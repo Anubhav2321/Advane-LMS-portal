@@ -33,10 +33,11 @@ from .forms import (
     ExamForm,
     ProfilePictureForm,
     LessonForm,
-    LessonCommentForm
+    LessonCommentForm,
+    FacultyRegistrationForm # 🚀 ADDED FACULTY FORM
 )
 
-# Import Models[cite: 5]
+# Import Models
 from .models import (
     Course,
     Enrollment,
@@ -52,8 +53,8 @@ from .models import (
     LessonComment,
     DynamicBountyProblem,  
     ProblemTestCase,       
-    BountySubmission,      
-    FacultyProfile         
+    BountySubmission,
+    FacultyProfile         # 🚀 ADDED FACULTY PROFILE
 )
 
 User = get_user_model()
@@ -125,6 +126,7 @@ def login_view(request):
         messages.success(request, "You are already logged in.")
         if request.user.is_staff or request.user.is_superuser:
             return redirect('admin_dashboard')
+        # 🚀 ROUTING: Redirect Faculty to their dashboard
         elif getattr(request.user, 'is_faculty', False):
             return redirect('faculty_dashboard')
         return redirect('dashboard')
@@ -150,6 +152,7 @@ def login_view(request):
             
             if user.is_staff or user.is_superuser:
                 return redirect('admin_dashboard')
+            # 🚀 ROUTING: Redirect Faculty to their dashboard
             elif getattr(user, 'is_faculty', False):
                 return redirect('faculty_dashboard')
             else:
@@ -839,6 +842,10 @@ def admin_dashboard(request):
     total_enrollments = Enrollment.objects.count()
     total_docs = LibraryDocument.objects.count()
 
+    # 🚀 NEW: Fetch Faculties
+    total_faculties = User.objects.filter(is_faculty=True).count()
+    faculties = User.objects.filter(is_faculty=True).order_by('-date_joined')
+
     courses = Course.objects.all().order_by('-created_at')
     documents = LibraryDocument.objects.all().order_by('-uploaded_at')
     
@@ -847,18 +854,34 @@ def admin_dashboard(request):
         'total_courses': total_courses,
         'total_enrollments': total_enrollments,
         'total_docs': total_docs,
+        'total_faculties': total_faculties, # 🚀 Added
+        'faculties': faculties,             # 🚀 Added list of faculties
         'courses': courses,
         'documents': documents,
+        
         'course_form': CourseForm(),
         'notice_form': NotificationForm(),
         'class_form': LiveClassForm(),
         'exam_form': ExamForm(),
         'library_form': LibraryDocumentForm(),
         'lesson_form': LessonForm(),
+        'faculty_form': FacultyRegistrationForm(), # 🚀 Added Faculty Form
     }
     return render(request, 'custom_admin/dashboard.html', context)
 
 # --- Admin Action Views (Create) ---
+
+# 🚀 NEW: Admin Action to Create Faculty
+@staff_member_required
+def admin_create_faculty(request):
+    if request.method == 'POST':
+        form = FacultyRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, f"Faculty '{user.first_name}' added successfully!")
+        else:
+            messages.error(request, "Failed to add faculty. Username or Email might exist.")
+    return redirect('admin_dashboard')
 
 @staff_member_required
 def admin_create_course(request):

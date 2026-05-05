@@ -10,7 +10,8 @@ from .models import (
     LibraryDocument, 
     Profile,
     Lesson,
-    LessonComment # UPDATE: Imported LessonComment Model
+    LessonComment, # UPDATE: Imported LessonComment Model
+    FacultyProfile # 🚀 NEW: Added FacultyProfile
 )
 
 User = get_user_model()
@@ -222,3 +223,37 @@ class LessonCommentForm(forms.ModelForm):
                 'placeholder': 'Ask a doubt or share your thoughts...'
             }),
         }
+
+# 9. FACULTY REGISTRATION FORM (CUSTOM ADMIN PANEL) 🚀 NEW
+
+class FacultyRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter temporary password'}))
+    department = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Computer Science'}))
+    experience_years = forms.IntegerField(required=False, initial=0, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Unique Username'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Faculty Email'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+        }
+
+    def save(self, commit=True):
+        # 1. Create the User
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password']) # Hash the password
+        user.is_student = False  # Not a student
+        user.is_faculty = True   # Make them a faculty member
+        
+        if commit:
+            user.save()
+            # 2. Create their Faculty Profile automatically
+            FacultyProfile.objects.create(
+                user=user,
+                department=self.cleaned_data.get('department'),
+                experience_years=self.cleaned_data.get('experience_years')
+            )
+        return user

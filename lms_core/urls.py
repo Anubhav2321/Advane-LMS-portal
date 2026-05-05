@@ -70,7 +70,11 @@ from students.views import (
     admin_create_live_class,
     admin_create_exam,
     add_library_view,
-    admin_add_lesson # Lesson View
+    admin_add_lesson, # Lesson View
+    
+    # 🚀 NEW: Faculty Actions
+    admin_create_faculty, 
+    faculty_dashboard
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -194,6 +198,12 @@ urlpatterns = [
     
     #  F. Lesson Management 
     path('admin-panel/course/<int:course_id>/add-lesson/', admin_add_lesson, name='admin_add_lesson'),
+    
+    # 🚀 NEW: Faculty Creation Route
+    path('admin-panel/create-faculty/', admin_create_faculty, name='admin_create_faculty'),
+    
+    # 🚀 NEW: Faculty Dashboard Route
+    path('faculty-panel/', faculty_dashboard, name='faculty_dashboard'),
 ]
 
 # Media & Static Files Configuration

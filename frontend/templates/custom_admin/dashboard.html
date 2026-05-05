@@ -58,10 +58,15 @@
 
 <div class="dashboard-container">
     
+    <!-- 🚀 UPDATED: Added Faculty Stats to Grid -->
     <div class="dashboard-grid">
         <a href="{% url 'admin_student_list' %}" class="stat-card" style="border-left-color: #00d4ff;">
             <h3>{{ total_students }}</h3>
             <p><i class="fas fa-users"></i> Students</p>
+        </a>
+        <a href="#" class="stat-card" style="border-left-color: #00e676;">
+            <h3>{{ total_faculties }}</h3>
+            <p><i class="fas fa-chalkboard-teacher"></i> Faculty</p>
         </a>
         <a href="{% url 'admin_course_list' %}" class="stat-card" style="border-left-color: #ff3366;">
             <h3>{{ total_courses }}</h3>
@@ -146,6 +151,31 @@
                 </div>
 
                 <button type="submit" class="btn-submit" style="background: #2ecc71; color: #000;">Create Exam</button>
+            </form>
+        </div>
+        
+        <!-- 🚀 NEW: FACULTY CREATION BOX -->
+        <div class="form-box" style="border: 1px solid #00e676;">
+            <h4 class="form-title" style="color: #00e676;"><i class="fas fa-user-tie"></i> Add New Faculty</h4>
+            <form action="/admin-panel/create-faculty/" method="POST">
+                {% csrf_token %}
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div><label>First Name</label> {{ faculty_form.first_name }}</div>
+                    <div><label>Last Name</label> {{ faculty_form.last_name }}</div>
+                </div>
+                
+                <label>Username (Unique ID)</label> {{ faculty_form.username }}
+                <label>Email Address</label> {{ faculty_form.email }}
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div><label>Department</label> {{ faculty_form.department }}</div>
+                    <div><label>Experience (Years)</label> {{ faculty_form.experience_years }}</div>
+                </div>
+                
+                <label>Temporary Password</label> {{ faculty_form.password }}
+
+                <button type="submit" class="btn-submit" style="background: #00e676; color: #000;">Register Faculty</button>
             </form>
         </div>
 
