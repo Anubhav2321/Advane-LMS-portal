@@ -72,9 +72,19 @@ from students.views import (
     add_library_view,
     admin_add_lesson, # Lesson View
     
-    # 🚀 NEW: Faculty Actions
-    admin_create_faculty, 
-    faculty_dashboard
+    # 🚀 NEW: Faculty Actions (Kept in views.py)
+    admin_create_faculty 
+)
+
+# 🚀 NEW: Importing Faculty Views from the new file
+from students.faculty_views import (
+    faculty_dashboard,
+    faculty_courses,
+    faculty_live_studio,
+    faculty_digital_archive,
+    faculty_exam_monitor,
+    faculty_community,
+    faculty_profile
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -199,11 +209,20 @@ urlpatterns = [
     #  F. Lesson Management 
     path('admin-panel/course/<int:course_id>/add-lesson/', admin_add_lesson, name='admin_add_lesson'),
     
-    # 🚀 NEW: Faculty Creation Route
+    # 🚀 NEW: Faculty Creation Route (Admin action)
     path('admin-panel/create-faculty/', admin_create_faculty, name='admin_create_faculty'),
     
-    # 🚀 NEW: Faculty Dashboard Route
+    # 🚀 NEW: Faculty Dashboard & Features Routes (Faculty actions)
     path('faculty-panel/', faculty_dashboard, name='faculty_dashboard'),
+    path('faculty-panel/my-courses/', faculty_courses, name='faculty_courses'),
+    path('faculty-panel/live-studio/', faculty_live_studio, name='faculty_live_studio'),
+    path('faculty-panel/digital-archive/', faculty_digital_archive, name='faculty_digital_archive'),
+    path('faculty-panel/exam-monitor/', faculty_exam_monitor, name='faculty_exam_monitor'),
+    path('faculty-panel/community/', faculty_community, name='faculty_community'),
+    path('faculty-panel/profile/', faculty_profile, name='faculty_profile'),
+    
+    # System Logout for Faculty
+    path('faculty-panel/disconnect/', logout_view, name='faculty_logout'),
 ]
 
 # Media & Static Files Configuration

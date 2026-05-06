@@ -15,133 +15,73 @@
            🚀 FACULTY CONTROL ROOM STYLES
            ========================================= */
         :root {
-            --bg-dark: #07070a;
-            --sidebar-bg: #030305;
-            --panel-bg: #0c0c12;
-            --border-color: #1f1f2a;
-            --text-main: #e0e0e0;
-            --text-muted: #888899;
-            --accent-cyan: #00f3ff;
-            --accent-purple: #bc13fe;
-            --danger: #ff3366;
-            --success: #00e676;
-            --warning: #ffc01e;
+            --bg-dark: #07070a; --sidebar-bg: #030305; --panel-bg: #0c0c12;
+            --border-color: #1f1f2a; --text-main: #e0e0e0; --text-muted: #888899;
+            --accent-cyan: #00f3ff; --accent-purple: #bc13fe; --danger: #ff3366;
+            --success: #00e676; --warning: #ffc01e;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        body { font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         /* --- FACULTY SIDEBAR --- */
-        .faculty-sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 30px 20px;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex; align-items: center; gap: 15px; margin-bottom: 40px;
-        }
+        .faculty-sidebar { width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 30px 20px; z-index: 100; }
+        .brand { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
         .brand-icon { font-size: 2.2rem; color: var(--accent-purple); filter: drop-shadow(0 0 10px rgba(188, 19, 254, 0.4)); }
         .brand-text { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 700; line-height: 1.1; }
         .brand-text .highlight { color: var(--accent-purple); font-size: 1.6rem; letter-spacing: 1px; }
         .badge-role { background: rgba(188, 19, 254, 0.1); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 2px 6px; font-size: 0.7rem; border-radius: 4px; margin-top: 5px; display: inline-block; letter-spacing: 1px; }
 
         .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-        .nav-item {
-            display: flex; align-items: center; gap: 15px; padding: 14px 18px;
-            color: var(--text-muted); text-decoration: none; font-size: 1.15rem;
-            font-weight: 600; border-radius: 12px; transition: 0.3s;
-            border: 1px solid transparent;
-        }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 14px 18px; color: var(--text-muted); text-decoration: none; font-size: 1.15rem; font-weight: 600; border-radius: 12px; transition: 0.3s; border: 1px solid transparent; cursor: pointer; }
         .nav-item i { font-size: 1.3rem; width: 25px; text-align: center; }
         
         .nav-item:hover { color: #fff; background: rgba(255, 255, 255, 0.03); }
         .nav-item.active {
             background: linear-gradient(90deg, rgba(188, 19, 254, 0.1), transparent);
             color: var(--accent-purple); border-left: 3px solid var(--accent-purple);
-            border-top: 1px solid rgba(188, 19, 254, 0.1);
-            border-bottom: 1px solid rgba(188, 19, 254, 0.1);
+            border-top: 1px solid rgba(188, 19, 254, 0.1); border-bottom: 1px solid rgba(188, 19, 254, 0.1);
         }
 
         /* --- MAIN DASHBOARD AREA --- */
-        .main-wrapper {
-            flex: 1; overflow-y: auto; padding: 40px 50px;
-            background: radial-gradient(circle at top right, rgba(188, 19, 254, 0.05), transparent 40%), var(--bg-dark);
-        }
-
+        .main-wrapper { flex: 1; overflow-y: auto; padding: 40px 50px; background: radial-gradient(circle at top right, rgba(188, 19, 254, 0.05), transparent 40%), var(--bg-dark); }
         .main-wrapper::-webkit-scrollbar { width: 8px; }
         .main-wrapper::-webkit-scrollbar-track { background: var(--bg-dark); }
         .main-wrapper::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 4px; }
 
-        /* Header */
-        .dashboard-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;
-        }
+        /* Headers & Buttons */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
         .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: #fff; letter-spacing: 1px; }
         .header-title p { color: var(--text-muted); font-size: 1.2rem; margin-top: 5px; }
 
         .quick-actions { display: flex; gap: 15px; }
-        .btn-live {
-            background: rgba(255, 51, 102, 0.1); color: var(--danger);
-            border: 1px solid var(--danger); padding: 12px 24px; border-radius: 8px;
-            font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer;
-            transition: 0.3s; display: flex; align-items: center; gap: 10px;
-        }
+        .btn-live { background: rgba(255, 51, 102, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 12px 24px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .btn-live:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px rgba(255, 51, 102, 0.4); }
         
-        .btn-upload {
-            background: rgba(0, 243, 255, 0.1); color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan); padding: 12px 24px; border-radius: 8px;
-            font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s;
-        }
+        .btn-upload { background: rgba(0, 243, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 12px 24px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s; }
         .btn-upload:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
 
-        /* STATS GRID */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px;
-        }
-        .stat-card {
-            background: var(--panel-bg); border: 1px solid var(--border-color);
-            padding: 25px; border-radius: 16px; display: flex; align-items: center; gap: 20px;
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
+        /* SPA TAB HIDING CSS */
+        .tab-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-section.active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PANELS AND GRIDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .stat-card { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 25px; border-radius: 16px; display: flex; align-items: center; gap: 20px; transition: 0.3s; }
         .stat-card:hover { transform: translateY(-5px); border-color: rgba(188, 19, 254, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .stat-icon {
-            width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-        }
+        .stat-icon { width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
         .icon-purple { background: rgba(188, 19, 254, 0.1); color: var(--accent-purple); }
         .icon-cyan { background: rgba(0, 243, 255, 0.1); color: var(--accent-cyan); }
         .icon-green { background: rgba(0, 230, 118, 0.1); color: var(--success); }
         .icon-yellow { background: rgba(255, 192, 30, 0.1); color: var(--warning); }
-        
         .stat-info h3 { font-size: 2.2rem; font-family: 'Orbitron', sans-serif; color: #fff; line-height: 1; }
         .stat-info p { color: var(--text-muted); font-size: 1.1rem; font-weight: 600; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;}
 
-        /* MAIN CONTENT SPLIT */
-        .content-split {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 30px;
-        }
-
-        .panel-section {
-            background: var(--panel-bg); border: 1px solid var(--border-color);
-            border-radius: 16px; padding: 30px;
-        }
-        .section-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
-        }
+        .content-split { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        .panel-section { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .section-header h2 { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: #fff; }
 
         /* Course List Table */
@@ -150,20 +90,20 @@
         .course-list td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 1.1rem; font-weight: 600; }
         .course-list tr:hover td { background: rgba(255,255,255,0.02); }
         .course-title { color: #fff; display: flex; align-items: center; gap: 10px; }
-        .course-title i { color: var(--accent-cyan); }
         .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-family: 'Orbitron', sans-serif; }
         .status-active { background: rgba(0, 230, 118, 0.1); color: var(--success); border: 1px solid rgba(0, 230, 118, 0.3); }
-
+        
+        /* Studio Specific */
+        .studio-panel { border: 1px solid rgba(255, 51, 102, 0.3); padding: 50px; text-align: center; box-shadow: 0 0 30px rgba(255, 51, 102, 0.05); }
+        .btn-start-stream { background: var(--danger); color: #fff; border: none; padding: 15px 40px; font-size: 1.2rem; font-family: 'Orbitron', sans-serif; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+        .btn-start-stream:hover { box-shadow: 0 0 25px rgba(255, 51, 102, 0.6); transform: scale(1.05); }
+        
         /* AI Alerts List */
-        .alert-item {
-            display: flex; gap: 15px; padding: 15px; background: rgba(255, 51, 102, 0.03);
-            border: 1px solid rgba(255, 51, 102, 0.1); border-radius: 12px; margin-bottom: 15px;
-        }
+        .alert-item { display: flex; gap: 15px; padding: 15px; background: rgba(255, 51, 102, 0.03); border: 1px solid rgba(255, 51, 102, 0.1); border-radius: 12px; margin-bottom: 15px; }
         .alert-icon { color: var(--danger); font-size: 1.5rem; margin-top: 3px; }
         .alert-text h4 { color: #fff; font-size: 1.1rem; }
         .alert-text p { color: var(--text-muted); font-size: 0.95rem; margin-top: 3px; }
         .alert-time { font-size: 0.8rem; color: var(--danger); font-family: 'Orbitron', sans-serif; margin-top: 5px; display: block;}
-
     </style>
 </head>
 <body>
@@ -178,172 +118,314 @@
             </div>
         </div>
 
+        <!-- 🚀 JAVASCRIPT ONCLICK ADDED TO TABS -->
         <ul class="nav-menu">
-            <a href="{% url 'faculty_dashboard' %}" class="nav-item active">
+            <a onclick="openTab('tab-dashboard')" class="nav-item tab-btn active" id="btn-dashboard">
                 <i class="fas fa-satellite-dish"></i> Command Center
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="openTab('tab-courses')" class="nav-item tab-btn" id="btn-courses">
                 <i class="fas fa-layer-group"></i> My Courses
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="openTab('tab-studio')" class="nav-item tab-btn" id="btn-studio">
                 <i class="fas fa-video"></i> Live Studio
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="openTab('tab-archive')" class="nav-item tab-btn" id="btn-archive">
                 <i class="fas fa-folder-open"></i> Digital Archive
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="openTab('tab-monitor')" class="nav-item tab-btn" id="btn-monitor">
                 <i class="fas fa-brain"></i> AI Exam Monitor
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="openTab('tab-community')" class="nav-item tab-btn" id="btn-community">
                 <i class="fas fa-comments"></i> Community CommLink
             </a>
-            <a href="#" class="nav-item">
+            <a onclick="openTab('tab-profile')" class="nav-item tab-btn" id="btn-profile">
                 <i class="fas fa-user-shield"></i> Faculty Profile
             </a>
         </ul>
         
         <div style="margin-top: auto;">
-            <a href="{% url 'logout' %}" class="nav-item" style="color: var(--danger);">
+            <!-- Logout still uses normal link -->
+            <a href="{% url 'faculty_logout' %}" class="nav-item" style="color: var(--danger);">
                 <i class="fas fa-power-off"></i> System Disconnect
             </a>
         </div>
     </nav>
 
-    <!-- 🚀 MAIN CONTROL ROOM AREA -->
+    <!-- 🚀 MAIN CONTENT AREA -->
     <div class="main-wrapper">
         
-        <!-- Header -->
-        <div class="dashboard-header">
-            <div class="header-title">
-                <h1>Welcome, Prof. {{ user.first_name }}</h1>
-                <p>System operational. You are connected to the Mainframe.</p>
+        <!-- ==============================================
+             1. DASHBOARD TAB (Original Content)
+             ============================================== -->
+        <div id="tab-dashboard" class="tab-section active-tab">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1>Welcome, Prof. {{ user.first_name }}</h1>
+                    <p>System operational. You are connected to the Mainframe.</p>
+                </div>
+                <div class="quick-actions">
+                    <button class="btn-upload" onclick="openTab('tab-archive')"><i class="fas fa-cloud-upload-alt"></i> Upload Asset</button>
+                    <button class="btn-live" onclick="openTab('tab-studio')"><i class="fas fa-broadcast-tower"></i> INITIALIZE LIVE</button>
+                </div>
             </div>
-            <div class="quick-actions">
-                <button class="btn-upload"><i class="fas fa-cloud-upload-alt"></i> Upload Asset</button>
-                <button class="btn-live"><i class="fas fa-broadcast-tower"></i> INITIALIZE LIVE</button>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple"><i class="fas fa-book"></i></div>
+                    <div class="stat-info"><h3>{{ total_courses }}</h3><p>Active Courses</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-cyan"><i class="fas fa-users"></i></div>
+                    <div class="stat-info"><h3>{{ total_students }}</h3><p>Total Students</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="fas fa-tasks"></i></div>
+                    <div class="stat-info"><h3>12</h3><p>Assignments Pending</p></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-yellow"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info"><h3>{{ upcoming_classes.count }}</h3><p>Upcoming Live Classes</p></div>
+                </div>
+            </div>
+
+            <div class="content-split">
+                <!-- Left: My Courses -->
+                <div class="panel-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-network-wired" style="color: var(--accent-purple); margin-right: 10px;"></i> My Assigned Modules</h2>
+                        <a href="#" onclick="openTab('tab-courses')" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    
+                    <table class="course-list">
+                        <thead>
+                            <tr>
+                                <th>Module Name</th>
+                                <th>Enrolled</th>
+                                <th>Total Lessons</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in assigned_courses %}
+                            <tr>
+                                <td class="course-title"><i class="fas fa-cube" style="color: var(--accent-cyan);"></i> {{ course.title }}</td>
+                                <td><i class="fas fa-user-graduate" style="color: var(--text-muted);"></i> {{ course.enrollments.count }}</td>
+                                <td>{{ course.total_modules }}</td>
+                                <td><span class="status-badge status-active">ACTIVE</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">No courses assigned to you yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right: AI Alerts & Live Classes -->
+                <div style="display: flex; flex-direction: column; gap: 30px;">
+                    <div class="panel-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-video" style="color: var(--warning); margin-right: 10px;"></i> Next Broadcasts</h2>
+                        </div>
+                        {% for live in upcoming_classes|slice:":3" %}
+                        <div style="padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--warning);">
+                            <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 5px;">{{ live.title }}</h4>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);">
+                                <span><i class="far fa-calendar-alt"></i> {{ live.date_time|date:"d M, Y" }}</span>
+                                <span style="color: var(--warning);"><i class="far fa-clock"></i> {{ live.date_time|time:"H:i A" }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p style="color: var(--text-muted); text-align: center;">No scheduled broadcasts.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="panel-section" style="border-color: rgba(255, 51, 102, 0.2);">
+                        <div class="section-header">
+                            <h2><i class="fas fa-shield-alt" style="color: var(--danger); margin-right: 10px;"></i> AI Proctor Alerts</h2>
+                        </div>
+                        <div class="alert-item">
+                            <i class="fas fa-exclamation-triangle alert-icon"></i>
+                            <div class="alert-text">
+                                <h4>Suspicious Activity Detected</h4>
+                                <p>Student <b>Akash</b> switched browser tabs during "Python Advanced Exam".</p>
+                                <span class="alert-time">AWAITING REVIEW</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon icon-purple"><i class="fas fa-book"></i></div>
-                <div class="stat-info">
-                    <h3>{{ total_courses }}</h3>
-                    <p>Active Courses</p>
+        <!-- ==============================================
+             2. MY COURSES TAB
+             ============================================== -->
+        <div id="tab-courses" class="tab-section">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-layer-group" style="color: var(--accent-cyan); margin-right: 15px;"></i> All Assigned Modules</h1>
+                    <p>Detailed view of courses you are instructing.</p>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-cyan"><i class="fas fa-users"></i></div>
-                <div class="stat-info">
-                    <h3>{{ total_students }}</h3>
-                    <p>Total Students</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-green"><i class="fas fa-tasks"></i></div>
-                <div class="stat-info">
-                    <h3>12</h3>
-                    <p>Assignments Pending</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-yellow"><i class="fas fa-clock"></i></div>
-                <div class="stat-info">
-                    <h3>{{ upcoming_classes.count }}</h3>
-                    <p>Upcoming Live Classes</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Content Split -->
-        <div class="content-split">
-            
-            <!-- Left: My Courses -->
             <div class="panel-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-network-wired" style="color: var(--accent-purple); margin-right: 10px;"></i> My Assigned Modules</h2>
-                    <a href="#" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem;">View All <i class="fas fa-arrow-right"></i></a>
-                </div>
-                
                 <table class="course-list">
                     <thead>
                         <tr>
+                            <th>Course ID</th>
                             <th>Module Name</th>
-                            <th>Enrolled</th>
+                            <th>Enrolled Students</th>
                             <th>Total Lessons</th>
-                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for course in assigned_courses %}
                         <tr>
-                            <td class="course-title"><i class="fas fa-cube"></i> {{ course.title }}</td>
+                            <td>#{{ course.id }}</td>
+                            <td class="course-title"><i class="fas fa-cube" style="color: var(--accent-cyan);"></i> {{ course.title }}</td>
                             <td><i class="fas fa-user-graduate" style="color: var(--text-muted);"></i> {{ course.enrollments.count }}</td>
                             <td>{{ course.total_modules }}</td>
-                            <td><span class="status-badge status-active">ACTIVE</span></td>
+                            <td><button class="btn-upload" style="padding: 5px 15px; font-size: 0.9rem;">Manage</button></td>
                         </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">No courses assigned to you yet.</td>
-                        </tr>
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No courses assigned to you.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <!-- Right: AI Alerts & Live Classes -->
-            <div style="display: flex; flex-direction: column; gap: 30px;">
-                
-                <!-- Upcoming Live -->
-                <div class="panel-section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-video" style="color: var(--warning); margin-right: 10px;"></i> Next Broadcasts</h2>
-                    </div>
-                    {% for live in upcoming_classes|slice:":3" %}
-                    <div style="padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--warning);">
-                        <h4 style="color: #fff; font-size: 1.1rem; margin-bottom: 5px;">{{ live.title }}</h4>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);">
-                            <span><i class="far fa-calendar-alt"></i> {{ live.date_time|date:"d M, Y" }}</span>
-                            <span style="color: var(--warning);"><i class="far fa-clock"></i> {{ live.date_time|time:"H:i A" }}</span>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p style="color: var(--text-muted); text-align: center;">No scheduled broadcasts.</p>
-                    {% endfor %}
+        <!-- ==============================================
+             3. LIVE STUDIO TAB
+             ============================================== -->
+        <div id="tab-studio" class="tab-section">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-broadcast-tower" style="color: var(--danger); margin-right: 15px;"></i> Broadcast Studio</h1>
+                    <p>Go live to teach your assigned modules.</p>
                 </div>
-
-                <!-- AI Exam Alerts -->
-                <div class="panel-section" style="border-color: rgba(255, 51, 102, 0.2);">
-                    <div class="section-header">
-                        <h2><i class="fas fa-shield-alt" style="color: var(--danger); margin-right: 10px;"></i> AI Proctor Alerts</h2>
-                    </div>
-                    
-                    <!-- Dummy Alerts to show the UI Power -->
-                    <div class="alert-item">
-                        <i class="fas fa-exclamation-triangle alert-icon"></i>
-                        <div class="alert-text">
-                            <h4>Suspicious Activity Detected</h4>
-                            <p>Student <b>Akash</b> switched browser tabs during "Python Advanced Exam".</p>
-                            <span class="alert-time">AWAITING REVIEW</span>
-                        </div>
-                    </div>
-                    <div class="alert-item">
-                        <i class="fas fa-camera-retro alert-icon"></i>
-                        <div class="alert-text">
-                            <h4>Multiple Faces Detected</h4>
-                            <p>AI detected a secondary person in webcam feed for <b>Rahul</b>.</p>
-                            <span class="alert-time">AWAITING REVIEW</span>
-                        </div>
-                    </div>
-                    
-                </div>
-
             </div>
 
-        </div> <!-- End Content Split -->
+            <div class="panel-section studio-panel">
+                <i class="fas fa-video" style="font-size: 4rem; color: var(--danger); margin-bottom: 20px;"></i>
+                <h2 style="font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #fff; margin-bottom: 10px;">Studio Offline</h2>
+                <p style="color: var(--text-muted); font-size: 1.2rem;">Connect your camera and microphone to begin broadcasting.</p>
+                <button class="btn-start-stream">INITIALIZE STREAM</button>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             4. DIGITAL ARCHIVE TAB
+             ============================================== -->
+        <div id="tab-archive" class="tab-section">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-folder-open" style="color: var(--warning); margin-right: 15px;"></i> Digital Archive</h1>
+                    <p>Manage documents, notes, and PDF assets for your students.</p>
+                </div>
+                <button class="btn-upload"><i class="fas fa-cloud-upload-alt"></i> Upload New Asset</button>
+            </div>
+            
+            <div class="panel-section">
+                <table class="course-list">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Associated Course</th>
+                            <th>Upload Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td class="course-title"><i class="fas fa-file-pdf" style="color: var(--warning);"></i> {{ doc.title }}</td>
+                            <td>{{ doc.course.title }}</td>
+                            <td>{{ doc.uploaded_at|date:"d M, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">No documents found in archive.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             5. AI EXAM MONITOR TAB
+             ============================================== -->
+        <div id="tab-monitor" class="tab-section">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-brain" style="color: #00e676; margin-right: 15px;"></i> AI Exam Monitor</h1>
+                    <p>Real-time AI proctoring and cheat-detection logs.</p>
+                </div>
+            </div>
+            <div class="panel-section" style="border-color: rgba(255, 51, 102, 0.2);">
+                <p style="color: var(--danger); text-align: center; font-size: 1.2rem; padding: 20px;"><i class="fas fa-exclamation-triangle"></i> No active exams running currently.</p>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             6. COMMUNITY COMMLINK TAB
+             ============================================== -->
+        <div id="tab-community" class="tab-section">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-comments" style="color: var(--accent-purple); margin-right: 15px;"></i> CommLink</h1>
+                    <p>Interact with students in course groups.</p>
+                </div>
+            </div>
+            <div class="panel-section" style="text-align: center; padding: 50px;">
+                <i class="fas fa-network-wired" style="font-size: 3rem; color: var(--accent-purple); margin-bottom: 20px;"></i>
+                <h3 style="color: #fff; font-family: 'Orbitron', sans-serif;">Connecting to Global Server...</h3>
+                <p style="color: var(--text-muted); margin-top: 10px;">Chat interface will appear here.</p>
+            </div>
+        </div>
+        
+        <!-- ==============================================
+             7. PROFILE TAB
+             ============================================== -->
+        <div id="tab-profile" class="tab-section">
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1><i class="fas fa-user-shield" style="color: var(--accent-cyan); margin-right: 15px;"></i> Faculty Profile</h1>
+                    <p>Update your personal details and credentials.</p>
+                </div>
+            </div>
+            <div class="panel-section">
+                <div style="display: flex; gap: 30px; align-items: center;">
+                    <div style="width: 100px; height: 100px; background: rgba(0, 243, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-cyan);">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <h2 style="color: #fff; font-family: 'Orbitron', sans-serif;">Prof. {{ user.first_name }} {{ user.last_name }}</h2>
+                        <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 5px;">{{ user.email }}</p>
+                        <p style="color: var(--accent-cyan); margin-top: 5px;">Department of Computer Science</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
+    <!-- 🚀 JAVASCRIPT FOR SPA TAB SWITCHING -->
+    <script>
+        function openTab(tabId) {
+            // 1. Hide all tab sections
+            const sections = document.querySelectorAll('.tab-section');
+            sections.forEach(sec => sec.classList.remove('active-tab'));
+
+            // 2. Remove active highlight from all sidebar buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // 3. Show the clicked tab
+            document.getElementById(tabId).classList.add('active-tab');
+
+            // 4. Highlight the clicked button
+            const btnId = tabId.replace('tab-', 'btn-');
+            document.getElementById(btnId).classList.add('active');
+        }
+    </script>
 </body>
 </html>

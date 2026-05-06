@@ -11,7 +11,7 @@ from .models import (
     Profile,
     Lesson,
     LessonComment, # UPDATE: Imported LessonComment Model
-    FacultyProfile # 🚀 NEW: Added FacultyProfile
+    FacultyProfile #  NEW: Added FacultyProfile
 )
 
 User = get_user_model()

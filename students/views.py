@@ -227,9 +227,8 @@ def profile_view(request):
     # Fetch Enrolled Courses for display
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-enrolled_at')
 
-    # =========================================================
     # 🚀 SYNTAX SINGULARITY STATS & GITHUB HEATMAP GRAPH FETCHING
-    # =========================================================
+
     successful_bounties = BountySubmission.objects.filter(
         student=user, 
         earned_coins__gt=0
@@ -1122,9 +1121,7 @@ def admin_delete_enrollment(request, enroll_id):
     return redirect('admin_enrollment_list')
 
 
-# =====================================================================
 # 8. PREVIOUS: SYNTAX SINGULARITY (AI LOGIC CHECKER)
-# =====================================================================
 
 @login_required
 def syntax_singularity_view(request):
@@ -1312,41 +1309,3 @@ def submit_bounty_code(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
             
     return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
-
-
-# =====================================================================
-# 9. NEW: FACULTY PANEL SYSTEM
-# =====================================================================
-
-@login_required
-def faculty_dashboard(request):
-    """
-    Main Dashboard for Faculty Members.
-    """
-    user = request.user
-    if not getattr(user, 'is_faculty', False):
-        messages.error(request, "Access Denied! Only faculty members can view this page.")
-        return redirect('dashboard')
-    
-    # Fetch assigned courses
-    assigned_courses = Course.objects.filter(assigned_faculty=user)
-    total_courses = assigned_courses.count()
-    
-    # Fetch total unique students enrolled in these courses
-    total_students = Enrollment.objects.filter(course__in=assigned_courses).values('student').distinct().count()
-    
-    # Upcoming Live Classes for these courses
-    upcoming_classes = LiveClass.objects.filter(course__in=assigned_courses, date_time__gte=timezone.now()).order_by('date_time')
-    
-    # Recent Documents uploaded for these courses
-    documents = LibraryDocument.objects.filter(course__in=assigned_courses).order_by('-uploaded_at')[:5]
-
-    context = {
-        'user': user,
-        'assigned_courses': assigned_courses,
-        'total_courses': total_courses,
-        'total_students': total_students,
-        'upcoming_classes': upcoming_classes,
-        'documents': documents,
-    }
-    return render(request, 'faculty_dashboard.html', context)
