@@ -1,4 +1,4 @@
-# 🚀 Learning-365: The Syntax Singularity Ecosystem
+# 🎓 Learning-365: The Syntax Singularity Ecosystem
 ### *Next-Generation AI-Powered EdTech Platform*
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)](https://www.python.org/)
