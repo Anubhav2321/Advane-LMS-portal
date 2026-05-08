@@ -120,9 +120,9 @@ Learning-365/
 🏅 Certified in AI Fundamentals & Prompt Engineering by IBM SkillsBuild.
 
 Connect:
-
-<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
 <a href="https://github.com/Anubhav2321" target="_blank">
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
+  </a> 
 
  <a href="https://www.linkedin.com/in/anubhav-samanta-187549379 " target="_blank">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
