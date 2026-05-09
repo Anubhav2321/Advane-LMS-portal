@@ -11,7 +11,9 @@ from .models import (
     Profile,
     Lesson,
     LessonComment, # UPDATE: Imported LessonComment Model
-    FacultyProfile #  NEW: Added FacultyProfile
+    FacultyProfile, #  NEW: Added FacultyProfile
+    Assignment,           # 🚀 NEW: Added Assignment Model
+    AssignmentSubmission  # 🚀 NEW: Added Assignment Submission Model
 )
 
 User = get_user_model()
@@ -257,3 +259,47 @@ class FacultyRegistrationForm(forms.ModelForm):
                 experience_years=self.cleaned_data.get('experience_years')
             )
         return user
+
+
+# =================================================================
+# 🚀 NEW: FACULTY PANEL FORMS
+# =================================================================
+
+class AssignmentForm(forms.ModelForm):
+    class Meta:
+        model = Assignment
+        fields = ['course', 'title', 'description', 'due_date', 'total_marks']
+        widgets = {
+            'course': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Assignment Title'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write the assignment instructions here...'}),
+            'due_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'total_marks': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 100'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        faculty = kwargs.pop('faculty', None)
+        super().__init__(*args, **kwargs)
+        if faculty:
+            # Dropdown e sudhu oi course gulo dekhabe jeta ei faculty ke assign kora ache
+            self.fields['course'].queryset = Course.objects.filter(assigned_faculty=faculty)
+
+class AssignmentGradeForm(forms.ModelForm):
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['marks_obtained', 'feedback']
+        widgets = {
+            'marks_obtained': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter marks'}),
+            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Feedback for the student...'}),
+        }
+
+class FacultyProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = FacultyProfile
+        fields = ['department', 'experience_years', 'specialization', 'background']
+        widgets = {
+            'department': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. IT Department'}),
+            'experience_years': forms.NumberInput(attrs={'class': 'form-control'}),
+            'specialization': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Artificial Intelligence'}),
+            'background': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Computer Science'}),
+        }

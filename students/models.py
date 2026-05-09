@@ -294,8 +294,7 @@ class LibraryDocument(models.Model):
     def __str__(self):
         return self.title
 
-
-# --- NEW: Lesson Comment Model (ADDED HERE) ---
+# --- NEW: Lesson Comment Model ---
 class LessonComment(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='comments')
     student = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -304,6 +303,37 @@ class LessonComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.student.username} on {self.lesson.title}"
+
+# =================================================================
+# 🚀 NEW: ASSIGNMENT SYSTEM (FOR FACULTY PANEL "PENDING ASSIGNMENTS")
+# =================================================================
+
+class Assignment(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    due_date = models.DateTimeField()
+    total_marks = models.PositiveIntegerField(default=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.course.title}"
+
+class AssignmentSubmission(models.Model):
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assignment_submissions')
+    file = models.FileField(upload_to='assignments/submissions/', blank=True, null=True)
+    text_answer = models.TextField(blank=True, null=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    
+    is_graded = models.BooleanField(default=False)
+    marks_obtained = models.FloatField(blank=True, null=True)
+    feedback = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.student.username} -> {self.assignment.title}"
+
+# =================================================================
 
 
 # 9. AI FEATURES MODELS

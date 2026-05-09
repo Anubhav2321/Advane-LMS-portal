@@ -84,7 +84,12 @@ from students.faculty_views import (
     faculty_digital_archive,
     faculty_exam_monitor,
     faculty_community,
-    faculty_profile
+    faculty_profile,
+    # 🚀 NEW ACTION VIEWS ADDED BELOW
+    faculty_create_assignment,
+    faculty_schedule_live,
+    faculty_upload_document,
+    faculty_update_profile
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -220,6 +225,12 @@ urlpatterns = [
     path('faculty-panel/exam-monitor/', faculty_exam_monitor, name='faculty_exam_monitor'),
     path('faculty-panel/community/', faculty_community, name='faculty_community'),
     path('faculty-panel/profile/', faculty_profile, name='faculty_profile'),
+    
+    # 🚀 NEW: Faculty Form Submission Routes (Actions)
+    path('faculty-panel/create-assignment/', faculty_create_assignment, name='faculty_create_assignment'),
+    path('faculty-panel/schedule-live/', faculty_schedule_live, name='faculty_schedule_live'),
+    path('faculty-panel/upload-document/', faculty_upload_document, name='faculty_upload_document'),
+    path('faculty-panel/update-profile/', faculty_update_profile, name='faculty_update_profile'),
     
     # System Logout for Faculty
     path('faculty-panel/disconnect/', logout_view, name='faculty_logout'),

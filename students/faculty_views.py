@@ -4,7 +4,16 @@ from django.contrib import messages
 from django.utils import timezone
 
 # Import Models
-from .models import Course, Enrollment, LiveClass, LibraryDocument
+from .models import (
+    Course, Enrollment, LiveClass, LibraryDocument, 
+    Assignment, AssignmentSubmission, FacultyProfile, User # 🚀 NEW IMPORTS
+)
+
+# Import Forms (🚀 NEW IMPORTS)
+from .forms import (
+    AssignmentForm, AssignmentGradeForm, FacultyProfileUpdateForm, 
+    LiveClassForm, LibraryDocumentForm
+)
 
 # =====================================================================
 # FACULTY PANEL VIEWS
@@ -15,6 +24,7 @@ def faculty_dashboard(request):
     """
     Main Dashboard for Faculty Members.
     Displays quick stats, upcoming classes, and recent documents.
+    Now fully dynamic with Assignments, Submissions, and Forms!
     """
     user = request.user
     
@@ -41,6 +51,36 @@ def faculty_dashboard(request):
         course__in=assigned_courses
     ).order_by('-uploaded_at')[:5]
 
+    # ==========================================
+    # 🚀 NEW: ASSIGNMENTS & PENDING STATS LOGIC
+    # ==========================================
+    # Fetch all assignments created for their courses
+    assignments = Assignment.objects.filter(course__in=assigned_courses).order_by('-created_at')
+    
+    # Fetch submissions that are not graded yet
+    pending_submissions = AssignmentSubmission.objects.filter(
+        assignment__course__in=assigned_courses, 
+        is_graded=False
+    ).order_by('submitted_at')
+    
+    pending_assignments_count = pending_submissions.count()
+
+    # Get or create Faculty Profile
+    faculty_profile, created = FacultyProfile.objects.get_or_create(user=user)
+
+    # ==========================================
+    # 🚀 NEW: INITIALIZE FORMS FOR DASHBOARD UI
+    # ==========================================
+    assignment_form = AssignmentForm(faculty=user)
+    
+    live_class_form = LiveClassForm()
+    live_class_form.fields['course'].queryset = assigned_courses # Restrict to their courses
+    
+    library_form = LibraryDocumentForm()
+    library_form.fields['course'].queryset = assigned_courses # Restrict to their courses
+    
+    profile_form = FacultyProfileUpdateForm(instance=faculty_profile)
+
     context = {
         'user': user,
         'assigned_courses': assigned_courses,
@@ -48,9 +88,95 @@ def faculty_dashboard(request):
         'total_students': total_students,
         'upcoming_classes': upcoming_classes,
         'documents': documents,
+        
+        # 🚀 NEW CONTEXT DATA
+        'assignments': assignments,
+        'pending_submissions': pending_submissions,
+        'pending_assignments_count': pending_assignments_count,
+        'faculty_profile': faculty_profile,
+        
+        # 🚀 FORMS FOR MODALS/TABS
+        'assignment_form': assignment_form,
+        'live_class_form': live_class_form,
+        'library_form': library_form,
+        'profile_form': profile_form,
     }
     return render(request, 'faculty_dashboard.html', context)
 
+
+# =====================================================================
+# 🚀 NEW: ACTION VIEWS FOR HANDLING FORM SUBMISSIONS (POST REQUESTS)
+# =====================================================================
+
+@login_required
+def faculty_create_assignment(request):
+    if request.method == 'POST' and getattr(request.user, 'is_faculty', False):
+        form = AssignmentForm(request.POST, faculty=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Assignment created successfully!")
+        else:
+            messages.error(request, "Error creating assignment. Please check the inputs.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_schedule_live(request):
+    if request.method == 'POST' and getattr(request.user, 'is_faculty', False):
+        form = LiveClassForm(request.POST)
+        if form.is_valid():
+            course = form.cleaned_data.get('course')
+            # Verify the course actually belongs to this faculty
+            if course in Course.objects.filter(assigned_faculty=request.user):
+                form.save()
+                messages.success(request, "Live class scheduled successfully!")
+            else:
+                messages.error(request, "You can only schedule classes for your own assigned modules.")
+        else:
+            messages.error(request, "Error scheduling live class.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_upload_document(request):
+    if request.method == 'POST' and getattr(request.user, 'is_faculty', False):
+        form = LibraryDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            course = form.cleaned_data.get('course')
+            if course in Course.objects.filter(assigned_faculty=request.user):
+                doc = form.save(commit=False)
+                doc.uploaded_by = request.user
+                doc.save()
+                messages.success(request, "Asset uploaded to Digital Archive!")
+            else:
+                messages.error(request, "You can only upload documents for your own assigned modules.")
+        else:
+            messages.error(request, "Upload failed. Check file type (PDF/Doc only).")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_update_profile(request):
+    if request.method == 'POST' and getattr(request.user, 'is_faculty', False):
+        faculty_profile, _ = FacultyProfile.objects.get_or_create(user=request.user)
+        form = FacultyProfileUpdateForm(request.POST, instance=faculty_profile)
+        
+        if form.is_valid():
+            form.save()
+            # Also update base User info
+            request.user.first_name = request.POST.get('first_name', request.user.first_name)
+            request.user.last_name = request.POST.get('last_name', request.user.last_name)
+            request.user.save()
+            
+            messages.success(request, "Faculty Profile updated successfully!")
+        else:
+            messages.error(request, "Failed to update profile.")
+    return redirect('faculty_dashboard')
+
+
+# =====================================================================
+# PREVIOUS VIEWS (KEPT INTACT AS REQUESTED)
+# =====================================================================
 
 @login_required
 def faculty_courses(request):
