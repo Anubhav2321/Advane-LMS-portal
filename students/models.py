@@ -304,9 +304,7 @@ class LessonComment(models.Model):
     def __str__(self):
         return f"Comment by {self.student.username} on {self.lesson.title}"
 
-# =================================================================
 # 🚀 NEW: ASSIGNMENT SYSTEM (FOR FACULTY PANEL "PENDING ASSIGNMENTS")
-# =================================================================
 
 class Assignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
@@ -333,7 +331,6 @@ class AssignmentSubmission(models.Model):
     def __str__(self):
         return f"{self.student.username} -> {self.assignment.title}"
 
-# =================================================================
 
 
 # 9. AI FEATURES MODELS

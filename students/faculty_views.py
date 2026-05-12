@@ -15,9 +15,7 @@ from .forms import (
     LiveClassForm, LibraryDocumentForm
 )
 
-# =====================================================================
 # FACULTY PANEL VIEWS
-# =====================================================================
 
 @login_required
 def faculty_dashboard(request):
@@ -51,9 +49,7 @@ def faculty_dashboard(request):
         course__in=assigned_courses
     ).order_by('-uploaded_at')[:5]
 
-    # ==========================================
     # 🚀 NEW: ASSIGNMENTS & PENDING STATS LOGIC
-    # ==========================================
     # Fetch all assignments created for their courses
     assignments = Assignment.objects.filter(course__in=assigned_courses).order_by('-created_at')
     
@@ -68,9 +64,8 @@ def faculty_dashboard(request):
     # Get or create Faculty Profile
     faculty_profile, created = FacultyProfile.objects.get_or_create(user=user)
 
-    # ==========================================
     # 🚀 NEW: INITIALIZE FORMS FOR DASHBOARD UI
-    # ==========================================
+
     assignment_form = AssignmentForm(faculty=user)
     
     live_class_form = LiveClassForm()
@@ -104,9 +99,7 @@ def faculty_dashboard(request):
     return render(request, 'faculty_dashboard.html', context)
 
 
-# =====================================================================
 # 🚀 NEW: ACTION VIEWS FOR HANDLING FORM SUBMISSIONS (POST REQUESTS)
-# =====================================================================
 
 @login_required
 def faculty_create_assignment(request):
@@ -174,9 +167,8 @@ def faculty_update_profile(request):
     return redirect('faculty_dashboard')
 
 
-# =====================================================================
+
 # PREVIOUS VIEWS (KEPT INTACT AS REQUESTED)
-# =====================================================================
 
 @login_required
 def faculty_courses(request):
