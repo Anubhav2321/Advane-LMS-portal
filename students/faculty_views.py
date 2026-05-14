@@ -6,13 +6,15 @@ from django.utils import timezone
 # Import Models
 from .models import (
     Course, Enrollment, LiveClass, LibraryDocument, 
-    Assignment, AssignmentSubmission, FacultyProfile, User # 🚀 NEW IMPORTS
+    Assignment, AssignmentSubmission, FacultyProfile, User,
+    Profile, ProctoringLog, CourseGroupMessage #  NEW IMPORTS ADDED
 )
 
-# Import Forms (🚀 NEW IMPORTS)
+# Import Forms 
 from .forms import (
     AssignmentForm, AssignmentGradeForm, FacultyProfileUpdateForm, 
-    LiveClassForm, LibraryDocumentForm
+    LiveClassForm, LibraryDocumentForm,
+    FacultyProfilePicForm, CourseGroupMessageForm #  NEW IMPORTS ADDED
 )
 
 # FACULTY PANEL VIEWS
@@ -22,7 +24,7 @@ def faculty_dashboard(request):
     """
     Main Dashboard for Faculty Members.
     Displays quick stats, upcoming classes, and recent documents.
-    Now fully dynamic with Assignments, Submissions, and Forms!
+    Now fully dynamic with Assignments, Submissions, Forms, and Profile Pics!
     """
     user = request.user
     
@@ -32,7 +34,7 @@ def faculty_dashboard(request):
         return redirect('dashboard')
     
     # Fetch assigned courses for this specific faculty
-    assigned_courses = Course.objects.filter(assigned_faculty=user)
+    assigned_courses = Course.objects.all()
     total_courses = assigned_courses.count()
     
     # Fetch total unique students enrolled in these assigned courses
@@ -61,10 +63,18 @@ def faculty_dashboard(request):
     
     pending_assignments_count = pending_submissions.count()
 
-    # Get or create Faculty Profile
+    # Get or create Faculty Professional Profile
     faculty_profile, created = FacultyProfile.objects.get_or_create(user=user)
+    
+    # 🚀 NEW: Get or create Base Profile (For Profile Picture)
+    base_profile, _ = Profile.objects.get_or_create(user=user)
 
-    # 🚀 NEW: INITIALIZE FORMS FOR DASHBOARD UI
+    # 🚀 NEW: FETCH AI PROCTORING LOGS FOR EXAM MONITOR
+    proctoring_logs = ProctoringLog.objects.filter(
+        exam__course__in=assigned_courses
+    ).order_by('-timestamp')[:20]
+
+    # 🚀 INITIALIZE FORMS FOR DASHBOARD UI
 
     assignment_form = AssignmentForm(faculty=user)
     
@@ -75,6 +85,9 @@ def faculty_dashboard(request):
     library_form.fields['course'].queryset = assigned_courses # Restrict to their courses
     
     profile_form = FacultyProfileUpdateForm(instance=faculty_profile)
+    
+    # 🚀 NEW: Profile Pic Form
+    profile_pic_form = FacultyProfilePicForm(instance=base_profile)
 
     context = {
         'user': user,
@@ -84,22 +97,25 @@ def faculty_dashboard(request):
         'upcoming_classes': upcoming_classes,
         'documents': documents,
         
-        # 🚀 NEW CONTEXT DATA
+        # CONTEXT DATA
         'assignments': assignments,
         'pending_submissions': pending_submissions,
         'pending_assignments_count': pending_assignments_count,
         'faculty_profile': faculty_profile,
+        'base_profile': base_profile, # 🚀 Added
+        'proctoring_logs': proctoring_logs, # 🚀 Added
         
-        # 🚀 FORMS FOR MODALS/TABS
+        # FORMS FOR MODALS/TABS
         'assignment_form': assignment_form,
         'live_class_form': live_class_form,
         'library_form': library_form,
         'profile_form': profile_form,
+        'profile_pic_form': profile_pic_form, # 🚀 Added
     }
     return render(request, 'faculty_dashboard.html', context)
 
 
-# 🚀 NEW: ACTION VIEWS FOR HANDLING FORM SUBMISSIONS (POST REQUESTS)
+# ACTION VIEWS FOR HANDLING FORM SUBMISSIONS (POST REQUESTS)
 
 @login_required
 def faculty_create_assignment(request):
@@ -119,7 +135,6 @@ def faculty_schedule_live(request):
         form = LiveClassForm(request.POST)
         if form.is_valid():
             course = form.cleaned_data.get('course')
-            # Verify the course actually belongs to this faculty
             if course in Course.objects.filter(assigned_faculty=request.user):
                 form.save()
                 messages.success(request, "Live class scheduled successfully!")
@@ -166,6 +181,20 @@ def faculty_update_profile(request):
             messages.error(request, "Failed to update profile.")
     return redirect('faculty_dashboard')
 
+
+# 🚀 NEW: ACTION VIEW FOR AUTO-SUBMIT PROFILE PICTURE
+@login_required
+def faculty_update_profile_pic(request):
+    if request.method == 'POST' and getattr(request.user, 'is_faculty', False):
+        base_profile, _ = Profile.objects.get_or_create(user=request.user)
+        form = FacultyProfilePicForm(request.POST, request.FILES, instance=base_profile)
+        
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile picture updated instantly!")
+        else:
+            messages.error(request, "Failed to upload picture. Check file size/format.")
+    return redirect('faculty_dashboard')
 
 
 # PREVIOUS VIEWS (KEPT INTACT AS REQUESTED)

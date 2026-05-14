@@ -111,6 +111,20 @@
         .btn-submit { background: var(--accent-cyan); color: #000; border: none; padding: 12px 30px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px;}
         .btn-submit:hover { background: #fff; box-shadow: 0 0 20px rgba(0,243,255,0.5); }
         select.form-control { background-color: #0c0c12; }
+        
+        /* Profile Image Styles */
+        .profile-img-container {
+            width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent-cyan);
+            overflow: hidden; position: relative; cursor: pointer; background: rgba(0, 243, 255, 0.1);
+            display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-cyan);
+        }
+        .profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-img-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7);
+            display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.5rem;
+            opacity: 0; transition: 0.3s;
+        }
+        .profile-img-container:hover .profile-img-overlay { opacity: 1; }
     </style>
 </head>
 <body>
@@ -252,14 +266,18 @@
                         <div class="section-header">
                             <h2><i class="fas fa-shield-alt" style="color: var(--danger); margin-right: 10px;"></i> AI Proctor Alerts</h2>
                         </div>
+                        {% for log in proctoring_logs|slice:":2" %}
                         <div class="alert-item">
                             <i class="fas fa-exclamation-triangle alert-icon"></i>
                             <div class="alert-text">
-                                <h4>Suspicious Activity Detected</h4>
-                                <p>Student <b>Akash</b> switched browser tabs during "Python Advanced Exam".</p>
-                                <span class="alert-time">AWAITING REVIEW</span>
+                                <h4>{{ log.violation_type }}</h4>
+                                <p>Student <b>{{ log.student.username }}</b> violation during "{{ log.exam.title }}".</p>
+                                <span class="alert-time">{{ log.timestamp|date:"d M, H:i" }}</span>
                             </div>
                         </div>
+                        {% empty %}
+                        <p style="color: var(--text-muted); text-align: center;">System secure. No cheating detected.</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -436,21 +454,46 @@
                 </div>
             </div>
             <div class="panel-section" style="border-color: rgba(255, 51, 102, 0.2);">
-                <p style="color: var(--danger); text-align: center; font-size: 1.2rem; padding: 20px;"><i class="fas fa-exclamation-triangle"></i> No active exams running currently.</p>
+                <div class="section-header">
+                    <h2><i class="fas fa-shield-alt" style="color: var(--danger); margin-right: 10px;"></i> Active Proctoring Alerts</h2>
+                </div>
+                
+                {% for log in proctoring_logs %}
+                <div class="alert-item">
+                    <i class="fas fa-exclamation-triangle alert-icon"></i>
+                    <div class="alert-text">
+                        <h4>{{ log.violation_type }}</h4>
+                        <p>Student <b>{{ log.student.username }}</b> violation during "{{ log.exam.title }}".</p>
+                        <span class="alert-time">{{ log.timestamp|date:"d M, Y H:i" }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--danger); text-align: center; font-size: 1.2rem; padding: 20px;"><i class="fas fa-shield-check"></i> No cheating activity detected.</p>
+                {% endfor %}
             </div>
         </div>
 
         <div id="tab-community" class="tab-section">
             <div class="dashboard-header">
                 <div class="header-title">
-                    <h1><i class="fas fa-comments" style="color: var(--accent-purple); margin-right: 15px;"></i> CommLink</h1>
-                    <p>Interact with students in course groups.</p>
+                    <h1><i class="fas fa-comments" style="color: var(--accent-purple); margin-right: 15px;"></i> CommLink Server</h1>
+                    <p>Select an assigned course module to enter the community chat.</p>
                 </div>
             </div>
-            <div class="panel-section" style="text-align: center; padding: 50px;">
-                <i class="fas fa-network-wired" style="font-size: 3rem; color: var(--accent-purple); margin-bottom: 20px;"></i>
-                <h3 style="color: #fff; font-family: 'Orbitron', sans-serif;">Connecting to Global Server...</h3>
-                <p style="color: var(--text-muted); margin-top: 10px;">Chat interface will appear here.</p>
+            
+            <div class="course-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                {% for course in assigned_courses %}
+                <div class="panel-section" style="padding: 20px; transition: 0.3s; border-color: rgba(188, 19, 254, 0.3);">
+                    <h3 style="font-family: 'Orbitron'; color: #fff; margin-bottom: 10px;">{{ course.title }}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;"><i class="fas fa-users"></i> {{ course.enrollments.count }} Students active</p>
+                    <a href="{% url 'course_community_chat' course.slug %}" class="btn-submit" style="background: transparent; border: 1px solid var(--accent-purple); color: var(--accent-purple); display: inline-block; text-decoration: none; padding: 8px 20px; font-size: 0.9rem;">ENTER CHATROOM</a>
+                </div>
+                {% empty %}
+                <div class="panel-section" style="grid-column: 1/-1; text-align: center;">
+                    <i class="fas fa-network-wired" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+                    <p style="color: var(--text-muted);">No courses assigned to establish a CommLink.</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
         
@@ -464,9 +507,19 @@
 
             <div class="panel-section" style="margin-bottom: 30px;">
                 <div style="display: flex; gap: 30px; align-items: center;">
-                    <div style="width: 100px; height: 100px; background: rgba(0, 243, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-cyan);">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
+                    
+                    <form method="POST" action="{% url 'faculty_update_profile_pic' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="profile-img-container" onclick="document.getElementById('faculty_profile_pic').click();">
+                            {% if base_profile.profile_pic %}
+                                <img src="{{ base_profile.profile_pic.url }}" alt="Profile Pic">
+                            {% else %}
+                                <i class="fas fa-user-tie"></i>
+                            {% endif %}
+                            <div class="profile-img-overlay"><i class="fas fa-camera"></i></div>
+                        </div>
+                        {{ profile_pic_form.profile_pic }} </form>
+                    
                     <div>
                         <h2 style="color: #fff; font-family: 'Orbitron', sans-serif;">Prof. {{ user.first_name }} {{ user.last_name }}</h2>
                         <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 5px;">{{ user.email }}</p>

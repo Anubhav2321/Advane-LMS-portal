@@ -54,7 +54,9 @@ from .models import (
     DynamicBountyProblem,  
     ProblemTestCase,       
     BountySubmission,
-    FacultyProfile         # 🚀 ADDED FACULTY PROFILE
+    FacultyProfile,        # 🚀 ADDED FACULTY PROFILE
+    Assignment,            # 🚀 NEW: Added Assignment Model
+    AssignmentSubmission   # 🚀 NEW: Added Assignment Submission Model
 )
 
 User = get_user_model()
@@ -173,12 +175,15 @@ def logout_view(request):
 @login_required
 def student_dashboard(request):
     """
-    Main Student Dashboard.
+    Main Student Dashboard with 3-Panel Sync Logic.
     """
     user = request.user
     
     # Fetch Enrollments
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-last_accessed')
+    
+    # 🚀 NEW: Get IDs of courses the student is enrolled in
+    enrolled_course_ids = enrollments.values_list('course_id', flat=True)
     
     # Fetch Notifications
     notifications = Notification.objects.all().order_by('-created_at')[:5]
@@ -191,6 +196,36 @@ def student_dashboard(request):
     # 🏆 GLOBAL LEADERBOARD LOGIC
     top_students = User.objects.filter(is_student=True).order_by('-lms_coins')[:10]
     
+    # =========================================================
+    # 🚀 NEW: 3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
+    # =========================================================
+    
+    # 1. Fetch Pending Assignments for enrolled courses
+    pending_assignments = Assignment.objects.filter(
+        course_id__in=enrolled_course_ids
+    ).exclude(
+        submissions__student=user
+    ).order_by('due_date')[:5]
+    
+    # 2. Fetch Upcoming Live Classes for enrolled courses
+    upcoming_classes = LiveClass.objects.filter(
+        course_id__in=enrolled_course_ids,
+        date_time__gte=timezone.now()
+    ).order_by('date_time')[:5]
+    
+    # 3. Fetch Active Exams for enrolled courses
+    active_exams = Exam.objects.filter(
+        course_id__in=enrolled_course_ids,
+        is_active=True
+    ).exclude(
+        quizresult__student=user
+    ).order_by('-created_at')[:5]
+    
+    # 4. Fetch Recent Digital Archive/Library Documents
+    recent_documents = LibraryDocument.objects.filter(
+        course_id__in=enrolled_course_ids
+    ).order_by('-uploaded_at')[:5]
+    
     context = {
         'enrollments': enrollments,
         'notifications': notifications,
@@ -198,7 +233,13 @@ def student_dashboard(request):
         'completed_courses': completed_courses,
         'certificate_eligible': certificate_eligible,
         'top_students': top_students,
-        'user': user
+        'user': user,
+        
+        # 🚀 NEW CONTEXT VARIABLES FOR STUDENT UI
+        'pending_assignments': pending_assignments,
+        'upcoming_classes': upcoming_classes,
+        'active_exams': active_exams,
+        'recent_documents': recent_documents,
     }
     return render(request, 'student_dashboard.html', context)
 
@@ -841,7 +882,7 @@ def admin_dashboard(request):
     total_enrollments = Enrollment.objects.count()
     total_docs = LibraryDocument.objects.count()
 
-    # 🚀 NEW: Fetch Faculties
+    # Fetch Faculties
     total_faculties = User.objects.filter(is_faculty=True).count()
     faculties = User.objects.filter(is_faculty=True).order_by('-date_joined')
 
@@ -853,8 +894,8 @@ def admin_dashboard(request):
         'total_courses': total_courses,
         'total_enrollments': total_enrollments,
         'total_docs': total_docs,
-        'total_faculties': total_faculties, # 🚀 Added
-        'faculties': faculties,             # 🚀 Added list of faculties
+        'total_faculties': total_faculties,
+        'faculties': faculties,
         'courses': courses,
         'documents': documents,
         
@@ -864,13 +905,12 @@ def admin_dashboard(request):
         'exam_form': ExamForm(),
         'library_form': LibraryDocumentForm(),
         'lesson_form': LessonForm(),
-        'faculty_form': FacultyRegistrationForm(), # 🚀 Added Faculty Form
+        'faculty_form': FacultyRegistrationForm(),
     }
     return render(request, 'custom_admin/dashboard.html', context)
 
 # --- Admin Action Views (Create) ---
 
-# 🚀 NEW: Admin Action to Create Faculty
 @staff_member_required
 def admin_create_faculty(request):
     if request.method == 'POST':

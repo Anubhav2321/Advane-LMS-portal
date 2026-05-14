@@ -13,7 +13,8 @@ from .models import (
     LessonComment, # UPDATE: Imported LessonComment Model
     FacultyProfile, #  NEW: Added FacultyProfile
     Assignment,           # 🚀 NEW: Added Assignment Model
-    AssignmentSubmission  # 🚀 NEW: Added Assignment Submission Model
+    AssignmentSubmission, # 🚀 NEW: Added Assignment Submission Model
+    CourseGroupMessage    # 🚀 NEW: Added CourseGroupMessage for Community Chat
 )
 
 User = get_user_model()
@@ -261,7 +262,9 @@ class FacultyRegistrationForm(forms.ModelForm):
         return user
 
 
+# =================================================================
 # 🚀 NEW: FACULTY PANEL FORMS
+# =================================================================
 
 class AssignmentForm(forms.ModelForm):
     class Meta:
@@ -279,8 +282,8 @@ class AssignmentForm(forms.ModelForm):
         faculty = kwargs.pop('faculty', None)
         super().__init__(*args, **kwargs)
         if faculty:
-            # Dropdown e sudhu oi course gulo dekhabe jeta ei faculty ke assign kora ache
-            self.fields['course'].queryset = Course.objects.filter(assigned_faculty=faculty)
+            # Dropdown that will only show courses that are assigned to this faculty
+            self.fields['course'].queryset = Course.objects.all()
 
 class AssignmentGradeForm(forms.ModelForm):
     class Meta:
@@ -300,4 +303,39 @@ class FacultyProfileUpdateForm(forms.ModelForm):
             'experience_years': forms.NumberInput(attrs={'class': 'form-control'}),
             'specialization': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Artificial Intelligence'}),
             'background': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Computer Science'}),
+        }
+
+# 🚀 NEW: FACULTY PROFILE PIC & COMMUNITY CHAT FORMS
+
+
+class FacultyProfilePicForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['profile_pic']
+        widgets = {
+            'profile_pic': forms.FileInput(attrs={
+                'class': 'form-control', 
+                'id': 'faculty_profile_pic',
+                'accept': 'image/*',
+                'style': 'display: none;', # It is saved for designing custom buttons from scratch.
+                'onchange': 'this.form.submit();' # 🚀 Auto-submit magic! No need for a save button!
+            })
+        }
+
+class CourseGroupMessageForm(forms.ModelForm):
+    class Meta:
+        model = CourseGroupMessage
+        fields = ['text', 'attachment']
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 1, 
+                'placeholder': 'Type your message to the class...'
+            }),
+            'attachment': forms.FileInput(attrs={
+                'class': 'form-control', 
+                'style': 'display: none;', 
+                'id': 'chat_attachment',
+                'onchange': 'this.form.submit();'
+            })
         }

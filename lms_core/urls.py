@@ -88,6 +88,7 @@ from students.faculty_views import (
     # 🚀 NEW ACTION VIEWS ADDED BELOW
     faculty_create_assignment,
     faculty_schedule_live,
+    faculty_update_profile_pic,
     faculty_upload_document,
     faculty_update_profile
 )
@@ -231,6 +232,7 @@ urlpatterns = [
     path('faculty-panel/schedule-live/', faculty_schedule_live, name='faculty_schedule_live'),
     path('faculty-panel/upload-document/', faculty_upload_document, name='faculty_upload_document'),
     path('faculty-panel/update-profile/', faculty_update_profile, name='faculty_update_profile'),
+    path('faculty-panel/update-pic/', faculty_update_profile_pic, name='faculty_update_profile_pic'),
     
     # System Logout for Faculty
     path('faculty-panel/disconnect/', logout_view, name='faculty_logout'),
