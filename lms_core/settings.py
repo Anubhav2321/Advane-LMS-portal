@@ -159,3 +159,14 @@ SOCIALACCOUNT_PROVIDERS = {
 # --- GROQ AI CONFIGURATION ---
 # Reads the key from your .env file
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# =====================================================================
+# 🚀 NEW: EMAIL SMTP CONFIGURATION FOR AUTOMATED HTML EMAILS
+# =====================================================================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# Reads email credentials securely from .env file
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

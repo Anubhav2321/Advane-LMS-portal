@@ -262,9 +262,7 @@ class FacultyRegistrationForm(forms.ModelForm):
         return user
 
 
-# =================================================================
 # 🚀 NEW: FACULTY PANEL FORMS
-# =================================================================
 
 class AssignmentForm(forms.ModelForm):
     class Meta:
