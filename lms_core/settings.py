@@ -160,9 +160,8 @@ SOCIALACCOUNT_PROVIDERS = {
 # Reads the key from your .env file
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# =====================================================================
+
 # 🚀 NEW: EMAIL SMTP CONFIGURATION FOR AUTOMATED HTML EMAILS
-# =====================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

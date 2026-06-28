@@ -162,7 +162,7 @@ urlpatterns = [
     #  NEW: Local Docker Code Execution API (THE MISSING LINK IS NOW HERE!)
     path('api/chat/execute-code/', execute_code_api, name='execute_code_api'),
     
-    # 👉 🚀 NEW: SYNTAX SINGULARITY (LeetCode Style AI Arena URLs)
+    # 👉 NEW: SYNTAX SINGULARITY (LeetCode Style AI Arena URLs)
     path('syntax-singularity/', syntax_singularity_view, name='syntax_singularity'),
     path('api/generate-challenge/', generate_ai_challenge, name='generate_challenge'),
     path('api/submit-bounty/', submit_bounty_code, name='submit_bounty'), # 🚀 NEW: Added this route!

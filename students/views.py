@@ -34,7 +34,7 @@ from .forms import (
     ProfilePictureForm,
     LessonForm,
     LessonCommentForm,
-    FacultyRegistrationForm # 🚀 ADDED FACULTY FORM
+    FacultyRegistrationForm #  ADDED FACULTY FORM
 )
 
 # Import Models
@@ -54,9 +54,9 @@ from .models import (
     DynamicBountyProblem,  
     ProblemTestCase,       
     BountySubmission,
-    FacultyProfile,        # 🚀 ADDED FACULTY PROFILE
-    Assignment,            # 🚀 NEW: Added Assignment Model
-    AssignmentSubmission   # 🚀 NEW: Added Assignment Submission Model
+    FacultyProfile,        #  ADDED FACULTY PROFILE
+    Assignment,            #  NEW: Added Assignment Model
+    AssignmentSubmission   #  NEW: Added Assignment Submission Model
 )
 
 User = get_user_model()
@@ -128,7 +128,7 @@ def login_view(request):
         messages.success(request, "You are already logged in.")
         if request.user.is_staff or request.user.is_superuser:
             return redirect('admin_dashboard')
-        # 🚀 ROUTING: Redirect Faculty to their dashboard
+        # ROUTING: Redirect Faculty to their dashboard
         elif getattr(request.user, 'is_faculty', False):
             return redirect('faculty_dashboard')
         return redirect('dashboard')
@@ -154,7 +154,7 @@ def login_view(request):
             
             if user.is_staff or user.is_superuser:
                 return redirect('admin_dashboard')
-            # 🚀 ROUTING: Redirect Faculty to their dashboard
+            # ROUTING: Redirect Faculty to their dashboard
             elif getattr(user, 'is_faculty', False):
                 return redirect('faculty_dashboard')
             else:
@@ -182,7 +182,7 @@ def student_dashboard(request):
     # Fetch Enrollments
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-last_accessed')
     
-    # 🚀 NEW: Get IDs of courses the student is enrolled in
+    #  NEW: Get IDs of courses the student is enrolled in
     enrolled_course_ids = enrollments.values_list('course_id', flat=True)
     
     # Fetch Notifications
@@ -193,12 +193,11 @@ def student_dashboard(request):
     completed_courses = enrollments.filter(progress=100).count()
     certificate_eligible = completed_courses
     
-    # 🏆 GLOBAL LEADERBOARD LOGIC
+    #  GLOBAL LEADERBOARD LOGIC
     top_students = User.objects.filter(is_student=True).order_by('-lms_coins')[:10]
     
-    # =========================================================
-    # 🚀 NEW: 3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
-    # =========================================================
+    
+    #  NEW: 3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
     
     # 1. Fetch Pending Assignments for enrolled courses
     pending_assignments = Assignment.objects.filter(
@@ -1207,7 +1206,7 @@ def generate_ai_challenge(request):
             """
             
             payload = {
-                "model": "llama-3.3-70b-versatile", # 🚀 UPDATED MODEL NAME (Current Flagship)
+                "model": "llama-3.3-70b-versatile", #  UPDATED MODEL NAME (Current Flagship)
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.5
             }
@@ -1268,7 +1267,7 @@ def submit_bounty_code(request):
             if not groq_api_key:
                 return JsonResponse({'status': 'error', 'message': 'Groq API Key is missing.'}, status=500)
             
-            # 🎯 ONE-SHOT LOGIC: Check attempt count
+            #  ONE-SHOT LOGIC: Check attempt count
             attempt_count = BountySubmission.objects.filter(problem=problem, student=request.user).count()
             current_attempt = attempt_count + 1
                 
@@ -1320,7 +1319,7 @@ def submit_bounty_code(request):
             
             earned_coins = 0
             
-            # 💰 ONE-SHOT REWARD LOGIC: Coin Reward only on 1st Attempt
+            # ONE-SHOT REWARD LOGIC: Coin Reward only on 1st Attempt
             if is_correct and not problem.is_solved:
                 if current_attempt == 1:
                     earned_coins = problem.base_bounty_coins
