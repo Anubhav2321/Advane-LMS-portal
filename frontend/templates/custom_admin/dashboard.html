@@ -58,7 +58,6 @@
 
 <div class="dashboard-container">
     
-    <!-- 🚀 UPDATED: Added Faculty Stats to Grid -->
     <div class="dashboard-grid">
         <a href="{% url 'admin_student_list' %}" class="stat-card" style="border-left-color: #00d4ff;">
             <h3>{{ total_students }}</h3>
@@ -97,14 +96,22 @@
                 <label>Thumbnail</label> {{ course_form.thumbnail }}
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div><label>Price</label> {{ course_form.price }}</div>
+                    <div><label>Price (Fiat)</label> {{ course_form.price }}</div>
+                    <div><label>Price (Coins)</label> {{ course_form.coin_price }}</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div><label>Modules</label> {{ course_form.total_modules }}</div>
+                    <div><label>Difficulty</label> {{ course_form.difficulty_level }}</div>
                 </div>
 
-                <label>Difficulty</label> {{ course_form.difficulty_level }}
-                
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                    {{ course_form.is_published }} <label style="margin:0;">Publish Immediately</label>
+                <div style="display: flex; align-items: center; gap: 20px; margin-top: 10px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {{ course_form.is_published }} <label style="margin:0;">Publish Immediately</label>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {{ course_form.is_coin_purchasable }} <label style="margin:0;">Allow Coins</label>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-submit" style="background: #00d4ff; color: #000;">Create Course</button>
@@ -154,10 +161,9 @@
             </form>
         </div>
         
-        <!-- 🚀 NEW: FACULTY CREATION BOX -->
         <div class="form-box" style="border: 1px solid #00e676;">
             <h4 class="form-title" style="color: #00e676;"><i class="fas fa-user-tie"></i> Add New Faculty</h4>
-            <form action="/admin-panel/create-faculty/" method="POST">
+            <form action="{% url 'admin_create_faculty' %}" method="POST">
                 {% csrf_token %}
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -212,9 +218,15 @@
                             </div>
                         </div>
                         
-                        <button class="quiz-btn" onclick="openQuizModal({{ doc.id }}, '{{ doc.title|escapejs }}', {% if doc.course %}{{ doc.course.id }}{% else %}null{% endif %})">
-                            <i class="fas fa-magic"></i> AI Quiz
-                        </button>
+                        {% if doc.course %}
+                            <button class="quiz-btn" onclick="openQuizModal({{ doc.id }}, '{{ doc.title|escapejs }}', {{ doc.course.id }})">
+                                <i class="fas fa-magic"></i> AI Quiz
+                            </button>
+                        {% else %}
+                            <button class="quiz-btn" onclick="openQuizModal({{ doc.id }}, '{{ doc.title|escapejs }}', null)">
+                                <i class="fas fa-magic"></i> AI Quiz
+                            </button>
+                        {% endif %}
                     </div>
                     {% empty %}
                     <p style="color: #666;">No documents uploaded yet.</p>

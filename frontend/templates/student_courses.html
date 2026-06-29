@@ -370,11 +370,14 @@
                     <div class="price-wrapper">
                         {% if course.price > 0 %}
                             <div class="price-label">₹{{ course.price }}</div>
-                            <div class="coin-price-badge" title="Can be purchased with LMS Coins">
-                                <i class="fas fa-coins"></i> {% widthratio course.price 1 10 %} Coins
-                            </div>
                         {% else %}
                             <div class="price-label"><span class="free-tag">Free</span></div>
+                        {% endif %}
+                        
+                        {% if course.is_coin_purchasable %}
+                            <div class="coin-price-badge" title="Can be purchased with LMS Coins">
+                                <i class="fas fa-coins"></i> {{ course.coin_price }} Coins
+                            </div>
                         {% endif %}
                     </div>
                     

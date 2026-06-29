@@ -93,12 +93,14 @@ class StudentRegistrationForm(forms.ModelForm):
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'faculty_name', 'thumbnail', 'price', 'total_modules', 'difficulty_level', 'is_published']
+        fields = ['title', 'description', 'faculty_name', 'thumbnail', 'price', 'is_coin_purchasable', 'coin_price', 'total_modules', 'difficulty_level', 'is_published']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Course Title'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Detailed Course Description'}),
             'faculty_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Instructor Name'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Course Price (0 for Free)'}),
+            'is_coin_purchasable': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'coin_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Coin Price'}),
             'total_modules': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Number of Modules'}),
             'difficulty_level': forms.Select(attrs={'class': 'form-control'}),
             'is_published': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

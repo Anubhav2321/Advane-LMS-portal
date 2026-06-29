@@ -376,7 +376,12 @@ def process_payment(request, course_id):
 def purchase_with_coins(request, course_id):
     if request.method == "POST":
         course = get_object_or_404(Course, id=course_id)
-        required_coins = int(course.price) * 10
+        
+        if not course.is_coin_purchasable:
+            messages.error(request, "This course cannot be purchased with coins.")
+            return redirect('payment_page', course_id=course.id)
+            
+        required_coins = course.coin_price
         
         # Check if the user has enough coins
         if request.user.lms_coins >= required_coins:
