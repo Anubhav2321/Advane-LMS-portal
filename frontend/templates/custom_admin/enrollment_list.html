@@ -1,37 +1,216 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-<div style="padding: 40px;">
-    <h2 style="color: #fff; margin-bottom: 20px;">Active Enrollments</h2>
+<style>
+    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, var(--accent-amber), #ffd54f);
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
+
+    .btn-back {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .btn-back:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateX(-4px);
+    }
+
+    .table-glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
+
+    th {
+        background: rgba(10, 10, 30, 0.5);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+        padding: 18px 20px;
+        text-align: left;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    td {
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        transition: var(--transition-fast);
+        animation: rowFade 0.4s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes rowFade {
+        to { opacity: 1; }
+    }
+
+    tbody tr:hover { background: var(--glass-bg-hover); }
+
+    .student-name { color: var(--text-primary); font-weight: 700; }
+    .course-name { color: var(--text-secondary); }
+    .date-text { color: var(--text-muted); font-size: 0.88rem; }
+
+    /* Progress Bar */
+    .progress-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .progress-bar-track {
+        width: 120px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transition: width 1s ease;
+    }
+
+    .progress-pct {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--secondary);
+        min-width: 36px;
+    }
+
+    .btn-revoke {
+        color: var(--accent-red);
+        text-decoration: none;
+        border: 1px solid rgba(255, 51, 102, 0.2);
+        padding: 7px 16px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: rgba(255, 51, 102, 0.08);
+        transition: var(--transition-smooth);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-revoke:hover {
+        background: var(--accent-red);
+        color: #fff;
+        box-shadow: 0 0 12px rgba(255, 51, 102, 0.3);
+    }
+</style>
+
+<div class="page-wrap">
     
-    <div style="background: #111; border-radius: 15px; border: 1px solid #333; overflow: hidden;">
-        <table style="width: 100%; border-collapse: collapse; color: #ccc;">
-            <tr style="background: #1a1a1a; text-align: left;">
-                <th style="padding: 15px;">Student</th>
-                <th style="padding: 15px;">Course</th>
-                <th style="padding: 15px;">Progress</th>
-                <th style="padding: 15px;">Date</th>
-                <th style="padding: 15px; text-align: right;">Action</th>
-            </tr>
-            {% for enroll in enrollments %}
-            <tr style="border-bottom: 1px solid #222;">
-                <td style="padding: 15px; color: #fff;">{{ enroll.student.username }}</td>
-                <td style="padding: 15px;">{{ enroll.course.title }}</td>
-                <td style="padding: 15px;">
-                    <div style="width: 100px; height: 6px; background: #333; border-radius: 3px;">
-                        <div style="width: {{ enroll.progress|default:'0' }}%; height: 100%; background: #00d4ff;"></div>
-                    </div>
-                    <small>{{ enroll.progress|default:'0' }}%</small>
-                </td>
-                <td style="padding: 15px;">{{ enroll.enrolled_at|date:"d M, Y" }}</td>
-                <td style="padding: 15px; text-align: right;">
-                    <a href="{% url 'admin_delete_enrollment' enroll.id %}" onclick="return confirm('Revoke access for this student?')" style="color: #ff3366; text-decoration: none; border: 1px solid #ff3366; padding: 5px 10px; border-radius: 5px;">Revoke</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" style="padding: 30px; text-align: center;">No enrollments yet.</td></tr>
-            {% endfor %}
+    <div class="page-header">
+        <div>
+            <h2><i class="fas fa-user-check"></i> Active Enrollments</h2>
+            <p>Monitor and manage all student enrollments.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="table-glass">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Progress</th>
+                    <th>Date</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enroll in enrollments %}
+                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
+                    <td><span class="student-name">{{ enroll.student.username }}</span></td>
+                    <td><span class="course-name">{{ enroll.course.title }}</span></td>
+                    <td>
+                        <div class="progress-wrap">
+                            <div class="progress-bar-track">
+                                <div class="progress-bar-fill" style="width: {{ enroll.progress|default:'0' }}%;"></div>
+                            </div>
+                            <span class="progress-pct">{{ enroll.progress|default:'0' }}%</span>
+                        </div>
+                    </td>
+                    <td><span class="date-text">{{ enroll.enrolled_at|date:"d M, Y" }}</span></td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'admin_delete_enrollment' enroll.id %}" onclick="return confirm('Revoke access for this student?')" class="btn-revoke">
+                            <i class="fas fa-ban"></i> Revoke
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" style="text-align: center; padding: 50px; color: var(--text-muted);">No enrollments yet.</td></tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
+
+{% endblock %} <!-- Close content block here -->
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('tbody tr').forEach((row, i) => {
+        row.style.animationDelay = `${i * 60}ms`;
+    });
+</script>
 {% endblock %}

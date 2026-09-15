@@ -571,3 +571,55 @@ class BountySubmission(models.Model):
 
     def __str__(self):
         return f"Submission by {self.student.username} - {self.status}"
+
+
+# 10. STUDENT ACTIVITY TRACKING (Admin Analytics)
+
+class StudentActivity(models.Model):
+    """
+    Tracks every student action for admin analytics dashboards.
+    Enables daily/weekly/monthly activity graphs and per-student tracking.
+    """
+    ACTIVITY_TYPES = [
+        ('login', 'Login'),
+        ('lesson_watch', 'Lesson Watched'),
+        ('quiz_taken', 'Quiz Taken'),
+        ('quiz_passed', 'Quiz Passed'),
+        ('assignment_submit', 'Assignment Submitted'),
+        ('bounty_attempt', 'Bounty Attempted'),
+        ('bounty_solved', 'Bounty Solved'),
+        ('course_enroll', 'Course Enrolled'),
+        ('chat_message', 'Chat Message Sent'),
+        ('profile_update', 'Profile Updated'),
+        ('course_complete', 'Course Completed'),
+        ('code_review', 'Code Review Requested'),
+    ]
+    
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
+    activity_type = models.CharField(max_length=30, choices=ACTIVITY_TYPES)
+    description = models.CharField(max_length=255, blank=True)
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Student Activities'
+
+    def __str__(self):
+        return f"{self.student.username} - {self.get_activity_type_display()} ({self.created_at.strftime('%d %b %Y %H:%M')})"
+
+
+def log_student_activity(user, activity_type, description='', course=None, metadata=None):
+    """
+    Helper function to log student activity from anywhere in the codebase.
+    Usage: log_student_activity(request.user, 'login', 'User logged in')
+    """
+    if user and user.is_authenticated and user.is_student:
+        StudentActivity.objects.create(
+            student=user,
+            activity_type=activity_type,
+            description=description,
+            course=course,
+            metadata=metadata or {}
+        )

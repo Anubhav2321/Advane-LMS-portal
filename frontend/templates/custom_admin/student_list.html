@@ -1,172 +1,249 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-
 <style>
-    .admin-container {
-        padding: 40px;
+    .list-container {
+        padding: 32px;
         max-width: 1400px;
         margin: 0 auto;
     }
 
+    /* Page Header */
     .page-header {
-        background: #111;
-        padding: 30px;
-        border-radius: 15px;
-        border: 1px solid #333;
-        margin-bottom: 30px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
         gap: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
 
     .header-title h2 {
-        color: #fff;
-        margin-bottom: 5px;
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .header-title p {
-        color: #888;
+        color: var(--text-muted);
+        font-size: 0.9rem;
     }
 
+    /* Search Form */
     .search-form {
         display: flex;
-        background: #222;
-        border: 1px solid #444;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass-border);
         border-radius: 50px;
-        padding: 5px 15px;
+        padding: 6px 18px;
         width: 100%;
-        max-width: 400px;
+        max-width: 380px;
+        transition: var(--transition-fast);
+    }
+
+    .search-form:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
     }
 
     .search-form input {
         background: transparent;
         border: none;
-        color: #fff;
+        color: var(--text-primary);
         width: 100%;
-        padding: 8px;
+        padding: 10px;
         outline: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
     }
+
+    .search-form input::placeholder { color: var(--text-muted); }
 
     .search-form button {
         background: transparent;
         border: none;
-        color: #00d4ff;
+        color: var(--primary);
         cursor: pointer;
         font-size: 1.1rem;
+        transition: var(--transition-fast);
     }
 
-    .student-table-container {
-        background: #111;
-        border-radius: 15px;
+    .search-form button:hover { color: var(--secondary); transform: scale(1.1); }
+
+    /* Table Container */
+    .table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        border: 1px solid #222;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #fff;
+        color: var(--text-primary);
     }
 
     thead {
-        background: #1a1a1a;
-        border-bottom: 2px solid #333;
+        background: rgba(10, 10, 30, 0.5);
+        border-bottom: 1px solid var(--glass-border);
     }
 
     th {
-        padding: 18px;
+        padding: 18px 20px;
         text-align: left;
-        color: #aaa;
-        font-weight: 600;
+        color: var(--text-muted);
+        font-weight: 700;
         text-transform: uppercase;
-        font-size: 0.85rem;
+        font-size: 0.78rem;
+        letter-spacing: 1.2px;
     }
 
     td {
-        padding: 18px;
-        border-bottom: 1px solid #222;
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         vertical-align: middle;
     }
 
-    tr:hover td {
-        background: #161616;
+    tbody tr {
+        transition: var(--transition-fast);
+        animation: rowFadeIn 0.4s ease forwards;
+        opacity: 0;
     }
 
+    @keyframes rowFadeIn {
+        to { opacity: 1; transform: translateX(0); }
+        from { transform: translateX(-8px); }
+    }
+
+    tbody tr:hover {
+        background: var(--glass-bg-hover);
+    }
+
+    /* User Info */
     .user-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
     }
 
     .user-avatar {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #333;
+        border: 2px solid var(--glass-border);
+        transition: var(--transition-fast);
+    }
+
+    tr:hover .user-avatar {
+        border-color: var(--primary);
+        box-shadow: 0 0 10px var(--primary-glow);
     }
 
     .user-name {
-        font-weight: bold;
-        color: #fff;
+        font-weight: 700;
+        color: var(--text-primary);
         display: block;
+        font-size: 0.92rem;
     }
 
     .user-email {
-        font-size: 0.85rem;
-        color: #666;
+        font-size: 0.8rem;
+        color: var(--text-muted);
     }
 
+    /* Status Badge */
     .status-badge {
-        padding: 5px 12px;
+        padding: 5px 14px;
         border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: bold;
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
+        letter-spacing: 0.8px;
     }
 
     .status-active {
-        background: rgba(0, 255, 136, 0.1);
-        color: #00ff88;
-        border: 1px solid rgba(0, 255, 136, 0.3);
+        background: rgba(0, 230, 118, 0.1);
+        color: var(--accent-green);
+        border: 1px solid rgba(0, 230, 118, 0.25);
     }
 
     .status-blocked {
         background: rgba(255, 51, 102, 0.1);
-        color: #ff3366;
-        border: 1px solid rgba(255, 51, 102, 0.3);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 51, 102, 0.25);
     }
 
+    /* View Button */
     .btn-view {
-        background: #333;
-        color: #fff;
-        padding: 8px 15px;
+        background: var(--glass-bg);
+        color: var(--text-secondary);
+        padding: 9px 18px;
         text-decoration: none;
-        border-radius: 5px;
-        font-size: 0.85rem;
-        transition: 0.3s;
-        border: 1px solid #444;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        border: 1px solid var(--glass-border);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .btn-view:hover {
-        background: #00d4ff;
-        color: #000;
-        border-color: #00d4ff;
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+        box-shadow: 0 0 15px var(--primary-glow);
+        transform: translateX(4px);
     }
 
+    /* Footer */
+    .table-footer {
+        margin-top: 20px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 50px;
-        color: #666;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
     }
 </style>
 
-<div class="admin-container">
+<div class="list-container">
     
     <div class="page-header">
         <div class="header-title">
@@ -180,26 +257,26 @@
         </form>
     </div>
 
-    <div class="student-table-container">
+    <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Student Name</th>
+                    <th>Student</th>
                     <th>Stream</th>
-                    <th>Joined Date</th>
+                    <th>Joined</th>
                     <th>Status</th>
                     <th style="text-align: right;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for student in students %}
-                <tr>
+                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
                     <td>
                         <div class="user-info">
                             {% if student.profile.profile_pic %}
                                 <img src="{{ student.profile.profile_pic.url }}" class="user-avatar" alt="Avatar">
                             {% else %}
-                                <img src="https://via.placeholder.com/40" class="user-avatar" alt="Avatar">
+                                <img src="https://ui-avatars.com/api/?name={{ student.first_name|default:student.username }}+{{ student.last_name }}&background=6C63FF&color=fff&size=84&bold=true" class="user-avatar" alt="Avatar">
                             {% endif %}
                             <div>
                                 <span class="user-name">{{ student.first_name }} {{ student.last_name }}</span>
@@ -207,15 +284,12 @@
                             </div>
                         </div>
                     </td>
-
                     <td>
-                        <span style="color: #aaa;">{{ student.stream|default:"General" }}</span>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">{{ student.stream|default:"General" }}</span>
                     </td>
-
                     <td>
-                        <span style="color: #888;">{{ student.date_joined|date:"d M, Y" }}</span>
+                        <span style="color: var(--text-muted); font-size: 0.88rem;">{{ student.date_joined|date:"d M, Y" }}</span>
                     </td>
-
                     <td>
                         {% if student.is_active %}
                             <span class="status-badge status-active">Active</span>
@@ -223,7 +297,6 @@
                             <span class="status-badge status-blocked">Blocked</span>
                         {% endif %}
                     </td>
-
                     <td style="text-align: right;">
                         <a href="{% url 'admin_student_detail' student.id %}" class="btn-view">
                             Manage <i class="fas fa-arrow-right"></i>
@@ -231,11 +304,10 @@
                     </td>
                 </tr>
                 {% empty %}
-                
                 <tr>
                     <td colspan="5">
                         <div class="empty-state">
-                            <i class="fas fa-user-slash" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                            <i class="fas fa-user-slash"></i>
                             <p>No students found matching your search.</p>
                         </div>
                     </td>
@@ -245,9 +317,19 @@
         </table>
     </div>
 
-    <div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">
-        Showing {{ students.count }} students
+    <div class="table-footer">
+        Showing {{ students.count }} student{{ students.count|pluralize }}
     </div>
 
 </div>
+
+{% endblock %} <!-- Close content block here -->
+
+{% block extra_js %}
+<script>
+    // Stagger row animations
+    document.querySelectorAll('tbody tr').forEach((row, i) => {
+        row.style.animationDelay = `${i * 60}ms`;
+    });
+</script>
 {% endblock %}

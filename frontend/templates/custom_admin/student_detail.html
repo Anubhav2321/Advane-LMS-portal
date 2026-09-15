@@ -2,255 +2,810 @@
 {% load static %}
 
 {% block content %}
-<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
-
 <style>
+    /* ============================================= */
+    /* STUDENT DETAIL — PREMIUM DESIGN               */
+    /* ============================================= */
+
     .detail-container {
-        padding: 40px;
-        max-width: 1000px;
+        padding: 32px;
+        max-width: 1400px;
         margin: 0 auto;
     }
 
-    /* Helper Classes for Utility (Removes Inline CSS warnings) */
-    .link-back { color: #888; text-decoration: none; margin-bottom: 20px; display: inline-block; transition: 0.3s; }
-    .link-back:hover { color: #00d4ff; }
-    .margin-left-10 { margin-left: 10px; }
-    .margin-bottom-10 { margin-bottom: 10px; }
-    .margin-bottom-15 { margin-bottom: 15px; }
-    .text-center { text-align: center; }
-    .text-grey { color: #aaa; }
-    .text-dark-grey { color: #666; }
-    .text-danger { color: #ff3366; }
-    .padding-20 { padding: 20px; }
-    .border-dark { border-color: #444 !important; }
-    .input-dark { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; margin-bottom: 5px; outline: none; }
-    .input-dark:focus { border-color: #00d4ff; }
-
-    /* Top Profile Card */
-    .profile-card {
-        background: #111;
-        border-radius: 15px;
-        padding: 30px;
-        border: 1px solid #333;
-        display: flex;
+    /* Back Link */
+    .link-back {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
-        gap: 30px;
-        margin-bottom: 30px;
-        position: relative; /* For Absolute Positioning of Coin Badge */
+        gap: 8px;
+        margin-bottom: 24px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+    }
+    .link-back:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        background: rgba(108, 99, 255, 0.08);
+        transform: translateX(-4px);
     }
 
-    .big-avatar {
+    /* ============================================= */
+    /* PROFILE HERO CARD                             */
+    /* ============================================= */
+
+    .profile-hero {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent-purple));
+    }
+
+    .hero-avatar {
         width: 100px;
         height: 100px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #00d4ff;
+        border: 3px solid var(--primary);
+        box-shadow: 0 0 20px var(--primary-glow);
+        flex-shrink: 0;
     }
 
-    .profile-info h2 {
-        color: #fff;
-        margin-bottom: 5px;
-        font-size: 2rem;
+    .hero-info h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
-    .profile-info p {
-        color: #aaa;
-        font-size: 1rem;
+    .hero-info .hero-email {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        margin-bottom: 10px;
     }
 
-    .id-badge {
-        background: #222;
-        color: #888;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 0.8rem;
-        border: 1px solid #444;
-        margin-top: 10px;
-        display: inline-block;
+    .hero-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
-    /* --- NEW: Coin Badge in Admin --- */
-    .admin-coin-badge {
+    .hero-badge {
+        font-size: 0.78rem;
+        padding: 5px 14px;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Coin Badge */
+    .coin-badge {
         position: absolute;
-        top: 30px;
-        right: 30px;
-        background: rgba(0, 243, 255, 0.1);
-        border: 1px solid #00f3ff;
-        padding: 10px 20px;
+        top: 32px; right: 32px;
+        background: rgba(108, 99, 255, 0.1);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        padding: 12px 24px;
         border-radius: 30px;
         display: flex;
         align-items: center;
         gap: 10px;
     }
-    .admin-coin-badge i {
-        color: #00f3ff;
+
+    .coin-badge i { color: var(--primary); font-size: 1.4rem; }
+    .coin-badge .coin-val {
+        font-family: var(--font-mono);
         font-size: 1.5rem;
-    }
-    .admin-coin-badge .coin-val {
-        color: #fff;
-        font-size: 1.5rem;
-        font-weight: bold;
-        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        color: var(--text-primary);
     }
 
-    /* Grid Layout */
-    .admin-grid {
+    /* ============================================= */
+    /* QUICK STATS ROW                               */
+    /* ============================================= */
+
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .qs-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        text-align: center;
+        transition: var(--transition-smooth);
+    }
+
+    .qs-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--glass-border-hover);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .qs-icon {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .qs-number {
+        font-family: var(--font-mono);
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .qs-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    /* Engagement Score */
+    .engagement-card {
+        position: relative;
+    }
+
+    .engagement-ring {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 10px;
+        position: relative;
+    }
+
+    .engagement-ring svg {
+        transform: rotate(-90deg);
+        width: 64px;
+        height: 64px;
+    }
+
+    .engagement-ring .ring-bg {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.05);
+        stroke-width: 4;
+    }
+
+    .engagement-ring .ring-fill {
+        fill: none;
+        stroke-width: 4;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.5s ease;
+    }
+
+    .engagement-percent {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    /* ============================================= */
+    /* CHARTS ROW                                    */
+    /* ============================================= */
+
+    .charts-row {
         display: grid;
         grid-template-columns: 2fr 1fr;
-        gap: 30px;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .chart-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .chart-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chart-title i { color: var(--primary); }
+
+    .chart-badge {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        background: rgba(108, 99, 255, 0.12);
+        color: var(--primary);
+        border: 1px solid rgba(108, 99, 255, 0.2);
+        font-weight: 600;
+    }
+
+    /* ============================================= */
+    /* MAIN GRID (Content + Actions)                 */
+    /* ============================================= */
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
     }
 
     .section-card {
-        background: #111;
-        border-radius: 15px;
-        padding: 25px;
-        border: 1px solid #333;
-        margin-bottom: 30px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 24px;
     }
 
     .section-title {
-        color: #fff;
-        font-size: 1.2rem;
+        font-size: 1.05rem;
+        font-weight: 700;
         margin-bottom: 20px;
-        border-bottom: 1px solid #222;
-        padding-bottom: 10px;
-    }
-
-    /* Action Buttons */
-    .action-btn {
-        display: block;
-        width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-bottom: 15px;
-        text-align: left;
-        transition: 0.3s;
-        font-size: 1rem;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--glass-border);
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        text-decoration: none;
+        gap: 10px;
     }
 
-    .btn-block { background: #ff9f43; color: #000; }
-    .btn-block:hover { background: #e67e22; }
+    .section-title i { color: var(--secondary); }
 
-    .btn-delete { background: #ff3366; color: #fff; }
-    .btn-delete:hover { background: #d63031; }
-
-    .btn-password { background: #333; color: #fff; border: 1px solid #444; }
-    .btn-password:hover { background: #444; }
-
-    /* NEW: Coin Update Button */
-    .btn-coin { background: rgba(0, 243, 255, 0.1); color: #00f3ff; border: 1px solid #00f3ff; }
-    .btn-coin:hover { background: #00f3ff; color: #000; box-shadow: 0 0 15px #00f3ff; }
-
-    /* Enrollment List */
+    /* Enrollment Items */
     .enroll-item {
         display: flex;
         justify-content: space-between;
-        padding: 15px;
-        border-bottom: 1px solid #222;
-        color: #ccc;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
     }
+
     .enroll-item:last-child { border-bottom: none; }
-    
+
     .progress-text {
-        color: #00d4ff;
-        font-weight: bold;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--secondary);
+    }
+
+    /* Activity Timeline */
+    .timeline {
+        position: relative;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 17px; top: 0;
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary), var(--secondary), transparent);
+        opacity: 0.3;
+    }
+
+    .timeline-item {
+        display: flex;
+        gap: 16px;
+        padding: 12px 0;
+        position: relative;
+        animation: timelineFadeIn 0.4s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes timelineFadeIn {
+        to { opacity: 1; transform: translateX(0); }
+        from { transform: translateX(-10px); }
+    }
+
+    .timeline-dot {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+        z-index: 1;
+    }
+
+    .timeline-dot.login { background: rgba(0, 212, 255, 0.15); color: var(--secondary); }
+    .timeline-dot.lesson { background: rgba(108, 99, 255, 0.15); color: var(--primary); }
+    .timeline-dot.quiz { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+    .timeline-dot.enroll { background: rgba(255, 183, 77, 0.15); color: var(--accent-amber); }
+    .timeline-dot.chat { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+    .timeline-dot.default { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+
+    .timeline-content { flex: 1; }
+    .timeline-content .tl-desc {
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    .timeline-content .tl-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 3px;
+    }
+
+    /* Info Items */
+    .info-item {
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        font-size: 0.92rem;
+    }
+
+    .info-item strong { color: var(--text-primary); }
+
+    /* Action Buttons */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 14px 18px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        font-family: var(--font-body);
+        transition: var(--transition-smooth);
+    }
+
+    .btn-block {
+        background: rgba(255, 183, 77, 0.1);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.2);
+    }
+    .btn-block:hover { background: var(--accent-amber); color: #000; box-shadow: 0 0 15px rgba(255, 183, 77, 0.3); }
+
+    .btn-delete {
+        background: rgba(255, 51, 102, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 51, 102, 0.2);
+    }
+    .btn-delete:hover { background: var(--accent-red); color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.3); }
+
+    .btn-password {
+        background: var(--glass-bg);
+        color: var(--text-secondary);
+        border: 1px solid var(--glass-border);
+    }
+    .btn-password:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
+
+    .btn-coin {
+        background: rgba(108, 99, 255, 0.1);
+        color: var(--primary);
+        border: 1px solid rgba(108, 99, 255, 0.2);
+    }
+    .btn-coin:hover { background: var(--primary); color: #fff; box-shadow: 0 0 15px var(--primary-glow); }
+
+    .input-dark {
+        width: 100%;
+        padding: 10px 14px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        border-radius: var(--radius-sm);
+        margin-bottom: 8px;
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+    }
+
+    .input-dark:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .detail-grid, .charts-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .profile-hero { flex-direction: column; text-align: center; }
+        .coin-badge { position: static; margin-top: 16px; }
+        .hero-badges { justify-content: center; }
+        .quick-stats { grid-template-columns: repeat(2, 1fr); }
     }
 </style>
 
 <div class="detail-container">
     
     <a href="{% url 'admin_student_list' %}" class="link-back">
-        <i class="fas fa-arrow-left"></i> Back to Student List
+        <i class="fas fa-arrow-left"></i> Back to Students
     </a>
 
-    <div class="profile-card">
+    <!-- ============================================= -->
+    <!-- PROFILE HERO                                  -->
+    <!-- ============================================= -->
+
+    <div class="profile-hero">
         {% if student.profile.profile_pic %}
-            <img src="{{ student.profile.profile_pic.url }}" class="big-avatar" alt="Profile">
+            <img src="{{ student.profile.profile_pic.url }}" class="hero-avatar" alt="Profile">
         {% else %}
-            <img src="https://ui-avatars.com/api/?name={{ student.username }}&background=00d4ff&color=000" class="big-avatar" alt="Profile">
+            <img src="https://ui-avatars.com/api/?name={{ student.first_name|default:student.username }}+{{ student.last_name }}&background=6C63FF&color=fff&size=200&bold=true" class="hero-avatar" alt="Profile">
         {% endif %}
         
-        <div class="profile-info">
+        <div class="hero-info">
             <h2>{{ student.first_name }} {{ student.last_name }}</h2>
-            <p>{{ student.email }}</p>
-            <div class="id-badge">User ID: #{{ student.id }}</div>
-            <div class="id-badge margin-left-10">Joined: {{ student.date_joined|date:"d M, Y" }}</div>
+            <p class="hero-email"><i class="fas fa-envelope"></i> {{ student.email }}</p>
+            <div class="hero-badges">
+                <span class="hero-badge"><i class="fas fa-hashtag"></i> ID: {{ student.id }}</span>
+                <span class="hero-badge"><i class="fas fa-calendar-alt"></i> Joined: {{ student.date_joined|date:"d M, Y" }}</span>
+                <span class="hero-badge"><i class="fas fa-layer-group"></i> {{ student.student_level }}</span>
+                <span class="hero-badge"><i class="fas fa-stream"></i> {{ student.stream|default:"General" }}</span>
+                {% if not student.is_active %}
+                    <span class="hero-badge" style="color: var(--accent-red); border-color: var(--accent-red);"><i class="fas fa-ban"></i> Blocked</span>
+                {% endif %}
+            </div>
         </div>
 
-        <div class="admin-coin-badge" title="Current LMS Coins">
+        <div class="coin-badge" title="LMS Coins">
             <i class="fas fa-coins"></i>
             <span class="coin-val">{{ student.lms_coins }}</span>
         </div>
     </div>
 
-    <div class="admin-grid">
-        
+    <!-- ============================================= -->
+    <!-- QUICK STATS                                   -->
+    <!-- ============================================= -->
+
+    <div class="quick-stats">
+        <div class="qs-card">
+            <div class="qs-icon" style="color: var(--secondary);"><i class="fas fa-sign-in-alt"></i></div>
+            <div class="qs-number" data-count="{{ total_logins }}">0</div>
+            <div class="qs-label">Logins</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: var(--primary);"><i class="fas fa-play-circle"></i></div>
+            <div class="qs-number" data-count="{{ total_lessons }}">0</div>
+            <div class="qs-label">Lessons</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: var(--accent-green);"><i class="fas fa-clipboard-check"></i></div>
+            <div class="qs-number" data-count="{{ total_quizzes }}">0</div>
+            <div class="qs-label">Quizzes</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: var(--accent-amber);"><i class="fas fa-comment-dots"></i></div>
+            <div class="qs-number" data-count="{{ total_messages }}">0</div>
+            <div class="qs-label">Messages</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: var(--accent-purple);"><i class="fas fa-bolt"></i></div>
+            <div class="qs-number" data-count="{{ total_student_activities }}">0</div>
+            <div class="qs-label">Total Acts</div>
+        </div>
+        <div class="qs-card engagement-card">
+            <div class="engagement-ring">
+                <svg viewBox="0 0 36 36">
+                    <circle class="ring-bg" cx="18" cy="18" r="15.5"></circle>
+                    <circle class="ring-fill" cx="18" cy="18" r="15.5"
+                        stroke="{% if engagement_score >= 70 %}var(--accent-green){% elif engagement_score >= 40 %}var(--accent-amber){% else %}var(--accent-red){% endif %}"
+                        stroke-dasharray="{{ engagement_score }}, 100"
+                        stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="engagement-percent" style="color: {% if engagement_score >= 70 %}var(--accent-green){% elif engagement_score >= 40 %}var(--accent-amber){% else %}var(--accent-red){% endif %};">
+                    {{ engagement_score }}%
+                </div>
+            </div>
+            <div class="qs-label">Engagement</div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- CHARTS                                        -->
+    <!-- ============================================= -->
+
+    <div class="charts-row">
+        <div class="chart-card">
+            <div class="chart-header">
+                <div class="chart-title"><i class="fas fa-chart-area"></i> Daily Activity</div>
+                <span class="chart-badge">30 Days</span>
+            </div>
+            <canvas id="studentActivityChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="chart-header">
+                <div class="chart-title"><i class="fas fa-chart-pie"></i> Activity Types</div>
+                <span class="chart-badge">All Time</span>
+            </div>
+            <canvas id="studentBreakdownChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Quiz Score Chart -->
+    {% if quiz_score_data %}
+    <div class="chart-card" style="margin-bottom: 28px;">
+        <div class="chart-header">
+            <div class="chart-title"><i class="fas fa-trophy"></i> Quiz Performance</div>
+            <span class="chart-badge">Avg: {{ avg_score }}%</span>
+        </div>
+        <canvas id="quizScoreChart"></canvas>
+    </div>
+    {% endif %}
+
+    <!-- ============================================= -->
+    <!-- MAIN CONTENT GRID                             -->
+    <!-- ============================================= -->
+
+    <div class="detail-grid">
         <div class="main-column">
             
+            <!-- Enrolled Courses -->
             <div class="section-card">
-                <h3 class="section-title"><i class="fas fa-book"></i> Enrolled Courses ({{ enrollments.count }})</h3>
+                <h3 class="section-title"><i class="fas fa-book-open"></i> Enrolled Courses ({{ enrollments.count }})</h3>
                 {% for enroll in enrollments %}
                 <div class="enroll-item">
-                    <span>{{ enroll.course.title }}</span>
-                    <span class="progress-text">{{ enroll.progress }}% Complete</span>
+                    <span style="color: var(--text-primary); font-weight: 500;">{{ enroll.course.title }}</span>
+                    <span class="progress-text">{{ enroll.progress }}%</span>
                 </div>
                 {% empty %}
-                <p class="text-dark-grey text-center padding-20">No active enrollments.</p>
+                <p style="color: var(--text-muted); text-align: center; padding: 24px;">No active enrollments.</p>
                 {% endfor %}
             </div>
 
+            <!-- Activity Timeline -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-stream"></i> Activity Timeline</h3>
+                <div class="timeline" style="max-height: 500px; overflow-y: auto;">
+                    {% for activity in student_activities %}
+                    <div class="timeline-item" style="animation-delay: {{ forloop.counter0 }}00ms;">
+                        <div class="timeline-dot {% if activity.activity_type == 'login' %}login{% elif activity.activity_type == 'lesson_watch' %}lesson{% elif activity.activity_type == 'quiz_taken' or activity.activity_type == 'quiz_passed' %}quiz{% elif activity.activity_type == 'course_enroll' %}enroll{% elif activity.activity_type == 'chat_message' %}chat{% else %}default{% endif %}">
+                            {% if activity.activity_type == 'login' %}<i class="fas fa-sign-in-alt"></i>
+                            {% elif activity.activity_type == 'lesson_watch' %}<i class="fas fa-play"></i>
+                            {% elif activity.activity_type == 'quiz_taken' %}<i class="fas fa-pen"></i>
+                            {% elif activity.activity_type == 'course_enroll' %}<i class="fas fa-plus"></i>
+                            {% elif activity.activity_type == 'chat_message' %}<i class="fas fa-comment"></i>
+                            {% else %}<i class="fas fa-bolt"></i>{% endif %}
+                        </div>
+                        <div class="timeline-content">
+                            <div class="tl-desc">{{ activity.description|default:activity.get_activity_type_display }}</div>
+                            <div class="tl-time">{{ activity.created_at|date:"d M Y, H:i" }} · {{ activity.created_at|timesince }} ago</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color: var(--text-muted); text-align: center; padding: 30px;">No activities recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Personal Information -->
             <div class="section-card">
                 <h3 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h3>
-                <p class="text-grey margin-bottom-10"><strong>Phone:</strong> {{ student.profile.phone|default:"Not Provided" }}</p>
-                <p class="text-grey margin-bottom-10"><strong>Stream:</strong> {{ student.stream|default:"General" }}</p>
-                <p class="text-grey margin-bottom-10"><strong>Level:</strong> {{ student.student_level }}</p>
-                <p class="text-grey"><strong>Bio:</strong> {{ student.profile.bio|default:"No bio available." }}</p>
+                <p class="info-item"><strong>Phone:</strong> {{ student.profile.phone|default:"Not Provided" }}</p>
+                <p class="info-item"><strong>Stream:</strong> {{ student.stream|default:"General" }}</p>
+                <p class="info-item"><strong>Level:</strong> {{ student.student_level }}</p>
+                <p class="info-item"><strong>Bio:</strong> {{ student.profile.bio|default:"No bio available." }}</p>
             </div>
         </div>
 
+        <!-- Action Sidebar -->
         <div class="action-column">
-            <div class="section-card border-dark">
-                <h3 class="section-title text-danger">Admin Actions</h3>
+            <div class="section-card">
+                <h3 class="section-title" style="color: var(--accent-red);"><i class="fas fa-shield-alt"></i> Admin Actions</h3>
                 
                 <a href="{% url 'admin_toggle_block' student.id %}" class="action-btn btn-block">
                     {% if student.is_active %}
                         <span><i class="fas fa-ban"></i> Block User</span>
                     {% else %}
-                        <span><i class="fas fa-check"></i> Unblock User</span>
+                        <span><i class="fas fa-check-circle"></i> Unblock User</span>
                     {% endif %}
+                    <i class="fas fa-chevron-right"></i>
                 </a>
 
-                <form action="{% url 'admin_reset_password' student.id %}" method="POST" class="margin-bottom-15">
+                <form action="{% url 'admin_reset_password' student.id %}" method="POST" style="margin-bottom: 12px;">
                     {% csrf_token %}
                     <input type="text" name="new_password" placeholder="New Password" required class="input-dark">
                     <button type="submit" class="action-btn btn-password">
                         <span><i class="fas fa-key"></i> Reset Password</span>
+                        <i class="fas fa-chevron-right"></i>
                     </button>
                 </form>
 
-                <form action="{% url 'admin_update_student_info' student.id %}" method="POST" class="margin-bottom-15">
+                <form action="{% url 'admin_update_student_info' student.id %}" method="POST" style="margin-bottom: 12px;">
                     {% csrf_token %}
                     <input type="hidden" name="update_type" value="coins">
                     <input type="number" name="new_coins" placeholder="Set Coin Balance" value="{{ student.lms_coins }}" required class="input-dark">
                     <button type="submit" class="action-btn btn-coin">
-                        <span><i class="fas fa-plus-circle"></i> Update Coins</span>
+                        <span><i class="fas fa-coins"></i> Update Coins</span>
+                        <i class="fas fa-chevron-right"></i>
                     </button>
                 </form>
 
                 <a href="{% url 'admin_delete_student' student.id %}" class="action-btn btn-delete" onclick="return confirm('Are you sure? This will delete all student data permanently!');">
-                    <span><i class="fas fa-trash"></i> Delete Account</span>
+                    <span><i class="fas fa-trash-alt"></i> Delete Account</span>
+                    <i class="fas fa-chevron-right"></i>
                 </a>
-
             </div>
-        </div>
 
+            <!-- Quiz Results -->
+            {% if quiz_results %}
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-award"></i> Quiz Results</h3>
+                {% for qr in quiz_results %}
+                <div class="enroll-item">
+                    <span style="color: var(--text-primary); font-size: 0.85rem;">{{ qr.exam.title|truncatechars:30 }}</span>
+                    <span class="progress-text">{{ qr.score }}/{{ qr.total_marks }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
     </div>
 </div>
+
+{% endblock %} <!-- Close content block here -->
+
+{% block extra_js %}
+<script>
+    // Count-up for quick stats
+    document.querySelectorAll('.qs-number[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count) || 0;
+        animateCount(el, target, 1200);
+    });
+
+    // Chart defaults
+    const chartOpts = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(10, 10, 30, 0.9)',
+                borderColor: 'rgba(108, 99, 255, 0.3)',
+                borderWidth: 1,
+                cornerRadius: 8,
+                padding: 12
+            }
+        }
+    };
+
+    // Daily Activity Chart
+    const saCtx = document.getElementById('studentActivityChart').getContext('2d');
+    const saGrad = saCtx.createLinearGradient(0, 0, 0, 250);
+    saGrad.addColorStop(0, 'rgba(0, 212, 255, 0.3)');
+    saGrad.addColorStop(1, 'rgba(0, 212, 255, 0)');
+
+    new Chart(saCtx, {
+        type: 'line',
+        data: {
+            labels: {{ stu_activity_labels|safe }},
+            datasets: [{
+                label: 'Activities',
+                data: {{ stu_activity_data|safe }},
+                borderColor: '#00D4FF',
+                backgroundColor: saGrad,
+                borderWidth: 2.5,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#00D4FF',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1.5,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            ...chartOpts,
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5A5A7A', font: { size: 10 } } },
+                y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5A5A7A', font: { size: 10 } }, beginAtZero: true }
+            },
+            animation: { duration: 1500, easing: 'easeInOutQuart' }
+        }
+    });
+
+    // Breakdown Doughnut
+    const breakColors = ['#6C63FF', '#00D4FF', '#00E676', '#FF3366', '#FFB74D', '#A855F7', '#F472B6', '#34D399', '#60A5FA', '#FBBF24', '#FB923C', '#E879F9'];
+
+    new Chart(document.getElementById('studentBreakdownChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ stu_breakdown_labels|safe }},
+            datasets: [{
+                data: {{ stu_breakdown_data|safe }},
+                backgroundColor: breakColors,
+                borderColor: 'rgba(10, 10, 30, 0.8)',
+                borderWidth: 3,
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '60%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#A0A0B8', font: { size: 10 }, padding: 10, usePointStyle: true, pointStyle: 'circle' }
+                }
+            },
+            animation: { animateRotate: true, animateScale: true, duration: 1500 }
+        }
+    });
+
+    // Quiz Score Chart
+    {% if quiz_score_data %}
+    const qsCtx = document.getElementById('quizScoreChart').getContext('2d');
+    const qsGrad = qsCtx.createLinearGradient(0, 0, 0, 250);
+    qsGrad.addColorStop(0, 'rgba(0, 230, 118, 0.5)');
+    qsGrad.addColorStop(1, 'rgba(0, 230, 118, 0.02)');
+
+    new Chart(qsCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ quiz_score_labels|safe }},
+            datasets: [{
+                label: 'Score %',
+                data: {{ quiz_score_data|safe }},
+                backgroundColor: qsGrad,
+                borderColor: 'rgba(0, 230, 118, 0.5)',
+                borderWidth: 1,
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            ...chartOpts,
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5A5A7A', font: { size: 10 } } },
+                y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5A5A7A', font: { size: 10 } }, beginAtZero: true, max: 100 }
+            },
+            animation: { duration: 1500, easing: 'easeInOutQuart' }
+        }
+    });
+    {% endif %}
+
+    // Timeline stagger animation
+    document.querySelectorAll('.timeline-item').forEach((item, i) => {
+        item.style.animationDelay = `${i * 60}ms`;
+    });
+</script>
 {% endblock %}

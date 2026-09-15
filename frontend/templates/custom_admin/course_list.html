@@ -2,45 +2,173 @@
 
 {% block content %}
 <style>
-    /* --- Page & Table Styling --- */
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 0 10px; }
-    .table-container { background: #13131f; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; }
-    .custom-table { width: 100%; border-collapse: collapse; color: #e0e0e0; }
-    .custom-table th { background: #1a1a2e; color: #a0a0b0; text-transform: uppercase; font-size: 0.85rem; padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .custom-table td { padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); vertical-align: middle; }
-    .custom-table tr:hover { background: rgba(255, 255, 255, 0.02); }
-    
-    /* --- Buttons --- */
-    .btn-action { padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
-    .btn-add-video { background: rgba(0, 240, 255, 0.1); color: #00f0ff; border: 1px solid rgba(0, 240, 255, 0.2); }
-    .btn-add-video:hover { background: #00f0ff; color: #000; }
-    .btn-edit { background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.1); }
-    .btn-edit:hover { background: #fff; color: #000; }
-    .btn-delete { background: rgba(255, 51, 102, 0.1); color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.2); }
-    .btn-delete:hover { background: #ff3366; color: #fff; }
+    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, var(--accent-red), #ff6090);
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
+
+    .btn-back {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .btn-back:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateX(-4px);
+    }
+
+    /* Table */
+    .table-glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .custom-table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
+
+    .custom-table th {
+        background: rgba(10, 10, 30, 0.5);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .custom-table td {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+    }
+
+    .custom-table tbody tr {
+        transition: var(--transition-fast);
+        animation: rowSlide 0.4s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes rowSlide {
+        to { opacity: 1; transform: translateX(0); }
+        from { transform: translateX(-8px); }
+    }
+
+    .custom-table tbody tr:hover { background: var(--glass-bg-hover); }
+
+    .course-name { color: var(--text-primary); font-size: 1.05rem; font-weight: 700; }
+    .course-date { color: var(--text-muted); font-size: 0.82rem; margin-top: 4px; }
+
+    .price-tag { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; }
+
+    .module-badge {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        border: 1px solid var(--glass-border);
+    }
+
+    .status-pub { color: var(--accent-green); font-weight: 600; }
+    .status-draft { color: var(--accent-red); font-weight: 600; }
+
+    /* Action Buttons */
+    .btn-action {
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        font-family: var(--font-body);
+        transition: var(--transition-smooth);
+    }
+
+    .btn-add-video {
+        background: rgba(0, 212, 255, 0.1);
+        color: var(--secondary);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+    .btn-add-video:hover { background: var(--secondary); color: #000; box-shadow: 0 0 12px var(--secondary-glow); }
+
+    .btn-edit {
+        background: var(--glass-bg);
+        color: var(--text-secondary);
+        border: 1px solid var(--glass-border);
+    }
+    .btn-edit:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
+
+    .btn-del {
+        background: rgba(255, 51, 102, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 51, 102, 0.2);
+    }
+    .btn-del:hover { background: var(--accent-red); color: #fff; box-shadow: 0 0 12px rgba(255, 51, 102, 0.3); }
+
+    .actions-row { display: flex; gap: 8px; justify-content: flex-end; }
 </style>
 
-<div style="padding: 40px;">
+<div class="page-wrap">
     
     <div class="page-header">
         <div>
-            <h2 style="color: white; font-weight: 700; margin: 0;">Manage Courses</h2>
-            <p style="color: #888; margin-top: 5px;">Create, edit, and manage your course content.</p>
+            <h2><i class="fas fa-book-open"></i> Manage Courses</h2>
+            <p>Create, edit, and manage your course content.</p>
         </div>
-        <a href="{% url 'admin_dashboard' %}" class="btn-action btn-edit">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        <a href="{% url 'admin_dashboard' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
         </a>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div style="background: rgba(0, 240, 255, 0.1); color: #00f0ff; border: 1px solid #00f0ff; padding: 12px; border-radius: 8px; margin-bottom: 25px;">
-                <i class="fas fa-info-circle"></i> {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <div class="table-container">
+    <div class="table-glass">
         <table class="custom-table">
             <thead>
                 <tr>
@@ -53,36 +181,51 @@
             </thead>
             <tbody>
                 {% for course in courses %}
-                <tr>
+                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
                     <td>
-                        <div style="color: white; font-size: 1.1rem; font-weight: 600;">{{ course.title }}</div>
-                        <div style="color: #666; font-size: 0.85rem; margin-top: 4px;">{{ course.created_at|date:"M d, Y" }}</div>
+                        <div class="course-name">{{ course.title }}</div>
+                        <div class="course-date">{{ course.created_at|date:"M d, Y" }}</div>
                     </td>
                     <td>
-                        {% if course.price > 0 %} <span style="color: #00f0ff; font-weight: bold;">₹{{ course.price }}</span>
-                        {% else %} <span style="color: #00ff88; font-weight: bold;">Free</span> {% endif %}
+                        {% if course.price > 0 %}
+                            <span class="price-tag" style="color: var(--secondary);">₹{{ course.price }}</span>
+                        {% else %}
+                            <span class="price-tag" style="color: var(--accent-green);">Free</span>
+                        {% endif %}
                     </td>
-                    <td><span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; color: #aaa;">{{ course.total_modules }} Modules</span></td>
+                    <td><span class="module-badge">{{ course.total_modules }} Modules</span></td>
                     <td>
-                        {% if course.is_published %} <span style="color: #00ff88;">Published</span>
-                        {% else %} <span style="color: #ff3366;">Draft</span> {% endif %}
+                        {% if course.is_published %}
+                            <span class="status-pub"><i class="fas fa-check-circle"></i> Published</span>
+                        {% else %}
+                            <span class="status-draft"><i class="fas fa-pencil-alt"></i> Draft</span>
+                        {% endif %}
                     </td>
-                    <td style="text-align: right;">
-                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <td>
+                        <div class="actions-row">
                             <a href="{% url 'admin_add_lesson' course.id %}" class="btn-action btn-add-video"><i class="fas fa-video"></i> Add Video</a>
                             <a href="{% url 'admin_edit_course' course.id %}" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
                             <form action="{% url 'admin_delete_course' course.id %}" method="POST" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-action btn-delete" onclick="return confirm('Delete?');"><i class="fas fa-trash"></i></button>
+                                <button type="submit" class="btn-action btn-del" onclick="return confirm('Delete this course?');"><i class="fas fa-trash"></i></button>
                             </form>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5" style="text-align: center; padding: 60px; color: #666;">No courses available.</td></tr>
+                <tr><td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">No courses available.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+{% endblock %} <!-- Close content block here -->
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('tbody tr').forEach((row, i) => {
+        row.style.animationDelay = `${i * 60}ms`;
+    });
+</script>
 {% endblock %}

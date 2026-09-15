@@ -59,6 +59,9 @@ urlpatterns = [
     path('admin-panel/documents/<int:doc_id>/delete/', views.admin_delete_document, name='admin_delete_document'),
     path('admin-panel/enrollments/', views.admin_enrollment_list, name='admin_enrollment_list'),
     path('admin-panel/enrollments/<int:enroll_id>/delete/', views.admin_delete_enrollment, name='admin_delete_enrollment'),
+    
+    # Activity API
+    path('admin-panel/api/activity-data/', views.admin_activity_api, name='admin_activity_api'),
 
     # Quiz APIs
     path('exams/generate-quiz/', views.generate_quiz_view, name='generate_quiz'),

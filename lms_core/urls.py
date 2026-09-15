@@ -73,7 +73,10 @@ from students.views import (
     admin_add_lesson, # Lesson View
     
     # 🚀 NEW: Faculty Actions (Kept in views.py)
-    admin_create_faculty 
+    admin_create_faculty,
+    
+    # 🚀 NEW: Activity API
+    admin_activity_api
 )
 
 # 🚀 NEW: Importing Faculty Views from the new file
@@ -204,6 +207,9 @@ urlpatterns = [
     #  D. Enrollment Management 
     path('admin-panel/enrollments/', admin_enrollment_list, name='admin_enrollment_list'),
     path('admin-panel/enrollments/delete/<int:enroll_id>/', admin_delete_enrollment, name='admin_delete_enrollment'),
+    
+    #  G. Activity API
+    path('admin-panel/api/activity-data/', admin_activity_api, name='admin_activity_api'),
 
     #  E. Content Creation (Forms) 
     path('admin-panel/create-course/', admin_create_course, name='admin_create_course'),

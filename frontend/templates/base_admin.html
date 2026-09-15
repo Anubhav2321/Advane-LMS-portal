@@ -5,89 +5,413 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning-365 | Admin Panel</title>
+    
+    <!-- Google Fonts: Inter + Orbitron -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js 4.x -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #000; color: #fff; display: flex; min-height: 100vh; }
+        /* ============================================= */
+        /* PREMIUM ADMIN DESIGN SYSTEM                   */
+        /* ============================================= */
 
-        /* --- Admin Sidebar --- */
+        :root {
+            --primary: #6C63FF;
+            --primary-glow: rgba(108, 99, 255, 0.3);
+            --secondary: #00D4FF;
+            --secondary-glow: rgba(0, 212, 255, 0.3);
+            --accent-green: #00E676;
+            --accent-red: #FF3366;
+            --accent-amber: #FFB74D;
+            --accent-purple: #A855F7;
+            
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg-hover: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-hover: rgba(255, 255, 255, 0.15);
+            
+            --bg-deep: #030014;
+            --bg-surface: #0A0A1A;
+            --bg-card: rgba(10, 10, 30, 0.6);
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0B8;
+            --text-muted: #5A5A7A;
+            
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Orbitron', monospace;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Animated Background Mesh --- */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: 
+                radial-gradient(ellipse 600px 400px at 10% 20%, rgba(108, 99, 255, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 500px 500px at 80% 60%, rgba(0, 212, 255, 0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 400px 300px at 50% 90%, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            animation: meshFloat 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, -15px) scale(1.02); }
+            100% { transform: translate(10px, 10px) scale(0.98); }
+        }
+
+        /* ============================================= */
+        /* GLASSMORPHISM SIDEBAR                         */
+        /* ============================================= */
+
         .sidebar {
-            width: 260px;
-            background: #111;
-            border-right: 1px solid #222;
-            padding: 20px;
+            width: var(--sidebar-width);
+            background: rgba(10, 10, 30, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
             position: fixed;
-            height: 100%;
+            height: 100vh;
+            z-index: 100;
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 1px; height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                var(--primary) 30%, 
+                var(--secondary) 70%, 
+                transparent 100%);
+            opacity: 0.3;
         }
 
         .brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #fff;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 40px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
+            position: relative;
         }
 
+        .brand i {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: brandPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes brandPulse {
+            0%, 100% { filter: drop-shadow(0 0 8px var(--primary-glow)); }
+            50% { filter: drop-shadow(0 0 15px var(--primary-glow)); }
+        }
+
+        .brand span {
+            background: linear-gradient(135deg, #fff 0%, #c0c0d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Nav Links */
         .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 10px; }
+        .nav-links li { margin-bottom: 4px; }
 
         .nav-links a {
             text-decoration: none;
-            color: #aaa;
+            color: var(--text-secondary);
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-size: 1rem;
+            gap: 14px;
+            padding: 13px 18px;
+            border-radius: var(--radius-md);
+            transition: var(--transition-fast);
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-links a:hover, .nav-links a.active {
-            background: #222;
-            color: #fff;
-            border-left: 4px solid #ff3366; /* Admin Accent Color */
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 0; height: 100%;
+            background: linear-gradient(90deg, var(--primary-glow), transparent);
+            transition: var(--transition-smooth);
+            border-radius: var(--radius-md);
         }
 
-        .nav-links i { width: 20px; text-align: center; }
+        .nav-links a:hover::before,
+        .nav-links a.active::before {
+            width: 100%;
+        }
 
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+            background: var(--glass-bg-hover);
+            transform: translateX(4px);
+        }
+
+        .nav-links a.active {
+            border-left: 3px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .nav-links a i {
+            width: 22px;
+            text-align: center;
+            font-size: 1.05rem;
+            transition: var(--transition-fast);
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-links a span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-links a:hover i {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Divider */
+        .nav-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+            margin: 16px 8px;
+        }
+
+        /* Logout Button */
         .logout-btn {
             margin-top: auto;
             text-decoration: none;
-            color: #ff4d4d;
-            padding: 12px 15px;
-            border: 1px solid #ff4d4d;
-            border-radius: 8px;
+            color: var(--accent-red);
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 51, 102, 0.2);
+            border-radius: var(--radius-md);
             text-align: center;
-            transition: 0.3s;
-            display: block;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            background: rgba(255, 51, 102, 0.05);
         }
 
-        .logout-btn:hover { background: #ff4d4d; color: #fff; }
+        .logout-btn:hover {
+            background: var(--accent-red);
+            color: #fff;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+            transform: translateY(-2px);
+        }
 
-        /* --- Main Content --- */
+        /* ============================================= */
+        /* MAIN CONTENT AREA                             */
+        /* ============================================= */
+
         .main-content {
             flex: 1;
-            margin-left: 260px; /* Width of sidebar */
-            padding: 20px;
-            background: #050505;
+            margin-left: var(--sidebar-width);
+            padding: 0;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
         }
 
-        /* Message Alerts */
-        .alert { padding: 15px; margin-bottom: 20px; border-radius: 5px; }
-        .alert-success { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; }
-        .alert-error { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; }
+        /* ============================================= */
+        /* TOAST NOTIFICATION SYSTEM                     */
+        /* ============================================= */
 
-        /* Responsive */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 450px;
+            animation: toastSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .toast:hover {
+            transform: translateX(-5px);
+        }
+
+        .toast-success {
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 230, 118, 0.25);
+        }
+
+        .toast-error {
+            background: rgba(255, 51, 102, 0.12);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 51, 102, 0.25);
+        }
+
+        .toast-warning {
+            background: rgba(255, 183, 77, 0.12);
+            color: var(--accent-amber);
+            border: 1px solid rgba(255, 183, 77, 0.25);
+        }
+
+        .toast-info {
+            background: rgba(0, 212, 255, 0.12);
+            color: var(--secondary);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast-exit {
+            animation: toastSlideOut 0.3s ease forwards;
+        }
+
+        @keyframes toastSlideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
+        }
+
+        /* ============================================= */
+        /* PAGE ENTRANCE ANIMATION                       */
+        /* ============================================= */
+
+        .page-enter {
+            animation: pageFadeIn 0.6s ease forwards;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================= */
+        /* UTILITY CLASSES                               */
+        /* ============================================= */
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-smooth);
+        }
+
+        .glass-card:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(108, 99, 255, 0.3); 
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: rgba(108, 99, 255, 0.5); 
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE                                    */
+        /* ============================================= */
+
         @media (max-width: 768px) {
-            .sidebar { width: 70px; padding: 10px; }
-            .brand span, .nav-links a span, .logout-btn span { display: none; }
-            .main-content { margin-left: 70px; }
+            .sidebar { 
+                width: var(--sidebar-collapsed); 
+                padding: 16px 8px; 
+            }
+            .brand span, 
+            .nav-links a span, 
+            .logout-btn span { display: none; }
+            .main-content { margin-left: var(--sidebar-collapsed); }
+            .brand { justify-content: center; padding: 12px 0; }
+            .nav-links a { justify-content: center; padding: 13px 0; }
+            .logout-btn { padding: 14px 0; }
         }
     </style>
 </head>
@@ -95,43 +419,126 @@
 
     <div class="sidebar">
         <div class="brand">
-            <i class="fas fa-user-shield" style="color: #ff3366;"></i>
+            <i class="fas fa-shield-halved"></i>
             <span>Admin Panel</span>
         </div>
 
         <ul class="nav-links">
             <li>
                 <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-th-large"></i>
-                    <span>Management</span>
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
                 </a>
             </li>
 
             <li>
                 <a href="{% url 'admin_student_list' %}" class="{% if 'student' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-users"></i>
-                    <span>Student Details</span>
+                    <span>Students</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-book-open"></i>
+                    <span>Courses</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{% url 'admin_enrollment_list' %}" class="{% if 'enrollment' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-user-check"></i>
+                    <span>Enrollments</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{% url 'admin_document_list' %}" class="{% if 'document' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Documents</span>
+                </a>
+            </li>
+            
+            <div class="nav-divider"></div>
+            
+            <li>
+                <a href="{% url 'home' %}" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Site</span>
                 </a>
             </li>
         </ul>
 
         <a href="{% url 'logout' %}" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
+            <i class="fas fa-power-off"></i> <span>Sign Out</span>
         </a>
     </div>
 
-    <div class="main-content">
+    <div class="main-content page-enter">
+        <!-- Toast Notifications -->
         {% if messages %}
+        <div class="toast-container" id="toastContainer">
             {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                <div class="toast toast-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}" onclick="this.classList.add('toast-exit'); setTimeout(() => this.remove(), 300);">
+                    {% if 'success' in message.tags %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif 'error' in message.tags %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% elif 'warning' in message.tags %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
                     {{ message }}
                 </div>
             {% endfor %}
+        </div>
         {% endif %}
 
         {% block content %}
         {% endblock %}
     </div>
+
+    <script>
+        // Auto-dismiss toasts after 5 seconds
+        document.querySelectorAll('.toast').forEach((toast, index) => {
+            setTimeout(() => {
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000 + (index * 500));
+        });
+
+        // Count-up animation utility
+        function animateCount(element, target, duration = 1500) {
+            let start = 0;
+            const step = target / (duration / 16);
+            const counter = setInterval(() => {
+                start += step;
+                if (start >= target) {
+                    element.textContent = Math.round(target).toLocaleString();
+                    clearInterval(counter);
+                } else {
+                    element.textContent = Math.round(start).toLocaleString();
+                }
+            }, 16);
+        }
+
+        // Intersection Observer for scroll-reveal animations
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+    </script>
+    
+    {% block extra_js %}
+    {% endblock %}
 
 </body>
 </html>

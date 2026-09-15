@@ -1,98 +1,313 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-<div style="padding: 40px;">
+<style>
+    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, var(--accent-purple), #c084fc);
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
+
+    .btn-back {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .btn-back:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateX(-4px);
+    }
+
+    .table-glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
+
+    thead tr {
+        background: rgba(10, 10, 30, 0.5);
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    th {
+        padding: 18px 20px;
+        text-align: left;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+    }
+
+    td {
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        transition: var(--transition-fast);
+        animation: rowFade 0.4s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes rowFade { to { opacity: 1; } }
+
+    tbody tr:hover { background: var(--glass-bg-hover); }
+
+    .doc-name {
+        color: var(--text-primary);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .doc-name i { color: var(--accent-red); }
+
+    .cat-badge {
+        background: rgba(0, 212, 255, 0.1);
+        color: var(--secondary);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .file-link {
+        color: var(--text-secondary);
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 255, 255, 0.15);
+        transition: var(--transition-fast);
+    }
+
+    .file-link:hover { color: var(--secondary); }
+
+    .date-text { color: var(--text-muted); font-size: 0.88rem; }
+
+    .actions-row { display: flex; gap: 8px; justify-content: flex-end; }
+
+    .btn-action {
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: var(--font-body);
+        transition: var(--transition-smooth);
+    }
+
+    .btn-edit-doc {
+        background: var(--glass-bg);
+        color: var(--text-secondary);
+        border: 1px solid var(--glass-border);
+    }
+    .btn-edit-doc:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
+
+    .btn-del-doc {
+        background: rgba(255, 51, 102, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 51, 102, 0.2);
+    }
+    .btn-del-doc:hover { background: var(--accent-red); color: #fff; }
+
+    /* Edit Modal */
+    .edit-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        z-index: 9999;
+        overflow-y: auto;
+    }
+
+    .edit-modal {
+        background: var(--bg-surface);
+        width: 90%;
+        max-width: 500px;
+        margin: 60px auto;
+        padding: 36px;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--glass-border);
+        position: relative;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .edit-modal h3 {
+        color: var(--accent-purple);
+        margin-bottom: 24px;
+        font-size: 1.2rem;
+    }
+
+    .edit-modal .close-btn {
+        position: absolute;
+        top: 16px; right: 20px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: var(--transition-fast);
+    }
+
+    .edit-modal .close-btn:hover { color: var(--accent-red); }
+
+    .edit-modal label {
+        color: var(--text-secondary);
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .edit-modal input {
+        width: 100%;
+        padding: 12px 14px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        border-radius: var(--radius-sm);
+        margin-bottom: 16px;
+        outline: none;
+        font-family: var(--font-body);
+        transition: var(--transition-fast);
+    }
+
+    .edit-modal input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+    .btn-save-doc {
+        width: 100%;
+        padding: 13px;
+        background: var(--accent-purple);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+    }
+
+    .btn-save-doc:hover { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
+</style>
+
+<div class="page-wrap">
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div class="page-header">
         <div>
-            <h2 style="color: #fff; margin-bottom: 5px;">Manage Library Documents</h2>
-            <p style="color: #888;">View, edit, or delete study materials.</p>
+            <h2><i class="fas fa-folder-open"></i> Library Documents</h2>
+            <p>View, edit, or delete study materials.</p>
         </div>
-        <a href="{% url 'admin_dashboard' %}" style="color: #aaa; text-decoration: none; border: 1px solid #444; padding: 8px 15px; border-radius: 5px;">
-            &larr; Back to Dashboard
+        <a href="{% url 'admin_dashboard' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
         </a>
     </div>
 
-    <div style="background: #111; border-radius: 15px; border: 1px solid #333; overflow: hidden;">
-        <table style="width: 100%; border-collapse: collapse; color: #ccc;">
+    <div class="table-glass">
+        <table>
             <thead>
-                <tr style="background: #1a1a1a; border-bottom: 1px solid #333;">
-                    <th style="padding: 20px; text-align: left;">Document Title</th>
-                    <th style="padding: 20px; text-align: left;">Category</th>
-                    <th style="padding: 20px; text-align: left;">Current File</th>
-                    <th style="padding: 20px; text-align: left;">Uploaded Date</th>
-                    <th style="padding: 20px; text-align: right;">Actions</th>
+                <tr>
+                    <th>Document Title</th>
+                    <th>Category</th>
+                    <th>File</th>
+                    <th>Uploaded</th>
+                    <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for doc in documents %}
-                <tr style="border-bottom: 1px solid #222;">
-                    <td style="padding: 20px;">
-                        <div style="color: #fff; font-weight: bold;">
-                            <i class="fas fa-file-pdf" style="color: #ff3366; margin-right: 8px;"></i>
+                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
+                    <td>
+                        <div class="doc-name">
+                            <i class="fas fa-file-pdf"></i>
                             {{ doc.title }}
                         </div>
                     </td>
-                    <td style="padding: 20px;">
-                        <span style="background: rgba(0, 212, 255, 0.1); color: #00d4ff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">
-                            {{ doc.category }}
-                        </span>
-                    </td>
-                    <td style="padding: 20px;">
-                        <a href="{{ doc.file.url }}" target="_blank" style="color: #aaa; text-decoration: underline;">View File</a>
-                    </td>
-                    <td style="padding: 20px; color: #666;">{{ doc.uploaded_at|date:"d M, Y" }}</td>
-                    
-                    <td style="padding: 20px; text-align: right;">
-                        <button onclick="document.getElementById('edit-modal-{{ doc.id }}').style.display='block'" 
-                                style="background: #222; color: #fff; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-right: 5px;">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-
-                        <form action="{% url 'admin_delete_document' doc.id %}" method="POST" style="display:inline;">
-                            {% csrf_token %}
-                            <button onclick="return confirm('Are you sure you want to delete {{ doc.title }}?')" 
-                                    style="background: rgba(255, 51, 102, 0.1); color: #ff3366; border: none; padding: 9px 15px; border-radius: 5px; cursor: pointer;">
-                                <i class="fas fa-trash"></i>
+                    <td><span class="cat-badge">{{ doc.category }}</span></td>
+                    <td><a href="{{ doc.file.url }}" target="_blank" class="file-link">View File</a></td>
+                    <td><span class="date-text">{{ doc.uploaded_at|date:"d M, Y" }}</span></td>
+                    <td>
+                        <div class="actions-row">
+                            <button class="btn-action btn-edit-doc" onclick="document.getElementById('edit-modal-{{ doc.id }}').style.display='block'">
+                                <i class="fas fa-edit"></i> Edit
                             </button>
-                        </form>
+                            <form action="{% url 'admin_delete_document' doc.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn-action btn-del-doc" onclick="return confirm('Delete {{ doc.title }}?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
 
-                <div id="edit-modal-{{ doc.id }}" class="w3-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto;">
-                    <div style="background: #1a1a1a; width: 90%; max-width: 500px; margin: 50px auto; padding: 40px; border-radius: 15px; position: relative; border: 1px solid #333;">
-                        
-                        <span onclick="document.getElementById('edit-modal-{{ doc.id }}').style.display='none'" 
-                              style="position: absolute; top: 15px; right: 20px; color: #fff; cursor: pointer; font-size: 2rem;">&times;</span>
-                        
-                        <h3 style="color: #a55eea; margin-bottom: 25px;">Edit Document</h3>
-                        
+                <!-- Edit Modal -->
+                <div id="edit-modal-{{ doc.id }}" class="edit-overlay">
+                    <div class="edit-modal">
+                        <span class="close-btn" onclick="document.getElementById('edit-modal-{{ doc.id }}').style.display='none'">&times;</span>
+                        <h3><i class="fas fa-edit"></i> Edit Document</h3>
                         <form action="{% url 'admin_edit_document' doc.id %}" method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
-                            
-                            <label style="color: #ccc; display: block; margin-bottom: 5px;">Title</label>
-                            <input type="text" name="title" value="{{ doc.title }}" required 
-                                   style="width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; border-radius: 5px; margin-bottom: 15px;">
-
-                            <label style="color: #ccc; display: block; margin-bottom: 5px;">Category</label>
-                            <input type="text" name="category" value="{{ doc.category }}" required 
-                                   style="width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; border-radius: 5px; margin-bottom: 15px;">
-
-                            <label style="color: #ccc; display: block; margin-bottom: 5px;">Replace File (Optional)</label>
-                            <input type="file" name="file" 
-                                   style="width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; border-radius: 5px; margin-bottom: 20px;">
-                            
-                            <p style="color: #666; font-size: 0.8rem; margin-bottom: 20px;">Current: {{ doc.file.name }}</p>
-
-                            <button type="submit" style="width: 100%; padding: 12px; background: #a55eea; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
-                                Save Changes
-                            </button>
+                            <label>Title</label>
+                            <input type="text" name="title" value="{{ doc.title }}" required>
+                            <label>Category</label>
+                            <input type="text" name="category" value="{{ doc.category }}" required>
+                            <label>Replace File (Optional)</label>
+                            <input type="file" name="file">
+                            <p style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 20px;">Current: {{ doc.file.name }}</p>
+                            <button type="submit" class="btn-save-doc">Save Changes</button>
                         </form>
                     </div>
                 </div>
                 {% empty %}
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 50px; color: #666;">
+                    <td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">
                         No documents found in the library.
                     </td>
                 </tr>
@@ -101,4 +316,13 @@
         </table>
     </div>
 </div>
+
+{% endblock %} <!-- Close content block here -->
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('tbody tr').forEach((row, i) => {
+        row.style.animationDelay = `${i * 60}ms`;
+    });
+</script>
 {% endblock %}

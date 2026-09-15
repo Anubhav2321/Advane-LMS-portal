@@ -13,7 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, Count
+from django.db.models.functions import TruncDate
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -56,7 +57,9 @@ from .models import (
     BountySubmission,
     FacultyProfile,        #  ADDED FACULTY PROFILE
     Assignment,            #  NEW: Added Assignment Model
-    AssignmentSubmission   #  NEW: Added Assignment Submission Model
+    AssignmentSubmission,  #  NEW: Added Assignment Submission Model
+    StudentActivity,       #  NEW: Student Activity Tracking
+    log_student_activity   #  NEW: Activity Logging Helper
 )
 
 User = get_user_model()
@@ -151,6 +154,9 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f"Welcome back, {user.first_name}!")
+            
+            # Log student login activity
+            log_student_activity(user, 'login', f'{user.username} logged in')
             
             if user.is_staff or user.is_superuser:
                 return redirect('admin_dashboard')
@@ -347,6 +353,7 @@ def enroll_course(request, course_id):
     
     # Free Course Enrollment
     Enrollment.objects.create(student=student, course=course)
+    log_student_activity(student, 'course_enroll', f'Enrolled in {course.title}', course=course)
     messages.success(request, f"Successfully enrolled in {course.title}!")
     return redirect('dashboard')
 
@@ -364,6 +371,7 @@ def process_payment(request, course_id):
         
         # Create Enrollment after successful payment
         Enrollment.objects.get_or_create(student=request.user, course=course)
+        log_student_activity(request.user, 'course_enroll', f'Paid and enrolled in {course.title}', course=course)
         
         messages.success(request, f"Payment Successful! Welcome to {course.title}.")
         return redirect('dashboard')
@@ -391,6 +399,7 @@ def purchase_with_coins(request, course_id):
             
             # Enroll the student in the course
             Enrollment.objects.get_or_create(student=request.user, course=course)
+            log_student_activity(request.user, 'course_enroll', f'Purchased {course.title} with {required_coins} coins', course=course)
             
             # Success Message with 'Coin' keyword to trigger the Golden Popup
             messages.success(request, f"Course Unlocked! You purchased '{course.title}' using {required_coins} LMS Coins.")
@@ -734,6 +743,14 @@ def submit_quiz_view(request, exam_id):
                 score=score
             )
         
+        # Log quiz activity
+        log_student_activity(
+            request.user, 'quiz_taken',
+            f'Took quiz: {exam.title} - Score: {score}/{total_questions}',
+            course=exam.course,
+            metadata={'score': score, 'total': total_questions}
+        )
+        
         percentage = int((score / total_questions) * 100) if total_questions > 0 else 0
         
         # --- LMS COIN REWARD SYSTEM (QUIZ SCORE) ---
@@ -879,12 +896,13 @@ def execute_code_api(request):
 @staff_member_required
 def admin_dashboard(request):
     """
-    Admin Dashboard Logic.
+    Admin Dashboard Logic with Analytics Data for Charts.
     """
     total_students = User.objects.filter(is_student=True).count()
     total_courses = Course.objects.count()
     total_enrollments = Enrollment.objects.count()
     total_docs = LibraryDocument.objects.count()
+    total_exams = Exam.objects.count()
 
     # Fetch Faculties
     total_faculties = User.objects.filter(is_faculty=True).count()
@@ -893,16 +911,91 @@ def admin_dashboard(request):
     courses = Course.objects.all().order_by('-created_at')
     documents = LibraryDocument.objects.all().order_by('-uploaded_at')
     
+    # --- ANALYTICS DATA FOR CHARTS ---
+    today = timezone.now().date()
+    thirty_days_ago = today - datetime.timedelta(days=30)
+    
+    # Daily new student registrations (last 30 days)
+    daily_registrations = (
+        User.objects.filter(is_student=True, date_joined__date__gte=thirty_days_ago)
+        .annotate(date=TruncDate('date_joined'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    reg_labels = []
+    reg_data = []
+    for entry in daily_registrations:
+        reg_labels.append(entry['date'].strftime('%d %b'))
+        reg_data.append(entry['count'])
+    
+    # Daily activity counts (last 30 days)
+    daily_activities = (
+        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago)
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    activity_labels = []
+    activity_data = []
+    for entry in daily_activities:
+        activity_labels.append(entry['date'].strftime('%d %b'))
+        activity_data.append(entry['count'])
+    
+    # Activity type breakdown (pie chart)
+    activity_breakdown = (
+        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago)
+        .values('activity_type')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    breakdown_labels = []
+    breakdown_data = []
+    activity_type_map = dict(StudentActivity.ACTIVITY_TYPES)
+    for entry in activity_breakdown:
+        breakdown_labels.append(activity_type_map.get(entry['activity_type'], entry['activity_type']))
+        breakdown_data.append(entry['count'])
+    
+    # Recent activities feed (latest 25)
+    recent_activities = StudentActivity.objects.select_related('student', 'course').all()[:25]
+    
+    # Top active students (by activity count in last 30 days)
+    top_students = (
+        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago)
+        .values('student__id', 'student__username', 'student__first_name', 'student__last_name')
+        .annotate(activity_count=Count('id'))
+        .order_by('-activity_count')[:10]
+    )
+    
+    # Total activities count
+    total_activities = StudentActivity.objects.count()
+    
     context = {
         'total_students': total_students,
         'total_courses': total_courses,
         'total_enrollments': total_enrollments,
         'total_docs': total_docs,
         'total_faculties': total_faculties,
+        'total_exams': total_exams,
+        'total_activities': total_activities,
         'faculties': faculties,
         'courses': courses,
         'documents': documents,
         
+        # Chart Data (serialized to JSON for JS)
+        'reg_labels': json.dumps(reg_labels),
+        'reg_data': json.dumps(reg_data),
+        'activity_labels': json.dumps(activity_labels),
+        'activity_data': json.dumps(activity_data),
+        'breakdown_labels': json.dumps(breakdown_labels),
+        'breakdown_data': json.dumps(breakdown_data),
+        
+        # Recent activity & top students
+        'recent_activities': recent_activities,
+        'top_students': top_students,
+        
+        # Forms
         'course_form': CourseForm(),
         'notice_form': NotificationForm(),
         'class_form': LiveClassForm(),
@@ -1028,13 +1121,84 @@ def admin_student_detail(request, user_id):
     avg_score = quiz_results.aggregate(Avg('score'))['score__avg']
     avg_score = round(avg_score, 1) if avg_score else 0
     
+    # --- STUDENT ACTIVITY ANALYTICS ---
+    today = timezone.now().date()
+    thirty_days_ago = today - datetime.timedelta(days=30)
+    
+    # Per-student daily activity (last 30 days)
+    student_daily_activity = (
+        StudentActivity.objects.filter(student=student, created_at__date__gte=thirty_days_ago)
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    stu_activity_labels = []
+    stu_activity_data = []
+    for entry in student_daily_activity:
+        stu_activity_labels.append(entry['date'].strftime('%d %b'))
+        stu_activity_data.append(entry['count'])
+    
+    # Activity type breakdown for this student
+    stu_breakdown = (
+        StudentActivity.objects.filter(student=student)
+        .values('activity_type')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    stu_breakdown_labels = []
+    stu_breakdown_data = []
+    activity_type_map = dict(StudentActivity.ACTIVITY_TYPES)
+    for entry in stu_breakdown:
+        stu_breakdown_labels.append(activity_type_map.get(entry['activity_type'], entry['activity_type']))
+        stu_breakdown_data.append(entry['count'])
+    
+    # Recent activities for this student (last 50)
+    student_activities = StudentActivity.objects.filter(student=student).select_related('course')[:50]
+    
+    # Stats
+    total_logins = StudentActivity.objects.filter(student=student, activity_type='login').count()
+    total_lessons = StudentActivity.objects.filter(student=student, activity_type='lesson_watch').count()
+    total_messages = StudentActivity.objects.filter(student=student, activity_type='chat_message').count()
+    total_student_activities = StudentActivity.objects.filter(student=student).count()
+    
+    # Engagement score (simple formula: activities in last 30 days / 30 * 100, capped at 100)
+    recent_count = StudentActivity.objects.filter(student=student, created_at__date__gte=thirty_days_ago).count()
+    engagement_score = min(100, int((recent_count / max(30, 1)) * 100))
+    
+    # Quiz scores over time for chart
+    quiz_score_labels = []
+    quiz_score_data = []
+    for qr in quiz_results[:20]:
+        quiz_score_labels.append(qr.taken_at.strftime('%d %b'))
+        pct = int((qr.score / max(qr.total_marks, 1)) * 100) if qr.total_marks else 0
+        quiz_score_data.append(pct)
+    quiz_score_labels.reverse()
+    quiz_score_data.reverse()
+    
     context = {
         'student': student,
         'enrollments': enrollments,
         'completed_courses': completed_courses,
         'quiz_results': quiz_results,
         'avg_score': avg_score,
-        'total_quizzes': quiz_results.count()
+        'total_quizzes': quiz_results.count(),
+        
+        # Activity tracking data
+        'student_activities': student_activities,
+        'total_logins': total_logins,
+        'total_lessons': total_lessons,
+        'total_messages': total_messages,
+        'total_student_activities': total_student_activities,
+        'engagement_score': engagement_score,
+        
+        # Chart data (JSON)
+        'stu_activity_labels': json.dumps(stu_activity_labels),
+        'stu_activity_data': json.dumps(stu_activity_data),
+        'stu_breakdown_labels': json.dumps(stu_breakdown_labels),
+        'stu_breakdown_data': json.dumps(stu_breakdown_data),
+        'quiz_score_labels': json.dumps(quiz_score_labels),
+        'quiz_score_data': json.dumps(quiz_score_data),
     }
     return render(request, 'custom_admin/student_detail.html', context)
 
@@ -1163,6 +1327,60 @@ def admin_delete_enrollment(request, enroll_id):
     enroll.delete()
     messages.success(request, "Enrollment removed.")
     return redirect('admin_enrollment_list')
+
+
+# --- ADMIN ACTIVITY DATA API (For AJAX Charts) ---
+
+@staff_member_required
+def admin_activity_api(request):
+    """
+    JSON API endpoint for admin activity chart data.
+    Supports filtering by student_id, days (range), and activity_type.
+    """
+    student_id = request.GET.get('student_id')
+    days = int(request.GET.get('days', 30))
+    activity_type = request.GET.get('type')
+    
+    today = timezone.now().date()
+    start_date = today - datetime.timedelta(days=days)
+    
+    queryset = StudentActivity.objects.filter(created_at__date__gte=start_date)
+    
+    if student_id:
+        queryset = queryset.filter(student_id=student_id)
+    if activity_type:
+        queryset = queryset.filter(activity_type=activity_type)
+    
+    # Daily counts
+    daily_data = (
+        queryset
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    
+    labels = [entry['date'].strftime('%d %b') for entry in daily_data]
+    data = [entry['count'] for entry in daily_data]
+    
+    # Type breakdown
+    breakdown = (
+        queryset
+        .values('activity_type')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    activity_type_map = dict(StudentActivity.ACTIVITY_TYPES)
+    breakdown_labels = [activity_type_map.get(e['activity_type'], e['activity_type']) for e in breakdown]
+    breakdown_data = [e['count'] for e in breakdown]
+    
+    return JsonResponse({
+        'labels': labels,
+        'data': data,
+        'breakdown_labels': breakdown_labels,
+        'breakdown_data': breakdown_data,
+        'total': queryset.count()
+    })
 
 
 # 8. PREVIOUS: SYNTAX SINGULARITY (AI LOGIC CHECKER)
