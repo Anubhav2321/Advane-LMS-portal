@@ -145,6 +145,22 @@ class Lesson(models.Model):
         ordering = ['order']
         unique_together = ['course', 'order']
 
+    @property
+    def duration_in_seconds(self):
+        """Converts duration string like '10:30' into total seconds."""
+        if not self.duration:
+            return 0
+        try:
+            parts = self.duration.split(':')
+            if len(parts) == 3: # HH:MM:SS
+                return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+            elif len(parts) == 2: # MM:SS
+                return int(parts[0]) * 60 + int(parts[1])
+            else:
+                return int(parts[0]) * 60 # Treat as just minutes
+        except:
+            return 0
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -198,8 +214,73 @@ class Enrollment(models.Model):
             self.is_completed = True
         self.save()
 
+    def get_real_progress(self):
+        """
+        Calculate real progress based on Overall Task Count.
+        Tasks = Lessons (watch time > 80%) + Quizzes + Live Classes + PDFs
+        """
+        # 1. Lesson Tasks
+        total_lessons = self.course.lessons.count()
+        completed_lessons = 0
+        for lp in LessonProgress.objects.filter(student=self.student, lesson__course=self.course):
+            required_time = lp.lesson.duration_in_seconds * 0.8
+            if lp.is_completed or (required_time > 0 and lp.watch_time_seconds >= required_time):
+                completed_lessons += 1
+
+        # 2. Quiz Tasks
+        total_quizzes = Exam.objects.filter(course=self.course, is_active=True).count()
+        attempted_quizzes = QuizResult.objects.filter(student=self.student, exam__course=self.course).count()
+
+        # 3. Live Class Tasks
+        total_classes = self.course.live_classes.count()
+        attended_classes = LiveClassAttendance.objects.filter(student=self.student, live_class__course=self.course).count()
+
+        # 4. Document Tasks
+        total_docs = self.course.documents.count()
+        read_docs = DocumentView.objects.filter(student=self.student, document__course=self.course).count()
+
+        total_tasks = total_lessons + total_quizzes + total_classes + total_docs
+        completed_tasks = completed_lessons + attempted_quizzes + attended_classes + read_docs
+
+        if total_tasks == 0:
+            return {'percent': 0.0, 'completed': 0, 'total': 0}
+        
+        percent = round((completed_tasks / total_tasks) * 100, 1)
+        return {'percent': percent, 'completed': completed_tasks, 'total': total_tasks}
+
+    def sync_progress(self):
+        """Sync the progress field with real lesson progress data."""
+        data = self.get_real_progress()
+        self.progress = data['percent']
+        if data['percent'] >= 100.0:
+            self.is_completed = True
+        self.save(update_fields=['progress', 'is_completed'])
+
     def __str__(self):
         return f"{self.student.username} -> {self.course.title}"
+
+
+# 5.5 LESSON PROGRESS MODEL (Per-Student Lesson Tracking)
+
+class LessonProgress(models.Model):
+    """
+    Tracks which lessons each student has completed.
+    Enables real progress calculation: completed_lessons / total_lessons * 100
+    """
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lesson_progress')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='student_progress')
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    watch_time_seconds = models.PositiveIntegerField(default=0, help_text="Total seconds spent watching")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'lesson')
+        ordering = ['lesson__order']
+
+    def __str__(self):
+        status = "✅" if self.is_completed else "⏳"
+        return f"{status} {self.student.username} — {self.lesson.title}"
 
 
 # 6. EXAM & QUIZ LOGIC
@@ -293,6 +374,29 @@ class LibraryDocument(models.Model):
 
     def __str__(self):
         return self.title
+
+# --- NEW: OVERALL PROGRESS TRACKING MODELS ---
+class LiveClassAttendance(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='class_attendance')
+    live_class = models.ForeignKey(LiveClass, on_delete=models.CASCADE, related_name='attendees')
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'live_class')
+
+    def __str__(self):
+        return f"{self.student.username} joined {self.live_class.title}"
+
+class DocumentView(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='document_views')
+    document = models.ForeignKey(LibraryDocument, on_delete=models.CASCADE, related_name='viewers')
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'document')
+
+    def __str__(self):
+        return f"{self.student.username} read {self.document.title}"
 
 # --- NEW: Lesson Comment Model ---
 class LessonComment(models.Model):

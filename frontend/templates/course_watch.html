@@ -116,99 +116,48 @@
         pointer-events: none;
     }
 
-    /* --- COMMENT SECTION --- */
-    .comment-section {
-        background: #111116;
-        border: 1px solid var(--border-color);
-        border-radius: 15px;
-        padding: 25px;
-        margin-bottom: 50px;
+    /* --- TABS SYSTEM --- */
+    .course-tabs {
+        display: flex; gap: 40px; margin-bottom: 30px; 
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
     }
     
-    .comment-section h3 {
-        font-family: 'Orbitron', sans-serif;
-        color: var(--neon-blue);
-        margin-bottom: 20px;
-        font-size: 1.3rem;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 10px;
-    }
-
-    .comment-form textarea {
-        width: 100%;
-        background: rgba(0,0,0,0.3);
-        border: 1px solid var(--border-color);
-        color: #fff;
-        padding: 15px;
-        border-radius: 10px;
-        font-family: 'Rajdhani', sans-serif;
-        font-size: 1rem;
-        resize: vertical;
-        transition: 0.3s;
-    }
-    .comment-form textarea:focus {
-        outline: none;
-        border-color: var(--neon-blue);
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
-    }
-
-    .btn-comment {
-        margin-top: 15px;
-        padding: 10px 30px;
-        background: linear-gradient(45deg, var(--neon-purple), #8a2be2);
-        border: none;
-        color: white;
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: 700;
-        text-transform: uppercase;
+    .tab-btn {
+        background: transparent; border: none; color: #888; 
+        font-size: 1.1rem; font-family: 'Orbitron', sans-serif;
+        padding: 12px 0; cursor: pointer; position: relative; 
+        transition: 0.3s; font-weight: 600; text-transform: uppercase;
         letter-spacing: 1px;
-        transition: 0.3s;
-        float: right;
-    }
-    .btn-comment:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 15px var(--neon-purple);
-    }
-
-    .comment-list {
-        margin-top: 60px;
-        clear: both;
-    }
-
-    .single-comment {
-        display: flex;
-        gap: 15px;
-        padding: 20px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        animation: fadeIn 0.5s ease;
     }
     
-    /* Profile Picture Logic */
-    .c-avatar {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        background: #222;
-        border: 1px solid var(--border-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        flex-shrink: 0;
+    .tab-btn:hover { color: #fff; }
+    .tab-btn.active { color: var(--neon-blue); }
+    .tab-btn.active::after {
+        content: ''; position: absolute; bottom: -1px; left: 0; 
+        width: 100%; height: 3px; background: var(--neon-blue); 
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.5); 
+        border-radius: 3px 3px 0 0;
     }
-    .c-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .c-avatar i { font-size: 1.2rem; color: #666; }
+    
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
 
-    .c-content { flex: 1; }
-    .c-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    .c-author { color: #fff; font-weight: 700; font-size: 1rem; }
-    .c-tag { 
-        font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; 
-        border: 1px solid var(--neon-blue); color: var(--neon-blue);
+    /* Overview Tab Content */
+    .overview-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 15px; padding: 30px; margin-bottom: 20px;
     }
-    .c-date { font-size: 0.8rem; color: #666; }
-    .c-text { color: #ccc; line-height: 1.5; font-size: 0.95rem; }
+    .overview-box h3 { color: #fff; font-family: 'Orbitron', sans-serif; margin-bottom: 15px; }
+    .overview-box p { color: #aaa; line-height: 1.6; font-size: 1.05rem; }
+
+    .instructor-meta {
+        display: flex; align-items: center; gap: 15px; margin-top: 30px;
+        padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .inst-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--neon-purple); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; }
+    .inst-info h4 { margin: 0; color: #fff; font-size: 1.1rem; }
+    .inst-info span { color: var(--neon-blue); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -306,7 +255,8 @@
             <div class="video-wrapper">
                 {% if youtube_id %}
                     <iframe 
-                        src="https://www.youtube.com/embed/{{ youtube_id }}?rel=0&modestbranding=1" 
+                        id="lesson-video"
+                        src="https://www.youtube.com/embed/{{ youtube_id }}?rel=0&modestbranding=1&enablejsapi=1" 
                         title="Course Video"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -349,46 +299,99 @@
                 {% endif %}
             </div>
 
-            <div class="comment-section">
-                <h3><i class="far fa-comments"></i> Discussion & Doubts</h3>
-                
-                <form method="POST" class="comment-form">
-                    {% csrf_token %}
-                    {{ comment_form.text }}
-                    <button type="submit" name="submit_comment" class="btn-comment">
-                        Post Comment <i class="fas fa-paper-plane"></i>
-                    </button>
-                </form>
+            <!-- TABS SYSTEM -->
+            <div class="course-tabs">
+                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                <button class="tab-btn" onclick="switchTab('qa')"><i class="far fa-comments"></i> Q&A Discussion</button>
+                <button class="tab-btn" onclick="switchTab('resources')"><i class="fas fa-download"></i> Resources</button>
+            </div>
 
-                <div class="comment-list">
-                    {% for comment in comments %}
-                    <div class="single-comment">
-                        <div class="c-avatar">
-                            {% if comment.student.profile.profile_picture %}
-                                <img src="{{ comment.student.profile.profile_picture.url }}" alt="User">
-                            {% else %}
-                                <i class="fas fa-user"></i>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="c-content">
-                            <div class="c-header">
-                                <span class="c-author">
-                                    {{ comment.student.first_name }} {{ comment.student.last_name }}
-                                    {% if comment.student.is_staff %}
-                                        <span class="c-tag">INSTRUCTOR</span>
-                                    {% endif %}
-                                </span>
-                                <span class="c-date">{{ comment.created_at|timesince }} ago</span>
-                            </div>
-                            <p class="c-text">{{ comment.text }}</p>
+            <!-- OVERVIEW TAB -->
+            <div id="tab-overview" class="tab-content active">
+                <div class="overview-box">
+                    <h3>About this course</h3>
+                    <p>{{ course.description|linebreaksbr }}</p>
+                    
+                    <div class="instructor-meta">
+                        <div class="inst-avatar"><i class="fas fa-user-tie"></i></div>
+                        <div class="inst-info">
+                            <h4>{{ course.faculty_name }}</h4>
+                            <span>Course Instructor</span>
                         </div>
                     </div>
-                    {% empty %}
-                        <p style="color:#666; text-align:center; padding: 20px;">
-                            No comments yet. Ask your doubts here!
-                        </p>
-                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Q&A TAB -->
+            <div id="tab-qa" class="tab-content">
+                <div class="overview-box">
+                    <form method="POST" class="comment-form" style="margin-bottom: 60px;">
+                        {% csrf_token %}
+                        <textarea name="text" rows="4" placeholder="Ask a question or share your thoughts on this lesson..." required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 15px; border-radius: 10px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; resize: vertical;"></textarea>
+                        <button type="submit" name="submit_comment" style="margin-top: 15px; padding: 10px 30px; background: linear-gradient(45deg, var(--neon-purple), #8a2be2); border: none; color: white; border-radius: 50px; cursor: pointer; font-weight: 700; text-transform: uppercase; float: right;">
+                            Post Comment <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+
+                    <div class="comment-list" style="clear: both; padding-top: 20px;">
+                        {% for comment in comments %}
+                        <div style="display: flex; gap: 15px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <div style="width: 45px; height: 45px; border-radius: 50%; background: #222; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); flex-shrink: 0;">
+                                {% if comment.student.profile.profile_pic %}
+                                    <img src="{{ comment.student.profile.profile_pic.url }}" alt="User" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                    <i class="fas fa-user" style="color: #666;"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="color: #fff; font-weight: 700;">
+                                        {{ comment.student.first_name|default:comment.student.username }}
+                                        {% if comment.student.is_staff or comment.student.is_faculty %}
+                                            <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; border: 1px solid var(--neon-blue); color: var(--neon-blue);">INSTRUCTOR</span>
+                                        {% endif %}
+                                    </span>
+                                    <span style="font-size: 0.8rem; color: #666;">{{ comment.created_at|timesince }} ago</span>
+                                </div>
+                                <p style="color: #ccc; line-height: 1.5; font-size: 0.95rem;">{{ comment.text }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                            <p style="color:#666; text-align:center; padding: 20px;">No questions asked yet. Be the first to start the discussion!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESOURCES TAB -->
+            <div id="tab-resources" class="tab-content">
+                <div class="overview-box">
+                    {% if documents %}
+                        <h3 style="margin-bottom: 20px;">Course Materials</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            {% for doc in documents %}
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 15px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <i class="fas fa-file-pdf" style="font-size: 1.5rem; color: #ff4757;"></i>
+                                        <div>
+                                            <span style="display: block; color: #fff; font-weight: 600;">{{ doc.title }}</span>
+                                            <span style="font-size: 0.8rem; color: #888;">{{ doc.category }}</span>
+                                        </div>
+                                    </div>
+                                    <a href="{{ doc.file.url }}" target="_blank" onclick="trackPdfView({{ doc.id }})" style="padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--neon-blue); border: 1px solid var(--neon-blue); border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: 0.3s;">
+                                        View PDF
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 50px;">
+                            <i class="fas fa-file-archive fa-3x" style="color: var(--border-color); margin-bottom: 15px;"></i>
+                            <h3 style="color: #888;">No resources attached to this course</h3>
+                            <p style="font-size: 0.9rem;">Instructor files, PDFs, or assignments will appear here.</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -403,10 +406,10 @@
         <div class="sidebar-header">
             <h3>COURSE CONTENT</h3>
             <div class="progress-container">
-                <span>{{ progress }}% Completed</span>
+                <span id="overall-progress-text">{{ progress }}% Completed</span>
             </div>
             <div class="progress-track">
-                <div class="progress-fill" style="width: {{ progress }}%;"></div>
+                <div id="overall-progress-bar" class="progress-fill" style="width: {{ progress }}%;"></div>
             </div>
         </div>
 
@@ -414,12 +417,13 @@
             {% for lesson in lessons %}
             <a href="{% url 'course_watch' course.id lesson.id %}" 
                class="lesson-item {% if lesson.id == current_lesson.id %}active{% endif %}">
-                
-                <div class="status-icon {% if lesson.id == current_lesson.id %}completed{% endif %}">
-                    {% if lesson.id == current_lesson.id %}
-                        <i class="fas fa-play-circle"></i>
+                <div class="status-icon">
+                    {% if lesson.id in completed_lesson_ids %}
+                        <i class="fas fa-check-circle" style="color: #00E676;"></i>
+                    {% elif lesson.id == current_lesson.id %}
+                        <i class="fas fa-play-circle" style="color: var(--neon-blue);"></i>
                     {% else %}
-                        <i class="far fa-circle"></i>
+                        <i class="far fa-circle" style="color: #444;"></i>
                     {% endif %}
                 </div>
 
@@ -433,5 +437,94 @@
     </div>
 
 </div>
+
+<script>
+function switchTab(tabId) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    // Deactivate all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Activate selected
+    document.getElementById('tab-' + tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+</script>
+
+<!-- YOUTUBE IFRAME API SCRIPT FOR PROGRESS TRACKING -->
+{% if current_lesson and youtube_id %}
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+    var player;
+    var watchTimer;
+    var watchTimeSeconds = 0;
+    var lessonId = {{ current_lesson.id }};
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('lesson-video', {
+            events: {
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+            // Start counting watch time
+            watchTimer = setInterval(function() {
+                watchTimeSeconds++;
+                // Ping backend every 10 seconds
+                if (watchTimeSeconds % 10 === 0) {
+                    pingProgressAPI('video', lessonId, watchTimeSeconds);
+                }
+            }, 1000);
+        } else {
+            // Pause counting
+            clearInterval(watchTimer);
+            if (watchTimeSeconds > 0) {
+                pingProgressAPI('video', lessonId, watchTimeSeconds);
+            }
+        }
+    }
+
+    function trackPdfView(docId) {
+        pingProgressAPI('pdf', docId, 0);
+    }
+
+    function pingProgressAPI(type, id, watch_time) {
+        fetch('/api/track-progress/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                type: type,
+                id: id,
+                watch_time: watch_time
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('overall-progress-text').innerText = data.progress + '% Completed';
+                document.getElementById('overall-progress-bar').style.width = data.progress + '%';
+                
+                if (data.is_completed) {
+                    let activeIcon = document.querySelector('.lesson-item.active .status-icon');
+                    if (activeIcon && !activeIcon.innerHTML.includes('fa-check-circle')) {
+                        activeIcon.innerHTML = '<i class="fas fa-check-circle" style="color: #00E676;"></i>';
+                    }
+                }
+            }
+        })
+        .catch(error => console.error('Error tracking progress:', error));
+    }
+</script>
+{% endif %}
 
 {% endblock %}

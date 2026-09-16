@@ -179,13 +179,13 @@
             </thead>
             <tbody>
                 {% for enroll in enrollments %}
-                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
+                <tr>
                     <td><span class="student-name">{{ enroll.student.username }}</span></td>
                     <td><span class="course-name">{{ enroll.course.title }}</span></td>
                     <td>
                         <div class="progress-wrap">
                             <div class="progress-bar-track">
-                                <div class="progress-bar-fill" style="width: {{ enroll.progress|default:'0' }}%;"></div>
+                                <div class="progress-bar-fill" data-width="{{ enroll.progress|default:'0' }}%"></div>
                             </div>
                             <span class="progress-pct">{{ enroll.progress|default:'0' }}%</span>
                         </div>
@@ -209,8 +209,13 @@
 
 {% block extra_js %}
 <script>
+    // Apply animation delays dynamically
     document.querySelectorAll('tbody tr').forEach((row, i) => {
         row.style.animationDelay = `${i * 60}ms`;
+    });
+    // Apply progress widths dynamically
+    document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+        bar.style.width = bar.getAttribute('data-width');
     });
 </script>
 {% endblock %}

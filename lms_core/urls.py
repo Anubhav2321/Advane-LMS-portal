@@ -22,6 +22,7 @@ from students.views import (
     live_classes, 
     library_view, 
     profile_view,       #  Profile View
+    track_progress,     # 🚀 NEW: Progress Tracking API
 
     # 4. Payment System
     payment_page,
@@ -75,8 +76,9 @@ from students.views import (
     # 🚀 NEW: Faculty Actions (Kept in views.py)
     admin_create_faculty,
     
-    # 🚀 NEW: Activity API
-    admin_activity_api
+    # NEW: Activity APIs
+    admin_activity_api,
+    admin_student_course_activity,
 )
 
 # 🚀 NEW: Importing Faculty Views from the new file
@@ -182,6 +184,9 @@ urlpatterns = [
     
     # AI Chatbot Endpoint
     path('api/ai-chat/', ai_chat, name='ai_chat'),
+    
+    # 🚀 NEW: Progress Tracking Endpoint
+    path('api/track-progress/', track_progress, name='track_progress'),
 
     # 6. Admin Panel System
     path('admin-panel/', admin_dashboard, name='admin_dashboard'),
@@ -210,6 +215,7 @@ urlpatterns = [
     
     #  G. Activity API
     path('admin-panel/api/activity-data/', admin_activity_api, name='admin_activity_api'),
+    path('admin-panel/api/student-course-activity/<int:student_id>/<int:course_id>/', admin_student_course_activity, name='admin_student_course_activity'),
 
     #  E. Content Creation (Forms) 
     path('admin-panel/create-course/', admin_create_course, name='admin_create_course'),

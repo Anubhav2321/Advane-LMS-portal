@@ -251,6 +251,25 @@
 
     .chart-title i { color: var(--primary); }
 
+    /* Inputs */
+    .input-dark {
+        width: 100%;
+        padding: 10px 14px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        outline: none;
+        transition: var(--transition-fast);
+        appearance: none;
+    }
+    .input-dark:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
     .chart-badge {
         font-family: var(--font-mono);
         font-size: 0.72rem;
@@ -585,12 +604,56 @@
                 {% for enroll in enrollments %}
                 <div class="enroll-item">
                     <span style="color: var(--text-primary); font-weight: 500;">{{ enroll.course.title }}</span>
-                    <span class="progress-text">{{ enroll.progress }}%</span>
+                    <span class="progress-text">{{ enroll.get_real_progress|floatformat:0 }}%</span>
                 </div>
                 {% empty %}
                 <p style="color: var(--text-muted); text-align: center; padding: 24px;">No active enrollments.</p>
                 {% endfor %}
             </div>
+
+            <!-- Course-Specific Activity Tracker (NEW) -->
+            {% if enrollments %}
+            <div class="section-card" style="margin-top: 24px;">
+                <h3 class="section-title"><i class="fas fa-radar"></i> Per-Course Tracker</h3>
+                <div style="margin-bottom: 20px;">
+                    <label style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px; display: block;">Select Course:</label>
+                    <select id="courseTrackerSelect" class="input-dark" onchange="fetchStudentCourseTracker()">
+                        <option value="">-- Choose Course to View Activity --</option>
+                        {% for enroll in enrollments %}
+                        <option value="{{ enroll.course.id }}">{{ enroll.course.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div id="courseTrackerLoader" style="display: none; text-align: center; padding: 30px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    <p style="color: var(--text-muted); margin-top: 10px; font-size: 0.85rem;">Loading data...</p>
+                </div>
+
+                <div id="courseTrackerResults" style="display: none;">
+                    <!-- Stats -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Progress</div>
+                            <div id="ctProgress" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-green);">0%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Avg Quiz Score</div>
+                            <div id="ctQuizAvg" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-amber);">0%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Last Accessed</div>
+                            <div id="ctLastAccess" style="font-size: 1rem; font-weight: 700; color: var(--primary);">N/A</div>
+                        </div>
+                    </div>
+                    <!-- Chart -->
+                    <div>
+                        <h4 style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 10px;">Daily Activity (This Course)</h4>
+                        <canvas id="courseTrackerChart" style="max-height: 200px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Activity Timeline -->
             <div class="section-card">
@@ -807,5 +870,76 @@
     document.querySelectorAll('.timeline-item').forEach((item, i) => {
         item.style.animationDelay = `${i * 60}ms`;
     });
+    
+    // Per-Course Tracker Logic
+    let courseTrackerChartInst = null;
+    
+    async function fetchStudentCourseTracker() {
+        const studentId = '{{ student.id }}';
+        const courseId = document.getElementById('courseTrackerSelect').value;
+        const loader = document.getElementById('courseTrackerLoader');
+        const results = document.getElementById('courseTrackerResults');
+        
+        if (!courseId) {
+            results.style.display = 'none';
+            return;
+        }
+        
+        results.style.display = 'none';
+        loader.style.display = 'block';
+        
+        try {
+            const response = await fetch(`/admin-panel/api/student-course-activity/${studentId}/${courseId}/`);
+            if (!response.ok) {
+                alert("Failed to fetch tracking data.");
+                loader.style.display = 'none';
+                return;
+            }
+            const data = await response.json();
+            
+            // Populate Stats
+            document.getElementById('ctProgress').innerText = data.progress_percent + '%';
+            document.getElementById('ctQuizAvg').innerText = data.avg_quiz_score + '%';
+            document.getElementById('ctLastAccess').innerText = data.last_accessed || 'N/A';
+            
+            // Render Chart
+            if (courseTrackerChartInst) courseTrackerChartInst.destroy();
+            const ctx = document.getElementById('courseTrackerChart').getContext('2d');
+            const actGrad = ctx.createLinearGradient(0, 0, 0, 150);
+            actGrad.addColorStop(0, 'rgba(0, 243, 255, 0.3)');
+            actGrad.addColorStop(1, 'rgba(0, 243, 255, 0)');
+            
+            courseTrackerChartInst = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.daily_labels,
+                    datasets: [{
+                        label: 'Course Actions',
+                        data: data.daily_data,
+                        borderColor: '#00f3ff',
+                        backgroundColor: actGrad,
+                        fill: true, tension: 0.4,
+                        pointBackgroundColor: '#00f3ff'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5A5A7A', font: { size: 10 } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5A5A7A', font: { size: 10 } }, beginAtZero: true, suggestedMax: 5 }
+                    }
+                }
+            });
+            
+            loader.style.display = 'none';
+            results.style.display = 'block';
+            
+        } catch (error) {
+            console.error(error);
+            alert("Network error fetching tracker data.");
+            loader.style.display = 'none';
+        }
+    }
 </script>
 {% endblock %}

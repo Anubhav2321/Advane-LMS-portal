@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import Q, Avg, Count
+from django.db.models import Q, Avg, Count, Sum, F
 from django.db.models.functions import TruncDate
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -59,7 +59,10 @@ from .models import (
     Assignment,            #  NEW: Added Assignment Model
     AssignmentSubmission,  #  NEW: Added Assignment Submission Model
     StudentActivity,       #  NEW: Student Activity Tracking
-    log_student_activity   #  NEW: Activity Logging Helper
+    log_student_activity,  #  NEW: Activity Logging Helper
+    LessonProgress,        #  NEW: Per-Student Lesson Tracking
+    DocumentView,          #  NEW: Document Tracking
+    LiveClassAttendance,   #  NEW: Live Class Tracking
 )
 
 User = get_user_model()
@@ -181,7 +184,7 @@ def logout_view(request):
 @login_required
 def student_dashboard(request):
     """
-    Main Student Dashboard with 3-Panel Sync Logic.
+    Main Student Dashboard with 3-Panel Sync Logic + Real Progress Tracking.
     """
     user = request.user
     
@@ -191,19 +194,56 @@ def student_dashboard(request):
     #  NEW: Get IDs of courses the student is enrolled in
     enrolled_course_ids = enrollments.values_list('course_id', flat=True)
     
+    # --- REAL PROGRESS CALCULATIONS ---
+    # Attach real progress data to each enrollment for the template
+    enriched_enrollments = []
+    total_all_lessons = 0
+    total_completed_lessons = 0
+    
+    for enrollment in enrollments:
+        progress_data = enrollment.get_real_progress()
+        enrollment.real_progress = progress_data['percent']
+        enrollment.lessons_completed = progress_data['completed']
+        enrollment.total_lessons = progress_data['total']
+        enrollment.lessons_remaining = progress_data['total'] - progress_data['completed']
+        
+        # Sync the progress field with real data
+        if abs(enrollment.progress - progress_data['percent']) > 0.5:
+            enrollment.progress = progress_data['percent']
+            if progress_data['percent'] >= 100.0:
+                enrollment.is_completed = True
+            enrollment.save(update_fields=['progress', 'is_completed'])
+        
+        # Get quiz count for this course
+        enrollment.quiz_count = QuizResult.objects.filter(
+            student=user, exam__course=enrollment.course
+        ).count()
+        
+        # Get assignment count for this course
+        enrollment.assignment_count = AssignmentSubmission.objects.filter(
+            student=user, assignment__course=enrollment.course
+        ).count()
+        
+        total_all_lessons += progress_data['total']
+        total_completed_lessons += progress_data['completed']
+        
+        enriched_enrollments.append(enrollment)
+    
+    # Overall progress across all courses
+    overall_progress = round((total_completed_lessons / max(total_all_lessons, 1)) * 100, 1)
+    
     # Fetch Notifications
     notifications = Notification.objects.all().order_by('-created_at')[:5]
     
     # Calculate Stats
     total_enrolled = enrollments.count()
-    completed_courses = enrollments.filter(progress=100).count()
+    completed_courses = enrollments.filter(progress__gte=100).count()
     certificate_eligible = completed_courses
     
     #  GLOBAL LEADERBOARD LOGIC
     top_students = User.objects.filter(is_student=True).order_by('-lms_coins')[:10]
     
-    
-    #  NEW: 3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
+    #  3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
     
     # 1. Fetch Pending Assignments for enrolled courses
     pending_assignments = Assignment.objects.filter(
@@ -231,16 +271,82 @@ def student_dashboard(request):
         course_id__in=enrolled_course_ids
     ).order_by('-uploaded_at')[:5]
     
+    # --- LEARNING ANALYTICS DATA ---
+    today = timezone.now().date()
+    fourteen_days_ago = today - datetime.timedelta(days=14)
+    
+    # Weekly activity data (last 14 days)
+    weekly_activity = (
+        StudentActivity.objects.filter(student=user, created_at__date__gte=fourteen_days_ago)
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    activity_labels = []
+    activity_data = []
+    for entry in weekly_activity:
+        activity_labels.append(entry['date'].strftime('%d %b'))
+        activity_data.append(entry['count'])
+    
+    # Course progress comparison data for bar chart
+    course_progress_labels = []
+    course_progress_data = []
+    for e in enriched_enrollments:
+        course_progress_labels.append(e.course.title[:25])
+        course_progress_data.append(e.real_progress)
+    
+    # Quiz performance trend
+    recent_quizzes = QuizResult.objects.filter(student=user).order_by('taken_at')[:20]
+    quiz_labels = []
+    quiz_data = []
+    for qr in recent_quizzes:
+        quiz_labels.append(qr.taken_at.strftime('%d %b'))
+        pct = int((qr.score / max(qr.total_marks, 1)) * 100) if qr.total_marks else 0
+        quiz_data.append(pct)
+    
+    # Average quiz score
+    avg_quiz_score = QuizResult.objects.filter(student=user).aggregate(avg=Avg('score'))['avg']
+    avg_quiz_score = round(avg_quiz_score, 1) if avg_quiz_score else 0
+    
+    # Study streak (consecutive days with at least 1 activity)
+    study_streak = 0
+    check_date = today
+    while True:
+        has_activity = StudentActivity.objects.filter(
+            student=user, created_at__date=check_date
+        ).exists()
+        if has_activity:
+            study_streak += 1
+            check_date -= datetime.timedelta(days=1)
+        else:
+            break
+        if study_streak > 365:
+            break
+    
     context = {
-        'enrollments': enrollments,
+        'enrollments': enriched_enrollments,
         'notifications': notifications,
         'total_enrolled': total_enrolled,
         'completed_courses': completed_courses,
         'certificate_eligible': certificate_eligible,
+        'overall_progress': overall_progress,
+        'total_all_lessons': total_all_lessons,
+        'total_completed_lessons': total_completed_lessons,
         'top_students': top_students,
         'user': user,
         
-        # 🚀 NEW CONTEXT VARIABLES FOR STUDENT UI
+        # Learning Analytics (JSON for charts)
+        'activity_labels': json.dumps(activity_labels),
+        'activity_data': json.dumps(activity_data),
+        'course_progress_labels': json.dumps(course_progress_labels),
+        'course_progress_data': json.dumps(course_progress_data),
+        'quiz_labels': json.dumps(quiz_labels),
+        'quiz_data': json.dumps(quiz_data),
+        'avg_quiz_score': avg_quiz_score,
+        'study_streak': study_streak,
+        
+        # 3-Panel Sync Data
         'pending_assignments': pending_assignments,
         'upcoming_classes': upcoming_classes,
         'active_exams': active_exams,
@@ -294,6 +400,40 @@ def profile_view(request):
         date_str = sub.submitted_at.strftime('%Y-%m-%d')
         contribution_data[date_str] = contribution_data.get(date_str, 0) + 1
 
+    # --- TOP STATS LOGIC FOR PROFILE ---
+    today = timezone.now().date()
+    
+    # Calculate study streak
+    study_streak = 0
+    check_date = today
+    while True:
+        has_activity = StudentActivity.objects.filter(
+            student=user, created_at__date=check_date
+        ).exists()
+        if has_activity:
+            study_streak += 1
+            check_date -= datetime.timedelta(days=1)
+        else:
+            break
+        if study_streak > 365:
+            break
+
+    # Calculate lessons done & overall progress
+    total_all_lessons = 0
+    total_completed_lessons = 0
+    for enrollment in enrollments:
+        progress_data = enrollment.get_real_progress()
+        total_all_lessons += progress_data['total']
+        total_completed_lessons += progress_data['completed']
+        
+    overall_progress = round((total_completed_lessons / max(total_all_lessons, 1)) * 100, 1)
+    
+    # Average quiz score
+    avg_quiz_score = QuizResult.objects.filter(student=user).aggregate(avg=Avg('score'))['avg']
+    avg_quiz_score = round(avg_quiz_score, 1) if avg_quiz_score else 0
+
+    total_enrolled = enrollments.count()
+
     context = {
         'user': user,
         'form': form,
@@ -302,6 +442,11 @@ def profile_view(request):
         'bounty_coins_earned': bounty_coins_earned,
         'recent_bounties': recent_bounties,
         'contribution_json': json.dumps(contribution_data), # <-- Sent to Template for Heatmap Graph
+        'study_streak': study_streak,
+        'total_completed_lessons': total_completed_lessons,
+        'avg_quiz_score': avg_quiz_score,
+        'overall_progress': overall_progress,
+        'total_enrolled': total_enrolled,
     }
     return render(request, 'student_profile.html', context)
 
@@ -452,30 +597,14 @@ def course_watch(request, course_id, lesson_id=None):
             if idx < len(lesson_list) - 1:
                 next_lesson = lesson_list[idx + 1]
             
-            # --- PROGRESS LOGIC ---
-            new_progress = ((idx + 1) / len(lesson_list)) * 100
+            # --- PER-LESSON PROGRESS TRACKING (via LessonProgress model) ---
+            lesson_progress, lp_created = LessonProgress.objects.get_or_create(
+                student=request.user,
+                lesson=current_lesson
+            )
             
-            # Only update if the user has progressed FURTHER than before
-            if new_progress > enrollment.progress:
-                
-                # --- LMS COIN REWARD SYSTEM (VIDEO WATCH) ---
-
-                request.user.lms_coins += 20
-                messages.success(request, "+20 LMS Coins for completing a lesson!")
-                
-                if new_progress >= 100.0 and enrollment.progress < 100.0:
-                    request.user.lms_coins += 500
-                    messages.success(request, "Course Completed! +500 Bonus LMS Coins!")
-                    
-                request.user.save(update_fields=['lms_coins'])
-
-                if hasattr(enrollment, 'update_progress'):
-                    enrollment.update_progress(new_progress)
-                else:
-                    enrollment.progress = new_progress
-                    if new_progress >= 100.0:
-                        enrollment.is_completed = True
-                    enrollment.save()
+            # --- REAL PROGRESS CALCULATION (USING NEW LOGIC) ---
+            enrollment.sync_progress()
 
             # --- YOUTUBE ID EXTRACTION ---
             if current_lesson.video_url:
@@ -504,8 +633,20 @@ def course_watch(request, course_id, lesson_id=None):
             messages.success(request, "Comment posted successfully!")
             return redirect('course_watch', course_id=course.id, lesson_id=current_lesson.id)
 
-    # Calculate integer progress
-    progress_int = int(enrollment.progress) if enrollment.progress else 0
+    # Calculate progress from real data
+    progress_data = enrollment.get_real_progress()
+    progress_int = int(progress_data['percent'])
+    
+    # Get lesson completion status for sidebar
+    completed_lesson_ids = set(
+        LessonProgress.objects.filter(
+            student=request.user,
+            lesson__course=course,
+            is_completed=True
+        ).values_list('lesson_id', flat=True)
+    )
+        
+    documents = course.documents.all()
 
     context = {
         'course': course,
@@ -514,9 +655,12 @@ def course_watch(request, course_id, lesson_id=None):
         'next_lesson': next_lesson,
         'prev_lesson': prev_lesson,
         'progress': progress_int,
+        'progress_data': progress_data,
+        'completed_lesson_ids': completed_lesson_ids,
         'youtube_id': youtube_id,
         'comments': comments,          
-        'comment_form': comment_form   
+        'comment_form': comment_form,
+        'documents': documents
     }
     return render(request, 'course_watch.html', context)
 
@@ -896,7 +1040,7 @@ def execute_code_api(request):
 @staff_member_required
 def admin_dashboard(request):
     """
-    Admin Dashboard Logic with Analytics Data for Charts.
+    Admin Dashboard Logic with Analytics Data for Charts + Course Activity Tracker.
     """
     total_students = User.objects.filter(is_student=True).count()
     total_courses = Course.objects.count()
@@ -971,6 +1115,29 @@ def admin_dashboard(request):
     # Total activities count
     total_activities = StudentActivity.objects.count()
     
+    # --- COURSE ACTIVITY TRACKER DATA ---
+    # Student list for dropdown (all students with enrollments)
+    all_students = User.objects.filter(is_student=True).order_by('first_name', 'username')
+    
+    # Course-wise enrollment analytics
+    course_enrollment_data = []
+    for course in courses[:15]:
+        enroll_count = course.enrollments.count()
+        avg_progress = course.enrollments.aggregate(avg=Avg('progress'))['avg'] or 0
+        completed = course.enrollments.filter(is_completed=True).count()
+        completion_rate = round((completed / max(enroll_count, 1)) * 100, 1)
+        course_enrollment_data.append({
+            'title': course.title[:30],
+            'enrollments': enroll_count,
+            'avg_progress': round(avg_progress, 1),
+            'completion_rate': completion_rate,
+        })
+    
+    # Course progress comparison chart data
+    course_names = [c['title'] for c in course_enrollment_data]
+    course_avg_progress = [c['avg_progress'] for c in course_enrollment_data]
+    course_completion_rates = [c['completion_rate'] for c in course_enrollment_data]
+    
     context = {
         'total_students': total_students,
         'total_courses': total_courses,
@@ -991,6 +1158,14 @@ def admin_dashboard(request):
         'breakdown_labels': json.dumps(breakdown_labels),
         'breakdown_data': json.dumps(breakdown_data),
         
+        # Course Analytics
+        'course_names': json.dumps(course_names),
+        'course_avg_progress': json.dumps(course_avg_progress),
+        'course_completion_rates': json.dumps(course_completion_rates),
+        
+        # Student list for Activity Tracker dropdown
+        'all_students': all_students,
+        
         # Recent activity & top students
         'recent_activities': recent_activities,
         'top_students': top_students,
@@ -1005,6 +1180,141 @@ def admin_dashboard(request):
         'faculty_form': FacultyRegistrationForm(),
     }
     return render(request, 'custom_admin/dashboard.html', context)
+
+
+# --- NEW: Admin Student Course Activity API ---
+@staff_member_required
+def admin_student_course_activity(request, student_id, course_id):
+    """
+    JSON API: Returns detailed activity data for a specific student in a specific course.
+    Used by the admin "Course Activity Tracker" section via AJAX.
+    """
+    student = get_object_or_404(User, id=student_id)
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Check enrollment
+    try:
+        enrollment = Enrollment.objects.get(student=student, course=course)
+    except Enrollment.DoesNotExist:
+        return JsonResponse({'error': 'Student is not enrolled in this course'}, status=404)
+    
+    today = timezone.now().date()
+    thirty_days_ago = today - datetime.timedelta(days=30)
+    
+    # 1. Daily activity for this student in this course (last 30 days)
+    daily_data = (
+        StudentActivity.objects.filter(
+            student=student, course=course,
+            created_at__date__gte=thirty_days_ago
+        )
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    daily_labels = [e['date'].strftime('%d %b') for e in daily_data]
+    daily_counts = [e['count'] for e in daily_data]
+    
+    # 2. Lesson progress
+    total_lessons = course.lessons.count()
+    completed_lessons = LessonProgress.objects.filter(
+        student=student, lesson__course=course, is_completed=True
+    ).count()
+    progress_percent = round((completed_lessons / max(total_lessons, 1)) * 100, 1)
+    
+    # Lesson-by-lesson status
+    lessons_status = []
+    for lesson in course.lessons.all().order_by('order'):
+        lp = LessonProgress.objects.filter(student=student, lesson=lesson).first()
+        lessons_status.append({
+            'title': lesson.title,
+            'order': lesson.order,
+            'completed': lp.is_completed if lp else False,
+            'completed_at': lp.completed_at.strftime('%d %b %Y, %I:%M %p') if lp and lp.completed_at else None,
+        })
+    
+    # 3. Quiz scores for this course
+    quiz_results = QuizResult.objects.filter(
+        student=student, exam__course=course
+    ).order_by('taken_at')
+    quiz_labels = []
+    quiz_scores = []
+    for qr in quiz_results:
+        quiz_labels.append(qr.taken_at.strftime('%d %b'))
+        pct = int((qr.score / max(qr.total_marks, 1)) * 100) if qr.total_marks else 0
+        quiz_scores.append(pct)
+    
+    avg_quiz = quiz_results.aggregate(avg=Avg('score'))['avg']
+    avg_quiz = round(avg_quiz, 1) if avg_quiz else 0
+    
+    # 4. Assignment submissions
+    submissions = AssignmentSubmission.objects.filter(
+        student=student, assignment__course=course
+    )
+    total_assignments = Assignment.objects.filter(course=course).count()
+    submitted_assignments = submissions.count()
+    graded_count = submissions.filter(is_graded=True).count()
+    avg_marks = submissions.filter(is_graded=True).aggregate(avg=Avg('marks_obtained'))['avg']
+    avg_marks = round(avg_marks, 1) if avg_marks else 0
+    
+    # 5. Activity type breakdown for this course
+    type_breakdown = (
+        StudentActivity.objects.filter(student=student, course=course)
+        .values('activity_type')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    act_type_map = dict(StudentActivity.ACTIVITY_TYPES)
+    type_labels = [act_type_map.get(e['activity_type'], e['activity_type']) for e in type_breakdown]
+    type_data = [e['count'] for e in type_breakdown]
+    
+    # 6. Recent activities (last 20)
+    recent = StudentActivity.objects.filter(
+        student=student, course=course
+    ).order_by('-created_at')[:20]
+    recent_list = [{
+        'type': act_type_map.get(a.activity_type, a.activity_type),
+        'description': a.description or a.get_activity_type_display(),
+        'time': a.created_at.strftime('%d %b %Y, %I:%M %p'),
+        'icon': a.activity_type,
+    } for a in recent]
+    
+    return JsonResponse({
+        'student_name': student.full_name,
+        'course_title': course.title,
+        'enrolled_at': enrollment.enrolled_at.strftime('%d %b %Y'),
+        'last_accessed': enrollment.last_accessed.strftime('%d %b %Y, %I:%M %p') if enrollment.last_accessed else 'N/A',
+        
+        # Progress
+        'progress_percent': progress_percent,
+        'completed_lessons': completed_lessons,
+        'total_lessons': total_lessons,
+        'lessons_status': lessons_status,
+        
+        # Daily activity chart
+        'daily_labels': daily_labels,
+        'daily_data': daily_counts,
+        
+        # Quiz data
+        'quiz_labels': quiz_labels,
+        'quiz_scores': quiz_scores,
+        'avg_quiz_score': avg_quiz,
+        'total_quizzes': quiz_results.count(),
+        
+        # Assignment data
+        'total_assignments': total_assignments,
+        'submitted_assignments': submitted_assignments,
+        'graded_assignments': graded_count,
+        'avg_assignment_marks': avg_marks,
+        
+        # Activity breakdown
+        'type_labels': type_labels,
+        'type_data': type_data,
+        
+        # Recent activities
+        'recent_activities': recent_list,
+    })
+
 
 # --- Admin Action Views (Create) ---
 
@@ -1567,6 +1877,70 @@ def submit_bounty_code(request):
                 'attempt': current_attempt
             })
 
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            
+    return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
+
+@login_required
+@csrf_exempt
+def track_progress(request):
+    """
+    API Endpoint to track video watch time, PDF views, and Live Class attendance.
+    Expects JSON: { "type": "video"|"pdf"|"liveclass", "id": 1, "watch_time": 120 }
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            track_type = data.get('type')
+            item_id = data.get('id')
+            
+            if track_type == 'video':
+                lesson = get_object_or_404(Lesson, id=item_id)
+                watch_time = int(data.get('watch_time', 0))
+                
+                lesson_progress, _ = LessonProgress.objects.get_or_create(
+                    student=request.user, lesson=lesson
+                )
+                
+                # Only update if the new watch time is higher (prevents rewinding losing progress)
+                if watch_time > lesson_progress.watch_time_seconds:
+                    lesson_progress.watch_time_seconds = watch_time
+                    
+                    # Check if 80% completed
+                    required_time = lesson.duration_in_seconds * 0.8
+                    if required_time > 0 and watch_time >= required_time and not lesson_progress.is_completed:
+                        lesson_progress.is_completed = True
+                        lesson_progress.completed_at = timezone.now()
+                        request.user.lms_coins += 20
+                        request.user.save(update_fields=['lms_coins'])
+                        log_student_activity(request.user, 'lesson_watch', f'Completed "{lesson.title}"', course=lesson.course)
+                    
+                    lesson_progress.save()
+                    
+                # Sync progress globally
+                enrollment = get_object_or_404(Enrollment, student=request.user, course=lesson.course)
+                enrollment.sync_progress()
+                return JsonResponse({'status': 'success', 'progress': enrollment.progress, 'is_completed': lesson_progress.is_completed})
+                
+            elif track_type == 'pdf':
+                doc = get_object_or_404(LibraryDocument, id=item_id)
+                DocumentView.objects.get_or_create(student=request.user, document=doc)
+                if doc.course:
+                    enrollment = get_object_or_404(Enrollment, student=request.user, course=doc.course)
+                    enrollment.sync_progress()
+                    return JsonResponse({'status': 'success', 'progress': enrollment.progress})
+                return JsonResponse({'status': 'success'})
+                
+            elif track_type == 'liveclass':
+                live_class = get_object_or_404(LiveClass, id=item_id)
+                LiveClassAttendance.objects.get_or_create(student=request.user, live_class=live_class)
+                if live_class.course:
+                    enrollment = get_object_or_404(Enrollment, student=request.user, course=live_class.course)
+                    enrollment.sync_progress()
+                    return JsonResponse({'status': 'success', 'progress': enrollment.progress})
+                return JsonResponse({'status': 'success'})
+                
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
             

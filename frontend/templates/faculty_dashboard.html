@@ -50,6 +50,28 @@
         .main-wrapper::-webkit-scrollbar-track { background: var(--bg-dark); }
         .main-wrapper::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 4px; }
 
+        /* Custom Scrollbar for inner elements */
+        .lesson-list::-webkit-scrollbar { width: 6px; }
+        .lesson-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        /* Message Alerts */
+        .message-alert {
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 25px; 
+            font-weight: bold;
+        }
+        .message-success {
+            background: rgba(0, 230, 118, 0.1); 
+            border: 1px solid var(--success); 
+            color: var(--success);
+        }
+        .message-error {
+            background: rgba(255, 51, 102, 0.1); 
+            border: 1px solid var(--danger); 
+            color: var(--danger);
+        }
+
         /* Headers & Buttons */
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
         .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: #fff; letter-spacing: 1px; }
@@ -176,7 +198,7 @@
 
         {% if messages %}
             {% for message in messages %}
-                <div style="padding: 15px; border-radius: 8px; margin-bottom: 25px; font-weight: bold; background: {% if message.tags == 'success' %}rgba(0, 230, 118, 0.1); border: 1px solid var(--success); color: var(--success);{% else %}rgba(255, 51, 102, 0.1); border: 1px solid var(--danger); color: var(--danger);{% endif %}">
+                <div class="message-alert {% if message.tags == 'success' %}message-success{% else %}message-error{% endif %}">
                     <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ message }}
                 </div>
             {% endfor %}

@@ -428,6 +428,75 @@
         border-radius: 12px; color: #666;
     }
 
+    /* --- STATS MINI CARDS --- */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+
+    .stat-mini-card {
+        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .stat-mini-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .stat-mini-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .stat-mini-card.streak::before { background: linear-gradient(90deg, #ff6b6b, #ffa502); }
+    .stat-mini-card.courses::before { background: linear-gradient(90deg, var(--neon-cyan), #0088ff); }
+    .stat-mini-card.quizzes::before { background: linear-gradient(90deg, #00E676, #00BFA5); }
+    .stat-mini-card.overall::before { background: linear-gradient(90deg, var(--neon-purple), #7E57C2); }
+    .stat-mini-card.total-course::before { background: linear-gradient(90deg, #fbc531, #e1b12c); }
+
+    .stat-mini-icon {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .stat-mini-value {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .stat-mini-label {
+        font-size: 0.8rem;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    @media (max-width: 1024px) {
+        .stats-row { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
 </style>
 
 <div class="profile-container">
@@ -471,7 +540,36 @@
         </form>
     </div>
 
-    <div class="info-grid fade-in-up delay-2">
+    <!-- LEARNING STATS ROW -->
+    <div class="stats-row fade-in-up delay-2">
+        <div class="stat-mini-card streak">
+            <div class="stat-mini-icon"><i class="fas fa-fire" style="color: #ff6b6b;"></i></div>
+            <div class="stat-mini-value">{{ study_streak }}</div>
+            <div class="stat-mini-label">Day Streak</div>
+        </div>
+        <div class="stat-mini-card courses">
+            <div class="stat-mini-icon"><i class="fas fa-book-open" style="color: var(--neon-cyan);"></i></div>
+            <div class="stat-mini-value">{{ total_completed_lessons }}</div>
+            <div class="stat-mini-label">Lessons Done</div>
+        </div>
+        <div class="stat-mini-card quizzes">
+            <div class="stat-mini-icon"><i class="fas fa-clipboard-check" style="color: #00E676;"></i></div>
+            <div class="stat-mini-value">{{ avg_quiz_score }}%</div>
+            <div class="stat-mini-label">Avg Quiz</div>
+        </div>
+        <div class="stat-mini-card overall">
+            <div class="stat-mini-icon"><i class="fas fa-chart-line" style="color: var(--neon-purple);"></i></div>
+            <div class="stat-mini-value">{{ overall_progress }}%</div>
+            <div class="stat-mini-label">Overall</div>
+        </div>
+        <div class="stat-mini-card total-course">
+            <div class="stat-mini-icon"><i class="fas fa-layer-group" style="color: #fbc531;"></i></div>
+            <div class="stat-mini-value">{{ total_enrolled }}</div>
+            <div class="stat-mini-label">Courses</div>
+        </div>
+    </div>
+
+    <div class="info-grid fade-in-up delay-3">
         
         <div class="info-card">
             <div class="card-header">

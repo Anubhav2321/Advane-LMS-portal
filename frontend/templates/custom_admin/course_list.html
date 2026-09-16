@@ -181,7 +181,7 @@
             </thead>
             <tbody>
                 {% for course in courses %}
-                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
+                <tr>
                     <td>
                         <div class="course-name">{{ course.title }}</div>
                         <div class="course-date">{{ course.created_at|date:"M d, Y" }}</div>
