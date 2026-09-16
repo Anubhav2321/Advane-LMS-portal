@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/Database-SQLite%20%2F%20PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
 </p>
 
+
 <p align="center">
   <strong>Learning-365</strong> is a next-generation AI-powered Learning Management System designed to combine structured education, AI-driven coding practice, digital learning resources, examinations, gamification, community interaction, and administrative management into one unified ecosystem.
 </p>
