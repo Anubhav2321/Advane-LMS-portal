@@ -640,6 +640,22 @@ The visual language is designed to make an educational platform feel closer to a
 
 ---
 
+# 🚀 Recent Updates: Advanced Analytics & Tracking
+
+Learning-365 has recently undergone a major feature update focusing on advanced analytics, progress tracking, and UI/UX improvements.
+
+### 📊 Advanced Analytics & Student Tracking
+* **Granular Activity Tracking:** Implemented new architectural data models (`StudentActivity`, `LessonProgress`, `DocumentView`, `LiveClassAttendance`) to securely capture fine-grained user interactions across the platform.
+* **Real-Time Admin Analytics:** The Admin Dashboard now features dynamic visualizations, including daily activity graphs, course progress metrics, and quiz score trends, providing a bird's-eye view of platform engagement.
+* **Intelligent Progress Monitoring:** Administrators can deeply analyze specific students and courses to view a complete breakdown of their learning journey, recent actions, and resource utilization.
+
+### 🎨 UI/UX & Dashboard Redesign
+* **Student Panel Revamp:** Upgraded the Student Dashboard, Profile, and Course Watch interfaces for a more immersive, seamless, and intuitive learning experience.
+* **Community Chat Enhancements:** Refined the community interface to align perfectly with the platform's premium glassmorphic, developer-focused aesthetic.
+* **Premium Admin Experience:** Complete overhaul of the Admin Control Center, transforming it into a sleek, data-rich command center for managing the entire educational ecosystem.
+
+---
+
 # 🏗️ System Architecture
 
 ```text
