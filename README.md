@@ -281,6 +281,7 @@ The goal is to help students understand **why** their solution works or fails ra
 
 ---
 
+
 # 🐳 9. Secure Docker Code Execution
 
 Student code can be executed through an isolated Docker-based execution environment.
