@@ -15,6 +15,10 @@
   <strong>Learning-365</strong> is a next-generation AI-powered Learning Management System designed to combine structured education, AI-driven coding practice, digital learning resources, examinations, gamification, community interaction, and administrative management into one unified ecosystem.
 </p>
 
+<p align="center">
+  <img src="frontend/static/images/dashboard.png" alt="Learning-365 Dashboard Preview" width="100%" />
+</p>
+
 ---
 
 ## 🚀 What is Learning-365?
