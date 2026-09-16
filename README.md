@@ -55,6 +55,7 @@ Learning-365 includes a complete authentication system rather than a static/demo
 
 ### Authentication Features
 
+
 * 👤 User Registration
 * 🔑 Secure Login
 * 🚪 Logout
