@@ -53,18 +53,18 @@
            ADVANCED CYBER-BLUE THEME & UTILITIES
            ========================================= */
         :root {
-            --bg-dark: #030508;
-            --glass-bg: rgba(10, 15, 25, 0.75);
-            --glass-border: rgba(0, 243, 255, 0.15);
-            --neon-cyan: #00f3ff;
-            --deep-blue: #0055ff;
-            --text-main: #e0e0e0;
-            --text-muted: #8892b0;
-            --my-msg-bg: rgba(0, 243, 255, 0.08);
-            --other-msg-bg: rgba(20, 25, 40, 0.9);
-            --danger-red: #ff3366;
-            --ai-neon: #ff0055;
-            --gold-bounty: #ffd700;
+            --bg-dark: #0a0d14;
+            --glass-bg: rgba(22, 27, 34, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-cyan: #3b82f6; /* Professional blue instead of neon */
+            --deep-blue: #2563eb;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --my-msg-bg: rgba(37, 99, 235, 0.15);
+            --other-msg-bg: rgba(30, 41, 59, 0.5);
+            --danger-red: #ef4444;
+            --ai-neon: #8b5cf6;
+            --gold-bounty: #f59e0b;
         }
 
         body.matrix-theme {
@@ -139,31 +139,24 @@
 
         .vfx-bg {
             position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-            background-image: linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.2; animation: floatOrb 25s infinite alternate ease-in-out; transition: background 0.5s;}
-        .orb-1 { width: 450px; height: 450px; background: var(--deep-blue); top: -10%; left: -10%; }
-        .orb-2 { width: 350px; height: 350px; background: var(--neon-cyan); bottom: -10%; right: -5%; animation-delay: -5s; opacity: 0.15;}
-
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(80px, 120px) scale(1.1); }
-            100% { transform: translate(-40px, 40px) scale(0.9); }
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.05), transparent 40%);
         }
 
         .app-container { 
-            display: flex; width: 100%; height: 100%; padding: 20px; gap: 20px; 
-            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); 
-            transition: 0.5s; z-index: 10;
+            display: flex; width: 100%; height: 100%; padding: 25px; gap: 25px; 
+            z-index: 10;
         }
 
         /* Sidebar */
         .sidebar {
             width: 320px; background: var(--glass-bg); border: 1px solid var(--glass-border);
-            border-radius: 20px; display: flex; flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; flex-shrink: 0;
-            transition: 0.5s;
+            border-radius: 16px; display: flex; flex-direction: column;
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2); overflow: hidden; flex-shrink: 0;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: 0.3s;
         }
 
         .sidebar-header { padding: 25px 20px; background: rgba(0, 243, 255, 0.03); border-bottom: 1px solid var(--glass-border); }
@@ -193,8 +186,10 @@
         /* Chat Area */
         .chat-area {
             flex: 1; display: flex; flex-direction: column; background: var(--glass-bg);
-            border: 1px solid var(--glass-border); border-radius: 20px; position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; transition: 0.5s;
+            border: 1px solid var(--glass-border); border-radius: 16px; position: relative;
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2); overflow: hidden; transition: 0.3s;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .chat-header {
@@ -241,6 +236,7 @@
             animation: msgPop 0.3s forwards;
             opacity: 0; 
         }
+        
         .my-msg-wrapper { align-self: flex-end; align-items: flex-end; }
         .other-msg-wrapper { align-self: flex-start; align-items: flex-start; }
 
@@ -249,16 +245,21 @@
         .my-msg-wrapper .msg-sender { display: none; }
 
         .msg {
-            padding: 12px 18px; border-radius: 16px; font-size: 1.05rem; word-wrap: break-word;
-            line-height: 1.6; position: relative; z-index: 1; min-width: 110px; 
+            padding: 12px 18px; border-radius: 12px; font-size: 1.05rem; word-wrap: break-word;
+            line-height: 1.5; position: relative; z-index: 1; min-width: 110px;
+            font-family: 'Rajdhani', sans-serif;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid var(--glass-border);
         }
         
         .message-body-text { white-space: pre-wrap; font-family: 'Rajdhani', sans-serif; }
 
-        .other-msg { background-color: var(--other-msg-bg); border-bottom-left-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); border-left: 3px solid var(--deep-blue); }
-        .my-msg { background-color: var(--my-msg-bg); border: 1px solid rgba(0, 243, 255, 0.2); border-right: 3px solid var(--neon-cyan); border-bottom-right-radius: 4px; }
+        .other-msg { border-bottom-left-radius: 4px; border-left: 3px solid var(--deep-blue); color: var(--text-main); }
+        .my-msg { background: var(--my-msg-bg); border-right: 3px solid var(--neon-cyan); border-bottom-right-radius: 4px; color: var(--text-main); text-align: left; }
         
-        .ai-msg { background-color: rgba(255, 0, 85, 0.05); border-left: 3px solid var(--ai-neon); border-bottom-left-radius: 4px; box-shadow: 0 5px 20px rgba(255, 0, 85, 0.1); border-top: 1px solid rgba(255, 0, 85, 0.1); border-right: 1px solid rgba(255, 0, 85, 0.1); border-bottom: 1px solid rgba(255, 0, 85, 0.1);}
+        .ai-msg { background: rgba(139, 92, 246, 0.05); border-left: 3px solid var(--ai-neon); border-bottom-left-radius: 4px; box-shadow: 0 2px 10px rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2);}
 
         /* =========================================
            💰 BOUNTY BOARD STYLES 💰
@@ -391,20 +392,22 @@
         .msg-time { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; padding: 0 5px; }
 
         /* Input Area */
-        .chat-input-container { padding: 15px 30px 25px; background: transparent; position: relative; flex-shrink: 0; border-top: 1px solid var(--glass-border); z-index: 20;}
+        .chat-input-container { padding: 20px 30px 30px; background: transparent; position: relative; flex-shrink: 0; z-index: 20; border-top: 1px solid rgba(255, 255, 255, 0.05);}
         
         .replying-to-bar {
             display: none; justify-content: space-between; align-items: center;
-            background: rgba(0, 243, 255, 0.05); border-left: 3px solid var(--neon-cyan);
-            padding: 8px 15px; border-radius: 8px 8px 0 0; font-size: 0.9rem; color: #fff;
+            background: rgba(0, 243, 255, 0.1); border-left: 3px solid var(--neon-cyan);
+            padding: 8px 15px; border-radius: 12px 12px 0 0; font-size: 0.9rem; color: #fff;
             margin-bottom: -10px; padding-bottom: 15px;
+            backdrop-filter: blur(10px);
         }
         .cancel-reply { color: var(--danger-red); cursor: pointer; font-size: 1rem; }
 
         .chat-form {
-            display: flex; align-items: flex-end; gap: 15px; background: rgba(5, 10, 15, 0.8);
-            border-radius: 30px; padding: 10px 15px; border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; position: relative; z-index: 2;
+            display: flex; align-items: flex-end; gap: 15px; background: rgba(30, 41, 59, 0.6);
+            border-radius: 24px; padding: 12px 20px; border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2); transition: 0.3s; position: relative; z-index: 2;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
         .chat-form:focus-within { border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
 
@@ -541,7 +544,7 @@
 </head>
 <body>
 
-    <div class="vfx-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+    <div class="vfx-bg"></div>
 
     <div id="focus-overlay" class="focus-overlay">
         <div class="focus-timer" id="focusTimerDisplay">25:00</div>
@@ -1450,6 +1453,15 @@
             
             vsModal.classList.remove('show');
         });
+        
+        // 🚀 INCREASED REFRESH RATE - Real-time polling for messages
+        // Polling every 800ms (0.8 seconds) for a buttery smooth and EXTREMELY fast chat experience
+        setInterval(() => {
+            // Check if user is typing a long message or in AI poll to prevent jitter
+            if (!window.aiPollInterval) {
+                fetchAndInjectChat(false);
+            }
+        }, 800);
     </script>
 </body>
 </html>
