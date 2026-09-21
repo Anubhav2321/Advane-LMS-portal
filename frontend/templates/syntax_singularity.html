@@ -1,332 +1,206 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntax Singularity | Learning-365</title>
+
+{% block content %}
+<style>
+    /* LeetCode Style UI Overhaul */
+    .ss-container {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px); 
+        width: 100%;
+        font-family: 'Rajdhani', sans-serif;
+        padding: 0 10px;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* --- SETUP VIEW (Step 1) --- */
+    #setup-view {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(circle at center, rgba(15,15,25,0.8) 0%, rgba(5,5,10,0.95) 100%);
+        z-index: 50;
+        backdrop-filter: blur(10px);
+        padding: 20px;
+    }
+
+    .setup-card {
+        background: rgba(20, 20, 30, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 2px 15px rgba(255,255,255,0.05);
+        padding: 50px;
+        width: 100%; max-width: 1100px;
+        backdrop-filter: blur(25px) saturate(150%);
+        text-align: center;
+    }
+
+    .setup-header { margin-bottom: 35px; }
+    .setup-header i { font-size: 3.5rem; color: #00d4ff; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.6)); }
+    .setup-header h2 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: #fff; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255,255,255,0.2); margin-bottom: 8px; }
+    .setup-header p { color: #888; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; }
     
-    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    .setup-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
+    
+    .form-group { text-align: left; position: relative; }
+    .form-label { display: block; margin-bottom: 10px; font-size: 0.85rem; color: #00d4ff; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; }
+    
+    .setup-control {
+        width: 100%; padding: 16px 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        color: white; font-size: 1.05rem; font-family: 'Rajdhani', sans-serif;
+        outline: none; transition: all 0.3s ease;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .setup-control:focus { 
+        border-color: #00d4ff; 
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 20px rgba(0, 212, 255, 0.2); 
+        background: rgba(0, 0, 0, 0.5); 
+    }
+    .setup-control option { background: #111; color: #fff; }
+    
+    .btn-massive {
+        width: 100%; padding: 18px; 
+        background: linear-gradient(135deg, #00d4ff, #0055ff);
+        color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1.15rem;
+        cursor: pointer; transition: all 0.3s ease; font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase; letter-spacing: 2px; margin-top: 15px;
+        box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4), inset 0 2px 5px rgba(255,255,255,0.2);
+    }
+    .btn-massive:hover { 
+        transform: translateY(-3px) scale(1.02); 
+        box-shadow: 0 15px 40px rgba(0, 212, 255, 0.6), inset 0 2px 5px rgba(255,255,255,0.3); 
+    }
+    .btn-massive:active { transform: translateY(1px); }
+    .btn-massive:disabled { background: #333; color: #777; box-shadow: none; transform: none; cursor: not-allowed; }
 
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    /* --- WORKSPACE VIEW (Step 2) --- */
+    #workspace-view {
+        display: none;
+        flex-direction: column;
+        height: 100%;
+        animation: fadeIn 0.5s ease;
+    }
 
-    <style>
-        /* 
-           🚀 1. GLOBAL VARIABLES & SIDEBAR CSS
-           */
-        :root {
-            --bg-dark: #0a0a0f;
-            --sidebar-bg: #050507; 
-            --border-color: #1f1f25;
-            --accent-cyan: #00d4ff;
-            --text-main: #e0e0e0;
-            --text-muted: #888;
-            --danger-color: #ff3366;
-            --accent-green: #00e676; 
-            --accent-yellow: #ffc01e;
-            --input-bg: #111116;
-        }
+    .ss-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(15, 15, 20, 0.95);
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        margin-bottom: 15px;
+    }
+    
+    .ss-brand {
+        display: flex; align-items: center; gap: 10px;
+        color: #00d4ff; font-family: 'Orbitron', sans-serif;
+        font-weight: 700; font-size: 1.1rem;
+    }
+    
+    .btn-danger {
+        background: rgba(255, 51, 102, 0.1); color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3);
+        padding: 8px 15px; border-radius: 6px; font-weight: 700; font-size: 0.9rem;
+        cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-danger:hover { background: #ff3366; color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4); }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* --- SPLIT WORKSPACE --- */
+    .ss-workspace {
+        display: flex;
+        flex: 1;
+        gap: 15px;
+        overflow: hidden;
+    }
+    
+    .ss-pane {
+        background: rgba(15, 15, 20, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    /* Left Pane */
+    .ss-left-pane { width: 40%; backdrop-filter: blur(20px); }
+    
+    .ss-pane-header {
+        background: rgba(0,0,0,0.4); padding: 10px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-family: 'Orbitron', sans-serif;
+        font-size: 0.85rem; color: #888; display: flex; align-items: center; gap: 8px;
+    }
+    
+    .ss-problem-content { padding: 25px; overflow-y: auto; flex: 1; }
+    .ss-problem-content::-webkit-scrollbar { width: 6px; }
+    .ss-problem-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    
+    .ss-q-title { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 15px; }
+    .ss-q-badges { display: flex; gap: 10px; margin-bottom: 25px; }
+    .ss-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
+    .badge-easy { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
+    .badge-medium { background: rgba(255, 215, 0, 0.1); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3); }
+    .badge-hard { background: rgba(255, 51, 102, 0.1); color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3); }
+    .badge-coin { background: rgba(255, 215, 0, 0.05); color: #ffaa00; border: 1px solid rgba(255, 215, 0, 0.2); }
+    
+    .ss-q-desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 1.05rem; line-height: 1.6; color: #ddd; }
+    .ss-q-desc h1, .ss-q-desc h2, .ss-q-desc h3 { font-family: 'Rajdhani', sans-serif; color: #fff; margin-top: 20px; margin-bottom: 10px; }
+    .ss-q-desc code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #00d4ff; font-family: 'Consolas', monospace; font-size: 0.95rem; }
+    .ss-q-desc pre { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; margin: 15px 0; }
+    .ss-q-desc pre code { background: none; padding: 0; color: #a5d6ff; }
+    .ss-q-desc ul { margin-left: 20px; margin-bottom: 15px; }
 
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
+    /* --- ANIMATIONS --- */
+    .fade-in-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 30px 20px;
-            flex-shrink: 0;
-            transition: 0.3s ease;
-            position: relative;
-            z-index: 1000;
-        }
+    /* Right Pane */
+    .ss-right-pane { width: 60%; }
+    
+    #editor { flex: 1; font-size: 16px; }
+    
+    .ss-terminal-pane { height: 35%; background: #0d0d12; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; }
+    .ss-terminal-header { padding: 8px 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.05); color: #888; font-size: 0.8rem; font-family: 'Orbitron', sans-serif; display: flex; justify-content: space-between; align-items: center; }
+    .ss-terminal-content { padding: 15px; flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; color: #ccc; }
+    
+    .btn-run { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+    .btn-run:hover { background: #00ff88; color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.4); }
+    .btn-run:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .brand {
-            display: flex; align-items: center; gap: 12px;
-            margin-bottom: 50px; padding-left: 10px;
-        }
-        
-        .brand-icon { font-size: 2rem; color: var(--accent-cyan); }
-        .brand-text { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 700; color: #fff; line-height: 1; }
-        .brand-text span { color: var(--accent-cyan); }
+    .t-success { color: #00ff88; font-weight: bold; }
+    .t-error { color: #ff3366; font-weight: bold; }
+    .t-info { color: #00d4ff; }
+    .t-warning { color: #ffd700; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
 
-        .nav-links {
-            list-style: none; flex: 1;
-            display: flex; flex-direction: column; gap: 15px;
-        }
-
-        .nav-item a {
-            display: flex; align-items: center; gap: 15px;
-            padding: 12px 20px; color: var(--text-muted);
-            text-decoration: none; font-size: 1.1rem; font-weight: 600;
-            border-radius: 10px; transition: all 0.2s ease-in-out;
-        }
-
-        .nav-item a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
-
-        .nav-item a.active {
-            background: rgba(0, 212, 255, 0.1); 
-            color: var(--accent-cyan);
-            border-left: 3px solid var(--accent-cyan); 
-        }
-
-        .nav-item a i { width: 25px; text-align: center; font-size: 1.2rem; }
-
-        .badge-neon {
-            background: rgba(0, 212, 255, 0.1); color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan); padding: 2px 8px;
-            font-size: 0.75rem; border-radius: 6px; margin-left: auto; 
-            text-transform: uppercase; font-weight: 700; letter-spacing: 1px;
-            animation: pulseNeon 2s infinite alternate;
-        }
-
-        @keyframes pulseNeon {
-            0% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.2); }
-            100% { box-shadow: 0 0 12px rgba(0, 212, 255, 0.6); }
-        }
-
-        .logout-container {
-            margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 20px;
-        }
-
-        .logout-btn {
-            display: flex; align-items: center; gap: 10px;
-            padding: 12px 20px; color: var(--danger-color);
-            text-decoration: none; font-weight: 700;
-            border: 1px solid rgba(255, 51, 102, 0.2);
-            border-radius: 10px; transition: 0.2s;
-            background: rgba(255, 51, 102, 0.05); justify-content: center;
-        }
-
-        .logout-btn:hover { background: rgba(255, 51, 102, 0.1); border-color: var(--danger-color); }
-
-        /* --- 2. MAIN CONTENT AREA --- */
-        .main-content {
-            flex: 1;
-            height: 100vh;
-            overflow-y: auto;
-            position: relative;
-            background-color: var(--bg-dark); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .main-content::-webkit-scrollbar { width: 8px; }
-        .main-content::-webkit-scrollbar-track { background: var(--bg-dark); }
-        .main-content::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .main-content::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* =========================================
-           🚀 3. SYNTAX SINGULARITY UI
-           ========================================= */
-        .setup-split-wrapper {
-            display: flex; width: 100%; max-width: 1100px; min-height: 550px;
-            background: var(--bg-dark); border: 1px solid var(--border-color);
-            border-radius: 20px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-            z-index: 10; overflow: hidden;
-            animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0; transform: translateY(40px);
-        }
-
-        @keyframes fadeSlideUp { to { opacity: 1; transform: translateY(0); } }
-
-        .split-left {
-            width: 45%;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.03), rgba(188, 19, 254, 0.03));
-            border-right: 1px solid var(--border-color); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; padding: 50px; text-align: center;
-        }
-
-        .brand-icon-big { font-size: 80px; color: var(--accent-cyan); margin-bottom: 25px; filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.2)); }
-        .brand-title { font-family: 'Orbitron', sans-serif; font-size: 32px; color: #fff; margin: 0 0 10px; letter-spacing: 1px; font-weight: 700; }
-        .brand-subtitle { color: var(--text-muted); font-size: 17px; font-family: 'Rajdhani', sans-serif; line-height: 1.6; max-width: 85%; }
-
-        .split-right { width: 55%; padding: 50px 60px; background: #0d0d12; display: flex; flex-direction: column; justify-content: center; }
-
-        .form-group { margin-bottom: 25px; }
-        .form-label { display: block; margin-bottom: 10px; font-size: 15px; color: #b0b0b0; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
-
-        .corp-input, .corp-select {
-            width: 100%; padding: 16px 20px; background: var(--input-bg);
-            border: 1px solid #2a2a35; border-radius: 10px; color: #fff;
-            font-size: 16px; font-family: 'Rajdhani', sans-serif; font-weight: 500;
-            outline: none; transition: all 0.3s ease; box-sizing: border-box;
-            appearance: none; -webkit-appearance: none; -moz-appearance: none;
-        }
-
-        .corp-select {
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238892b0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat; background-position: right 20px top 50%; background-size: 12px auto;
-        }
-
-        .corp-select option { background-color: var(--sidebar-bg); color: white; }
-
-        .corp-input:focus, .corp-select:focus { border-color: var(--accent-cyan); background: #15151c; box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1); }
-
-        .btn-submit {
-            width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-cyan), #0066ff);
-            color: #000; border: none; border-radius: 10px; font-family: 'Orbitron', sans-serif;
-            font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
-        }
-
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3); }
-
-        /* --- 4. IDE WORKSPACE --- */
-        .workspace {
-            display: none; width: 100%; height: calc(100vh - 80px); 
-            flex-direction: column; background: var(--bg-dark);
-            border: 1px solid var(--border-color); border-radius: 16px;
-            overflow: hidden; animation: fadeIn 0.5s ease-in forwards;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .workspace-header {
-            background: var(--sidebar-bg); height: 55px; display: flex; align-items: center; 
-            justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--border-color);
-        }
-
-        .btn-back { background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
-        .btn-back:hover { color: var(--danger-color); }
-
-        .header-title { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--text-muted); letter-spacing: 1px; }
-
-        .btn-check {
-            background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green);
-            padding: 8px 18px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;
-            display: flex; align-items: center; gap: 6px; transition: 0.2s;
-        }
-        .btn-check:hover { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(0, 230, 118, 0.4); }
-
-        .split-layout { display: flex; flex: 1; overflow: hidden; }
-
-        .left-panel { width: 40%; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .panel-tab { padding: 12px 20px; background: var(--bg-dark); color: var(--accent-cyan); font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', sans-serif; }
-        .q-content { padding: 30px; overflow-y: auto; flex: 1; }
-        .q-title { font-size: 26px; color: #fff; margin-bottom: 15px; font-weight: 700; }
-        
-        .q-badges { display: flex; gap: 12px; margin-bottom: 30px; align-items: center;}
-        .badge { padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 700; font-family: 'Orbitron', sans-serif; }
-        .badge-easy { background: rgba(0, 184, 163, 0.1); color: #00b8a3; border: 1px solid rgba(0, 184, 163, 0.3); }
-        .badge-medium { background: rgba(255, 192, 30, 0.1); color: #ffc01e; border: 1px solid rgba(255, 192, 30, 0.3); }
-        .badge-hard { background: rgba(255, 51, 102, 0.1); color: var(--danger-color); border: 1px solid rgba(255, 51, 102, 0.3); }
-        .badge-coin { background: rgba(255, 192, 30, 0.05); color: var(--accent-yellow); border: 1px solid rgba(255, 192, 30, 0.2); display: flex; align-items: center; gap: 5px;}
-        .q-desc { font-size: 16px; line-height: 1.7; color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
-
-        .right-panel { width: 60%; display: flex; flex-direction: column; background: var(--bg-dark); }
-        .editor-header { padding: 12px 20px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; gap: 10px; }
-        #editor { flex: 1; font-size: 16px; }
-
-        .terminal-panel { height: 35%; background: var(--sidebar-bg); border-top: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .terminal-header { padding: 10px 20px; background: var(--bg-dark); border-bottom: 1px solid var(--border-color); color: var(--accent-cyan); font-size: 13px; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; gap: 8px; }
-        .terminal-content { padding: 20px; overflow-y: auto; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; color: var(--text-main); flex: 1; }
-
-        .t-success { color: var(--accent-green); font-weight: bold; }
-        .t-error { color: var(--danger-color); font-weight: bold; }
-        .t-info { color: var(--accent-cyan); }
-        .t-warning { color: var(--accent-yellow); }
-
-        .full-loader {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5, 5, 7, 0.95); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 2000;
-        }
-        .loader-icon { font-size: 50px; color: var(--accent-cyan); margin-bottom: 25px; }
-        .loader-text { color: #fff; font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
-        .loader-subtext { color: var(--text-muted); margin-top: 10px; font-size: 18px; }
-    </style>
-</head>
-<body>
-
-    <!-- 🚀 LEFT SIDEBAR (আপনার অরিজিনাল ন্যাভবার) -->
-    <nav class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="fas fa-graduation-cap brand-icon"></i>
-            <div class="brand-text">Learning-<span>365</span></div>
-        </div>
-
-        <ul class="nav-links">
-            <li class="nav-item">
-                <a href="{% url 'dashboard' %}">
-                    <i class="fas fa-th-large"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'all_courses' %}">
-                    <i class="fas fa-book-open"></i> All Courses
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'live_classes' %}">
-                    <i class="fas fa-video"></i> Live Classes
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'library' %}">
-                    <i class="fas fa-folder"></i> Library
-                </a>
-            </li>
-            
-            <!-- Active Menu: Syntax Singularity -->
-            <li class="nav-item">
-                <a href="{% url 'syntax_singularity' %}" class="active">
-                    <i class="fas fa-laptop-code"></i> Syntax Singularity
-                    <span class="badge-neon">New</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{% url 'student_exam_list' %}">
-                    <i class="fas fa-edit"></i> AI Exams
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'profile' %}">
-                    <i class="fas fa-user"></i> Profile
-                </a>
-            </li>
-        </ul>
-
-        <div class="logout-container">
-            <a href="{% url 'logout' %}" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Sign Out
-            </a>
-        </div>
-    </nav>
-
-    <!-- 🚀 RIGHT MAIN CONTENT AREA -->
-    <main class="main-content">
-        
-        <!-- The Corporate Split-Screen Form Container -->
-        <div class="setup-split-wrapper" id="setupCard">
-            
-            <div class="split-left">
-                <i class="fas fa-code brand-icon-big"></i>
-                <h2 class="brand-title">Syntax Singularity</h2>
-                <p class="brand-subtitle">Configure your environment and connect to the ARIS Mainframe to initialize your assessment.</p>
+<div class="ss-container">
+    
+    <!-- STEP 1: SETUP SCREEN -->
+    <div id="setup-view">
+        <div class="setup-card fade-in-up">
+            <div class="setup-header">
+                <i class="fas fa-laptop-code"></i>
+                <h2>Initialize ARIS</h2>
+                <p>Configure your parameters to generate a custom assessment</p>
             </div>
 
-            <div class="split-right">
-                
+            <div class="setup-form-grid">
                 <div class="form-group">
-                    <label for="courseSelect" class="form-label">Linked Course</label>
-                    <select id="courseSelect" class="corp-select">
-                        <option value="" disabled selected hidden>Choose a course</option> 
+                    <label class="form-label">Linked Course</label>
+                    <select id="courseSelect" class="setup-control" onchange="updateLanguages()">
+                        <option value="" disabled selected hidden>Choose an enrolled course</option>
                         {% for enrollment in courses %}
                             <option value="{{ enrollment.course.id }}">{{ enrollment.course.title }}</option>
                         {% empty %}
@@ -334,163 +208,181 @@
                         {% endfor %}
                     </select>
                 </div>
-
+                
                 <div class="form-group">
-                    <label for="langSelect" class="form-label">Programming Language</label>
-                    <select id="langSelect" class="corp-select">
-                        <option value="" disabled selected hidden>Choose environment</option>
-                        <option value="python">Python</option>
-                        <option value="cpp">C++</option>
-                        <option value="java">Java</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="Express Js">Express Js</option>
-                        <option value="TypeScript">TypeScript</option>
-                        <option value="Angular Js">Angular Js</option>
-                        <option value="Css">Css</option>
-                        <option value="PHP">PHP</option>
-                        <option value="Node Js">Node Js</option>
-                        <option value="React js">React js</option>
-                        <option value="MongoDB">MongoDB</option>
-                         <option value="DBMS">DBMS</option>
-
+                    <label class="form-label">Programming Language</label>
+                    <select id="langSelect" class="setup-control">
+                        <option value="" disabled selected hidden>Select environment</option>
                     </select>
                 </div>
-
+                
                 <div class="form-group">
-                    <label for="topicInput" class="form-label">Target Topic</label>
-                    <input type="text" id="topicInput" class="corp-input" placeholder="e.g., Arrays, Pointers, Logic..." autocomplete="off">
+                    <label class="form-label">Target Topic</label>
+                    <input type="text" id="topicInput" class="setup-control" placeholder="e.g., Arrays, Pointers, Graph Theory...">
                 </div>
-
+                
                 <div class="form-group">
-                    <label for="diffSelect" class="form-label">Difficulty Level</label>
-                    <select id="diffSelect" class="corp-select">
-                        <option value="" disabled selected hidden>Select level</option>
+                    <label class="form-label">Difficulty Level</label>
+                    <select id="diffSelect" class="setup-control">
                         <option value="Easy">Easy</option>
-                        <option value="Medium">Medium</option>
+                        <option value="Medium" selected>Medium</option>
                         <option value="Hard">Hard</option>
                     </select>
                 </div>
-
-                <button class="btn-submit" onclick="startChallenge()">
-                    <i class="fas fa-terminal"></i> Initialize System
-                </button>
-                
             </div>
-        </div>
-
-        <!-- Main Loader -->
-        <div class="full-loader" id="mainLoader">
-            <i class="fas fa-circle-notch fa-spin loader-icon"></i>
-            <h3 class="loader-text">GENERATING MISSION...</h3>
-            <p class="loader-subtext">Connecting to ARIS Mainframe</p>
-        </div>
-
-        <!-- Workspace Area -->
-        <div class="workspace" id="workspaceArea">
             
-            <div class="workspace-header">
-                <button class="btn-back" onclick="goBack()"><i class="fas fa-sign-out-alt"></i> Leave</button>
-                <div class="header-title">&lt;Workspace /&gt;</div>
-                <button class="btn-check" id="checkBtn" onclick="checkCode()">
-                    <i class="fas fa-play"></i> AI Logic Check
-                </button>
+            <button class="btn-massive" id="generateBtn" onclick="startChallenge()">
+                <i class="fas fa-bolt"></i> Generate Challenge
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 2: WORKSPACE (Hidden by default) -->
+    <div id="workspace-view">
+        
+        <div class="ss-top-bar">
+            <div class="ss-brand">
+                <i class="fas fa-code"></i> SYNTAX SINGULARITY <span style="color: #666; margin-left: 10px;">| ARIS Environment</span>
             </div>
-
-            <div class="split-layout">
-                
-                <div class="left-panel">
-                    <div class="panel-tab"><i class="fas fa-file-code"></i> problem_statement.md</div>
-                    
-                    <div class="q-content">
-                        <div class="q-title" id="qTitle">Problem Title</div>
-                        <div class="q-badges">
-                            <span class="badge" id="qDiff">Difficulty</span>
-                            <span class="badge badge-coin"><i class="fas fa-coins"></i> <span id="qCoins">0</span> Coins</span>
-                        </div>
-                        <div class="q-desc" id="qDesc">Loading...</div>
-                    </div>
-                </div>
-
-                <div class="right-panel">
-                    
-                    <div class="editor-header" id="fileTabName">
-                        <i class="fas fa-code"></i> solution.py
-                    </div>
-                    
-                    <div id="editor"># Write your clean code here...</div>
-                    
-                    <div class="terminal-panel">
-                        <div class="terminal-header">
-                            <i class="fas fa-terminal"></i> SYSTEM_OUTPUT
-                        </div>
-                        
-                        <div class="terminal-content" id="aiFeedback">
-                            <span class="t-info">> ARIS Terminal Initialized.</span><br>
-                            <span style="color: var(--text-muted);">> Write your code above and click 'AI Logic Check' to evaluate.</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+            <button class="btn-danger" onclick="endSession()">
+                <i class="fas fa-power-off"></i> End Session
+            </button>
         </div>
 
-    </main>
+        <div class="ss-workspace">
+            
+            <!-- LEFT: PROBLEM DESCRIPTION -->
+            <div class="ss-pane ss-left-pane">
+                <div class="ss-pane-header">
+                    <i class="fas fa-file-alt"></i> problem_statement.md
+                </div>
+                <div class="ss-problem-content">
+                    <div class="ss-q-title" id="qTitle">Problem Title</div>
+                    <div class="ss-q-badges">
+                        <span class="ss-badge" id="qDiff">Difficulty</span>
+                        <span class="ss-badge badge-coin"><i class="fas fa-coins"></i> <span id="qCoins">0</span> Coins</span>
+                    </div>
+                    <div class="ss-q-desc" id="qDesc">Loading description...</div>
+                </div>
+            </div>
+            
+            <!-- RIGHT: IDE AND TERMINAL -->
+            <div class="ss-pane ss-right-pane">
+                <div class="ss-pane-header" id="fileTabName">
+                    <i class="fas fa-laptop-code"></i> solution.py
+                </div>
+                
+                <div id="editor"></div>
+                
+                <div class="ss-terminal-pane">
+                    <div class="ss-terminal-header">
+                        <span><i class="fas fa-terminal"></i> Console Output</span>
+                        <button class="btn-run" id="checkBtn" onclick="checkCode()">
+                            <i class="fas fa-play"></i> Run Code
+                        </button>
+                    </div>
+                    <div class="ss-terminal-content" id="aiFeedback">
+                        <span class="t-info">> ARIS Terminal Ready. Waiting for execution...</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
 
-    <!-- SCRIPTS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/tomorrow_night_eighties"); 
-        editor.session.setMode("ace/mode/python");
-        editor.setOptions({
-            fontSize: "16px",
-            showPrintMargin: false,
-            cursorStyle: "smooth",
-            fontFamily: "Consolas, 'Courier New', monospace"
-        });
-        
-        let currentProblemId = null;
+</div>
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+    // --- 1. CSRF Token Setup ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-        const csrftoken = getCookie('csrftoken');
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 
-        function goBack() {
-            document.getElementById('workspaceArea').style.display = 'none';
+    // --- 2. IDE Configuration ---
+    const editor = ace.edit("editor");
+    editor.setTheme("ace/theme/dracula");
+    editor.session.setMode("ace/mode/python");
+    editor.setOptions({
+        fontSize: "16px",
+        showPrintMargin: false,
+        cursorStyle: "smooth",
+        fontFamily: "'Fira Code', 'Consolas', monospace",
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        wrap: true,
+        tabSize: 4,
+        useSoftTabs: true
+    });
+
+    // --- 3. Language Filtering ---
+    const courseLangMap = JSON.parse('{{ course_language_map_json|escapejs }}');
+    function updateLanguages() {
+        const courseId = document.getElementById('courseSelect').value;
+        const langSelect = document.getElementById('langSelect');
+        langSelect.innerHTML = '<option value="" disabled selected hidden>Select Language</option>';
+        if (courseId && courseLangMap[courseId]) {
+            const langs = courseLangMap[courseId];
+            langs.forEach(lang => {
+                const opt = document.createElement('option');
+                opt.value = lang.toLowerCase();
+                let display = lang;
+                if(lang.toLowerCase() === 'cpp') display = "C++";
+                else if(lang.toLowerCase() === 'python') display = "Python";
+                else if(lang.toLowerCase() === 'java') display = "Java";
+                else if(lang.toLowerCase() === 'javascript') display = "JavaScript";
+                opt.textContent = display;
+                langSelect.appendChild(opt);
+            });
+            if(langs.length === 1) langSelect.value = langs[0].toLowerCase();
+        }
+    }
+
+    // --- 4. State Persistence (localStorage) ---
+    let currentProblemId = null;
+
+    // Autosave Code when typing
+    editor.session.on('change', function() {
+        if (currentProblemId) {
+            localStorage.setItem('ss_saved_code', editor.getValue());
+        }
+    });
+
+    // Load State on Page Load
+    window.onload = function() {
+        const savedProblemId = localStorage.getItem('ss_problem_id');
+        if (savedProblemId) {
+            // Restore Session
+            currentProblemId = savedProblemId;
+            document.getElementById('qTitle').innerText = localStorage.getItem('ss_title');
             
-            const card = document.getElementById('setupCard');
-            card.style.display = 'flex'; 
-            card.style.animation = 'none';
-            void card.offsetWidth; 
-            card.style.animation = 'fadeSlideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards';
-        }
-
-        async function startChallenge() {
-            const courseId = document.getElementById('courseSelect').value;
-            const lang = document.getElementById('langSelect').value;
-            const topic = document.getElementById('topicInput').value.trim();
-            const diff = document.getElementById('diffSelect').value;
-
-            if(!courseId) { alert("Please select a course!"); return; }
-            if(!lang) { alert("Please select a language!"); return; }
-            if(!topic) { alert("Please type a topic!"); return; }
-            if(!diff) { alert("Please select a difficulty!"); return; }
-
-            document.getElementById('setupCard').style.display = 'none';
-            document.getElementById('mainLoader').style.display = 'flex';
-
+            const diff = localStorage.getItem('ss_diff');
+            const badge = document.getElementById('qDiff');
+            badge.innerText = diff;
+            badge.className = 'ss-badge';
+            if(diff === 'Easy') badge.classList.add('badge-easy');
+            if(diff === 'Medium') badge.classList.add('badge-medium');
+            if(diff === 'Hard') badge.classList.add('badge-hard');
+            
+            document.getElementById('qCoins').innerText = localStorage.getItem('ss_coins');
+            document.getElementById('qDesc').innerHTML = localStorage.getItem('ss_desc');
+            
+            const lang = localStorage.getItem('ss_lang');
             let mode = lang === 'cpp' ? 'c_cpp' : lang;
             editor.session.setMode("ace/mode/" + mode);
             
@@ -499,97 +391,138 @@
             if(lang === 'cpp') ext = ".cpp";
             if(lang === 'java') ext = ".java";
             if(lang === 'javascript') ext = ".js";
+            document.getElementById('fileTabName').innerHTML = `<i class="fas fa-laptop-code"></i> solution${ext}`;
             
-            document.getElementById('fileTabName').innerHTML = `<i class="fas fa-code"></i> solution${ext}`;
-
-            try {
-                const response = await fetch("{% url 'generate_challenge' %}", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
-                    body: JSON.stringify({ course_id: courseId, language: lang, topic: topic, difficulty: diff })
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    currentProblemId = data.problem_id; 
-                    document.getElementById('qTitle').innerText = data.title;
-                    
-                    let badge = document.getElementById('qDiff');
-                    badge.innerText = data.difficulty;
-                    badge.className = 'badge'; 
-                    if(data.difficulty === 'Easy') badge.classList.add('badge-easy');
-                    if(data.difficulty === 'Medium') badge.classList.add('badge-medium');
-                    if(data.difficulty === 'Hard') badge.classList.add('badge-hard');
-                    
-                    document.getElementById('qCoins').innerText = data.base_coins;
-                    document.getElementById('qDesc').innerHTML = data.description.replace(/\n/g, '<br><br>');
-                    editor.setValue(data.base_code, -1);
-                    
-                    document.getElementById('mainLoader').style.display = 'none';
-                    document.getElementById('workspaceArea').style.display = 'flex';
-                    document.getElementById('aiFeedback').innerHTML = '<span class="t-info">> ARIS Terminal Ready. Standing by.</span>';
-                } else {
-                    alert("Error: " + data.message);
-                    goBack();
-                    document.getElementById('mainLoader').style.display = 'none';
-                }
-            } catch (error) {
-                alert("Failed to connect to AI Server.");
-                goBack();
-                document.getElementById('mainLoader').style.display = 'none';
+            // Restore Code
+            const savedCode = localStorage.getItem('ss_saved_code');
+            if(savedCode) {
+                editor.setValue(savedCode, -1);
             }
+            
+            // Show Workspace
+            document.getElementById('setup-view').style.display = 'none';
+            document.getElementById('workspace-view').style.display = 'flex';
         }
+    };
 
-        async function checkCode() {
-            if (!currentProblemId) return;
+    function endSession() {
+        if(confirm("End current session? Unsaved progress will be lost!")) {
+            localStorage.removeItem('ss_problem_id');
+            localStorage.removeItem('ss_title');
+            localStorage.removeItem('ss_diff');
+            localStorage.removeItem('ss_coins');
+            localStorage.removeItem('ss_desc');
+            localStorage.removeItem('ss_lang');
+            localStorage.removeItem('ss_saved_code');
+            
+            document.getElementById('workspace-view').style.display = 'none';
+            document.getElementById('setup-view').style.display = 'flex';
+            currentProblemId = null;
+        }
+    }
 
-            const code = editor.getValue();
-            const checkBtn = document.getElementById('checkBtn');
-            const feedbackBox = document.getElementById('aiFeedback');
+    // --- 5. Generate Challenge ---
+    async function startChallenge() {
+        const courseId = document.getElementById('courseSelect').value;
+        const lang = document.getElementById('langSelect').value;
+        const topic = document.getElementById('topicInput').value.trim();
+        const diff = document.getElementById('diffSelect').value;
 
-            checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-            checkBtn.disabled = true;
-            feedbackBox.innerHTML = '<span class="t-warning">> Running AI evaluation protocol...</span><br><span style="color: var(--text-muted);">> Analyzing syntax and logic...</span>';
+        if(!courseId) { alert("Please select a course!"); return; }
+        if(!lang) { alert("Please select a language!"); return; }
+        if(!topic) { alert("Please type a topic!"); return; }
 
-            try {
-                const response = await fetch("/api/submit-bounty/", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
-                    body: JSON.stringify({ problem_id: currentProblemId, code: code })
-                });
+        const genBtn = document.getElementById('generateBtn');
+        genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing...';
+        genBtn.disabled = true;
 
-                const data = await response.json();
+        try {
+            const response = await fetch("{% url 'generate_challenge' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                body: JSON.stringify({ course_id: courseId, language: lang, topic: topic, difficulty: diff })
+            });
 
-                if (data.status === 'success') {
-                    if(data.is_correct) {
-                        feedbackBox.innerHTML = `
-                            <div class="t-success">> EXECUTION SUCCESSFUL</div>
-                            <div class="t-info">> STATUS: PERFECT LOGIC MATCH</div>
-                            <br>
-                            <div style="color: #ccc;">${data.feedback}</div>
-                            <br>
-                            <div class="t-warning" style="font-weight: bold;">> REWARD GRANTED: +${data.earned_coins} LMS COINS 🪙</div>
-                        `;
-                    } else {
-                        feedbackBox.innerHTML = `
-                            <div class="t-error">> EXECUTION FAILED</div>
-                            <div class="t-warning">> STATUS: LOGIC ERROR DETECTED</div>
-                            <br>
-                            <div style="color: #ccc;">${data.feedback}</div>
-                        `;
-                    }
-                } else {
-                    feedbackBox.innerHTML = `<span class="t-error">> ERROR: ${data.message}</span>`;
-                }
+            const data = await response.json();
 
-            } catch (error) {
-                feedbackBox.innerHTML = '<span class="t-error">> FATAL ERROR: Network disconnected. AI could not be reached.</span>';
-            } finally {
-                checkBtn.innerHTML = '<i class="fas fa-play"></i> AI Logic Check';
-                checkBtn.disabled = false;
+            if (data.status === 'success') {
+                currentProblemId = data.problem_id; 
+                
+                // Save to localStorage
+                localStorage.setItem('ss_problem_id', currentProblemId);
+                localStorage.setItem('ss_title', data.title);
+                localStorage.setItem('ss_diff', data.difficulty);
+                localStorage.setItem('ss_coins', data.base_coins);
+                localStorage.setItem('ss_lang', lang);
+                localStorage.setItem('ss_saved_code', data.base_code);
+                
+                // Parse markdown description and save HTML to storage
+                const parsedHtml = marked.parse(data.description);
+                localStorage.setItem('ss_desc', parsedHtml);
+                
+                // Reload page to automatically trigger the window.onload restoration logic
+                // This ensures a clean transition and state setup
+                window.location.reload();
+            } else {
+                alert("Error: " + data.message);
+                genBtn.innerHTML = '<i class="fas fa-bolt"></i> Generate Challenge';
+                genBtn.disabled = false;
             }
+        } catch (error) {
+            alert("Failed to connect to AI Server.");
+            genBtn.innerHTML = '<i class="fas fa-bolt"></i> Generate Challenge';
+            genBtn.disabled = false;
         }
-    </script>
-</body>
-</html>
+    }
+
+    // --- 6. Submit Code ---
+    async function checkCode() {
+        if (!currentProblemId) return;
+
+        const code = editor.getValue();
+        const checkBtn = document.getElementById('checkBtn');
+        const feedbackBox = document.getElementById('aiFeedback');
+
+        checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+        checkBtn.disabled = true;
+        feedbackBox.innerHTML = '<span class="t-warning">> Executing code in secure sandbox...</span><br><span style="color: #888;">> Analyzing output for correct logic...</span>';
+
+        try {
+            const response = await fetch("/api/submit-bounty/", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                body: JSON.stringify({ problem_id: currentProblemId, code: code })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                if(data.is_correct) {
+                    feedbackBox.innerHTML = `
+                        <div class="t-success">> EXECUTION SUCCESSFUL - All tests passed!</div>
+                        <div class="t-info">> STATUS: PERFECT LOGIC MATCH</div>
+                        <br>
+                        <div style="color: #ddd;">${marked.parse(data.feedback)}</div>
+                        <br>
+                        <div class="t-warning" style="font-weight: bold; font-size: 1.1rem;">> REWARD GRANTED: +${data.earned_coins} LMS COINS 🪙</div>
+                    `;
+                } else {
+                    feedbackBox.innerHTML = `
+                        <div class="t-error">> EXECUTION FAILED - Output did not match expectations.</div>
+                        <br>
+                        <div style="color: #ddd;">${marked.parse(data.feedback)}</div>
+                    `;
+                }
+            } else {
+                feedbackBox.innerHTML = `<span class="t-error">> ERROR: ${data.message}</span>`;
+            }
+
+        } catch (error) {
+            feedbackBox.innerHTML = '<span class="t-error">> FATAL ERROR: Network disconnected. AI could not be reached.</span>';
+        } finally {
+            checkBtn.innerHTML = '<i class="fas fa-play"></i> Run Code';
+            checkBtn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

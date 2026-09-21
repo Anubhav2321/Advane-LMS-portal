@@ -73,15 +73,21 @@ def home_view(request):
     """
     Renders the Landing Page with stats.
     """
-    featured_courses = Course.objects.filter(is_published=True).order_by('-created_at')[:3]
+    featured_courses = Course.objects.filter(is_published=True).order_by('-created_at')[:6]
     total_students = User.objects.filter(is_student=True).count()
     total_courses_count = Course.objects.count()
+    total_exams = Exam.objects.count()
+    total_documents = LibraryDocument.objects.count()
+    total_live_classes = LiveClass.objects.count()
     
     context = {
         'featured_courses': featured_courses,
         'total_students': total_students,
         'total_courses_count': total_courses_count,
-        'year': timezone.now().year
+        'total_exams': total_exams,
+        'total_documents': total_documents,
+        'total_live_classes': total_live_classes,
+        'year': timezone.now().year,
     }
     return render(request, 'landing.html', context)
 
@@ -214,15 +220,47 @@ def student_dashboard(request):
                 enrollment.is_completed = True
             enrollment.save(update_fields=['progress', 'is_completed'])
         
-        # Get quiz count for this course
-        enrollment.quiz_count = QuizResult.objects.filter(
+        # --- GRANULAR COMPLETED COUNTS (for clickable chips) ---
+        # Lessons: count completed LessonProgress records
+        enrollment.total_lessons_count = enrollment.course.lessons.count()
+        enrollment.completed_lessons_count = LessonProgress.objects.filter(
+            student=user, lesson__course=enrollment.course, is_completed=True
+        ).count()
+        
+        # Quizzes: total active quizzes vs attempted
+        enrollment.total_quizzes_count = Exam.objects.filter(
+            course=enrollment.course, is_active=True
+        ).count()
+        enrollment.completed_quizzes_count = QuizResult.objects.filter(
             student=user, exam__course=enrollment.course
         ).count()
         
-        # Get assignment count for this course
-        enrollment.assignment_count = AssignmentSubmission.objects.filter(
+        # Tasks (Assignments): total vs submitted
+        enrollment.total_tasks_count = Assignment.objects.filter(
+            course=enrollment.course
+        ).count()
+        enrollment.completed_tasks_count = AssignmentSubmission.objects.filter(
             student=user, assignment__course=enrollment.course
         ).count()
+
+        # Legacy fields (kept for backward compatibility)
+        enrollment.quiz_count = enrollment.completed_quizzes_count
+        enrollment.assignment_count = enrollment.completed_tasks_count
+        
+        # Course slug for navigation links
+        enrollment.course_slug = enrollment.course.slug
+        
+        # Faculty profile data for display
+        if enrollment.course.assigned_faculty:
+            try:
+                enrollment.faculty_profile = enrollment.course.assigned_faculty.faculty_profile
+                enrollment.faculty_user = enrollment.course.assigned_faculty
+            except FacultyProfile.DoesNotExist:
+                enrollment.faculty_profile = None
+                enrollment.faculty_user = None
+        else:
+            enrollment.faculty_profile = None
+            enrollment.faculty_user = None
         
         total_all_lessons += progress_data['total']
         total_completed_lessons += progress_data['completed']
@@ -241,7 +279,7 @@ def student_dashboard(request):
     certificate_eligible = completed_courses
     
     #  GLOBAL LEADERBOARD LOGIC
-    top_students = User.objects.filter(is_student=True).order_by('-lms_coins')[:10]
+    top_students = User.objects.filter(is_student=True).select_related('profile').order_by('-lms_coins')[:10]
     
     #  3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
     
@@ -560,7 +598,8 @@ def purchase_with_coins(request, course_id):
 @login_required
 def course_watch(request, course_id, lesson_id=None):
     """
-    Course Player logic with YouTube ID Extraction and Comment System.
+    Course Player logic with YouTube ID Extraction, Comment System,
+    and Real-Time Progress Tracking (NO auto-sync on page load).
     """
     course = get_object_or_404(Course, id=course_id)
     
@@ -571,9 +610,9 @@ def course_watch(request, course_id, lesson_id=None):
         messages.warning(request, "You must enroll in this course to access the content.")
         return redirect('all_courses')
 
-    # Update Last Accessed Time
+    # Update Last Accessed Time (only this field, not progress)
     enrollment.last_accessed = timezone.now()
-    enrollment.save()
+    enrollment.save(update_fields=['last_accessed'])
 
     lessons = course.lessons.all().order_by('order')
     
@@ -598,13 +637,14 @@ def course_watch(request, course_id, lesson_id=None):
                 next_lesson = lesson_list[idx + 1]
             
             # --- PER-LESSON PROGRESS TRACKING (via LessonProgress model) ---
+            # Only creates a record if one doesn't exist; does NOT mark as completed
             lesson_progress, lp_created = LessonProgress.objects.get_or_create(
                 student=request.user,
                 lesson=current_lesson
             )
             
-            # --- REAL PROGRESS CALCULATION (USING NEW LOGIC) ---
-            enrollment.sync_progress()
+            # REMOVED: enrollment.sync_progress() — progress should only update
+            # when the student actually watches video (via track_progress API)
 
             # --- YOUTUBE ID EXTRACTION ---
             if current_lesson.video_url:
@@ -633,7 +673,7 @@ def course_watch(request, course_id, lesson_id=None):
             messages.success(request, "Comment posted successfully!")
             return redirect('course_watch', course_id=course.id, lesson_id=current_lesson.id)
 
-    # Calculate progress from real data
+    # Calculate progress from real data (read-only, no sync)
     progress_data = enrollment.get_real_progress()
     progress_int = int(progress_data['percent'])
     
@@ -645,6 +685,59 @@ def course_watch(request, course_id, lesson_id=None):
             is_completed=True
         ).values_list('lesson_id', flat=True)
     )
+    
+    # --- PER-LESSON PROGRESS MAP (for real-time sidebar indicators) ---
+    lesson_progress_map = {}
+    all_lesson_progress = LessonProgress.objects.filter(
+        student=request.user,
+        lesson__course=course
+    ).select_related('lesson')
+    
+    for lp in all_lesson_progress:
+        required_time = lp.lesson.duration_in_seconds * 0.8
+        if lp.is_completed:
+            lesson_percent = 100
+        elif required_time > 0 and lp.watch_time_seconds > 0:
+            lesson_percent = min(100, int((lp.watch_time_seconds / required_time) * 100))
+        else:
+            lesson_percent = 0
+        lesson_progress_map[lp.lesson_id] = {
+            'percent': lesson_percent,
+            'watch_time': lp.watch_time_seconds,
+            'is_completed': lp.is_completed,
+        }
+    
+    # --- FACULTY DATA ---
+    faculty_data = None
+    if course.assigned_faculty:
+        try:
+            fp = course.assigned_faculty.faculty_profile
+            faculty_data = {
+                'name': course.assigned_faculty.full_name or course.faculty_name,
+                'department': fp.department or '',
+                'specialization': fp.specialization or '',
+                'experience': fp.experience_years,
+                'has_pic': bool(course.assigned_faculty.profile.profile_pic),
+                'pic_url': course.assigned_faculty.profile.profile_pic.url if course.assigned_faculty.profile.profile_pic else '',
+            }
+        except (FacultyProfile.DoesNotExist, Profile.DoesNotExist):
+            faculty_data = {
+                'name': course.faculty_name,
+                'department': '',
+                'specialization': '',
+                'experience': 0,
+                'has_pic': False,
+                'pic_url': '',
+            }
+    else:
+        faculty_data = {
+            'name': course.faculty_name,
+            'department': '',
+            'specialization': '',
+            'experience': 0,
+            'has_pic': False,
+            'pic_url': '',
+        }
         
     documents = course.documents.all()
 
@@ -657,10 +750,12 @@ def course_watch(request, course_id, lesson_id=None):
         'progress': progress_int,
         'progress_data': progress_data,
         'completed_lesson_ids': completed_lesson_ids,
+        'lesson_progress_map': json.dumps(lesson_progress_map),
         'youtube_id': youtube_id,
         'comments': comments,          
         'comment_form': comment_form,
-        'documents': documents
+        'documents': documents,
+        'faculty_data': faculty_data,
     }
     return render(request, 'course_watch.html', context)
 
@@ -960,6 +1055,7 @@ def execute_code_api(request):
         data = json.loads(request.body)
         language = data.get('language', 'python')
         code = data.get('code', '')
+        user_input = data.get('user_input', '')
         
         if not code.strip():
             return JsonResponse({'status': 'error', 'message': 'Code cannot be empty.'})
@@ -997,7 +1093,7 @@ def execute_code_api(request):
         # 4. Prepare Docker run command
         # Binds the TEMP_DIR to /app inside container, limits memory and CPU
         docker_cmd = [
-            'docker', 'run', '--rm', 
+            'docker', 'run', '--rm', '-i', 
             '-v', f"{TEMP_DIR}:/app", 
             '--network', 'none',      
             '--memory', '256m',       
@@ -1005,10 +1101,10 @@ def execute_code_api(request):
             'local-compiler'          
         ] + run_cmd
 
-        # 5. Run the code safely with a timeout of 5 seconds
+        # 5. Run the code safely with a timeout of 15 seconds, passing standard input
         try:
             process = subprocess.run(
-                docker_cmd, capture_output=True, text=True, timeout=15
+                docker_cmd, capture_output=True, text=True, input=user_input, timeout=15
             )
             output = process.stdout
             error = process.stderr
@@ -1019,6 +1115,9 @@ def execute_code_api(request):
             else:
                 result_status = 'error'
                 final_output = error if error else output
+                
+            if "EOFError: EOF when reading a line" in final_output:
+                final_output += "\n\n[HINT] Your code expects user input! Please provide it in the 'Custom Input' tab before running."
 
         except subprocess.TimeoutExpired:
             result_status = 'error'
@@ -1319,15 +1418,31 @@ def admin_student_course_activity(request, student_id, course_id):
 # --- Admin Action Views (Create) ---
 
 @staff_member_required
-def admin_create_faculty(request):
+def admin_faculty_list(request):
+    """
+    Dedicated view for Admin to manage and view all faculty members.
+    """
     if request.method == 'POST':
         form = FacultyRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             messages.success(request, f"Faculty '{user.first_name}' added successfully!")
+            return redirect('admin_faculty_list')
         else:
             messages.error(request, "Failed to add faculty. Username or Email might exist.")
-    return redirect('admin_dashboard')
+            
+    # GET Request: Fetch all faculties and their related data
+    faculties = User.objects.filter(is_faculty=True).prefetch_related('faculty_profile', 'assigned_courses')
+    faculty_form = FacultyRegistrationForm()
+    
+    total_faculties = faculties.count()
+    
+    context = {
+        'faculties': faculties,
+        'faculty_form': faculty_form,
+        'total_faculties': total_faculties
+    }
+    return render(request, 'custom_admin/admin_faculty_list.html', context)
 
 @staff_member_required
 def admin_create_course(request):
@@ -1699,7 +1814,32 @@ def admin_activity_api(request):
 def syntax_singularity_view(request):
     """ Renders the VS Code style Syntax Singularity page. """
     enrolled_courses = Enrollment.objects.filter(student=request.user).select_related('course')
-    return render(request, 'syntax_singularity.html', {'courses': enrolled_courses})
+    
+    # Simple mapping of keywords to languages for the frontend
+    course_language_map = {}
+    for enrollment in enrolled_courses:
+        title = enrollment.course.title.lower()
+        langs = []
+        if 'python' in title: langs.append('python')
+        if 'java' in title and 'javascript' not in title: langs.append('java')
+        if 'c++' in title or 'cpp' in title: langs.append('cpp')
+        if 'javascript' in title or 'js' in title or 'node' in title or 'react' in title or 'express' in title or 'angular' in title:
+            langs.extend(['javascript', 'Node Js', 'React js', 'Express Js', 'Angular Js'])
+        if 'php' in title: langs.append('PHP')
+        if 'type' in title and 'script' in title: langs.append('TypeScript')
+        if 'css' in title or 'html' in title: langs.append('Css')
+        if 'mongo' in title or 'db' in title: langs.extend(['MongoDB', 'DBMS'])
+        
+        # Fallback to general languages if no specific match
+        if not langs:
+            langs = ['python', 'java', 'cpp', 'javascript', 'DBMS']
+            
+        course_language_map[enrollment.course.id] = list(set(langs))
+        
+    return render(request, 'syntax_singularity.html', {
+        'courses': enrolled_courses,
+        'course_language_map_json': json.dumps(course_language_map)
+    })
 
 @login_required
 @csrf_exempt
@@ -1727,21 +1867,30 @@ def generate_ai_challenge(request):
             Topic: {topic}
             Difficulty: {difficulty}
             
+            CRITICAL INSTRUCTION FOR `description`:
+            You MUST format the description exactly like a LeetCode problem. Use markdown.
+            Include the following sections strictly:
+            1. **Problem Statement**: Clear explanation of the task.
+            2. **Example 1**: Input and Output format clearly shown.
+            3. **Example 2**: Input and Output format clearly shown.
+            4. **Constraints**: Time/Space limits or array size limits.
+            
             CRITICAL INSTRUCTION FOR `base_code`: 
             You MUST NOT provide the solution. Provide ONLY the empty function signature/template for the student to start with. The function body MUST be empty (use `pass` in Python, or empty brackets `{{}}` in other languages). DO NOT write the actual logic.
             
             Return ONLY a valid JSON object without markdown tags:
             {{
                 "title": "A short engaging title",
-                "description": "Clear problem statement and constraints.",
+                "description": "The full LeetCode style markdown string",
                 "base_code": "def solve(arr):\\n    # Write your logic here\\n    pass"
             }}
             """
             
             payload = {
-                "model": "qwen/qwen3.8-27b",  # Updated: llama-3.3-70b-versatile was removed from Groq
+                "model": "qwen/qwen3.8-27b", # Restore required model for this environment
                 "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.5
+                "temperature": 0.5,
+                "response_format": {"type": "json_object"}
             }
             
             base_url = "https://"
@@ -1755,10 +1904,18 @@ def generate_ai_challenge(request):
                 error_msg = response_data.get('error', {}).get('message', str(response_data))
                 return JsonResponse({'status': 'error', 'message': f'Groq API Error: {error_msg}'}, status=500)
             
-            content = response_data['choices'][0]['message']['content'].replace("```json", "").replace("```", "").strip()
+            content = response_data['choices'][0]['message']['content']
             
-            try: problem_data = json.loads(content)
-            except json.JSONDecodeError: return JsonResponse({'status': 'error', 'message': 'AI generated invalid JSON. Try again.'}, status=500)
+            # Extract JSON block using regex to avoid conversational text
+            import re
+            json_match = re.search(r'\{.*\}', content, re.DOTALL)
+            if json_match:
+                content = json_match.group(0)
+                
+            try: 
+                problem_data = json.loads(content)
+            except json.JSONDecodeError as e: 
+                return JsonResponse({'status': 'error', 'message': f'AI generated invalid JSON: {str(e)}. Try again.'}, status=500)
             
             base_coins = 10 if difficulty == 'Easy' else (30 if difficulty == 'Medium' else 100)
             
@@ -1825,9 +1982,10 @@ def submit_bounty_code(request):
             """
             
             payload = {
-                "model": "qwen/qwen3.8-27b",  # Updated: llama-3.3-70b-versatile was removed from Groq
+                "model": "qwen/qwen3.8-27b", 
                 "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.2
+                "temperature": 0.2,
+                "response_format": {"type": "json_object"}
             }
             
             base_url = "https://"
@@ -1838,14 +1996,21 @@ def submit_bounty_code(request):
             response_data = response.json()
             
             if 'choices' not in response_data:
-                return JsonResponse({'status': 'error', 'message': 'AI failed to evaluate code.'}, status=500)
+                error_msg = response_data.get('error', {}).get('message', str(response_data))
+                return JsonResponse({'status': 'error', 'message': f'AI failed to evaluate code: {error_msg}'}, status=500)
             
-            content = response_data['choices'][0]['message']['content'].replace("```json", "").replace("```", "").strip()
+            content = response_data['choices'][0]['message']['content']
             
+            # Extract JSON block using regex to avoid conversational text
+            import re
+            json_match = re.search(r'\{.*\}', content, re.DOTALL)
+            if json_match:
+                content = json_match.group(0)
+                
             try: 
                 eval_result = json.loads(content)
-            except json.JSONDecodeError: 
-                return JsonResponse({'status': 'error', 'message': 'AI response format error.'}, status=500)
+            except json.JSONDecodeError as e: 
+                return JsonResponse({'status': 'error', 'message': f'AI response format error: {str(e)}'}, status=500)
             
             is_correct = eval_result.get('is_correct', False)
             feedback = eval_result.get('feedback', 'No feedback provided.')
@@ -1921,7 +2086,25 @@ def track_progress(request):
                 # Sync progress globally
                 enrollment = get_object_or_404(Enrollment, student=request.user, course=lesson.course)
                 enrollment.sync_progress()
-                return JsonResponse({'status': 'success', 'progress': enrollment.progress, 'is_completed': lesson_progress.is_completed})
+                
+                # Calculate per-lesson completion percentage
+                required_time = lesson.duration_in_seconds * 0.8
+                if lesson_progress.is_completed:
+                    lesson_percent = 100
+                elif required_time > 0 and lesson_progress.watch_time_seconds > 0:
+                    lesson_percent = min(100, int((lesson_progress.watch_time_seconds / required_time) * 100))
+                else:
+                    lesson_percent = 0
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'progress': enrollment.progress,
+                    'is_completed': lesson_progress.is_completed,
+                    'lesson_percent': lesson_percent,
+                    'watch_time': lesson_progress.watch_time_seconds,
+                    'required_time': int(required_time) if required_time > 0 else 0,
+                    'coins_earned': 20 if lesson_progress.is_completed else 0,
+                })
                 
             elif track_type == 'pdf':
                 doc = get_object_or_404(LibraryDocument, id=item_id)

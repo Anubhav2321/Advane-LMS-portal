@@ -34,7 +34,7 @@ def faculty_dashboard(request):
         return redirect('dashboard')
     
     # Fetch assigned courses for this specific faculty
-    assigned_courses = Course.objects.all()
+    assigned_courses = Course.objects.filter(assigned_faculty=user)
     total_courses = assigned_courses.count()
     
     # Fetch total unique students enrolled in these assigned courses

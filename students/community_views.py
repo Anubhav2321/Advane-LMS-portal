@@ -114,7 +114,7 @@ def course_community_chat(request, slug):
     course = get_object_or_404(Course, slug=slug)
 
     is_enrolled = Enrollment.objects.filter(student=request.user, course=course).exists()
-    if not (is_enrolled or request.user.is_teacher or request.user.is_superuser):
+    if not (is_enrolled or request.user.is_teacher or getattr(request.user, 'is_faculty', False) or request.user.is_superuser):
         messages.error(request, "You must be enrolled in this course to access the community chat.")
         return redirect('dashboard')
 

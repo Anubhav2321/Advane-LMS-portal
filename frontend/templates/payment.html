@@ -8,33 +8,39 @@
 
 <style>
     /* --- GLOBAL STYLES --- */
-    body {
-        background-color: #050505;
-        font-family: 'Inter', sans-serif;
-        overflow-x: hidden;
-    }
-
     .checkout-wrapper {
-        min-height: 90vh;
+        min-height: calc(100vh - 80px);
         display: flex;
         justify-content: center;
-        align-items: center;
-        padding: 40px;
+        align-items: stretch;
+        padding: 10px 20px 20px 20px;
+        position: relative;
+    }
+    
+    .checkout-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
         background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 0;
     }
 
     /* --- GLASSMORPHISM CARD --- */
     .pay-card {
-        width: 1000px;
-        background: rgba(20, 20, 25, 0.7);
-        -webkit-backdrop-filter: blur(20px); /* Fixed Warning */
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 25px;
+        width: 100%;
+        max-width: 100%;
+        background: linear-gradient(145deg, rgba(15, 15, 20, 0.85), rgba(10, 10, 15, 0.95));
+        -webkit-backdrop-filter: blur(40px);
+        backdrop-filter: blur(40px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
         display: grid;
-        grid-template-columns: 300px 1fr;
+        grid-template-columns: 350px 1fr;
         overflow: hidden;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
     }
 
     /* --- SIDEBAR --- */
@@ -133,44 +139,49 @@
     }
     .input-field {
         width: 100%;
-        padding: 14px;
-        background: #0a0a0f;
-        border: 1px solid #333;
-        border-radius: 10px;
+        padding: 16px 20px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
         color: white;
         outline: none;
-        transition: 0.3s;
-        font-family: monospace;
-        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: 'Rajdhani', monospace;
+        font-size: 1.1rem;
+        backdrop-filter: blur(10px);
+        letter-spacing: 1px;
     }
-    .input-field-margin { margin-bottom: 20px; }
+    .input-field::placeholder { color: #555; }
+    .input-field-margin { margin-bottom: 25px; }
     .input-field-nomargin { margin-bottom: 0; }
     .select-pointer { cursor: pointer; }
     
     .input-field:focus {
         border-color: #00ff88;
-        box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        background: rgba(0, 0, 0, 0.7);
     }
 
     /* Pay Button */
     .btn-pay {
         width: 100%;
         padding: 16px;
-        background: #00ff88;
+        background: linear-gradient(135deg, #00ff88, #00b35f);
         color: #000;
         border: none;
-        border-radius: 12px;
+        border-radius: 14px;
         font-weight: 800;
         font-size: 1.1rem;
         cursor: pointer;
-        transition: 0.3s;
+        transition: all 0.3s ease;
         margin-top: 10px;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
+        box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
     }
     .btn-pay:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 255, 136, 0.5);
     }
     .btn-pay-small { width: 120px; margin: 0; }
     .btn-pay-qr { margin-top: 20px; }
@@ -212,16 +223,14 @@
     .qr-container { background: white; padding: 15px; display: inline-block; border-radius: 10px; }
 
     /* UPI Grid */
-    .upi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+    .upi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
     .upi-box {
-        background: #111; padding: 15px; border-radius: 12px; border: 1px solid #333;
-        cursor: pointer; display: flex; align-items: center; gap: 10px; color: #fff; transition: 0.3s;
+        background: rgba(0, 0, 0, 0.5); padding: 18px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px; color: #fff; transition: all 0.3s ease; backdrop-filter: blur(10px);
+        font-size: 1.1rem; font-weight: 600;
     }
-    .upi-box:hover { border-color: #00ff88; transform: translateY(-3px); }
-    .gpay-icon { color: #fff; }
-    .phonepe-icon { color: #5f259f; }
-    .paytm-icon { color: #00baf2; }
-    .bhim-icon { color: #f26522; }
+    .upi-box:hover { border-color: #00ff88; transform: translateY(-4px); background: rgba(0, 255, 136, 0.05); box-shadow: 0 12px 25px rgba(0, 255, 136, 0.15); }
+    .upi-logo { height: 28px; object-fit: contain; }
 
     /* ========================================= */
     /* --- SUPER COOL ANIMATION OVERLAY --- */
@@ -360,10 +369,16 @@
 
             <div id="tab-card" class="tab-view active">
                 <h3 class="text-white mb-20">Enter Card Details</h3>
-                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee')">
+                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'card')">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label>Card Number</label>
+                        <label style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Card Number</span>
+                            <span style="display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 8px;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style="height: 12px; filter: brightness(0) invert(1);">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 16px;">
+                            </span>
+                        </label>
                         <input type="text" class="input-field input-field-margin" placeholder="0000 0000 0000 0000" maxlength="19" required>
                     </div>
                     <div class="form-group-split">
@@ -387,15 +402,27 @@
             <div id="tab-upi" class="tab-view">
                 <h3 class="text-white mb-20">Pay via UPI App</h3>
                 <div class="upi-grid">
-                    <div class="upi-box" onclick="triggerDirectPay()"><i class="fab fa-google-pay gpay-icon"></i> Google Pay</div>
-                    <div class="upi-box" onclick="triggerDirectPay()"><i class="fas fa-rupee-sign phonepe-icon"></i> PhonePe</div>
-                    <div class="upi-box" onclick="triggerDirectPay()"><i class="fas fa-wallet paytm-icon"></i> Paytm</div>
-                    <div class="upi-box" onclick="triggerDirectPay()"><i class="fas fa-mobile bhim-icon"></i> BHIM</div>
+                    <div class="upi-box" onclick="triggerDirectPay('gpay')">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" class="upi-logo" style="height: 24px;"> 
+                        <span>Google Pay</span>
+                    </div>
+                    <div class="upi-box" onclick="triggerDirectPay('phonepe')">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" class="upi-logo"> 
+                        <span>PhonePe</span>
+                    </div>
+                    <div class="upi-box" onclick="triggerDirectPay('paytm')">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm" class="upi-logo" style="height: 20px;"> 
+                        <span>Paytm</span>
+                    </div>
+                    <div class="upi-box" onclick="triggerDirectPay('bhim')">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" alt="BHIM UPI" class="upi-logo" style="height: 22px;"> 
+                        <span>BHIM UPI</span>
+                    </div>
                 </div>
                 
                 <p class="text-center text-muted my-20">-- OR ENTER UPI ID --</p>
                 
-                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee')">
+                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'upi')">
                     {% csrf_token %}
                     <div class="form-group">
                         <label>UPI ID</label>
@@ -410,7 +437,7 @@
 
             <div id="tab-net" class="tab-view">
                 <h3 class="text-white mb-20">Select Bank</h3>
-                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee')">
+                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'net')">
                     {% csrf_token %}
                     <div class="form-group">
                         <select class="input-field select-pointer">
@@ -430,7 +457,7 @@
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=learning365@upi&pn=Learning365&am={{ course.price }}" alt="QR">
                 </div>
                 <p class="text-success">Waiting for payment...</p>
-                <button type="button" class="btn-pay btn-pay-qr" onclick="handlePayment(event, document.getElementById('hidden-form'), 'rupee')">I Have Paid</button>
+                <button type="button" class="btn-pay btn-pay-qr" onclick="handlePayment(event, document.getElementById('hidden-form'), 'rupee', 'qr')">I Have Paid</button>
             </div>
 
             <div id="tab-coin" class="tab-view text-center">
@@ -496,9 +523,90 @@
         }
     }
 
+    // --- WEB AUDIO API SYNTHESIZER ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function playCustomSound(provider) {
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        if (provider === 'gpay') {
+            // Google Pay: Smooth ascending tri-tone
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, t); // C5
+            osc.frequency.exponentialRampToValueAtTime(659.25, t + 0.15); // E5
+            osc.frequency.exponentialRampToValueAtTime(783.99, t + 0.3); // G5
+            gainNode.gain.setValueAtTime(0, t);
+            gainNode.gain.linearRampToValueAtTime(0.5, t + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+            osc.start(t);
+            osc.stop(t + 0.6);
+        } else if (provider === 'phonepe') {
+            // PhonePe: Quick double bell
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(880, t);
+            gainNode.gain.setValueAtTime(0, t);
+            gainNode.gain.linearRampToValueAtTime(0.4, t + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+            osc.start(t); osc.stop(t + 0.2);
+            
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(1108.73, t + 0.2); // C#6
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            gain2.gain.setValueAtTime(0, t + 0.2);
+            gain2.gain.linearRampToValueAtTime(0.4, t + 0.25);
+            gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+            osc2.start(t + 0.2); osc2.stop(t + 0.5);
+        } else if (provider === 'paytm') {
+            // Paytm: Distinct longer melody
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(587.33, t); // D5
+            osc.frequency.setValueAtTime(739.99, t + 0.15); // F#5
+            osc.frequency.setValueAtTime(880.00, t + 0.3); // A5
+            gainNode.gain.setValueAtTime(0, t);
+            gainNode.gain.linearRampToValueAtTime(0.2, t + 0.05);
+            gainNode.gain.setValueAtTime(0.2, t + 0.3);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.7);
+            osc.start(t);
+            osc.stop(t + 0.7);
+        } else if (provider === 'coin') {
+            // LMS Coin: Arcade coin sound (Mario-esque)
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(987.77, t); // B5
+            osc.frequency.setValueAtTime(1318.51, t + 0.1); // E6
+            gainNode.gain.setValueAtTime(0, t);
+            gainNode.gain.linearRampToValueAtTime(0.2, t + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+            osc.start(t);
+            osc.stop(t + 0.4);
+        } else {
+            // Card / Generic / NetBanking: Clean sharp cash ding
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1200, t);
+            osc.frequency.exponentialRampToValueAtTime(2400, t + 0.1);
+            gainNode.gain.setValueAtTime(0, t);
+            gainNode.gain.linearRampToValueAtTime(0.6, t + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+            osc.start(t);
+            osc.stop(t + 0.6);
+        }
+    }
+
     // --- PAYMENT ANIMATION LOGIC ---
-    function handlePayment(e, form, type) {
+    function handlePayment(e, form, type, provider) {
         e.preventDefault(); 
+        if (!provider) provider = type; // fallback
 
         const overlay = document.getElementById('overlay-screen');
         const processing = document.getElementById('state-processing');
@@ -511,9 +619,8 @@
         const successTitle = document.getElementById('success-title');
         const successSub = document.getElementById('success-sub');
 
-        // Sounds
+        // Processing Sound
         const processSound = document.getElementById('sound-processing');
-        const successSound = document.getElementById('sound-success');
 
         // Apply Gold Theme if paying with coins
         if(type === 'coin') {
@@ -529,7 +636,7 @@
         // 1. Start Processing Phase
         overlay.style.display = 'flex';
         processSound.volume = 0.5;
-        processSound.play().catch(e => console.log("Audio play failed (browser policy):", e));
+        processSound.play().catch(e => console.log("Audio play failed:", e));
 
         // Simulate Connection Steps
         if(type === 'rupee') {
@@ -554,10 +661,10 @@
 
             setTimeout(() => success.classList.add('show'), 50); 
             
-            // Stop processing sound & Play Success "Ding"
+            // Stop processing sound & Play Custom Synthesized Success Sound
             processSound.pause();
             processSound.currentTime = 0;
-            successSound.play();
+            playCustomSound(provider);
 
             // Vibration (if mobile)
             if (navigator.vibrate) navigator.vibrate([200]);
@@ -575,10 +682,10 @@
         return false;
     }
 
-    function triggerDirectPay() {
+    function triggerDirectPay(provider) {
         if(confirm("Open App to complete payment?")) {
             const form = document.getElementById('hidden-form');
-            handlePayment({ preventDefault: () => {} }, form, 'rupee');
+            handlePayment({ preventDefault: () => {} }, form, 'rupee', provider);
         }
     }
 

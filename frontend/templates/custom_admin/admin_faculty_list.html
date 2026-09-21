@@ -1,0 +1,280 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<style>
+    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+
+    .page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, #10b981, #34d399);
+    }
+
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
+
+    .btn-back {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .btn-back:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateX(-4px);
+    }
+
+    .grid-split {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 32px;
+        align-items: start;
+    }
+    
+    @media (max-width: 1000px) {
+        .grid-split { grid-template-columns: 1fr; }
+    }
+
+    /* Form Card Styles */
+    .form-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-emerald::before { 
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; 
+        background: linear-gradient(90deg, #10b981, #34d399); 
+    }
+    .form-emerald .form-card-title { color: #10b981; }
+
+    .form-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .form-card label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-card input, .form-card select {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        margin-bottom: 16px;
+        outline: none;
+        transition: var(--transition-fast);
+    }
+    .form-card input:focus, .form-card select:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: var(--radius-sm);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        background: #10b981;
+    }
+    .btn-submit:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+
+    /* Table Styles */
+    .table-glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .custom-table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
+
+    .custom-table th {
+        background: rgba(10, 10, 30, 0.5);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--glass-border);
+        text-align: left;
+    }
+
+    .custom-table td {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+    }
+
+    .custom-table tbody tr {
+        transition: var(--transition-fast);
+        animation: rowSlide 0.4s ease forwards;
+    }
+    .custom-table tbody tr:hover { background: var(--glass-bg-hover); }
+
+    .faculty-name { color: var(--text-primary); font-size: 1.05rem; font-weight: 700; }
+    .faculty-meta { color: var(--text-muted); font-size: 0.82rem; margin-top: 4px; }
+
+    .badge-course {
+        background: rgba(168, 85, 247, 0.1);
+        color: var(--accent-purple);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        display: inline-block;
+        font-weight: 600;
+    }
+
+</style>
+
+<div class="page-wrap">
+    <div class="page-header">
+        <div>
+            <h2>Faculty Management System</h2>
+            <p>Total Registered Faculties: <strong>{{ total_faculties }}</strong> | Central command for monitoring and creating faculty accounts.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="grid-split">
+        <!-- Add Faculty Form -->
+        <div class="form-card form-emerald">
+            <div class="form-card-title"><i class="fas fa-user-tie"></i> Register New Faculty</div>
+            <form action="{% url 'admin_faculty_list' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div><label>First Name</label> {{ faculty_form.first_name }}</div>
+                    <div><label>Last Name</label> {{ faculty_form.last_name }}</div>
+                </div>
+                <label>Username (ID)</label> {{ faculty_form.username }}
+                <label>Email</label> {{ faculty_form.email }}
+                <div class="form-row">
+                    <div><label>Department (STEAM)</label> {{ faculty_form.department }}</div>
+                    <div><label>Experience (Yrs)</label> {{ faculty_form.experience_years }}</div>
+                </div>
+                <label>Set Password</label> {{ faculty_form.password }}
+                <button type="submit" class="btn-submit">Register Faculty</button>
+            </form>
+        </div>
+
+        <!-- Faculty List Table -->
+        <div class="table-glass">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Faculty Profile</th>
+                        <th>Department (STEAM)</th>
+                        <th>Assigned Courses</th>
+                        <th>Stats</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for faculty in faculties %}
+                    <tr>
+                        <td>
+                            <div class="faculty-name">{{ faculty.first_name }} {{ faculty.last_name }}</div>
+                            <div class="faculty-meta"><i class="fas fa-envelope"></i> {{ faculty.email }} | <b>ID:</b> {{ faculty.username }}</div>
+                        </td>
+                        <td>
+                            {% if faculty.faculty_profile.department %}
+                                <span style="color: var(--accent-cyan); font-weight:600;"><i class="fas fa-atom"></i> {{ faculty.faculty_profile.department }}</span>
+                            {% else %}
+                                <span style="color: var(--text-muted);">Not Specified</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if faculty.assigned_courses.all %}
+                                {% for course in faculty.assigned_courses.all %}
+                                    <span class="badge-course"><i class="fas fa-book"></i> {{ course.title }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">No courses assigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="faculty-meta"><i class="fas fa-briefcase"></i> Exp: {{ faculty.faculty_profile.experience_years }} Yrs</div>
+                            <div class="faculty-meta"><i class="fas fa-layer-group"></i> Modules: {{ faculty.assigned_courses.count }}</div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i><br>
+                            No faculty members found in the system.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

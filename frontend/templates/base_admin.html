@@ -437,6 +437,13 @@
                     <span>Students</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{% url 'admin_faculty_list' %}" class="{% if 'faculties' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Faculties</span>
+                </a>
+            </li>
             
             <li>
                 <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name %}active{% endif %}">
@@ -467,6 +474,24 @@
                     <span>View Site</span>
                 </a>
             </li>
+
+            <div class="nav-divider"></div>
+
+            <li>
+                <a href="{% url 'dashboard' %}" style="color: #00d4ff;">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Switch to Student</span>
+                </a>
+            </li>
+
+            {% if request.user.is_teacher or request.user.is_faculty %}
+            <li>
+                <a href="{% url 'faculty_dashboard' %}" style="color: #ffaa00;">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Switch to Faculty</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
 
         <a href="{% url 'logout' %}" class="logout-btn">

@@ -4,798 +4,1117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning-365 | Future EdTech</title>
+    <title>Learning-365 | Learn. Practice. Compete. Build.</title>
+    <meta name="description" content="Learning-365 is a next-generation LMS with AI-powered exams, live coding IDE, gamified learning, and community features. Start your 365-day learning journey.">
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
-    <style>
-        /* --- THEME CONFIGURATION --- */
-        :root {
-            --bg-deep: #030005;
-            --neon-cyan: #00f3ff;
-            --neon-purple: #bc13fe;
-            --neon-pink: #ff0055;
-            
-            --neon-green: #00ff99;
-            --neon-yellow: #ffdd00;
-            --neon-orange: #ff5e00;
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-grey: #9ca3af;
-            --card-bg: #111116;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        
-        body { 
-            background-color: var(--bg-deep); 
-            color: white; 
-            overflow-x: hidden; 
-            background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(188, 19, 254, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            position: relative;
-            scroll-behavior: smooth;
-        }
-
-        /* --- LIGHTER CURSOR GLOW --- */
-        #cursor-glow {
-            position: fixed; top: 0; left: 0; width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(255, 0, 85, 0.04) 0%, transparent 60%);
-            border-radius: 50%; pointer-events: none; 
-            transform: translate(-50%, -50%); z-index: 0; filter: blur(60px);
-            transition: transform 0.1s ease-out;
-        }
-
-        /* --- NAVBAR --- */
-        .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%; position: fixed; top: 0; width: 100%; z-index: 1000;
-            background: rgba(3, 0, 5, 0.85); 
-            -webkit-backdrop-filter: blur(20px); 
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all 0.4s ease; 
-        }
-        .logo { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        .logo i { color: var(--neon-cyan); }
-        .nav-btn {
-            padding: 10px 30px; border-radius: 50px; text-decoration: none;
-            background: linear-gradient(90deg, var(--neon-cyan), #0066ff);
-            color: black; font-weight: 800; transition: 0.3s;
-        }
-        .nav-btn:hover { box-shadow: 0 0 20px var(--neon-cyan); transform: scale(1.05); }
-
-        /* --- HERO SECTION --- */
-        .hero-section {
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 120px 5% 50px; position: relative; z-index: 1;
-        }
-        .hero-grid {
-            display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; 
-            align-items: center; max-width: 1400px; width: 100%;
-        }
-        .hero-badge {
-            display: inline-block; padding: 8px 25px; border-radius: 50px;
-            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-            margin-bottom: 25px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-        }
-        
-        .hero-title { font-size: 70px; line-height: 1.1; font-weight: 900; margin-bottom: 25px; min-height: 160px; } 
-        
-        .typed-text-grad {
-            background: linear-gradient(to right, #fff, var(--neon-cyan), var(--neon-purple));
-            -webkit-background-clip: text; 
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent;
-        }
-
-        .hero-subtitle { font-size: 20px; color: var(--text-grey); margin-bottom: 40px; max-width: 600px; }
-        .hero-btns { display: flex; gap: 20px; }
-        
-        .btn-fill {
-            padding: 15px 40px; border-radius: 50px; font-weight: 700; text-decoration: none;
-            background: white; color: black; box-shadow: 0 0 20px rgba(255,255,255,0.3); transition: 0.3s;
-            position: relative; overflow: hidden;
-        }
-        .btn-fill:hover {
-            box-shadow: 0 0 25px var(--neon-cyan), inset 0 0 10px var(--neon-purple);
-            transform: translateY(-3px) scale(1.05);
-            background: #e6e6e6;
-        }
-        .btn-glass {
-            padding: 15px 40px; border-radius: 50px; font-weight: 700; text-decoration: none;
-            border: 2px solid var(--glass-border); color: white; transition: 0.3s;
-            -webkit-backdrop-filter: blur(5px); 
-            backdrop-filter: blur(5px);
-        }
-        .btn-glass:hover {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            background: rgba(0, 243, 255, 0.05);
-        }
-        
-        .hero-icon-box { display: flex; justify-content: center; align-items: center; position: relative; cursor: pointer; }
-        .big-hat-icon {
-            font-size: 350px; 
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-            -webkit-background-clip: text; 
-            background-clip: text; 
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 20px 50px rgba(188, 19, 254, 0.5));
-            animation: floatIcon 6s ease-in-out infinite;
-        }
-        .icon-glow {
-            position: absolute; width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(188, 19, 254, 0.2), transparent 70%);
-            z-index: -1; animation: pulseGlow 4s infinite alternate;
-        }
-        @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
-        @keyframes pulseGlow { 0% { transform: scale(0.8); opacity: 0.3; } 100% { transform: scale(1.2); opacity: 0.6; } }
-
-
-        /* =========================================
-           SMOOTH ANIMATION STAGE (Intro)
-           ========================================= */
-        .features-section { padding: 50px 8% 50px; position: relative; z-index: 1; }
-
-        .intro-animation-stage {
-            height: 400px; display: flex; justify-content: center; align-items: center;
-            position: relative; margin-bottom: 50px; perspective: 1000px;
-        }
-
-        .blocks-wrapper { position: relative; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; }
-
-        .anim-block {
-            position: absolute; width: 80px; height: 80px; border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05); border: 2px solid var(--neon-cyan);
-            -webkit-backdrop-filter: blur(10px); 
-            backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center;
-            font-size: 35px; color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            opacity: 0; transform: scale(0); transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .blk-1 { border-color: var(--neon-cyan); color: var(--neon-cyan); }
-        .blk-2 { border-color: white; color: white; }
-        .blk-3 { border-color: var(--neon-purple); color: var(--neon-purple); }
-
-        .final-logo-wrapper {
-            position: absolute; display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron', sans-serif; font-weight: 900; z-index: 10;
-        }
-        .logo-icon-l {
-            font-size: 80px; color: var(--neon-cyan); filter: drop-shadow(0 0 20px var(--neon-cyan));
-            opacity: 0; transform: scale(0.5); transition: all 0.5s ease-out; margin-right: 10px;
-        }
-        .logo-text-group { display: flex; align-items: baseline; font-size: 80px; line-height: 1; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
-        .char-l { opacity: 0; transform: translateX(20px); transition: all 0.5s ease-out; color: white; }
-        .char-rest {
-            display: inline-block; width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
-            background: linear-gradient(to right, white, var(--neon-cyan));
-            -webkit-background-clip: text; 
-            background-clip: text; 
-            -webkit-text-fill-color: transparent;
-            transition: width 1s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
-        }
-        .logo-365 {
-            font-size: 80px; color: var(--neon-purple); opacity: 0; transform: translateX(-30px) scale(0.8);
-            filter: drop-shadow(0 0 15px var(--neon-purple)); margin-left: 10px;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .phase-1 .blk-1 { opacity: 1; transform: scale(1) translate(-100px, 0); }
-        .phase-1 .blk-2 { opacity: 1; transform: scale(1) translate(0, -100px); }
-        .phase-1 .blk-3 { opacity: 1; transform: scale(1) translate(100px, 0); }
-        .phase-2 .anim-block { transform: scale(0.1) translate(0,0) !important; opacity: 0 !important; transition-duration: 0.5s; }
-        .phase-2 .logo-icon-l { opacity: 1; transform: scale(1); }
-        .phase-2 .char-l { opacity: 1; transform: translateX(0); }
-        .phase-3 .char-rest { width: 420px; opacity: 1; }
-        .phase-4 .final-logo-wrapper { transform: scale(0.9); transition: transform 0.5s ease; }
-        .phase-4 .logo-365 { opacity: 1; transform: translateX(0) scale(1); }
-
-
-        /* --- FEATURES LIST --- */
-        .section-header { text-align: center; margin-bottom: 80px; }
-        .section-header h2 { font-size: 50px; font-weight: 900; margin-bottom: 10px; }
-        .section-header span { color: var(--neon-purple); }
-
-        .feature-row {
-            display: flex; align-items: center; gap: 50px; margin-bottom: 80px;
-            padding: 40px; border-radius: 30px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
-            border-left: 5px solid var(--neon-cyan); 
-            -webkit-backdrop-filter: blur(5px); 
-            backdrop-filter: blur(5px); transition: 0.4s;
-        }
-        .feature-row:hover { background: linear-gradient(90deg, rgba(255,255,255,0.06), transparent); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .f-icon-box {
-            width: 120px; height: 120px; border-radius: 50%; background: rgba(0,0,0,0.5);
-            display: flex; justify-content: center; align-items: center; font-size: 50px; color: var(--neon-cyan);
-            border: 2px solid var(--glass-border);
-        }
-        .feature-content h3 { font-size: 32px; margin-bottom: 20px; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
-        .feature-list li { list-style: none; margin-bottom: 12px; font-size: 18px; color: var(--text-grey); display: flex; align-items: center; gap: 15px; }
-        .feature-list li i { color: var(--neon-pink); }
-        
-        .style-purple { border-left-color: var(--neon-purple); } .style-purple .f-icon-box { color: var(--neon-purple); }
-        .style-pink { border-left-color: var(--neon-pink); } .style-pink .f-icon-box { color: var(--neon-pink); }
-        .style-yellow { border-left-color: var(--neon-yellow); } .style-yellow .f-icon-box { color: var(--neon-yellow); }
-        .style-orange { border-left-color: var(--neon-orange); } .style-orange .f-icon-box { color: var(--neon-orange); }
-
-
-        /* =========================================
-           2. STATS SECTION (Multi-Color Icons)
-           ========================================= */
-        .stats-wrapper { padding: 50px 8%; margin-bottom: 50px; position: relative; z-index: 2; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1300px; margin: 0 auto; }
-        
-        .stat-box {
-            background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px;
-            padding: 35px 30px; display: flex; align-items: center; gap: 25px; transition: all 0.4s ease;
-            position: relative; overflow: hidden; transform-style: preserve-3d; cursor: pointer;
-        }
-        .stat-box:hover {
-            border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); background: #16161d;
-        }
-        .stat-icon {
-            width: 60px; font-size: 45px; display: flex; justify-content: center; align-items: center;
-            flex-shrink: 0; transition: 0.3s; transform: translateZ(40px); 
-        }
-
-        .stat-box:nth-child(1) .stat-icon { color: var(--neon-cyan); filter: drop-shadow(0 0 8px var(--neon-cyan)); }
-        .stat-box:nth-child(2) .stat-icon { color: var(--neon-purple); filter: drop-shadow(0 0 8px var(--neon-purple)); }
-        .stat-box:nth-child(3) .stat-icon { color: var(--neon-green); filter: drop-shadow(0 0 8px var(--neon-green)); }
-        .stat-box:nth-child(4) .stat-icon { color: var(--neon-pink); filter: drop-shadow(0 0 8px var(--neon-pink)); }
-        .stat-box:nth-child(5) .stat-icon { color: var(--neon-yellow); filter: drop-shadow(0 0 8px var(--neon-yellow)); }
-        .stat-box:nth-child(6) .stat-icon { color: var(--neon-orange); filter: drop-shadow(0 0 8px var(--neon-orange)); }
-
-        .stat-content { display: flex; flex-direction: column; transform: translateZ(20px); }
-        .stat-num-wrapper { display: flex; align-items: baseline; gap: 2px; font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 5px; }
-        .stat-desc { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 400; color: #b0b0b0; line-height: 1.4; }
-
-
-        /* =========================================
-           DEVELOPERS SECTION (Fixed Image Alignment)
-           ========================================= */
-        .dev-section { padding: 50px 5% 100px; position: relative; z-index: 1; }
-        .dev-carousel { overflow: hidden; max-width: 1200px; margin: 0 auto; position: relative; }
-        .dev-track { display: flex; transition: transform 0.6s ease; }
-        .dev-slide { min-width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; padding: 20px; }
-        
-        .dev-card {
-            display: flex; align-items: center; gap: 30px; padding: 30px; 
-            border-radius: 20px; background: rgba(255,255,255,0.02); 
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
-        }
-        .dev-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
-
-        /* 🚀 FIXED: Professional Clean Look, Larger Size 🚀 */
-        .dev-avatar-container {
-            position: relative; 
-            width: 210px; 
-            height: 210px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-        }
-        .static-ring {
-            position: absolute; 
-            width: 100%; 
-            height: 100%; 
-            border-radius: 50%; 
-            border: 3px solid transparent; 
-            z-index: 1;
-        }
-        .ring-cyan { 
-            border-color: var(--neon-cyan); 
-            box-shadow: 0 10px 25px rgba(0, 243, 255, 0.1); 
-        }
-        .ring-purple { 
-            border-color: var(--neon-purple); 
-            box-shadow: 0 10px 25px rgba(188, 19, 254, 0.1); 
-        }
-
-        .dev-img {
-            width: 190px; 
-            height: 190px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            z-index: 2; 
-            border: 4px solid var(--card-bg); /* Clean separation */
-            image-rendering: -webkit-optimize-contrast; 
-            image-rendering: high-quality;
-            filter: contrast(1.05) brightness(1.02);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); /* Professional inner depth */
-        }
-
-        .dev-info h3 { font-family: 'Rajdhani'; font-size: 28px; color: white; margin-bottom: 5px; font-weight: 700; }
-        .role-text { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: block; }
-        .role-cyan { color: var(--neon-cyan); }
-        .role-purple { color: var(--neon-purple); }
-        .dev-sub-role { font-size: 13px; color: var(--text-grey); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; }
-
-        .socials a { 
-            color: #fff; background: rgba(255,255,255,0.1); width: 35px; height: 35px; 
-            border-radius: 50%; display: inline-flex; justify-content: center; align-items: center;
-            margin-right: 10px; transition: 0.3s; text-decoration: none;
-        }
-        .socials a:hover { background: white; color: black; transform: translateY(-3px) scale(1.1); box-shadow: 0 5px 15px rgba(255,255,255,0.3); }
-
-        .dots { display: flex; justify-content: center; gap: 10px; margin-top: 40px; }
-        .dot { width: 12px; height: 12px; background: #333; border-radius: 50%; cursor: pointer; transition: 0.3s; }
-        .dot.active { background: var(--neon-cyan); transform: scale(1.3); box-shadow: 0 0 10px var(--neon-cyan); }
-
-
-        /* =========================================
-           HELP CENTER & CONTACT FORM
-           ========================================= */
-        #help-center { 
-            padding: 80px 5% 20px; position: relative; z-index: 1;
-            display: none; /* Hidden initially */
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease-out;
-        }
-        #help-center.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .contact-container {
-            display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px;
-            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 50px; 
-            -webkit-backdrop-filter: blur(10px); 
-            backdrop-filter: blur(10px);
-            max-width: 1200px; margin: 0 auto; transition: all 0.3s ease;
-        }
-        .contact-container:hover { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border-color: rgba(0, 243, 255, 0.2); }
-
-        .contact-form input, .contact-form textarea {
-            width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.5); 
-            border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; font-size: 16px;
-            transition: 0.3s;
-        }
-        .contact-form input:focus, .contact-form textarea:focus {
-            border-color: var(--neon-cyan); outline: none; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); background: rgba(0,0,0,0.8);
-        }
-        
-        .contact-info { padding: 20px; border-left: 1px solid var(--glass-border); padding-left: 50px;}
-        .info-item { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; font-size: 18px; color: #ccc;}
-        .info-item i { color: var(--neon-purple); font-size: 24px; width: 30px; text-align: center;}
-        
-        .social-links-lg { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;}
-        .social-links-lg a {
-            display: inline-flex; width: 50px; height: 50px; background: rgba(255,255,255,0.05); 
-            border-radius: 50%; justify-content: center; align-items: center; color: white;
-            font-size: 22px; transition: 0.3s; text-decoration: none; border: 1px solid var(--glass-border);
-        }
-        .social-links-lg a:hover {
-            background: var(--neon-cyan); color: black; border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px var(--neon-cyan); transform: translateY(-5px);
-        }
-
-        /* =========================================
-           TERMS OF USE MODAL 
-           ========================================= */
-        .ide-modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.80); 
-            z-index: 999999; justify-content: center; align-items: center; 
-            -webkit-backdrop-filter: blur(10px); 
-            backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.4s ease;
-        }
-        .ide-modal-overlay.show { display: flex; opacity: 1; }
-        
-        .terms-container {
-            background: rgba(10, 10, 15, 0.85); 
-            -webkit-backdrop-filter: blur(20px); 
-            backdrop-filter: blur(20px);
-            width: 700px; max-width: 90%; max-height: 80vh;
-            border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3);
-            display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 243, 255, 0.15);
-            transform: translateY(50px) scale(0.95); opacity: 0;
-            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .ide-modal-overlay.show .terms-container { transform: translateY(0) scale(1); opacity: 1; }
-        
-        .terms-header { 
-            background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), rgba(188, 19, 254, 0.1));
-            padding: 20px 30px; display: flex; justify-content: space-between; 
-            align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .terms-title { color: #fff; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; font-weight: bold; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;}
-        
-        .terms-body { padding: 30px; overflow-y: auto; color: #d1d5db; line-height: 1.8; font-size: 16px; }
-        .terms-body::-webkit-scrollbar { width: 8px; }
-        .terms-body::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
-        .terms-body::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; }
-        
-        .terms-body h4 { margin-top: 25px; margin-bottom: 10px; font-size: 20px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;}
-        .terms-body h4:nth-of-type(1) { color: var(--neon-cyan); }
-        .terms-body h4:nth-of-type(2) { color: var(--neon-purple); }
-        .terms-body h4:nth-of-type(3) { color: var(--neon-pink); }
-
-        /* =========================================
-           FIXES FOR VS CODE INLINE CSS WARNINGS
-           ========================================= */
-        .section-subtitle { color: #999; font-size: 18px; }
-        .section-subtitle-sm { color: #999; }
-        .text-grad-custom {
-            background: linear-gradient(to right, #fff, var(--neon-cyan), var(--neon-purple));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .contact-heading-cyan { font-size: 32px; margin-bottom: 25px; color: var(--neon-cyan); font-family: 'Rajdhani', sans-serif; }
-        .contact-heading-purple { font-size: 32px; margin-bottom: 25px; color: var(--neon-purple); font-family: 'Rajdhani', sans-serif; }
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .btn-submit-full { width: 100%; border: none; cursor: pointer; font-size: 18px; padding: 15px; }
-        .contact-subheading { margin: 40px 0 15px; color: white; font-size: 20px; }
-        .icon-cyan { color: var(--neon-cyan); }
-        .modal-icon-cyan { color: var(--neon-cyan); font-size: 1.5rem; }
-        .btn-close-modal { color: rgba(255,255,255,0.5); font-size: 1.5rem; cursor: pointer; transition: 0.3s; }
-        .terms-h3 { color: white; margin-bottom: 10px; font-size: 24px; }
-
-
-        /* =========================================
-           FOOTER
-           ========================================= */
-        footer {
-            background-color: black; padding: 80px 5% 30px; margin-top: 50px;
-            border-top: 1px solid #1a1a1a; position: relative; z-index: 1;
-        }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
-
-        .footer-brand .logo { font-size: 24px; margin-bottom: 20px; }
-        .footer-brand p { color: #888; line-height: 1.6; font-size: 15px; max-width: 350px; }
-
-        .footer-col h4 { color: white; font-size: 18px; font-weight: 700; margin-bottom: 25px; }
-        .footer-col ul { list-style: none; padding: 0; }
-        .footer-col ul li { margin-bottom: 15px; }
-        .footer-col ul li a { color: #999; text-decoration: none; font-size: 15px; transition: 0.3s; cursor: pointer;}
-        .footer-col ul li a:hover { color: var(--neon-cyan); padding-left: 5px; }
-
-        .footer-bottom { border-top: 1px solid #1a1a1a; padding-top: 30px; text-align: center; color: #555; font-size: 14px; }
-        .footer-bottom i { color: var(--neon-pink); }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .hero-grid { grid-template-columns: 1fr; text-align: center; }
-            .hero-btns { justify-content: center; }
-            .stats-grid { grid-template-columns: 1fr; gap: 20px; }
-            .intro-animation-stage { transform: scale(0.6); }
-            .feature-row { flex-direction: column; text-align: center; border-left: none; border-top: 5px solid var(--neon-cyan); }
-            .dev-slide { grid-template-columns: 1fr; }
-            .dev-card { flex-direction: column; text-align: center; }
-            .contact-container { grid-template-columns: 1fr; }
-            .contact-info { border-left: none; border-top: 1px solid var(--glass-border); padding-left: 0; padding-top: 30px;}
-            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
-        }
-    </style>
+    <!-- Landing CSS -->
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=1.3">
 </head>
 <body>
 
+    <!-- Cursor Glow -->
     <div id="cursor-glow"></div>
 
-    <nav class="navbar">
-        <div class="logo"><i class="fas fa-graduation-cap"></i> LEARNING-365</div>
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'dashboard' %}" class="nav-btn">Get Started</a>
-        {% else %}
-            <a href="{% url 'register' %}" class="nav-btn">Get Started</a>
-        {% endif %}
+    <!-- ============================================================
+         NAVBAR
+         ============================================================ -->
+    <nav class="navbar" id="mainNav">
+        <a href="{% url 'home' %}" class="nav-brand">
+            <i class="fas fa-graduation-cap"></i>
+            LEARNING-365
+        </a>
+
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#showcase">AI Lab</a>
+            <a href="#courses">Courses</a>
+            <a href="#community">Community</a>
+            <a href="#developers">Team</a>
+        </div>
+
+        <div class="nav-actions">
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-nav-cta">Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-nav-login">Log In</a>
+                <a href="{% url 'register' %}" class="btn-nav-cta">Get Started</a>
+            {% endif %}
+        </div>
+
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
 
+    <!-- Mobile Nav -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#features">Features</a>
+        <a href="#showcase">AI Lab</a>
+        <a href="#courses">Courses</a>
+        <a href="#community">Community</a>
+        <a href="#developers">Team</a>
+        <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 0;">
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+        {% else %}
+            <a href="{% url 'login' %}">Log In</a>
+            <a href="{% url 'register' %}" style="color: var(--accent-cyan); font-weight: 700;">Get Started</a>
+        {% endif %}
+    </div>
+
+
+    <!-- ============================================================
+         SECTION 1: HERO
+         ============================================================ -->
     <section class="hero-section">
         <div class="hero-grid">
-            <div class="hero-text" data-aos="fade-up">
-                <div class="hero-badge">🚀 Empowering Students</div>
-                <h1 class="hero-title">
-                    Unlock Your Potential with <br> 
-                    <span class="typed-text-grad">Advanced Education</span>
+            <div class="hero-text">
+                <div class="badge badge-cyan hero-badge reveal">
+                    <i class="fas fa-bolt"></i> Next-Gen Learning Platform
+                </div>
+
+                <h1 class="hero-title reveal reveal-delay-1">
+                    Learn. Practice.<br>
+                    <span class="line-gradient">Compete. Build.</span>
                 </h1>
-                <p class="hero-subtitle">Join thousands of students learning AI, Coding, and Design. Access live classes, AI-proctored exams, and a vast library.</p>
-                <div class="hero-btns">
+
+                <p class="hero-subtitle reveal reveal-delay-2">
+                    Master coding, AI, and design through live classes, AI-proctored exams, a full IDE, 
+                    and a gamified community — all in one platform.
+                </p>
+
+                <div class="hero-btns reveal reveal-delay-3">
                     {% if request.user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="btn-fill">Go to Dashboard</a>
-                        <a href="{% url 'all_courses' %}" class="btn-glass">Browse Courses</a>
+                        <a href="{% url 'dashboard' %}" class="btn-primary">
+                            <i class="fas fa-arrow-right"></i> Go to Dashboard
+                        </a>
+                        <a href="{% url 'all_courses' %}" class="btn-outline">Browse Courses</a>
                     {% else %}
-                        <a href="{% url 'register' %}" class="btn-fill">Start Learning</a>
-                        <a href="#features" class="btn-glass">Explore Features</a>
+                        <a href="{% url 'register' %}" class="btn-primary">
+                            <i class="fas fa-rocket"></i> Start Learning — Free
+                        </a>
+                        <a href="#features" class="btn-outline">
+                            <i class="fas fa-play"></i> Explore Features
+                        </a>
                     {% endif %}
                 </div>
+
+                <div class="hero-social-proof reveal reveal-delay-4" data-counter-trigger>
+                    <div class="proof-stat">
+                        <span class="number counter" data-target="{{ total_students }}">0</span>
+                        <span class="label">Students</span>
+                    </div>
+                    <div class="proof-stat">
+                        <span class="number counter" data-target="{{ total_courses_count }}">0</span>
+                        <span class="label">Courses</span>
+                    </div>
+                    <div class="proof-stat">
+                        <span class="number counter" data-target="{{ total_exams }}">0</span>
+                        <span class="label">Exams</span>
+                    </div>
+                    <div class="proof-stat">
+                        <span class="number counter" data-target="{{ total_live_classes }}">0</span>
+                        <span class="label">Live Classes</span>
+                    </div>
+                </div>
             </div>
-            <div class="hero-icon-box" data-aos="zoom-in">
-                <div class="icon-glow"></div>
-                <i class="fas fa-graduation-cap big-hat-icon"></i>
+
+            <div class="hero-visual reveal">
+                <div class="hero-glow"></div>
+                <div class="dashboard-mockup">
+                    <div class="dash-titlebar">
+                        <span class="dot-red"></span>
+                        <span class="dot-yellow"></span>
+                        <span class="dot-green"></span>
+                        <span class="dash-title-text">dashboard — Learning-365</span>
+                    </div>
+                    <div class="dash-content">
+                        <div class="dash-stat-card cyan">
+                            <div class="stat-label">Enrolled</div>
+                            <div class="stat-value">{{ total_courses_count }}</div>
+                        </div>
+                        <div class="dash-stat-card purple">
+                            <div class="stat-label">Exams Taken</div>
+                            <div class="stat-value">{{ total_exams }}</div>
+                        </div>
+                        <div class="dash-stat-card blue">
+                            <div class="stat-label">Documents</div>
+                            <div class="stat-value">{{ total_documents }}</div>
+                        </div>
+                        <div class="dash-stat-card green">
+                            <div class="stat-label">Live Classes</div>
+                            <div class="stat-value">{{ total_live_classes }}</div>
+                        </div>
+                        <div class="dash-progress">
+                            <div class="progress-ring">
+                                <div class="progress-ring-inner">67%</div>
+                            </div>
+                            <div class="progress-info">
+                                <div class="progress-title">Learning Progress</div>
+                                <div class="progress-desc">Across all enrolled courses</div>
+                            </div>
+                        </div>
+                        <div class="dash-chart">
+                            <div class="chart-label">Weekly Activity</div>
+                            <div class="chart-bars">
+                                <div class="chart-bar"></div>
+                                <div class="chart-bar"></div>
+                                <div class="chart-bar"></div>
+                                <div class="chart-bar"></div>
+                                <div class="chart-bar"></div>
+                                <div class="chart-bar"></div>
+                                <div class="chart-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
+
+    <!-- ============================================================
+         SECTION 2: FEATURES GRID
+         ============================================================ -->
     <section id="features" class="features-section">
-        <div class="intro-animation-stage" id="animStage">
-            <div class="blocks-wrapper">
-                <div class="anim-block blk-1"><i class="fas fa-broadcast-tower"></i></div>
-                <div class="anim-block blk-2"><i class="fas fa-brain"></i></div>
-                <div class="anim-block blk-3"><i class="fas fa-book-reader"></i></div>
-            </div>
-            <div class="final-logo-wrapper">
-                <i class="fas fa-graduation-cap logo-icon-l"></i>
-                <div class="logo-text-group">
-                    <span class="char-l">L</span>
-                    <span class="char-rest">EARNING-</span>
-                </div>
-                <span class="logo-365">365</span>
-            </div>
+        <div class="section-header reveal">
+            <div class="badge badge-blue section-badge">Platform</div>
+            <h2 class="section-title">Everything You Need to <span class="text-gradient">Excel</span></h2>
+            <p class="section-desc">A digital campus packed with tools for learning, practicing, competing, and building — all powered by AI.</p>
         </div>
 
-        <div class="section-header" data-aos="fade-down">
-            <h2>Our Core <span>Features</span></h2>
-            <p class="section-subtitle">Experience the power of a digital campus.</p>
-        </div>
-
-        <div class="feature-row" data-aos="fade-right">
-            <div class="f-icon-box"><i class="fas fa-broadcast-tower"></i></div>
-            <div class="feature-content">
-                <h3>Interactive Learning</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check-circle"></i> 500+ Monthly Live Classes</li>
-                    <li><i class="fas fa-check-circle"></i> Doubt Clearing Sessions</li>
-                    <li><i class="fas fa-check-circle"></i> Real-time Interaction</li>
-                </ul>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan"><i class="fas fa-broadcast-tower"></i></div>
+                <h3>Live Classes</h3>
+                <p>Join real-time interactive sessions with faculty. Ask questions, participate in polls, and never miss a class.</p>
             </div>
-        </div>
-
-        <div class="feature-row style-purple" data-aos="fade-right" data-aos-delay="100">
-            <div class="f-icon-box"><i class="fas fa-brain"></i></div>
-            <div class="feature-content">
-                <h3>Smart Assessment</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check-circle"></i> 8500+ AI Proctored Exams</li>
-                    <li><i class="fas fa-check-circle"></i> Facial Recognition Security</li>
-                    <li><i class="fas fa-check-circle"></i> Instant Analytics</li>
-                </ul>
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon purple"><i class="fas fa-brain"></i></div>
+                <h3>AI-Powered Exams</h3>
+                <p>Take AI-proctored exams with facial recognition, auto-grading, and instant analytics on your performance.</p>
             </div>
-        </div>
-
-        <div class="feature-row style-pink" data-aos="fade-right" data-aos-delay="200">
-            <div class="f-icon-box"><i class="fas fa-book-reader"></i></div>
-            <div class="feature-content">
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon blue"><i class="fas fa-code"></i></div>
+                <h3>Syntax Singularity IDE</h3>
+                <p>Write, run, and debug code in 10+ languages directly in your browser with Docker-isolated execution.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-icon green"><i class="fas fa-book-open"></i></div>
                 <h3>Resource Library</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check-circle"></i> 5000+ Digital Resources</li>
-                    <li><i class="fas fa-check-circle"></i> Offline Access Mode</li>
-                    <li><i class="fas fa-check-circle"></i> Community Notes Sharing</li>
-                </ul>
+                <p>Access a rich library of PDFs, notes, and study materials uploaded by faculty. Download and study offline.</p>
             </div>
-        </div>
-
-        <div class="feature-row style-yellow" data-aos="fade-right" data-aos-delay="300">
-            <div class="f-icon-box"><i class="fas fa-coins"></i></div>
-            <div class="feature-content">
-                <h3>Reward System (LMS Coins)</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check-circle"></i> Earn Coins by completing lessons</li>
-                    <li><i class="fas fa-check-circle"></i> Unlock premium courses with coins</li>
-                    <li><i class="fas fa-check-circle"></i> Win coding bounties from peers</li>
-                </ul>
+            <div class="feature-card reveal">
+                <div class="feature-icon amber"><i class="fas fa-coins"></i></div>
+                <h3>LMS Coins & Rewards</h3>
+                <p>Earn coins for completing lessons, passing exams, and solving bounty problems. Climb the leaderboard.</p>
             </div>
-        </div>
-
-        <div class="feature-row style-orange" data-aos="fade-right" data-aos-delay="400">
-            <div class="f-icon-box"><i class="fas fa-satellite-dish"></i></div>
-            <div class="feature-content">
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon pink"><i class="fas fa-users"></i></div>
                 <h3>Community Commlink</h3>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check-circle"></i> Real-time secure group chats</li>
-                    <li><i class="fas fa-check-circle"></i> Live IDE and code sharing</li>
-                    <li><i class="fas fa-check-circle"></i> Direct AI Commander access</li>
+                <p>Real-time course-specific group chats with code sharing, reactions, pinning, and AI moderation.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon cyan"><i class="fas fa-bug"></i></div>
+                <h3>Coding Bounties</h3>
+                <p>Post coding challenges with coin rewards. Solve peers' bounties to earn coins and reputation.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-icon purple"><i class="fas fa-robot"></i></div>
+                <h3>AI Learning Assistant</h3>
+                <p>Get instant help from an AI tutor that understands your course context, code, and learning history.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green"><i class="fas fa-chart-line"></i></div>
+                <h3>Progress Tracking</h3>
+                <p>365-day heatmap, per-lesson tracking, XP system, and detailed analytics on your learning journey.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon blue"><i class="fas fa-tasks"></i></div>
+                <h3>Assignments & Quizzes</h3>
+                <p>Submit assignments, take auto-generated quizzes, and get AI-powered feedback on your submissions.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 3: SYNTAX SINGULARITY — Code IDE Showcase
+         ============================================================ -->
+    <section id="showcase" class="showcase-section">
+        <div class="showcase-layout">
+            <div class="showcase-text reveal">
+                <div class="badge badge-green">Syntax Singularity</div>
+                <h2>Code. Run. <span class="text-gradient">Debug.</span></h2>
+                <p>A full-featured browser IDE with Docker-isolated code execution, multi-language support, and AI-powered code analysis. Write Python, JavaScript, Java, C++, and more — right here.</p>
+                <ul class="showcase-features">
+                    <li><i class="fas fa-check-circle"></i> 10+ programming languages supported</li>
+                    <li><i class="fas fa-check-circle"></i> Docker-isolated secure execution</li>
+                    <li><i class="fas fa-check-circle"></i> AI code review & suggestions</li>
+                    <li><i class="fas fa-check-circle"></i> Syntax highlighting & auto-complete</li>
+                    <li><i class="fas fa-check-circle"></i> Save, share, and submit code</li>
+                </ul>
+            </div>
+
+            <div class="reveal reveal-delay-2">
+                <div class="ide-mockup">
+                    <div class="ide-toolbar">
+                        <div class="ide-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <span class="ide-file-name">main.py</span>
+                        <span class="ide-lang-badge">Python</span>
+                    </div>
+                    <div class="ide-body">
+                        <div class="ide-line">
+                            <span class="ide-line-num">1</span>
+                            <span class="ide-line-code"><span class="syn-keyword">def</span> <span class="syn-function">fibonacci</span><span class="syn-operator">(</span>n<span class="syn-operator">):</span></span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">2</span>
+                            <span class="ide-line-code">    <span class="syn-comment"># Generate Fibonacci sequence</span></span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">3</span>
+                            <span class="ide-line-code">    a, b <span class="syn-operator">=</span> <span class="syn-number">0</span>, <span class="syn-number">1</span></span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">4</span>
+                            <span class="ide-line-code">    <span class="syn-keyword">for</span> _ <span class="syn-keyword">in</span> <span class="syn-function">range</span><span class="syn-operator">(</span>n<span class="syn-operator">):</span></span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">5</span>
+                            <span class="ide-line-code">        <span class="syn-keyword">yield</span> a</span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">6</span>
+                            <span class="ide-line-code">        a, b <span class="syn-operator">=</span> b, a <span class="syn-operator">+</span> b</span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">7</span>
+                            <span class="ide-line-code"></span>
+                        </div>
+                        <div class="ide-line">
+                            <span class="ide-line-num">8</span>
+                            <span class="ide-line-code"><span class="syn-function">print</span><span class="syn-operator">(</span><span class="syn-function">list</span><span class="syn-operator">(</span><span class="syn-function">fibonacci</span><span class="syn-operator">(</span><span class="syn-number">10</span><span class="syn-operator">)))</span></span>
+                        </div>
+                    </div>
+                    <div class="ide-footer">
+                        <div class="ide-run-btn">
+                            <i class="fas fa-play"></i> Run Code
+                        </div>
+                        <div class="ide-ai-hint">
+                            <i class="fas fa-sparkles"></i> AI analysis ready
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 4: AI EXAMINATION DASHBOARD
+         ============================================================ -->
+    <section class="showcase-section">
+        <div class="showcase-layout reverse">
+            <div class="reveal reveal-delay-2">
+                <div class="exam-mockup">
+                    <div class="exam-header">
+                        <div class="exam-header-left">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>AI Proctored Exam</span>
+                        </div>
+                        <div class="exam-timer">
+                            <i class="fas fa-clock"></i> 24:30
+                        </div>
+                    </div>
+                    <div class="exam-body">
+                        <div class="exam-question">
+                            <div class="exam-q-badge">Question 7 of 20</div>
+                            <div class="exam-q-text">What is the time complexity of binary search on a sorted array of n elements?</div>
+                        </div>
+                        <div class="exam-options">
+                            <div class="exam-option">
+                                <span class="opt-marker">A</span>
+                                <span>O(n)</span>
+                            </div>
+                            <div class="exam-option selected">
+                                <span class="opt-marker">B</span>
+                                <span>O(log n)</span>
+                            </div>
+                            <div class="exam-option">
+                                <span class="opt-marker">C</span>
+                                <span>O(n log n)</span>
+                            </div>
+                            <div class="exam-option">
+                                <span class="opt-marker">D</span>
+                                <span>O(n²)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-footer">
+                        <div class="exam-progress">
+                            <div class="exam-progress-bar">
+                                <div class="exam-progress-fill"></div>
+                            </div>
+                            <span class="exam-progress-text">7 / 20</span>
+                        </div>
+                        <div class="exam-score">
+                            <i class="fas fa-star"></i> 85%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-text reveal">
+                <div class="badge badge-purple">AI Examination</div>
+                <h2>Smart. Secure. <span class="text-gradient">Fair.</span></h2>
+                <p>Our AI-powered examination system uses facial recognition, tab-switch detection, and intelligent proctoring to ensure exam integrity — while providing instant grading and detailed analytics.</p>
+                <ul class="showcase-features">
+                    <li><i class="fas fa-check-circle"></i> AI proctoring with facial recognition</li>
+                    <li><i class="fas fa-check-circle"></i> Auto-generated questions from materials</li>
+                    <li><i class="fas fa-check-circle"></i> Instant grading & performance analytics</li>
+                    <li><i class="fas fa-check-circle"></i> Anti-cheating tab-switch detection</li>
+                    <li><i class="fas fa-check-circle"></i> Timed exams with progress tracking</li>
                 </ul>
             </div>
         </div>
-
     </section>
 
-    <section class="stats-wrapper" data-aos="fade-up">
-        <div class="stats-grid">
-            
-            <div class="stat-box js-tilt">
-                <div class="stat-icon"><i class="fas fa-university"></i></div>
-                <div class="stat-content">
-                    <div class="stat-num-wrapper">
-                        <span class="counter" data-target="200">0</span><span>+</span>
-                    </div>
-                    <div class="stat-desc">Educational institutes digitised</div>
-                </div>
+
+    <!-- ============================================================
+         SECTION 5: 365-DAY HEATMAP
+         ============================================================ -->
+    <section class="heatmap-section">
+        <div class="heatmap-container">
+            <div class="section-header reveal">
+                <div class="badge badge-amber section-badge">Consistency</div>
+                <h2 class="section-title">Your <span class="text-gradient">365-Day</span> Learning Journey</h2>
+                <p class="section-desc">Every day counts. Track your learning streaks, daily progress, and build the habit of consistent growth.</p>
             </div>
 
-            <div class="stat-box js-tilt">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-content">
-                    <div class="stat-num-wrapper">
-                        <span class="counter" data-target="700000">0</span><span>+</span>
-                    </div>
-                    <div class="stat-desc">Happy users learning daily</div>
-                </div>
-            </div>
-
-            <div class="stat-box js-tilt">
-                <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
-                <div class="stat-content">
-                    <div class="stat-num-wrapper">
-                        <span class="counter" data-target="4">0</span><span> Lakh Cr+</span>
-                    </div>
-                    <div class="stat-desc">Fee managed securely</div>
-                </div>
-            </div>
-
-            <div class="stat-box js-tilt">
-                <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                <div class="stat-content">
-                    <div class="stat-num-wrapper">
-                        <span class="counter" data-target="71">0</span><span>L+</span>
-                    </div>
-                    <div class="stat-desc">Learning Hours Managed</div>
-                </div>
-            </div>
-
-            <div class="stat-box js-tilt">
-                <div class="stat-icon"><i class="fas fa-handshake"></i></div>
-                <div class="stat-content">
-                    <div class="stat-num-wrapper">
-                        <span class="counter" data-target="8">0</span><span>L+</span>
-                    </div>
-                    <div class="stat-desc">Requests Resolved on Platform</div>
-                </div>
-            </div>
-
-            <div class="stat-box js-tilt">
-                <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
-                <div class="stat-content">
-                    <div class="stat-num-wrapper">
-                        <span class="counter" data-target="40">0</span><span>+</span>
-                    </div>
-                    <div class="stat-desc">Dashboards for Intelligent Decisions</div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section id="developers" class="dev-section">
-        <div class="section-header" data-aos="fade-up">
-            <h2>Meet Our <span class="text-grad-custom">Developers</span></h2>
-            <p class="section-subtitle-sm">The brilliant minds behind Learning-365</p>
-        </div>
-
-        <div class="dev-carousel">
-            <div class="dev-track">
-                
-                <div class="dev-slide">
-                    <div class="dev-card">
-                        <div class="dev-avatar-container">
-                            <div class="static-ring ring-cyan"></div>
-                            <img src="{% static 'images/dev1.png' %}" class="dev-img" alt="Soham">
-                        </div>
-                        <div class="dev-info">
-                            <span class="role-text role-cyan">"UI/UX Designer"</span>
-                            <h3>Soham Shymal</h3>
-                            <div class="dev-sub-role">(React & UI)</div>
-                            <div class="socials">
-                                <a href="https://github.com/Soham2319" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                                <a href="#" aria-label="Email"><i class="fas fa-envelope"></i></a>
-                                <a href="https://www.instagram.com/rik___009" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            </div>
+            <div class="heatmap-layout">
+                <div class="heatmap-stats reveal">
+                    <div class="heatmap-stat-card">
+                        <div class="heatmap-stat-icon fire"><i class="fas fa-fire"></i></div>
+                        <div class="heatmap-stat-info">
+                            <div class="stat-val" style="color: var(--accent-amber);">42 Days</div>
+                            <div class="stat-lbl">Current Streak</div>
                         </div>
                     </div>
-
-                    <div class="dev-card">
-                        <div class="dev-avatar-container">
-                            <div class="static-ring ring-purple"></div>
-                            <img src="{% static 'images/dev2.png' %}" class="dev-img" alt="Anubhav">
+                    <div class="heatmap-stat-card">
+                        <div class="heatmap-stat-icon calendar"><i class="fas fa-calendar-check"></i></div>
+                        <div class="heatmap-stat-info">
+                            <div class="stat-val" style="color: var(--accent-cyan);">218 Days</div>
+                            <div class="stat-lbl">Total Active Days</div>
                         </div>
-                        <div class="dev-info">
-                            <span class="role-text role-purple">"Backend developer"</span>
-                            <h3>Anubhav Samanta</h3>
-                            <div class="dev-sub-role">Backend & API Developer</div>
-                            <div class="socials">
-                                <a href="https://github.com/Anubhav2321" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                                <a href="#" aria-label="Email"><i class="fas fa-envelope"></i></a>
-                                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            </div>
+                    </div>
+                    <div class="heatmap-stat-card">
+                        <div class="heatmap-stat-icon clock"><i class="fas fa-clock"></i></div>
+                        <div class="heatmap-stat-info">
+                            <div class="stat-val" style="color: var(--accent-purple);">1,240 hrs</div>
+                            <div class="stat-lbl">Total Learning Time</div>
+                        </div>
+                    </div>
+                    <div class="heatmap-stat-card">
+                        <div class="heatmap-stat-icon trophy"><i class="fas fa-trophy"></i></div>
+                        <div class="heatmap-stat-info">
+                            <div class="stat-val" style="color: var(--accent-green);">89 Days</div>
+                            <div class="stat-lbl">Longest Streak</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="dev-slide">
-                    <div class="dev-card">
-                        <div class="dev-avatar-container">
-                            <div class="static-ring ring-cyan"></div>
-                            <img src="{% static 'images/dev3.png' %}" class="dev-img" alt="Avik">
-                        </div>
-                        <div class="dev-info">
-                            <span class="role-text role-cyan">"Database Administrator"</span>
-                            <h3>Avik Kulavi</h3>
-                            <div class="dev-sub-role">Database & Data Management</div>
-                            <div class="socials">
-                                <a href="https://github.com/avikkulavi1-max" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                                <a href="#" aria-label="Email"><i class="fas fa-envelope"></i></a>
-                                <a href="https://www.instagram.com/avikkulavi" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            </div>
+                <div class="heatmap-visual reveal reveal-delay-2">
+                    <div class="heatmap-title-row">
+                        <h4>Activity Overview</h4>
+                        <div class="heatmap-legend">
+                            Less
+                            <span class="legend-block" style="background: rgba(255,255,255,0.04);"></span>
+                            <span class="legend-block" style="background: rgba(34,211,238,0.15);"></span>
+                            <span class="legend-block" style="background: rgba(34,211,238,0.35);"></span>
+                            <span class="legend-block" style="background: rgba(34,211,238,0.55);"></span>
+                            <span class="legend-block" style="background: rgba(34,211,238,0.8);"></span>
+                            More
                         </div>
                     </div>
-                    
-                    <div class="dev-card">
-                        <div class="dev-avatar-container">
-                            <div class="static-ring ring-purple"></div>
-                            <img src="{% static 'images/dev4.png' %}" class="dev-img" alt="Abhishek">
+
+                    <div class="heatmap-months">
+                        <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span>
+                        <span>May</span><span>Jun</span><span>Jul</span><span>Aug</span>
+                        <span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                    </div>
+
+                    <div class="heatmap-grid-wrapper">
+                        <div class="heatmap-days">
+                            <span></span>
+                            <span>Mon</span>
+                            <span></span>
+                            <span>Wed</span>
+                            <span></span>
+                            <span>Fri</span>
+                            <span></span>
                         </div>
-                        <div class="dev-info">
-                            <span class="role-text role-purple">"Ai Intelligenc"</span>
-                            <h3>Abhishek Chowdhoury</h3>
-                            <div class="dev-sub-role">AI Intelligence</div>
-                            <div class="socials">
-                                <a href="https://github.com/Abhishek2187" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                                <a href="#" aria-label="Email"><i class="fas fa-envelope"></i></a>
-                                <a href="https://www.instagram.com/its__mr___abhishek" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            </div>
+                        <div class="heatmap-grid" id="heatmapGrid">
+                            <!-- Cells generated by JS -->
                         </div>
                     </div>
                 </div>
-
-            </div>
-
-            <div class="dots">
-                <div class="dot active" onclick="moveSlide(0)"></div>
-                <div class="dot" onclick="moveSlide(1)"></div>
             </div>
         </div>
     </section>
 
-    <section id="help-center">
+
+    <!-- ============================================================
+         SECTION 6: GAMIFICATION / LMS COINS
+         ============================================================ -->
+    <section class="gamification-section">
+        <div class="gamification-container">
+            <div class="section-header reveal">
+                <div class="badge badge-amber section-badge">Gamification</div>
+                <h2 class="section-title">Learn. Earn. <span class="text-gradient">Compete.</span></h2>
+                <p class="section-desc">LMS Coins turn your learning into a rewarding experience. Complete challenges, climb leaderboards, and unlock achievements.</p>
+            </div>
+
+            <div class="gamification-flow reveal">
+                <div class="flow-step">
+                    <span class="step-icon step-icon--learn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="44" height="44" fill="none">
+                            <defs>
+                                <linearGradient id="learnGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#22d3ee"/>
+                                    <stop offset="100%" stop-color="#6366f1"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="6" y="10" width="26" height="30" rx="3" stroke="url(#learnGrad)" stroke-width="2.5" fill="none"/>
+                            <rect x="16" y="6" width="26" height="30" rx="3" fill="url(#learnGrad)" opacity="0.13"/>
+                            <rect x="16" y="6" width="26" height="30" rx="3" stroke="url(#learnGrad)" stroke-width="2.5" fill="none"/>
+                            <line x1="21" y1="14" x2="37" y2="14" stroke="url(#learnGrad)" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="21" y1="20" x2="33" y2="20" stroke="url(#learnGrad)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                            <line x1="21" y1="26" x2="35" y2="26" stroke="url(#learnGrad)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                        </svg>
+                    </span>
+                    <span class="step-label">Learn</span>
+                </div>
+                <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="flow-step">
+                    <span class="step-icon step-icon--complete">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="44" height="44" fill="none">
+                            <defs>
+                                <linearGradient id="completeGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#34d399"/>
+                                    <stop offset="100%" stop-color="#06b6d4"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="24" cy="24" r="18" fill="url(#completeGrad)" opacity="0.12"/>
+                            <circle cx="24" cy="24" r="18" stroke="url(#completeGrad)" stroke-width="2.5" fill="none"/>
+                            <polyline points="15,24 21,30 33,18" stroke="url(#completeGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                    </span>
+                    <span class="step-label">Complete</span>
+                </div>
+                <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="flow-step">
+                    <span class="step-icon step-icon--earn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="44" height="44" fill="none">
+                            <defs>
+                                <linearGradient id="coinGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fbbf24"/>
+                                    <stop offset="100%" stop-color="#f59e0b"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="20" cy="28" r="14" fill="url(#coinGrad)" opacity="0.10"/>
+                            <circle cx="20" cy="28" r="14" stroke="url(#coinGrad)" stroke-width="2.5" fill="none"/>
+                            <text x="20" y="33" text-anchor="middle" font-size="14" font-weight="700" fill="url(#coinGrad)" font-family="Inter, sans-serif">$</text>
+                            <circle cx="30" cy="18" r="10" stroke="url(#coinGrad)" stroke-width="2" fill="none" opacity="0.4"/>
+                            <text x="30" y="22" text-anchor="middle" font-size="10" font-weight="700" fill="url(#coinGrad)" font-family="Inter, sans-serif" opacity="0.4">$</text>
+                        </svg>
+                    </span>
+                    <span class="step-label">Earn Coins</span>
+                </div>
+                <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="flow-step">
+                    <span class="step-icon step-icon--climb">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="44" height="44" fill="none">
+                            <defs>
+                                <linearGradient id="climbGrad" x1="0" y1="48" x2="48" y2="0" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#818cf8"/>
+                                    <stop offset="100%" stop-color="#c084fc"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="8" y="30" width="7" height="12" rx="2" fill="url(#climbGrad)" opacity="0.3"/>
+                            <rect x="18" y="22" width="7" height="20" rx="2" fill="url(#climbGrad)" opacity="0.5"/>
+                            <rect x="28" y="14" width="7" height="28" rx="2" fill="url(#climbGrad)" opacity="0.75"/>
+                            <rect x="38" y="6" width="7" height="36" rx="2" fill="url(#climbGrad)"/>
+                            <polyline points="10,26 20,18 30,10 42,4" stroke="url(#climbGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            <polygon points="42,4 42,11 35,7" fill="url(#climbGrad)"/>
+                        </svg>
+                    </span>
+                    <span class="step-label">Climb</span>
+                </div>
+                <span class="flow-arrow"><i class="fas fa-arrow-right"></i></span>
+                <div class="flow-step">
+                    <span class="step-icon step-icon--compete">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="44" height="44" fill="none">
+                            <defs>
+                                <linearGradient id="trophyGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fbbf24"/>
+                                    <stop offset="100%" stop-color="#f97316"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M14 8h20v2a10 10 0 01-20 0V8z" fill="url(#trophyGrad)" opacity="0.15"/>
+                            <path d="M14 8h20v2a10 10 0 01-20 0V8z" stroke="url(#trophyGrad)" stroke-width="2.5" fill="none"/>
+                            <path d="M14 12H8a4 4 0 004 4h2" stroke="url(#trophyGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+                            <path d="M34 12h6a4 4 0 01-4 4h-2" stroke="url(#trophyGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+                            <line x1="24" y1="22" x2="24" y2="30" stroke="url(#trophyGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                            <rect x="17" y="30" width="14" height="4" rx="2" fill="url(#trophyGrad)" opacity="0.3"/>
+                            <rect x="17" y="30" width="14" height="4" rx="2" stroke="url(#trophyGrad)" stroke-width="2" fill="none"/>
+                            <path d="M22 14l2 2 2-2" stroke="url(#trophyGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>
+                        </svg>
+                    </span>
+                    <span class="step-label">Compete</span>
+                </div>
+            </div>
+
+            <div class="gamification-grid">
+                <div class="coins-card reveal">
+                    <div class="coins-display">
+                        <i class="fas fa-coins"></i>
+                        <span class="coin-count">2,450</span>
+                    </div>
+                    <div class="coins-label">LMS Coins Earned</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; max-width: 300px;">
+                        Earn coins by completing lessons, passing exams, solving bounties, and engaging in the community. 
+                        Use coins to unlock premium courses and reward peers.
+                    </p>
+                </div>
+
+                <div class="leaderboard-card reveal reveal-delay-1">
+                    <div class="leaderboard-title">
+                        <i class="fas fa-crown"></i> Leaderboard
+                    </div>
+                    <div class="lb-entry">
+                        <span class="lb-rank gold">1</span>
+                        <span class="lb-name">Soham S.</span>
+                        <span class="lb-coins">4,820 🪙</span>
+                    </div>
+                    <div class="lb-entry">
+                        <span class="lb-rank silver">2</span>
+                        <span class="lb-name">Anubhav S.</span>
+                        <span class="lb-coins">4,210 🪙</span>
+                    </div>
+                    <div class="lb-entry">
+                        <span class="lb-rank bronze">3</span>
+                        <span class="lb-name">Avik K.</span>
+                        <span class="lb-coins">3,890 🪙</span>
+                    </div>
+                    <div class="lb-entry">
+                        <span class="lb-rank default">4</span>
+                        <span class="lb-name">Abhishek C.</span>
+                        <span class="lb-coins">3,450 🪙</span>
+                    </div>
+                </div>
+
+                <div class="achievements-row reveal reveal-delay-2">
+                    <div class="achievement-badge ach-badge--streak">
+                        <span class="ach-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none">
+                                <defs>
+                                    <linearGradient id="streakGrad" x1="12" y1="36" x2="28" y2="4" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#f97316"/>
+                                        <stop offset="50%" stop-color="#ef4444"/>
+                                        <stop offset="100%" stop-color="#fbbf24"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M20 4C20 4 10 14 10 22a10 10 0 0020 0C30 14 20 4 20 4z" fill="url(#streakGrad)" opacity="0.15"/>
+                                <path d="M20 4C20 4 10 14 10 22a10 10 0 0020 0C30 14 20 4 20 4z" stroke="url(#streakGrad)" stroke-width="2.2" fill="none"/>
+                                <path d="M20 16c0 0-4 4-4 8a4 4 0 008 0c0-4-4-8-4-8z" fill="url(#streakGrad)" opacity="0.35"/>
+                            </svg>
+                        </span>
+                        <span class="ach-label">7-Day Streak</span>
+                    </div>
+                    <div class="achievement-badge ach-badge--speed">
+                        <span class="ach-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none">
+                                <defs>
+                                    <linearGradient id="speedGrad" x1="8" y1="36" x2="32" y2="4" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#22d3ee"/>
+                                        <stop offset="100%" stop-color="#facc15"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="22,3 10,22 18,22 16,37 30,16 22,16" fill="url(#speedGrad)" opacity="0.15"/>
+                                <polygon points="22,3 10,22 18,22 16,37 30,16 22,16" stroke="url(#speedGrad)" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+                            </svg>
+                        </span>
+                        <span class="ach-label">Speed Solver</span>
+                    </div>
+                    <div class="achievement-badge ach-badge--perfect">
+                        <span class="ach-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none">
+                                <defs>
+                                    <linearGradient id="targetGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#f43f5e"/>
+                                        <stop offset="100%" stop-color="#ec4899"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="20" cy="20" r="16" stroke="url(#targetGrad)" stroke-width="2.2" fill="none" opacity="0.35"/>
+                                <circle cx="20" cy="20" r="10" stroke="url(#targetGrad)" stroke-width="2" fill="none" opacity="0.55"/>
+                                <circle cx="20" cy="20" r="4" fill="url(#targetGrad)"/>
+                                <line x1="20" y1="2" x2="20" y2="8" stroke="url(#targetGrad)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                                <line x1="20" y1="32" x2="20" y2="38" stroke="url(#targetGrad)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                                <line x1="2" y1="20" x2="8" y2="20" stroke="url(#targetGrad)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                                <line x1="32" y1="20" x2="38" y2="20" stroke="url(#targetGrad)" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                            </svg>
+                        </span>
+                        <span class="ach-label">Perfect Score</span>
+                    </div>
+                    <div class="achievement-badge ach-badge--top10">
+                        <span class="ach-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none">
+                                <defs>
+                                    <linearGradient id="medalGrad" x1="12" y1="4" x2="28" y2="36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#fbbf24"/>
+                                        <stop offset="100%" stop-color="#f59e0b"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="14,4 12,16 20,12 28,16 26,4" fill="url(#medalGrad)" opacity="0.2"/>
+                                <line x1="14" y1="4" x2="12" y2="16" stroke="url(#medalGrad)" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="26" y1="4" x2="28" y2="16" stroke="url(#medalGrad)" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="20" cy="24" r="12" fill="url(#medalGrad)" opacity="0.12"/>
+                                <circle cx="20" cy="24" r="12" stroke="url(#medalGrad)" stroke-width="2.2" fill="none"/>
+                                <circle cx="20" cy="24" r="7" stroke="url(#medalGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+                                <path d="M17 24l2 2 4-5" stroke="url(#medalGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                            </svg>
+                        </span>
+                        <span class="ach-label">Top 10</span>
+                    </div>
+                    <div class="achievement-badge ach-badge--coins">
+                        <span class="ach-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none">
+                                <defs>
+                                    <linearGradient id="diamondGrad" x1="8" y1="8" x2="32" y2="36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#818cf8"/>
+                                        <stop offset="50%" stop-color="#22d3ee"/>
+                                        <stop offset="100%" stop-color="#c084fc"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="20,4 36,16 20,36 4,16" fill="url(#diamondGrad)" opacity="0.12"/>
+                                <polygon points="20,4 36,16 20,36 4,16" stroke="url(#diamondGrad)" stroke-width="2.2" stroke-linejoin="round" fill="none"/>
+                                <polyline points="4,16 20,20 36,16" stroke="url(#diamondGrad)" stroke-width="1.5" fill="none" opacity="0.4"/>
+                                <line x1="20" y1="4" x2="20" y2="36" stroke="url(#diamondGrad)" stroke-width="1.5" opacity="0.3"/>
+                                <polyline points="12,10 20,16 28,10" stroke="url(#diamondGrad)" stroke-width="1.5" fill="none" opacity="0.25"/>
+                            </svg>
+                        </span>
+                        <span class="ach-label">1K Coins</span>
+                    </div>
+                    <div class="achievement-badge ach-badge--quiz">
+                        <span class="ach-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" fill="none">
+                                <defs>
+                                    <linearGradient id="brainGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#a78bfa"/>
+                                        <stop offset="100%" stop-color="#ec4899"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="20" cy="20" r="16" fill="url(#brainGrad)" opacity="0.10"/>
+                                <circle cx="20" cy="20" r="16" stroke="url(#brainGrad)" stroke-width="2.2" fill="none"/>
+                                <path d="M14 22c0-4 2-6 6-6s6 2 6 6c0 2-2 3-4 3v2" stroke="url(#brainGrad)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                                <circle cx="20" cy="30" r="1.2" fill="url(#brainGrad)"/>
+                                <path d="M12 14c-1-3 1-6 4-7" stroke="url(#brainGrad)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.3"/>
+                                <path d="M28 14c1-3-1-6-4-7" stroke="url(#brainGrad)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.3"/>
+                            </svg>
+                        </span>
+                        <span class="ach-label">Quiz Master</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 7: COMMUNITY
+         ============================================================ -->
+    <section id="community" class="community-section">
+        <div class="community-container">
+            <div class="community-layout">
+                <div class="showcase-text reveal">
+                    <div class="badge badge-cyan">Community</div>
+                    <h2>Connect. Discuss. <span class="text-gradient">Collaborate.</span></h2>
+                    <p>Every course has a real-time community chat — share code, ask questions, earn bounties, and learn together. AI moderation keeps the space safe and productive.</p>
+                    <ul class="showcase-features">
+                        <li><i class="fas fa-check-circle"></i> Real-time group messaging per course</li>
+                        <li><i class="fas fa-check-circle"></i> Code sharing with syntax highlighting</li>
+                        <li><i class="fas fa-check-circle"></i> Bounty system for peer help</li>
+                        <li><i class="fas fa-check-circle"></i> AI-powered content moderation</li>
+                        <li><i class="fas fa-check-circle"></i> Pin messages, reactions, threads</li>
+                    </ul>
+                </div>
+
+                <div class="reveal reveal-delay-2">
+                    <div class="discussion-mockup">
+                        <div class="discussion-header">
+                            <i class="fas fa-hashtag"></i>
+                            <span>python-fundamentals</span>
+                            <span class="discussion-channel">12 online</span>
+                        </div>
+                        <div class="discussion-body">
+                            <div class="disc-message">
+                                <div class="disc-avatar blue">SK</div>
+                                <div class="disc-content">
+                                    <div class="disc-meta">
+                                        <span class="disc-username">Soham K.</span>
+                                        <span class="disc-time">2 min ago</span>
+                                        <span class="disc-bounty">🪙 50 bounty</span>
+                                    </div>
+                                    <div class="disc-text">Can someone explain how Python generators work with large datasets? I'm running out of memory with lists.</div>
+                                </div>
+                            </div>
+                            <div class="disc-message">
+                                <div class="disc-avatar purple">AS</div>
+                                <div class="disc-content">
+                                    <div class="disc-meta">
+                                        <span class="disc-username">Anubhav S.</span>
+                                        <span class="disc-time">1 min ago</span>
+                                    </div>
+                                    <div class="disc-text">Generators use lazy evaluation — they yield one item at a time instead of storing everything in memory:</div>
+                                    <div class="disc-code">def read_large_file(path):
+    with open(path) as f:
+        for line in f:
+            yield line.strip()</div>
+                                    <div class="disc-reactions">
+                                        <span class="disc-reaction">👍 3</span>
+                                        <span class="disc-reaction">🔥 1</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="disc-message">
+                                <div class="disc-avatar cyan">AK</div>
+                                <div class="disc-content">
+                                    <div class="disc-meta">
+                                        <span class="disc-username">Avik K.</span>
+                                        <span class="disc-time">just now</span>
+                                    </div>
+                                    <div class="disc-text">Great explanation! Also check out <code style="color: var(--accent-cyan); background: rgba(34,211,238,0.1); padding: 2px 6px; border-radius: 4px;">itertools</code> for even more powerful lazy operations.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 8: COURSE SHOWCASE
+         ============================================================ -->
+    <section id="courses" class="courses-section">
+        <div class="courses-container">
+            <div class="section-header reveal">
+                <div class="badge badge-blue section-badge">Courses</div>
+                <h2 class="section-title">Featured <span class="text-gradient">Courses</span></h2>
+                <p class="section-desc">Explore our curated courses designed by industry experts. Start learning today.</p>
+            </div>
+
+            <div class="courses-grid">
+                {% for course in featured_courses %}
+                <div class="course-card reveal {% if forloop.counter > 1 %}reveal-delay-{{ forloop.counter0 }}{% endif %}">
+                    <div class="course-thumb">
+                        {% if course.thumbnail %}
+                            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                        {% else %}
+                            <i class="fas fa-graduation-cap course-thumb-placeholder"></i>
+                        {% endif %}
+                        <span class="course-difficulty {% if course.difficulty_level == 'easy' %}diff-easy{% elif course.difficulty_level == 'medium' %}diff-medium{% else %}diff-hard{% endif %}">
+                            {{ course.difficulty_level|default:"Medium" }}
+                        </span>
+                    </div>
+                    <div class="course-info">
+                        <h3>{{ course.title }}</h3>
+                        <div class="course-meta">
+                            <span><i class="fas fa-user"></i> {{ course.instructor.first_name|default:"Faculty" }}</span>
+                            <span><i class="fas fa-signal"></i> {{ course.difficulty_level|default:"Medium" }}</span>
+                        </div>
+                        <p class="course-desc">{{ course.description|truncatewords:20 }}</p>
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'course_watch' course.id %}" class="course-cta">
+                                View Course <i class="fas fa-arrow-right"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'register' %}" class="course-cta">
+                                Enroll Now <i class="fas fa-arrow-right"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="course-card reveal" style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+                    <div class="feature-icon blue" style="margin: 0 auto 16px;"><i class="fas fa-plus"></i></div>
+                    <h3>Courses Coming Soon</h3>
+                    <p style="color: var(--text-secondary);">New courses are being prepared. Stay tuned!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 9: DEVELOPERS
+         ============================================================ -->
+    <section id="developers" class="developers-section">
+        <div class="developers-container">
+            <div class="section-header reveal">
+                <div class="badge badge-purple section-badge">Team</div>
+                <h2 class="section-title">Meet Our <span class="text-gradient">Developers</span></h2>
+                <p class="section-desc">The brilliant minds behind Learning-365.</p>
+            </div>
+
+            <div class="developers-grid">
+                <!-- Dev 1: Soham Shymal -->
+                <div class="dev-card dev-card--cyan reveal">
+                    <div class="dev-avatar-wrap">
+                        <div class="dev-avatar-ring">
+                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev1.png' %}');" title="Soham Shymal"></div>
+                        </div>
+                        <div class="dev-status-badge"><i class="fas fa-palette"></i></div>
+                    </div>
+                    <h3>Soham Shymal</h3>
+                    <div class="dev-role">UI/UX Designer</div>
+                    <p class="dev-bio">Crafting pixel-perfect interfaces and seamless user experiences. Passionate about design systems, motion design, and accessibility.</p>
+                    <div class="dev-tech-stack">
+                        <span class="dev-tech-pill">React</span>
+                        <span class="dev-tech-pill">Figma</span>
+                        <span class="dev-tech-pill">CSS</span>
+                        <span class="dev-tech-pill">Motion</span>
+                    </div>
+                    <div class="dev-stats-row">
+                        <div class="dev-stat">
+                            <i class="fas fa-code-commit"></i>
+                            <span>320+</span>
+                            <small>Commits</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-layer-group"></i>
+                            <span>45+</span>
+                            <small>Components</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-paint-brush"></i>
+                            <span>12</span>
+                            <small>Designs</small>
+                        </div>
+                    </div>
+                    <div class="dev-socials">
+                        <a href="https://github.com/Soham2319" aria-label="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.instagram.com/rik___009" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Dev 2: Anubhav Samanta -->
+                <div class="dev-card dev-card--purple reveal reveal-delay-1">
+                    <div class="dev-avatar-wrap">
+                        <div class="dev-avatar-ring">
+                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev2.png' %}');" title="Anubhav Samanta"></div>
+                        </div>
+                        <div class="dev-status-badge"><i class="fas fa-server"></i></div>
+                    </div>
+                    <h3>Anubhav Samanta</h3>
+                    <div class="dev-role">Backend Developer</div>
+                    <p class="dev-bio">Architecting scalable APIs and robust backend systems. Specialized in Django, real-time systems, and cloud infrastructure.</p>
+                    <div class="dev-tech-stack">
+                        <span class="dev-tech-pill">Django</span>
+                        <span class="dev-tech-pill">Python</span>
+                        <span class="dev-tech-pill">REST API</span>
+                        <span class="dev-tech-pill">Docker</span>
+                    </div>
+                    <div class="dev-stats-row">
+                        <div class="dev-stat">
+                            <i class="fas fa-code-commit"></i>
+                            <span>580+</span>
+                            <small>Commits</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-plug"></i>
+                            <span>30+</span>
+                            <small>APIs</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-database"></i>
+                            <span>18</span>
+                            <small>Models</small>
+                        </div>
+                    </div>
+                    <div class="dev-socials">
+                        <a href="https://github.com/Anubhav2321" aria-label="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Dev 3: Avik Kulavi -->
+                <div class="dev-card dev-card--green reveal reveal-delay-2">
+                    <div class="dev-avatar-wrap">
+                        <div class="dev-avatar-ring">
+                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev3.png' %}');" title="Avik Kulavi"></div>
+                        </div>
+                        <div class="dev-status-badge"><i class="fas fa-database"></i></div>
+                    </div>
+                    <h3>Avik Kulavi</h3>
+                    <div class="dev-role">Database Administrator</div>
+                    <p class="dev-bio">Designing optimized database schemas and ensuring data integrity. Expert in query optimization, indexing, and data migrations.</p>
+                    <div class="dev-tech-stack">
+                        <span class="dev-tech-pill">PostgreSQL</span>
+                        <span class="dev-tech-pill">Redis</span>
+                        <span class="dev-tech-pill">SQL</span>
+                        <span class="dev-tech-pill">MongoDB</span>
+                    </div>
+                    <div class="dev-stats-row">
+                        <div class="dev-stat">
+                            <i class="fas fa-code-commit"></i>
+                            <span>270+</span>
+                            <small>Commits</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-table"></i>
+                            <span>25+</span>
+                            <small>Tables</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-bolt"></i>
+                            <span>50+</span>
+                            <small>Queries</small>
+                        </div>
+                    </div>
+                    <div class="dev-socials">
+                        <a href="https://github.com/avikkulavi1-max" aria-label="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.instagram.com/avikkulavi" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Dev 4: Abhishek Chowdhoury -->
+                <div class="dev-card dev-card--amber reveal reveal-delay-3">
+                    <div class="dev-avatar-wrap">
+                        <div class="dev-avatar-ring">
+                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev4.png' %}');" title="Abhishek Chowdhoury"></div>
+                        </div>
+                        <div class="dev-status-badge"><i class="fas fa-robot"></i></div>
+                    </div>
+                    <h3>Abhishek Chowdhoury</h3>
+                    <div class="dev-role">AI Engineer</div>
+                    <p class="dev-bio">Building intelligent systems with machine learning and NLP. Focused on AI proctoring, auto-grading, and smart content generation.</p>
+                    <div class="dev-tech-stack">
+                        <span class="dev-tech-pill">TensorFlow</span>
+                        <span class="dev-tech-pill">NLP</span>
+                        <span class="dev-tech-pill">OpenCV</span>
+                        <span class="dev-tech-pill">Python</span>
+                    </div>
+                    <div class="dev-stats-row">
+                        <div class="dev-stat">
+                            <i class="fas fa-code-commit"></i>
+                            <span>410+</span>
+                            <small>Commits</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-brain"></i>
+                            <span>8</span>
+                            <small>Models</small>
+                        </div>
+                        <div class="dev-stat">
+                            <i class="fas fa-chart-line"></i>
+                            <span>95%</span>
+                            <small>Accuracy</small>
+                        </div>
+                    </div>
+                    <div class="dev-socials">
+                        <a href="https://github.com/Abhishek2187" aria-label="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.instagram.com/its__mr___abhishek" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 10: FINAL CTA
+         ============================================================ -->
+    <section class="final-cta-section">
+        <div class="final-cta-content reveal">
+            <h2>Your Next <span class="text-gradient">365 Days</span> Start Here.</h2>
+            <p>Join thousands of students building their future with AI-powered learning, gamified progress, and a supportive community.</p>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-cta-large">
+                    <i class="fas fa-arrow-right"></i> Go to Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn-cta-large">
+                    <i class="fas fa-rocket"></i> Start Your Journey — Free
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 11: HELP CENTER / CONTACT (hidden, revealed on click)
+         ============================================================ -->
+    <section id="help-center" class="help-section">
         <div class="section-header">
-            <h2>Help Center & <span>Contact Us</span></h2>
-            <p class="section-subtitle">Get in touch with our team for any support or inquiries.</p>
+            <h2 class="section-title">Help Center & <span class="text-gradient">Contact Us</span></h2>
+            <p class="section-desc">Get in touch with our team for any support or inquiries.</p>
         </div>
-        
+
         <div class="contact-container">
             <div class="contact-form">
-                <h3 class="contact-heading-cyan">Send a Message</h3>
+                <h3 class="contact-heading cyan">Send a Message</h3>
                 <form action="{% url 'contact_developers' %}" method="POST">
                     {% csrf_token %}
-                    <div class="form-grid-2">
+                    <div class="form-row">
                         <input type="text" name="first_name" placeholder="First Name" required>
                         <input type="text" name="last_name" placeholder="Last Name" required>
                     </div>
                     <input type="email" name="email" placeholder="Email Address" required>
                     <textarea name="message" rows="5" placeholder="How can we help you?" required></textarea>
-                    <button type="submit" class="btn-fill btn-submit-full">Submit Request</button>
+                    <button type="submit" class="contact-submit-btn">Submit Request</button>
                 </form>
             </div>
-            
+
             <div class="contact-info">
-                <h3 class="contact-heading-purple">Contact Information</h3>
-                <div class="info-item"><i class="fas fa-map-marker-alt"></i> <span>Tech Park, Sector 5, Cyber City</span></div>
-                <div class="info-item"><i class="fas fa-envelope"></i> <span>support@learning365.com</span></div>
-                <div class="info-item"><i class="fas fa-phone"></i> <span>+91 98765 43210</span></div>
-                
-                <h4 class="contact-subheading">Connect With Us</h4>
-                <div class="social-links-lg">
+                <h3 class="contact-heading purple">Contact Information</h3>
+                <div class="contact-info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Tech Park, Sector 5, Cyber City</span>
+                </div>
+                <div class="contact-info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>support@learning365.com</span>
+                </div>
+                <div class="contact-info-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+91 98765 43210</span>
+                </div>
+
+                <h4 class="contact-socials-title">Connect With Us</h4>
+                <div class="contact-socials">
                     <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
@@ -806,235 +1125,123 @@
         </div>
     </section>
 
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <div class="logo">
-                    <i class="fas fa-graduation-cap icon-cyan"></i> LEARNING-365
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-graduation-cap"></i> LEARNING-365
+                    </div>
+                    <p>Empowering the next generation of learners with AI-powered tools, community support, and expert guidance.</p>
+                    <div class="footer-socials">
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                    </div>
                 </div>
-                <p>Empowering the next generation of learners with advanced tools, community support, and expert guidance.</p>
-            </div>
-            
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li>
-                        {% if request.user.is_authenticated %}
-                            <a href="{% url 'all_courses' %}">Browse Courses</a>
-                        {% else %}
-                            <a href="{% url 'register' %}">Browse Courses</a>
-                        {% endif %}
-                    </li>
-                    <li>
-                        {% if request.user.is_authenticated %}
-                            <a href="{% url 'live_classes' %}">Live Classes</a>
-                        {% else %}
-                            <a href="{% url 'register' %}">Live Classes</a>
-                        {% endif %}
-                    </li>
-                    <li>
-                        {% if request.user.is_authenticated %}
-                            <a href="{% url 'student_exam_list' %}">AI Exams</a>
-                        {% else %}
-                            <a href="{% url 'register' %}">AI Exams</a>
-                        {% endif %}
-                    </li>
-                </ul>
+
+                <div class="footer-col">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li>
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'all_courses' %}">Browse Courses</a>
+                            {% else %}
+                                <a href="{% url 'register' %}">Browse Courses</a>
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'live_classes' %}">Live Classes</a>
+                            {% else %}
+                                <a href="{% url 'register' %}">Live Classes</a>
+                            {% endif %}
+                        </li>
+                        <li>
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'student_exam_list' %}">AI Exams</a>
+                            {% else %}
+                                <a href="{% url 'register' %}">AI Exams</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>AI Lab</h4>
+                    <ul>
+                        <li><a href="#showcase">Syntax Singularity</a></li>
+                        <li><a href="#showcase">Code Execution</a></li>
+                        <li><a href="#showcase">AI Assistant</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="#community">Discussion</a></li>
+                        <li><a href="#community">Coding Bounties</a></li>
+                        <li><a href="#developers">Our Team</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#" class="open-contact-btn">Help Center</a></li>
+                        <li><a href="#" class="open-contact-btn">Contact Us</a></li>
+                        <li><a href="#" id="openTermsModal">Terms of Use</a></li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="footer-col">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#" class="open-contact-btn">Help Center</a></li>
-                    <li><a href="#" class="open-contact-btn">Contact Us</a></li>
-                    <li><a href="#" id="openTermsModal">Terms of Use</a></li>
-                </ul>
+            <div class="footer-bottom">
+                &copy; {{ year }} Learning-365. All Rights Reserved. Designed with <i class="fas fa-heart"></i> for Future Leaders.
             </div>
-        </div>
-
-        <div class="footer-bottom">
-            &copy; 2026 Learning-365. All Rights Reserved. Designed with <i class="fas fa-heart"></i> for Future Leaders.
         </div>
     </footer>
 
-    <div class="ide-modal-overlay" id="termsModal">
+
+    <!-- ============================================================
+         TERMS MODAL
+         ============================================================ -->
+    <div class="terms-overlay" id="termsModal">
         <div class="terms-container">
             <div class="terms-header">
-                <div class="terms-title">
-                    <i class="fas fa-shield-alt modal-icon-cyan"></i> <span>Terms & Conditions</span>
+                <div class="terms-header-title">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Terms & Conditions</span>
                 </div>
-                <i class="fas fa-times btn-close-modal" id="closeTermsBtn" title="Close"></i>
+                <button class="terms-close-btn" id="closeTermsBtn" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="terms-body">
-                <h3 class="terms-h3">Welcome to Learning-365</h3>
+                <h3>Welcome to Learning-365</h3>
                 <p>By accessing this platform, you agree to be bound by these terms of use. Our platform is dedicated to providing high-quality tech education.</p>
-                
+
                 <h4>1. User Conduct & Ethics</h4>
                 <p>Users must not engage in any activity that disrupts the platform or other students' learning experience. Mutual respect in the Community Commlink is strictly enforced by AI moderation.</p>
-                
+
                 <h4>2. LMS Coins & Bounties</h4>
                 <p>LMS coins hold no real-world monetary value. They are strictly digital tokens used within the platform for unlocking premium content, participating in leaderboards, and rewarding peers via coding bounties.</p>
-                
+
                 <h4>3. Privacy & Data Security</h4>
                 <p>We respect your privacy. All your code executions in our IDE are handled securely inside isolated Docker containers. Your personal data is encrypted and never shared with third parties.</p>
-                
-                <br><br>
-                <button class="btn-fill btn-submit-full" id="acceptTermsBtn">I Accept & Continue</button>
+
+                <button class="terms-accept-btn" id="acceptTermsBtn">I Accept & Continue</button>
             </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ duration: 800, once: true });
 
-        // Initialize VanillaTilt ONLY for Stats Box
-        VanillaTilt.init(document.querySelectorAll(".stat-box.js-tilt"), {
-            max: 12,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.15,
-            scale: 1.02
-        });
-
-        // Contact Section Reveal Logic
-        document.querySelectorAll('.open-contact-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const helpSection = document.getElementById('help-center');
-                helpSection.style.display = 'block';
-                setTimeout(() => {
-                    helpSection.classList.add('visible');
-                    helpSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 50);
-            });
-        });
-
-        // Terms of Use Modal Logic
-        const termsModal = document.getElementById('termsModal');
-        const openTermsModal = document.getElementById('openTermsModal');
-        const closeTermsBtn = document.getElementById('closeTermsBtn');
-        const acceptTermsBtn = document.getElementById('acceptTermsBtn');
-
-        if(openTermsModal) {
-            openTermsModal.addEventListener('click', (e) => {
-                e.preventDefault(); 
-                termsModal.classList.add('show');
-            });
-        }
-        
-        const closeTerms = () => {
-            termsModal.classList.remove('show');
-        };
-        
-        if(closeTermsBtn) closeTermsBtn.addEventListener('click', closeTerms);
-        if(acceptTermsBtn) acceptTermsBtn.addEventListener('click', closeTerms);
-        
-        // Hover effect for close button
-        if(closeTermsBtn) {
-            closeTermsBtn.addEventListener('mouseover', () => closeTermsBtn.style.color = '#ff0055');
-            closeTermsBtn.addEventListener('mouseout', () => closeTermsBtn.style.color = 'rgba(255,255,255,0.5)');
-        }
-
-        // Sticky Navbar Effect on Scroll
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('.navbar');
-            if(window.scrollY > 60) {
-                nav.style.padding = '10px 5%';
-                nav.style.background = 'rgba(3, 0, 5, 0.95)';
-                nav.style.boxShadow = '0 5px 20px rgba(0, 243, 255, 0.1)';
-            } else {
-                nav.style.padding = '20px 5%';
-                nav.style.background = 'rgba(3, 0, 5, 0.85)';
-                nav.style.boxShadow = 'none';
-            }
-        });
-
-        // --- ANIMATION CONTROLLER ---
-        const stage = document.getElementById('animStage');
-
-        function runAnimation() {
-            if(!stage) return;
-            stage.classList.remove('phase-1', 'phase-2', 'phase-3', 'phase-4');
-            void stage.offsetWidth; 
-            
-            setTimeout(() => stage.classList.add('phase-1'), 100);
-            setTimeout(() => stage.classList.add('phase-2'), 2500);
-            setTimeout(() => stage.classList.add('phase-3'), 3500);
-            setTimeout(() => stage.classList.add('phase-4'), 5000);
-        }
-
-        runAnimation();
-        setInterval(runAnimation, 8000);
-
-        // --- SLIDER LOGIC ---
-        let currentSlide = 0;
-        const track = document.querySelector('.dev-track');
-        const dots = document.querySelectorAll('.dot');
-
-        function moveSlide(index) {
-            currentSlide = index;
-            if(track) {
-                track.style.transform = `translateX(-${index * 100}%)`;
-            }
-            dots.forEach(d => d.classList.remove('active'));
-            if(dots[index]) {
-                dots[index].classList.add('active');
-            }
-        }
-
-        setInterval(() => {
-            currentSlide = currentSlide === 0 ? 1 : 0;
-            moveSlide(currentSlide);
-        }, 5000);
-
-        // --- STATS COUNTER LOGIC ---
-        const counters = document.querySelectorAll('.counter');
-        const speed = 100;
-
-        const animateCounters = () => {
-            counters.forEach(counter => {
-                const updateCount = () => {
-                    const target = +counter.getAttribute('data-target');
-                    const count = +counter.innerText.replace(/,/g, ''); 
-                    
-                    const inc = target / speed;
-
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + inc).toLocaleString();
-                        setTimeout(updateCount, 25);
-                    } else {
-                        counter.innerText = target.toLocaleString();
-                    }
-                };
-                updateCount();
-            });
-        };
-
-        // Trigger on Scroll
-        let triggered = false;
-        const statsSection = document.querySelector('.stats-wrapper');
-        
-        window.addEventListener('scroll', () => {
-            if(!statsSection) return;
-            const sectionPos = statsSection.getBoundingClientRect().top;
-            const screenPos = window.innerHeight / 1.3;
-
-            if(!triggered && sectionPos < screenPos) {
-                animateCounters();
-                triggered = true;
-            }
-        });
-
-        // --- CURSOR GLOW LOGIC ---
-        const cursorGlow = document.getElementById('cursor-glow');
-        if(cursorGlow) {
-            document.addEventListener('mousemove', (e) => {
-                cursorGlow.style.left = e.clientX + 'px';
-                cursorGlow.style.top = e.clientY + 'px';
-            });
-        }
-    </script>
+    <!-- Landing JS -->
+    <script src="{% static 'css/js/landing.js' %}"></script>
 
 </body>
 </html>

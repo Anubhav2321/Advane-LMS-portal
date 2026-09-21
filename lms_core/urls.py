@@ -74,7 +74,7 @@ from students.views import (
     admin_add_lesson, # Lesson View
     
     # 🚀 NEW: Faculty Actions (Kept in views.py)
-    admin_create_faculty,
+    admin_faculty_list,
     
     # NEW: Activity APIs
     admin_activity_api,
@@ -227,8 +227,8 @@ urlpatterns = [
     #  F. Lesson Management 
     path('admin-panel/course/<int:course_id>/add-lesson/', admin_add_lesson, name='admin_add_lesson'),
     
-    # 🚀 NEW: Faculty Creation Route (Admin action)
-    path('admin-panel/create-faculty/', admin_create_faculty, name='admin_create_faculty'),
+    # 🚀 NEW: Faculty Management Portal (Admin action)
+    path('admin-panel/faculties/', admin_faculty_list, name='admin_faculty_list'),
     
     # 🚀 NEW: Faculty Dashboard & Features Routes (Faculty actions)
     path('faculty-panel/', faculty_dashboard, name='faculty_dashboard'),

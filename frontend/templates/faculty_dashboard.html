@@ -185,6 +185,18 @@
             <a onclick="openTab('tab-profile')" class="nav-item tab-btn" id="btn-profile">
                 <i class="fas fa-user-shield"></i> Faculty Profile
             </a>
+
+            <div style="height:1px; background:rgba(255,255,255,0.1); margin: 15px 0;"></div>
+
+            <a href="{% url 'dashboard' %}" class="nav-item" style="color: #00d4ff;">
+                <i class="fas fa-graduation-cap"></i> Switch to Student
+            </a>
+
+            {% if request.user.is_superuser or request.user.is_staff %}
+            <a href="{% url 'admin_dashboard' %}" class="nav-item" style="color: #ffaa00;">
+                <i class="fas fa-shield-halved"></i> Switch to Admin
+            </a>
+            {% endif %}
         </ul>
         
         <div style="margin-top: auto;">

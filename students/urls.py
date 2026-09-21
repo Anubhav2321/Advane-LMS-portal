@@ -39,8 +39,8 @@ urlpatterns = [
     path('admin-panel/add-library/', views.add_library_view, name='add_library'),
     path('admin-panel/course/<int:course_id>/add-lesson/', views.admin_add_lesson, name='admin_add_lesson'),
     
-    # 🚀 NEW: Create Faculty Route
-    path('admin-panel/create-faculty/', views.admin_create_faculty, name='admin_create_faculty'),
+    # 🚀 NEW: Faculty Management Route
+    path('admin-panel/faculties/', views.admin_faculty_list, name='admin_faculty_list'),
     
     # Student Management List & Actions
     path('admin-panel/students/', views.admin_student_list, name='admin_student_list'),

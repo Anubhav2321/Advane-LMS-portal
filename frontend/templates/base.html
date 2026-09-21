@@ -242,6 +242,24 @@
                     <i class="fas fa-user"></i> Profile
                 </a>
             </li>
+
+            <div class="nav-divider" style="height:1px; background:rgba(255,255,255,0.1); margin: 15px 0;"></div>
+
+            {% if request.user.is_superuser or request.user.is_staff %}
+            <li class="nav-item">
+                <a href="{% url 'admin_dashboard' %}" style="color: #ffaa00;">
+                    <i class="fas fa-shield-halved"></i> Switch to Admin
+                </a>
+            </li>
+            {% endif %}
+
+            {% if request.user.is_teacher or request.user.is_faculty %}
+            <li class="nav-item">
+                <a href="{% url 'faculty_dashboard' %}" style="color: #00d4ff;">
+                    <i class="fas fa-chalkboard-teacher"></i> Switch to Faculty
+                </a>
+            </li>
+            {% endif %}
         </ul>
 
         <div class="logout-container">

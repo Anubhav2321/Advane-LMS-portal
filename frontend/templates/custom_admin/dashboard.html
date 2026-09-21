@@ -1179,25 +1179,6 @@
             </form>
         </div>
 
-        <!-- Add Faculty -->
-        <div class="form-card form-emerald">
-            <div class="form-card-title"><i class="fas fa-user-tie"></i> Add New Faculty</div>
-            <form action="{% url 'admin_create_faculty' %}" method="POST">
-                {% csrf_token %}
-                <div class="form-row">
-                    <div><label>First Name</label> {{ faculty_form.first_name }}</div>
-                    <div><label>Last Name</label> {{ faculty_form.last_name }}</div>
-                </div>
-                <label>Username (ID)</label> {{ faculty_form.username }}
-                <label>Email</label> {{ faculty_form.email }}
-                <div class="form-row">
-                    <div><label>Department</label> {{ faculty_form.department }}</div>
-                    <div><label>Experience (Yrs)</label> {{ faculty_form.experience_years }}</div>
-                </div>
-                <label>Password</label> {{ faculty_form.password }}
-                <button type="submit" class="btn-submit" style="background: #10b981;">Register Faculty</button>
-            </form>
-        </div>
     </div>
 
     <!-- ============================================= -->

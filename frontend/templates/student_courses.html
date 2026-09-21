@@ -40,10 +40,10 @@
 
     /* --- PAGE HEADER & SEARCH --- */
     .header-section {
-        background: linear-gradient(90deg, #13131a 0%, #1a1a24 100%);
-        border: 1px solid var(--border-color);
+        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.06);
         border-left: 5px solid var(--neon-blue);
-        border-radius: 15px;
+        border-radius: 20px;
         padding: 30px 40px;
         margin-bottom: 40px;
         display: flex;
@@ -51,7 +51,9 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         animation: fadeInDown 0.8s ease-out;
     }
 
@@ -80,18 +82,20 @@
         width: 100%;
         padding: 12px 20px;
         padding-right: 50px;
-        background: #0a0a0f;
-        border: 1px solid var(--border-color);
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: #fff;
         border-radius: 50px;
         font-family: 'Rajdhani', sans-serif;
         font-size: 1rem;
         outline: none;
         transition: 0.3s;
+        backdrop-filter: blur(10px);
     }
     .search-input:focus {
         border-color: var(--neon-blue);
         box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        background: rgba(0, 0, 0, 0.6);
     }
     .search-btn {
         position: absolute;
@@ -101,43 +105,45 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: var(--neon-blue);
-        border: none;
-        color: #000;
+        background: rgba(0, 243, 255, 0.1);
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        color: var(--neon-blue);
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: 0.3s;
     }
-    .search-btn:hover { background: #fff; }
+    .search-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
 
     /* --- COURSE GRID --- */
     .course-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
         gap: 30px;
         padding-bottom: 50px;
     }
 
     /* Course Card */
     .course-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 15px;
+        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
         overflow: hidden;
         position: relative;
         display: flex;
         flex-direction: column;
-        transition: 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         animation: fadeInUp 0.8s ease-out forwards;
         opacity: 0;
     }
     
-    /* Hover Glow Only (No Movement) */
     .course-card:hover {
-        border-color: var(--neon-blue);
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+        border-color: rgba(0, 243, 255, 0.3);
+        box-shadow: 0 15px 40px rgba(0, 243, 255, 0.08), 0 0 0 1px rgba(0, 243, 255, 0.1);
+        transform: translateY(-6px);
     }
 
     /* Stagger Animation Delay */
@@ -264,23 +270,31 @@
     .free-tag { color: var(--neon-purple); }
 
     .enroll-btn {
-        background: transparent;
-        border: 1px solid var(--border-color);
-        color: #fff;
-        padding: 8px 20px;
-        border-radius: 6px;
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 136, 255, 0.1));
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        color: var(--neon-blue);
+        padding: 10px 20px;
+        border-radius: 12px;
         text-decoration: none;
-        font-weight: 600;
-        transition: 0.3s;
+        font-weight: 700;
+        transition: all 0.3s ease;
         text-transform: uppercase;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
     }
+    .enroll-btn::before {
+        content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+    .enroll-btn:hover::before { left: 100%; }
     .enroll-btn:hover {
         background: var(--neon-blue);
         color: #000;
-        border-color: var(--neon-blue);
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        transform: translateY(-2px);
     }
 
     /* --- EMPTY STATE --- */

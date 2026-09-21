@@ -484,7 +484,7 @@
         .ide-modal-overlay.show { display: flex; opacity: 1; }
 
         .vscode-container {
-            background: #1e1e1e; width: 95vw; height: 90vh; border-radius: 12px; 
+            background: #1e1e1e; width: 98vw; height: 96vh; border-radius: 12px; 
             display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); border: 1px solid #3c3c3c;
             transform: scale(0.95); transition: transform 0.3s ease;
@@ -492,54 +492,79 @@
         .ide-modal-overlay.show .vscode-container { transform: scale(1); }
 
         .vscode-header { 
-            background: #323233; padding: 8px 20px; display: flex; justify-content: space-between; 
+            background: #323233; padding: 10px 20px; display: flex; justify-content: space-between; 
             align-items: center; border-bottom: 1px solid #1e1e1e; 
-            -webkit-user-select: none; /* 🚀 FIXED */
-            user-select: none;
+            -webkit-user-select: none; user-select: none;
         }
         .vscode-title { 
-            color: #cccccc; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 0.95rem; 
-            display: flex; align-items: center; gap: 8px; 
+            color: #cccccc; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 1rem; 
+            display: flex; align-items: center; gap: 8px; font-weight: 600;
         }
         .vscode-controls i { color: #cccccc; cursor: pointer; font-size: 1.1rem; margin-left: 15px; transition: 0.2s;}
         .vscode-controls i:hover { color: #ffffff; }
         .vscode-controls .fa-times:hover { color: #f44336; } 
 
         .vscode-toolbar { 
-            background: #252526; padding: 10px 20px; display: flex; gap: 15px; 
+            background: #252526; padding: 12px 20px; display: flex; gap: 15px; 
             align-items: center; border-bottom: 1px solid #3c3c3c;
         }
         
         .vscode-select { 
-            background: #3c3c3c; color: #cccccc; border: 1px solid #3c3c3c; padding: 6px 12px; 
-            border-radius: 4px; outline: none; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 0.9rem; cursor: pointer; 
+            background: #3c3c3c; color: #cccccc; border: 1px solid #3c3c3c; padding: 8px 15px; 
+            border-radius: 6px; outline: none; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 0.95rem; cursor: pointer; 
         }
         .vscode-select:focus { border-color: #007acc; }
 
         .vscode-btn { 
-            border: none; padding: 7px 16px; border-radius: 4px; cursor: pointer; font-family: 'Segoe UI', Tahoma, sans-serif; 
-            font-weight: 600; font-size: 0.85rem; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+            border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-family: 'Segoe UI', Tahoma, sans-serif; 
+            font-weight: 600; font-size: 0.9rem; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
         }
-        .vscode-btn-run { background: #4CAF50; color: #ffffff; }
-        .vscode-btn-run:hover { background: #45a049; box-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+        .vscode-btn-run { background: #00E676; color: #000; box-shadow: 0 0 10px rgba(0, 230, 118, 0.2); }
+        .vscode-btn-run:hover { background: #00C853; box-shadow: 0 0 15px rgba(0, 230, 118, 0.5); transform: translateY(-1px); }
+        .vscode-btn-run:disabled { background: #555; color: #aaa; cursor: not-allowed; box-shadow: none; transform: none; }
+        
         .vscode-btn-attach { background: #007acc; color: #ffffff; margin-left: auto; }
-        .vscode-btn-attach:hover { background: #005f9e; box-shadow: 0 0 10px rgba(0, 122, 204, 0.4);}
+        .vscode-btn-attach:hover { background: #005f9e; box-shadow: 0 0 10px rgba(0, 122, 204, 0.4); }
 
-        .vscode-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        #vsAceEditor { flex: 6.5; width: 100%; font-size: 16px; font-family: 'Consolas', monospace; border-bottom: 1px solid #3c3c3c; }
+        .vscode-body { flex: 1; display: flex; flex-direction: row; overflow: hidden; }
+        #vsAceEditor { flex: 6; width: 100%; height: 100%; font-size: 16px; font-family: 'Consolas', monospace; border-right: 1px solid #3c3c3c; }
 
-        .vscode-terminal { flex: 3.5; background: #1e1e1e; display: flex; flex-direction: column; }
-        .vscode-term-tabs { display: flex; background: #252526; border-bottom: 1px solid #3c3c3c; }
-        .vscode-term-tab {
-            padding: 8px 20px; color: #e7e7e7; font-family: 'Segoe UI', Tahoma, sans-serif;
-            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #007acc; cursor: default;
+        .vscode-terminal { flex: 4; background: #1e1e1e; display: flex; flex-direction: column; border-left: 1px solid #111; }
+        .vscode-term-tabs { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #252526; border-bottom: 1px solid #3c3c3c; padding-right: 15px;
         }
+        .vscode-term-tab {
+            padding: 10px 20px; color: #888; font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid transparent; cursor: pointer; transition: 0.2s;
+        }
+        .vscode-term-tab:hover { color: #ccc; }
+        .vscode-term-tab.active { color: #e7e7e7; border-bottom-color: #007acc; cursor: default; }
+
+        .vscode-term-status {
+            font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 0.85rem; color: #888;
+        }
+        .vscode-term-status span { font-weight: 600; color: #aaa; }
+        
+        .term-content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
         #vscodeOutput { 
-            flex: 1; padding: 15px 20px; color: #cccccc; font-family: 'Consolas', monospace; font-size: 0.95rem; 
-            overflow-y: auto; margin: 0; white-space: pre-wrap; line-height: 1.5;
+            flex: 1; padding: 20px; color: #cccccc; font-family: 'Consolas', monospace; font-size: 0.95rem; 
+            overflow-y: auto; margin: 0; white-space: pre-wrap; line-height: 1.6; display: block;
         }
         #vscodeOutput::-webkit-scrollbar { width: 10px; }
         #vscodeOutput::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; }
+
+        #vsInputArea { 
+            flex: 1; display: none; flex-direction: column; 
+        }
+        #vsInputArea textarea {
+            flex: 1; background: #1e1e1e; border: none; color: #ccc; font-family: 'Consolas', monospace; 
+            font-size: 0.95rem; padding: 20px; outline: none; resize: none; line-height: 1.6;
+        }
+        #vsInputArea textarea::-webkit-scrollbar { width: 10px; }
+        #vsInputArea textarea::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; }
+        .input-hint { padding: 10px 20px; font-size: 0.85rem; color: #888; border-bottom: 1px solid #333; background: #252526;}
     </style>
 </head>
 <body>
@@ -838,8 +863,20 @@
             <div class="vscode-body">
                 <div id="vsAceEditor"></div>
                 <div class="vscode-terminal">
-                    <div class="vscode-term-tabs"><div class="vscode-term-tab">Terminal</div></div>
-                    <pre id="vscodeOutput">Welcome to the integrated Docker terminal.&#10;Write your code above and click 'Run Code' to execute.&#10;Output will be displayed here...</pre>
+                    <div class="vscode-term-tabs">
+                        <div style="display:flex;">
+                            <div class="vscode-term-tab" id="tabInput" onclick="switchTermTab('input')"><i class="fas fa-keyboard"></i> Custom Input</div>
+                            <div class="vscode-term-tab active" id="tabOutput" onclick="switchTermTab('output')"><i class="fas fa-terminal"></i> Output</div>
+                        </div>
+                        <div class="vscode-term-status">Status: <span id="vsTermStatus">Ready</span> <span id="vsTermTime" style="margin-left:10px; display:none;"><i class="far fa-clock"></i> <b id="vsTimeValue">0.0s</b></span></div>
+                    </div>
+                    <div class="term-content-area">
+                        <div id="vsInputArea">
+                            <div class="input-hint">Provide standard input here before running your code (e.g., for input() or cin):</div>
+                            <textarea id="vsCustomInput" placeholder="Enter input values here..."></textarea>
+                        </div>
+                        <pre id="vscodeOutput">Welcome to the integrated Coding Platform.&#10;Write your code on the left and click 'Run Code' to execute.&#10;Output will be displayed here in real-time...</pre>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1392,16 +1429,40 @@
             if (vsEditor) setTimeout(() => vsEditor.resize(), 100);
         });
 
+        function switchTermTab(tab) {
+            if (tab === 'input') {
+                document.getElementById('tabInput').classList.add('active');
+                document.getElementById('tabOutput').classList.remove('active');
+                document.getElementById('vsInputArea').style.display = 'flex';
+                document.getElementById('vscodeOutput').style.display = 'none';
+                document.getElementById('vsCustomInput').focus();
+            } else {
+                document.getElementById('tabOutput').classList.add('active');
+                document.getElementById('tabInput').classList.remove('active');
+                document.getElementById('vscodeOutput').style.display = 'block';
+                document.getElementById('vsInputArea').style.display = 'none';
+            }
+        }
+
         vsRunBtn.addEventListener('click', async function() {
             if (!vsEditor) return;
             const code = vsEditor.getValue();
             const lang = vsLanguage.value;
+            const userInput = document.getElementById('vsCustomInput').value;
 
-            // 🚀 FIXED: Extracted Inline Style
-            vsOutput.innerHTML = `<span class="vs-running-text"><i class="fas fa-circle-notch fa-spin"></i> Running inside isolated Docker container...</span>`;
+            // Auto switch to Output tab when running
+            switchTermTab('output');
+
+            // UI Updates for Loading State
+            vsRunBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+            vsRunBtn.disabled = true;
+            document.getElementById('vsTermStatus').innerHTML = '<span style="color:#007acc;">Running inside Docker...</span>';
+            document.getElementById('vsTermTime').style.display = 'none';
+            vsOutput.innerHTML = `<span style="color:#888;">Compiling and executing...</span>`;
+
+            const startTime = performance.now();
 
             try {
-                // 🟢 FIXED: Hardcoded exact URL matching the working views.py
                 const response = await fetch("/api/chat/execute-code/", {
                     method: 'POST',
                     headers: {
@@ -1410,23 +1471,36 @@
                     },
                     body: JSON.stringify({
                         language: lang,
-                        code: code
+                        code: code,
+                        user_input: userInput
                     })
                 });
 
                 const data = await response.json();
+                const endTime = performance.now();
+                const executionTime = ((endTime - startTime) / 1000).toFixed(2) + 's';
+                
+                document.getElementById('vsTermTime').style.display = 'inline-block';
+                document.getElementById('vsTimeValue').innerText = executionTime;
                 
                 if (data.status === 'success') {
+                    document.getElementById('vsTermStatus').innerHTML = '<span style="color:#00E676;">Success</span>';
                     vsOutput.innerText = data.output || "Program finished successfully with no output.";
                     vsOutput.style.color = "#cccccc"; 
                 } else {
+                    document.getElementById('vsTermStatus').innerHTML = '<span style="color:#f44336;">Error</span>';
                     vsOutput.innerText = "[ERROR]\n" + (data.output || data.message);
                     vsOutput.style.color = "#f44336"; 
                 }
 
             } catch (err) {
+                document.getElementById('vsTermStatus').innerHTML = '<span style="color:#f44336;">Network Error</span>';
                 vsOutput.innerText = "[NETWORK ERROR]\nFailed to connect to the backend server.";
                 vsOutput.style.color = "#f44336";
+            } finally {
+                // Restore button state
+                vsRunBtn.innerHTML = '<i class="fas fa-play"></i> Run Code';
+                vsRunBtn.disabled = false;
             }
         });
 
