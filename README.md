@@ -150,6 +150,7 @@ The system can be extended to integrate platforms such as Google Meet, Zoom, or 
 
 The platform includes a centralized digital library for educational resources.
 
+
 Students can access different types of learning materials including:
 
 * 📕 PDF books
