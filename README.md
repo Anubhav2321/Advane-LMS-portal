@@ -612,6 +612,7 @@ The admin interface is designed as a centralized control center.
 
 Possible operational metrics include:
 
+
 ```text
 ┌─────────────────────────────────────────────┐
 │              ADMIN CONTROL CENTER           │
