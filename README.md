@@ -647,19 +647,22 @@ The visual language is designed to make an educational platform feel closer to a
 
 ---
 
-# 🚀 Recent Updates: Advanced Analytics & Tracking
+# 🚀 Recent Updates: Next-Gen Landing, Cloud IDE & Dashboards
 
-Learning-365 has recently undergone a major feature update focusing on advanced analytics, progress tracking, and UI/UX improvements.
+Learning-365 has just received a massive upgrade focusing on the core user journey, cloud coding capabilities, and administrative control.
 
-### 📊 Advanced Analytics & Student Tracking
-* **Granular Activity Tracking:** Implemented new architectural data models (`StudentActivity`, `LessonProgress`, `DocumentView`, `LiveClassAttendance`) to securely capture fine-grained user interactions across the platform.
-* **Real-Time Admin Analytics:** The Admin Dashboard now features dynamic visualizations, including daily activity graphs, course progress metrics, and quiz score trends, providing a bird's-eye view of platform engagement.
-* **Intelligent Progress Monitoring:** Administrators can deeply analyze specific students and courses to view a complete breakdown of their learning journey, recent actions, and resource utilization.
+### 🌌 Next-Gen Landing Experience
+* **Immersive Hero & UI:** Completely redesigned landing page featuring a stunning, glassmorphic UI, dynamic cursor glow, and scroll-reveal animations.
+* **Feature Showcase:** Beautifully integrated visual sections for the AI Lab, 365-Day Heatmap, and Gamification pathways to instantly demonstrate platform value.
 
-### 🎨 UI/UX & Dashboard Redesign
-* **Student Panel Revamp:** Upgraded the Student Dashboard, Profile, and Course Watch interfaces for a more immersive, seamless, and intuitive learning experience.
-* **Community Chat Enhancements:** Refined the community interface to align perfectly with the platform's premium glassmorphic, developer-focused aesthetic.
-* **Premium Admin Experience:** Complete overhaul of the Admin Control Center, transforming it into a sleek, data-rich command center for managing the entire educational ecosystem.
+### 💻 Syntax Singularity Cloud IDE & Security
+* **Advanced Browser IDE:** Upgraded the *Syntax Singularity* cloud coding interface to support 10+ languages with real-time AI code analysis and syntax highlighting.
+* **Secure Docker Execution:** Implemented a robust, isolated Docker-based execution pipeline, ensuring that student code runs in a highly secure, sandboxed environment.
+* **Password-Based Auth:** Added streamlined password-based authentication alongside the existing Google OAuth for flexible access.
+
+### 🎛️ Unified Dashboards & Panels
+* **Student Panel Revamp:** Transformed the Student Dashboard into a premium command center featuring detailed learning statistics, gamified LMS coin integration, and course progress tracking.
+* **Admin Control Center:** Overhauled the Admin Panel with deeper analytics and centralized control over the multi-course ecosystem and user progression.
 
 ---
 
