@@ -795,6 +795,7 @@ Security is an important part of the Learning-365 architecture.
 
 The platform is designed around:
 
+
 * 🔑 Authenticated sessions
 * 🛡️ Protected routes
 * 🔐 Environment-based secrets
