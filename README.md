@@ -665,6 +665,7 @@ Learning-365 has just received a massive upgrade focusing on the core user journ
 * **Secure Docker Execution:** Implemented a robust, isolated Docker-based execution pipeline, ensuring that student code runs in a highly secure, sandboxed environment.
 * **Password-Based Auth:** Added streamlined password-based authentication alongside the existing Google OAuth for flexible access.
 
+
 ### 🎛️ Unified Dashboards & Panels
 * **Student Panel Revamp:** Transformed the Student Dashboard into a premium command center featuring detailed learning statistics, gamified LMS coin integration, and course progress tracking.
 * **Admin Control Center:** Overhauled the Admin Panel with deeper analytics and centralized control over the multi-course ecosystem and user progression.
