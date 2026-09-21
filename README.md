@@ -201,6 +201,7 @@ This allows instructors/administrators to distribute course materials without re
 
 One of the core features of Learning-365 is **Syntax Singularity**.
 
+
 Instead of depending entirely on a fixed database of coding questions, the system can use AI to dynamically generate coding practice challenges.
 
 ### How it works
