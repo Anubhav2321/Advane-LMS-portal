@@ -501,12 +501,19 @@ class AIVideoNote(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
     if created:
         Profile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    if kwargs.get('raw', False):
+        return
+    try:
+        instance.profile.save()
+    except Exception:
+        pass
 
 @receiver(post_delete, sender=LibraryDocument)
 def delete_document_file(sender, instance, **kwargs):
