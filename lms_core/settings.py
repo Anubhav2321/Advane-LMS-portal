@@ -16,7 +16,7 @@ env_path = BASE_DIR / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # A print message to check in the terminal  
-print("✅ Loading Google Client ID:", "SUCCESS" if os.getenv('GOOGLE_CLIENT_ID') else "FAILED")
+print("[INFO] Loading Google Client ID:", "SUCCESS" if os.getenv('GOOGLE_CLIENT_ID') else "FAILED")
 
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-this-key-for-production')
