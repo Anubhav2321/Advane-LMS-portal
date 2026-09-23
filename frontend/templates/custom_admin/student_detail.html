@@ -1,7 +1,7 @@
 {% extends 'base_admin.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_css %}
 <style>
     /* ============================================= */
     /* STUDENT DETAIL — PREMIUM DESIGN               */
@@ -474,7 +474,9 @@
         .quick-stats { grid-template-columns: repeat(2, 1fr); }
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="detail-container">
     
     <a href="{% url 'admin_student_list' %}" class="link-back">

@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-
+{% block extra_css %}
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -330,7 +329,9 @@
     }
 
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container-fluid">
 
     <div class="header-section">

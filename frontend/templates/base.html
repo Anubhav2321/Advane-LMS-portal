@@ -190,6 +190,7 @@
         }
 
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
@@ -382,5 +383,6 @@
         });
     </script>
     {% endif %}
+    {% block extra_js %}{% endblock %}
     </body>
 </html>

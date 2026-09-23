@@ -1079,8 +1079,8 @@
                             <div class="progress-ring-wrapper">
                                 <svg class="progress-ring-svg" viewBox="0 0 60 60">
                                     <circle class="progress-ring-bg" cx="30" cy="30" r="26" />
-                                    <circle class="progress-ring-fill {% if enrollment.real_progress >= 100 %}complete{% endif %}" cx="30" cy="30" r="26" 
-                                        style="stroke-dashoffset: {{ enrollment.ring_offset|default:'163.36' }};"
+                                    <circle class="progress-ring-fill js-set-offset {% if enrollment.real_progress >= 100 %}complete{% endif %}" cx="30" cy="30" r="26" 
+                                        data-offset="{{ enrollment.ring_offset|default:'163.36' }}"
                                         data-progress="{{ enrollment.real_progress }}" />
                                 </svg>
                                 <div class="progress-ring-text">
@@ -1106,7 +1106,7 @@
 
                         <!-- Progress Bar -->
                         <div class="progress-track-slim">
-                            <div class="progress-fill-slim {% if enrollment.real_progress >= 100 %}complete{% endif %}" style="width: {{ enrollment.real_progress }}%;"></div>
+                            <div class="progress-fill-slim js-set-width {% if enrollment.real_progress >= 100 %}complete{% endif %}" data-width="{{ enrollment.real_progress }}%"></div>
                         </div>
 
                         <div class="progress-meta">
@@ -1176,7 +1176,13 @@
             <div class="rank-item {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
                 <div class="rank-left">
                     <div class="rank-number">#{{ forloop.counter }}</div>
-                    <div class="rank-avatar" onclick="openStudentModal('{{ student.first_name|default:student.username|escapejs }}', '{{ student.username|escapejs }}', '{% if student.profile.profile_pic %}{{ student.profile.profile_pic.url }}{% else %}{% endif %}', '{{ student.lms_coins }}', '{{ student.stream|default:'Not Specified'|escapejs }}', '{{ student.student_level|default:'Beginner'|escapejs }}')">
+                    <div class="rank-avatar js-open-modal"
+                        data-firstname="{{ student.first_name|default:student.username|escapejs }}"
+                        data-username="{{ student.username|escapejs }}"
+                        data-pic="{% if student.profile.profile_pic %}{{ student.profile.profile_pic.url }}{% endif %}"
+                        data-coins="{{ student.lms_coins }}"
+                        data-stream="{{ student.stream|default:'Not Specified'|escapejs }}"
+                        data-level="{{ student.student_level|default:'Beginner'|escapejs }}">
                         {% if student.profile.profile_pic %}
                             <img src="{{ student.profile.profile_pic.url }}" alt="{{ student.username }}">
                         {% else %}
@@ -1448,6 +1454,23 @@
         chatBox.appendChild(msgDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    // Handle data attributes for VS Code linter workaround
+    document.querySelectorAll('.js-set-offset').forEach(el => el.style.strokeDashoffset = el.getAttribute('data-offset'));
+    document.querySelectorAll('.js-set-width').forEach(el => el.style.width = el.getAttribute('data-width'));
+    
+    document.querySelectorAll('.js-open-modal').forEach(el => {
+        el.addEventListener('click', function() {
+            openStudentModal(
+                this.getAttribute('data-firstname'),
+                this.getAttribute('data-username'),
+                this.getAttribute('data-pic'),
+                this.getAttribute('data-coins'),
+                this.getAttribute('data-stream'),
+                this.getAttribute('data-level')
+            );
+        });
+    });
 </script>
 
 {% endblock %}

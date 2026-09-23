@@ -463,7 +463,7 @@
                                             <span style="font-size: 0.8rem; color: #888;">{{ doc.category }}</span>
                                         </div>
                                     </div>
-                                    <a href="{{ doc.file.url }}" target="_blank" onclick="trackPdfView({{ doc.id }})" style="padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--neon-blue); border: 1px solid var(--neon-blue); border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: 0.3s;">
+                                    <a href="{{ doc.file.url }}" target="_blank" onclick="trackPdfView(parseInt('{{ doc.id }}', 10))" style="padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--neon-blue); border: 1px solid var(--neon-blue); border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: 0.3s;">
                                         View PDF
                                     </a>
                                 </div>
@@ -493,7 +493,7 @@
                 <span id="overall-progress-text">{{ progress }}% Completed</span>
             </div>
             <div class="progress-track">
-                <div id="overall-progress-bar" class="progress-fill" style="width: {{ progress }}%;"></div>
+                <div id="overall-progress-bar" class="progress-fill js-set-width" data-width="{{ progress }}%"></div>
             </div>
         </div>
 
@@ -529,6 +529,7 @@
 
 </div>
 
+{{ lesson_progress_map|json_script:"progressMapData" }}
 <script>
 function switchTab(tabId) {
     // Hide all tabs
@@ -545,9 +546,12 @@ function switchTab(tabId) {
     event.currentTarget.classList.add('active');
 }
 
+// Set data widths and offsets
+document.querySelectorAll('.js-set-width').forEach(el => el.style.width = el.getAttribute('data-width'));
+
 // --- Initialize Per-Lesson Progress Bars from Server Data ---
 (function() {
-    var progressMap = {{ lesson_progress_map|safe }};
+    var progressMap = JSON.parse(document.getElementById('progressMapData').textContent);
     for (var lessonId in progressMap) {
         var pct = progressMap[lessonId].percent;
         var bar = document.getElementById('lesson-bar-' + lessonId);
@@ -577,7 +581,7 @@ function switchTab(tabId) {
     var player;
     var watchTimer;
     var watchTimeSeconds = 0;
-    var lessonId = {{ current_lesson.id }};
+    var lessonId = parseInt('{{ current_lesson.id }}', 10);
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('lesson-video', {

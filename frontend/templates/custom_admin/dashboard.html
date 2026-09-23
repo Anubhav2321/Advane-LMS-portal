@@ -1060,7 +1060,7 @@
             </div>
             <div class="panel-body">
                 {% for activity in recent_activities %}
-                <div class="activity-item" style="animation-delay: {{ forloop.counter0|floatformat:0 }}00ms;">
+                <div class="activity-item js-set-delay" data-delay="{{ forloop.counter0|floatformat:0 }}00ms">
                     <div class="activity-icon {% if activity.activity_type == 'login' %}login{% elif activity.activity_type == 'lesson_watch' %}lesson{% elif activity.activity_type == 'quiz_taken' or activity.activity_type == 'quiz_passed' %}quiz{% elif activity.activity_type == 'course_enroll' %}enroll{% elif activity.activity_type == 'chat_message' %}chat{% else %}default{% endif %}">
                         {% if activity.activity_type == 'login' %}<i class="fas fa-sign-in-alt"></i>
                         {% elif activity.activity_type == 'lesson_watch' %}<i class="fas fa-play-circle"></i>
@@ -1256,6 +1256,22 @@
 {% endblock %} <!-- Close block content here -->
 
 {% block extra_js %}
+{{ activity_labels|json_script:"activityLabelsData" }}
+{{ activity_data|json_script:"activityData" }}
+{{ course_names|json_script:"courseNamesData" }}
+{{ course_avg_progress|json_script:"courseAvgProgressData" }}
+{{ course_completion_rates|json_script:"courseCompletionRatesData" }}
+{{ reg_labels|json_script:"regLabelsData" }}
+{{ reg_data|json_script:"regData" }}
+{{ breakdown_labels|json_script:"breakdownLabelsData" }}
+{{ breakdown_data|json_script:"breakdownData" }}
+<script type="application/json" id="allCoursesListData">
+    [
+        {% for c in courses %}
+        { "id": "{{ c.id }}", "title": "{{ c.title|escapejs }}" }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+</script>
 <script>
     // ============================================= //
     // COUNT-UP ANIMATION                            //
@@ -1280,6 +1296,8 @@
         const target = parseInt(el.dataset.count) || 0;
         animateCount(el, target, 1200);
     });
+
+    document.querySelectorAll('.js-set-delay').forEach(el => el.style.animationDelay = el.getAttribute('data-delay'));
 
     // ============================================= //
     // CHART.JS INITIALIZATIONS                      //
@@ -1311,10 +1329,10 @@
     new Chart(actCtx, {
         type: 'line',
         data: {
-            labels: {{ activity_labels|safe }},
+            labels: JSON.parse(document.getElementById('activityLabelsData').textContent),
             datasets: [{
                 label: 'Activities',
-                data: {{ activity_data|safe }},
+                data: JSON.parse(document.getElementById('activityData').textContent),
                 borderColor: '#6C63FF',
                 backgroundColor: actGrad,
                 borderWidth: 2.5,
@@ -1365,11 +1383,11 @@
     new Chart(cmCtx, {
         type: 'bar',
         data: {
-            labels: {{ course_names|safe }},
+            labels: JSON.parse(document.getElementById('courseNamesData').textContent),
             datasets: [
                 {
                     label: 'Avg Progress %',
-                    data: {{ course_avg_progress|safe }},
+                    data: JSON.parse(document.getElementById('courseAvgProgressData').textContent),
                     backgroundColor: progGrad,
                     borderColor: 'rgba(0, 243, 255, 1)',
                     borderWidth: 1,
@@ -1380,7 +1398,7 @@
                 },
                 {
                     label: 'Completion Rate %',
-                    data: {{ course_completion_rates|safe }},
+                    data: JSON.parse(document.getElementById('courseCompletionRatesData').textContent),
                     backgroundColor: compGrad,
                     borderColor: 'rgba(0, 230, 118, 1)',
                     borderWidth: 1,
@@ -1439,10 +1457,10 @@
     new Chart(regCtx, {
         type: 'bar',
         data: {
-            labels: {{ reg_labels|safe }},
+            labels: JSON.parse(document.getElementById('regLabelsData').textContent),
             datasets: [{
                 label: 'New Students',
-                data: {{ reg_data|safe }},
+                data: JSON.parse(document.getElementById('regData').textContent),
                 backgroundColor: regGrad,
                 borderColor: 'rgba(0, 212, 255, 0.5)',
                 borderWidth: 1,
@@ -1478,9 +1496,9 @@
     new Chart(document.getElementById('breakdownChart'), {
         type: 'doughnut',
         data: {
-            labels: {{ breakdown_labels|safe }},
+            labels: JSON.parse(document.getElementById('breakdownLabelsData').textContent),
             datasets: [{
-                data: {{ breakdown_data|safe }},
+                data: JSON.parse(document.getElementById('breakdownData').textContent),
                 backgroundColor: breakColors,
                 borderColor: 'rgba(10, 10, 30, 0.8)',
                 borderWidth: 3,
@@ -1646,11 +1664,7 @@
     // Simulating student course list fetch (In a real app, make another AJAX call to get courses for student)
     // For this implementation, we will populate the course list dynamically or use a static list
     // We will just enable the course dropdown and assume the admin knows the course ID or we load all courses.
-    const allCoursesList = [
-        {% for c in courses %}
-        { id: "{{ c.id }}", title: "{{ c.title|escapejs }}" },
-        {% endfor %}
-    ];
+    const allCoursesList = JSON.parse(document.getElementById('allCoursesListData').textContent);
     
     function loadStudentCourses() {
         const studentId = document.getElementById('trackerStudent').value;

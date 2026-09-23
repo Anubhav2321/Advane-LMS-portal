@@ -890,7 +890,7 @@
                 <div class="dev-card dev-card--cyan reveal">
                     <div class="dev-avatar-wrap">
                         <div class="dev-avatar-ring">
-                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev1.png' %}');" title="Soham Shymal"></div>
+                            <div class="dev-avatar-img js-set-bg" data-bg="{% static 'images/dev1.png' %}" title="Soham Shymal"></div>
                         </div>
                         <div class="dev-status-badge"><i class="fas fa-palette"></i></div>
                     </div>
@@ -931,7 +931,7 @@
                 <div class="dev-card dev-card--purple reveal reveal-delay-1">
                     <div class="dev-avatar-wrap">
                         <div class="dev-avatar-ring">
-                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev2.png' %}');" title="Anubhav Samanta"></div>
+                            <div class="dev-avatar-img js-set-bg" data-bg="{% static 'images/dev2.png' %}" title="Anubhav Samanta"></div>
                         </div>
                         <div class="dev-status-badge"><i class="fas fa-server"></i></div>
                     </div>
@@ -972,7 +972,7 @@
                 <div class="dev-card dev-card--green reveal reveal-delay-2">
                     <div class="dev-avatar-wrap">
                         <div class="dev-avatar-ring">
-                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev3.png' %}');" title="Avik Kulavi"></div>
+                            <div class="dev-avatar-img js-set-bg" data-bg="{% static 'images/dev3.png' %}" title="Avik Kulavi"></div>
                         </div>
                         <div class="dev-status-badge"><i class="fas fa-database"></i></div>
                     </div>
@@ -1013,7 +1013,7 @@
                 <div class="dev-card dev-card--amber reveal reveal-delay-3">
                     <div class="dev-avatar-wrap">
                         <div class="dev-avatar-ring">
-                            <div class="dev-avatar-img" style="background-image: url('{% static 'images/dev4.png' %}');" title="Abhishek Chowdhoury"></div>
+                            <div class="dev-avatar-img js-set-bg" data-bg="{% static 'images/dev4.png' %}" title="Abhishek Chowdhoury"></div>
                         </div>
                         <div class="dev-status-badge"><i class="fas fa-robot"></i></div>
                     </div>
@@ -1242,6 +1242,9 @@
 
     <!-- Landing JS -->
     <script src="{% static 'css/js/landing.js' %}"></script>
+    <script>
+        document.querySelectorAll('.js-set-bg').forEach(el => el.style.backgroundImage = 'url(' + el.getAttribute('data-bg') + ')');
+    </script>
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 {% extends 'base_admin.html' %}
 
-{% block content %}
+{% block extra_css %}
 <style>
     .list-container {
         padding: 32px;
@@ -242,7 +242,9 @@
         opacity: 0.5;
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="list-container">
     
     <div class="page-header">
@@ -270,7 +272,7 @@
             </thead>
             <tbody>
                 {% for student in students %}
-                <tr style="animation-delay: {{ forloop.counter0 }}00ms;">
+                <tr class="js-set-delay" data-delay="{{ forloop.counter0 }}00ms">
                     <td>
                         <div class="user-info">
                             {% if student.profile.profile_pic %}
