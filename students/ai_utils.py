@@ -37,7 +37,7 @@ def get_groq_response(system_instruction, user_message):
             #  UPDATE: Changed deprecated model to the latest one 
             model="qwen/qwen3.8-27b",  # Updated: llama-3.3-70b-versatile was removed from Groq
             temperature=0.5,
-            max_tokens=1024,
+            max_tokens=800,
         )
         return chat_completion.choices[0].message.content
     except Exception as e:

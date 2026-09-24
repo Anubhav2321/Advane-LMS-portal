@@ -1901,7 +1901,8 @@ def generate_ai_challenge(request):
                 "model": "qwen/qwen3.8-27b", # Restore required model for this environment
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.5,
-                "response_format": {"type": "json_object"}
+                "response_format": {"type": "json_object"},
+                "max_tokens": 800
             }
             
             base_url = "https://"
