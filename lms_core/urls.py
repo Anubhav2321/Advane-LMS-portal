@@ -78,6 +78,7 @@ from students.views import (
     
     # NEW: Activity APIs
     admin_activity_api,
+    admin_student_courses_api,
     admin_student_course_activity,
 )
 
@@ -215,6 +216,7 @@ urlpatterns = [
     
     #  G. Activity API
     path('admin-panel/api/activity-data/', admin_activity_api, name='admin_activity_api'),
+    path('admin-panel/api/student-courses/<int:student_id>/', admin_student_courses_api, name='admin_student_courses_api'),
     path('admin-panel/api/student-course-activity/<int:student_id>/<int:course_id>/', admin_student_course_activity, name='admin_student_course_activity'),
 
     #  E. Content Creation (Forms) 

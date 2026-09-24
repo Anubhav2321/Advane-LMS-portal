@@ -1666,7 +1666,7 @@
     // We will just enable the course dropdown and assume the admin knows the course ID or we load all courses.
     const allCoursesList = JSON.parse(document.getElementById('allCoursesListData').textContent);
     
-    function loadStudentCourses() {
+    async function loadStudentCourses() {
         const studentId = document.getElementById('trackerStudent').value;
         const courseSelect = document.getElementById('trackerCourse');
         
@@ -1676,13 +1676,28 @@
             return;
         }
         
-        // In a full implementation, you'd fetch the specific enrollments for this student.
-        // Here, we'll populate all courses for simplicity, and the API will return 404 if not enrolled.
-        courseSelect.innerHTML = '<option value="">-- Choose a Course --</option>';
-        allCoursesList.forEach(c => {
-            courseSelect.innerHTML += `<option value="${c.id}">${c.title}</option>`;
-        });
-        courseSelect.disabled = false;
+        courseSelect.innerHTML = '<option value="">Loading courses...</option>';
+        courseSelect.disabled = true;
+        
+        try {
+            const response = await fetch(`/admin-panel/api/student-courses/${studentId}/`);
+            if (!response.ok) throw new Error("Failed to load courses");
+            
+            const data = await response.json();
+            courseSelect.innerHTML = '<option value="">-- Choose a Course --</option>';
+            
+            if (data.courses.length === 0) {
+                courseSelect.innerHTML = '<option value="">-- No Enrolled Courses --</option>';
+            } else {
+                data.courses.forEach(c => {
+                    courseSelect.innerHTML += `<option value="${c.id}">${c.title}</option>`;
+                });
+                courseSelect.disabled = false;
+            }
+        } catch (error) {
+            console.error(error);
+            courseSelect.innerHTML = '<option value="">-- Error Loading Courses --</option>';
+        }
     }
     
     async function fetchTrackerData() {

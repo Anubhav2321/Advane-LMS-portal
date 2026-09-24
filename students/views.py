@@ -1281,6 +1281,17 @@ def admin_dashboard(request):
     return render(request, 'custom_admin/dashboard.html', context)
 
 
+@staff_member_required
+def admin_student_courses_api(request, student_id):
+    """
+    JSON API: Returns the list of courses a specific student is enrolled in.
+    """
+    student = get_object_or_404(User, id=student_id)
+    enrollments = Enrollment.objects.filter(student=student).select_related('course')
+    courses_data = [{'id': e.course.id, 'title': e.course.title} for e in enrollments]
+    return JsonResponse({'courses': courses_data})
+
+
 # --- NEW: Admin Student Course Activity API ---
 @staff_member_required
 def admin_student_course_activity(request, student_id, course_id):
