@@ -212,7 +212,12 @@ class ProfilePictureForm(forms.ModelForm):
         model = Profile
         fields = ['profile_pic']
         widgets = {
-           'profile_pic': forms.FileInput(attrs={'class': 'form-control', 'id': 'id_profile_pic'})
+           'profile_pic': forms.FileInput(attrs={
+               'class': 'form-control', 
+               'id': 'id_profile_pic',
+               'style': 'display: none;',
+               'onchange': 'this.form.submit();'
+           })
         }
 
 # 8. LESSON COMMENT FORM (NEW ADDITION)

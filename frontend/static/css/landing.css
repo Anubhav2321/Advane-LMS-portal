@@ -224,6 +224,13 @@ ul { list-style: none; }
     transition: transform 0.08s linear;
 }
 
+/* Disable heavy blur effect on mobile to prevent lagging */
+@media (max-width: 768px) {
+    #cursor-glow {
+        display: none !important;
+    }
+}
+
 /* ============================================================
    4. NAVBAR
    ============================================================ */
