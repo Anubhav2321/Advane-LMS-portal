@@ -23,7 +23,7 @@ __pycache__/
 # =========================
 # 4. Media & Static Files
 # =========================
-media/
+# media/
 # staticfiles/  (Keep commenting, if you do collectstatic in the future, you will provide the hash)
 
 # =========================
