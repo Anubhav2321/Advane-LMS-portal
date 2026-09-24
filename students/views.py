@@ -1249,18 +1249,18 @@ def admin_dashboard(request):
         'courses': courses,
         'documents': documents,
         
-        # Chart Data (serialized to JSON for JS)
-        'reg_labels': json.dumps(reg_labels),
-        'reg_data': json.dumps(reg_data),
-        'activity_labels': json.dumps(activity_labels),
-        'activity_data': json.dumps(activity_data),
-        'breakdown_labels': json.dumps(breakdown_labels),
-        'breakdown_data': json.dumps(breakdown_data),
+        # Chart Data (serialized via json_script in template, so pass raw lists)
+        'reg_labels': reg_labels,
+        'reg_data': reg_data,
+        'activity_labels': activity_labels,
+        'activity_data': activity_data,
+        'breakdown_labels': breakdown_labels,
+        'breakdown_data': breakdown_data,
         
         # Course Analytics
-        'course_names': json.dumps(course_names),
-        'course_avg_progress': json.dumps(course_avg_progress),
-        'course_completion_rates': json.dumps(course_completion_rates),
+        'course_names': course_names,
+        'course_avg_progress': course_avg_progress,
+        'course_completion_rates': course_completion_rates,
         
         # Student list for Activity Tracker dropdown
         'all_students': all_students,
