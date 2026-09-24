@@ -71,8 +71,8 @@ def generate_learning_assistant_response(user_message, chat_history=[]):
         # 5. Call AI API
         chat_completion = client.chat.completions.create(
             messages=messages,
-            # UPDATE: Changed to the latest supported model
-            model="qwen/qwen3.8-27b",  # Updated: llama-3.3-70b-versatile was removed from Groq
+            # UPDATE: Changed to a stable model with better free-tier limits
+            model="llama-3.1-8b-instant",  # Updated from qwen
             temperature=0.7,         
             max_tokens=400,
         )
