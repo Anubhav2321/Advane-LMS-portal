@@ -41,7 +41,7 @@ from students.views import (
     save_quiz_view, 
     submit_quiz_view,   
     ai_chat,
-    execute_code_api,   # 👉 🚀 NEW: Imported the Docker Code Execution API
+    execute_code_api,   # 👉 🚀 Cloud Code Execution API (Piston)
 
     # 6. Admin Panel (Dashboard)
     admin_dashboard, 
@@ -73,30 +73,10 @@ from students.views import (
     add_library_view,
     admin_add_lesson, # Lesson View
     
-    # 🚀 NEW: Faculty Actions (Kept in views.py)
-    admin_faculty_list,
-    
     # NEW: Activity APIs
     admin_activity_api,
     admin_student_courses_api,
     admin_student_course_activity,
-)
-
-# 🚀 NEW: Importing Faculty Views from the new file
-from students.faculty_views import (
-    faculty_dashboard,
-    faculty_courses,
-    faculty_live_studio,
-    faculty_digital_archive,
-    faculty_exam_monitor,
-    faculty_community,
-    faculty_profile,
-    # 🚀 NEW ACTION VIEWS ADDED BELOW
-    faculty_create_assignment,
-    faculty_schedule_live,
-    faculty_update_profile_pic,
-    faculty_upload_document,
-    faculty_update_profile
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -165,7 +145,7 @@ urlpatterns = [
     #  NEW: Bounty System API ---
     path('api/chat/accept-bounty/<int:reply_id>/', accept_bounty, name='accept_bounty'), 
     
-    #  NEW: Local Docker Code Execution API (THE MISSING LINK IS NOW HERE!)
+    #  Cloud Code Execution API (Piston)
     path('api/chat/execute-code/', execute_code_api, name='execute_code_api'),
     
     # 👉 NEW: SYNTAX SINGULARITY (LeetCode Style AI Arena URLs)
@@ -228,28 +208,6 @@ urlpatterns = [
     
     #  F. Lesson Management 
     path('admin-panel/course/<int:course_id>/add-lesson/', admin_add_lesson, name='admin_add_lesson'),
-    
-    # 🚀 NEW: Faculty Management Portal (Admin action)
-    path('admin-panel/faculties/', admin_faculty_list, name='admin_faculty_list'),
-    
-    # 🚀 NEW: Faculty Dashboard & Features Routes (Faculty actions)
-    path('faculty-panel/', faculty_dashboard, name='faculty_dashboard'),
-    path('faculty-panel/my-courses/', faculty_courses, name='faculty_courses'),
-    path('faculty-panel/live-studio/', faculty_live_studio, name='faculty_live_studio'),
-    path('faculty-panel/digital-archive/', faculty_digital_archive, name='faculty_digital_archive'),
-    path('faculty-panel/exam-monitor/', faculty_exam_monitor, name='faculty_exam_monitor'),
-    path('faculty-panel/community/', faculty_community, name='faculty_community'),
-    path('faculty-panel/profile/', faculty_profile, name='faculty_profile'),
-    
-    # 🚀 NEW: Faculty Form Submission Routes (Actions)
-    path('faculty-panel/create-assignment/', faculty_create_assignment, name='faculty_create_assignment'),
-    path('faculty-panel/schedule-live/', faculty_schedule_live, name='faculty_schedule_live'),
-    path('faculty-panel/upload-document/', faculty_upload_document, name='faculty_upload_document'),
-    path('faculty-panel/update-profile/', faculty_update_profile, name='faculty_update_profile'),
-    path('faculty-panel/update-pic/', faculty_update_profile_pic, name='faculty_update_profile_pic'),
-    
-    # System Logout for Faculty
-    path('faculty-panel/disconnect/', logout_view, name='faculty_logout'),
 ]
 
 from django.urls import re_path

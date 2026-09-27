@@ -23,6 +23,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-this-key-for-produc
 DEBUG = os.getenv('RENDER') != 'True'
 ALLOWED_HOSTS = ['*']
 
+# --- CSRF & Security for Render Deployment ---
+RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+CSRF_TRUSTED_ORIGINS = []
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+# Always trust the known live URL
+CSRF_TRUSTED_ORIGINS.append('https://learning-365-ccs7.onrender.com')
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for allauth & Google OAuth
     
     # Third Party Apps
     'allauth',
@@ -173,3 +182,4 @@ EMAIL_USE_TLS = True
 # Reads email credentials securely from .env file
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+

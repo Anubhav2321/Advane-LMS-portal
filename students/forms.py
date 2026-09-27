@@ -11,10 +11,7 @@ from .models import (
     Profile,
     Lesson,
     LessonComment, # UPDATE: Imported LessonComment Model
-    FacultyProfile, #  NEW: Added FacultyProfile
-    Assignment,           # 🚀 NEW: Added Assignment Model
-    AssignmentSubmission, # 🚀 NEW: Added Assignment Submission Model
-    CourseGroupMessage    # 🚀 NEW: Added CourseGroupMessage for Community Chat
+    CourseGroupMessage    # Community Chat Message Form
 )
 
 User = get_user_model()
@@ -220,7 +217,7 @@ class ProfilePictureForm(forms.ModelForm):
            })
         }
 
-# 8. LESSON COMMENT FORM (NEW ADDITION)
+# 8. LESSON COMMENT FORM
 
 class LessonCommentForm(forms.ModelForm):
     class Meta:
@@ -234,98 +231,7 @@ class LessonCommentForm(forms.ModelForm):
             }),
         }
 
-# 9. FACULTY REGISTRATION FORM (CUSTOM ADMIN PANEL) 🚀 NEW
-
-class FacultyRegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter temporary password'}))
-    department = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Computer Science'}))
-    experience_years = forms.IntegerField(required=False, initial=0, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Unique Username'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Faculty Email'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
-        }
-
-    def save(self, commit=True):
-        # 1. Create the User
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password']) # Hash the password
-        user.is_student = False  # Not a student
-        user.is_faculty = True   # Make them a faculty member
-        
-        if commit:
-            user.save()
-            # 2. Create their Faculty Profile automatically
-            FacultyProfile.objects.create(
-                user=user,
-                department=self.cleaned_data.get('department'),
-                experience_years=self.cleaned_data.get('experience_years')
-            )
-        return user
-
-
-# 🚀 NEW: FACULTY PANEL FORMS
-
-class AssignmentForm(forms.ModelForm):
-    class Meta:
-        model = Assignment
-        fields = ['course', 'title', 'description', 'due_date', 'total_marks']
-        widgets = {
-            'course': forms.Select(attrs={'class': 'form-control'}),
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Assignment Title'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write the assignment instructions here...'}),
-            'due_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
-            'total_marks': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 100'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        faculty = kwargs.pop('faculty', None)
-        super().__init__(*args, **kwargs)
-        if faculty:
-            # Dropdown that will only show courses that are assigned to this faculty
-            self.fields['course'].queryset = Course.objects.all()
-
-class AssignmentGradeForm(forms.ModelForm):
-    class Meta:
-        model = AssignmentSubmission
-        fields = ['marks_obtained', 'feedback']
-        widgets = {
-            'marks_obtained': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter marks'}),
-            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Feedback for the student...'}),
-        }
-
-class FacultyProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = FacultyProfile
-        fields = ['department', 'experience_years', 'specialization', 'background']
-        widgets = {
-            'department': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. IT Department'}),
-            'experience_years': forms.NumberInput(attrs={'class': 'form-control'}),
-            'specialization': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Artificial Intelligence'}),
-            'background': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Computer Science'}),
-        }
-
-# 🚀 NEW: FACULTY PROFILE PIC & COMMUNITY CHAT FORMS
-
-
-class FacultyProfilePicForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['profile_pic']
-        widgets = {
-            'profile_pic': forms.FileInput(attrs={
-                'class': 'form-control', 
-                'id': 'faculty_profile_pic',
-                'accept': 'image/*',
-                'style': 'display: none;', # It is saved for designing custom buttons from scratch.
-                'onchange': 'this.form.submit();' # 🚀 Auto-submit magic! No need for a save button!
-            })
-        }
+# 9. COMMUNITY CHAT MESSAGE FORM
 
 class CourseGroupMessageForm(forms.ModelForm):
     class Meta:

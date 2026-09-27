@@ -1,7 +1,7 @@
 from django.urls import path
 from students import community_views
 from . import views
-from . import compiler_service  # NEW: Import the compiler service for Docker Execution
+from . import compiler_service  # Cloud Code Execution Service (Piston API)
 
 urlpatterns = [
 
@@ -38,9 +38,6 @@ urlpatterns = [
     path('admin-panel/create-exam/', views.admin_create_exam, name='admin_create_exam'),
     path('admin-panel/add-library/', views.add_library_view, name='add_library'),
     path('admin-panel/course/<int:course_id>/add-lesson/', views.admin_add_lesson, name='admin_add_lesson'),
-    
-    # 🚀 NEW: Faculty Management Route
-    path('admin-panel/faculties/', views.admin_faculty_list, name='admin_faculty_list'),
     
     # Student Management List & Actions
     path('admin-panel/students/', views.admin_student_list, name='admin_student_list'),
@@ -83,7 +80,4 @@ urlpatterns = [
     path('syntax-singularity/', views.syntax_singularity_view, name='syntax_singularity'),
     path('api/generate-challenge/', views.generate_ai_challenge, name='generate_challenge'),
     path('api/bounty/submit/', views.submit_bounty_code, name='submit_bounty_code'),
-
-    # 🚀 FACULTY PANEL SYSTEM
-    path('faculty-panel/', views.faculty_dashboard, name='faculty_dashboard'),
 ]

@@ -35,7 +35,6 @@ from .forms import (
     ProfilePictureForm,
     LessonForm,
     LessonCommentForm,
-    FacultyRegistrationForm #  ADDED FACULTY FORM
 )
 
 # Import Models
@@ -55,7 +54,6 @@ from .models import (
     DynamicBountyProblem,  
     ProblemTestCase,       
     BountySubmission,
-    FacultyProfile,        #  ADDED FACULTY PROFILE
     Assignment,            #  NEW: Added Assignment Model
     AssignmentSubmission,  #  NEW: Added Assignment Submission Model
     StudentActivity,       #  NEW: Student Activity Tracking
@@ -253,13 +251,10 @@ def student_dashboard(request):
         # Faculty profile data for display
         if enrollment.course.assigned_faculty:
             try:
-                enrollment.faculty_profile = enrollment.course.assigned_faculty.faculty_profile
                 enrollment.faculty_user = enrollment.course.assigned_faculty
-            except FacultyProfile.DoesNotExist:
-                enrollment.faculty_profile = None
+            except Exception:
                 enrollment.faculty_user = None
         else:
-            enrollment.faculty_profile = None
             enrollment.faculty_user = None
         
         total_all_lessons += progress_data['total']
@@ -711,16 +706,15 @@ def course_watch(request, course_id, lesson_id=None):
     faculty_data = None
     if course.assigned_faculty:
         try:
-            fp = course.assigned_faculty.faculty_profile
             faculty_data = {
                 'name': course.assigned_faculty.full_name or course.faculty_name,
-                'department': fp.department or '',
-                'specialization': fp.specialization or '',
-                'experience': fp.experience_years,
-                'has_pic': bool(course.assigned_faculty.profile.profile_pic),
-                'pic_url': course.assigned_faculty.profile.profile_pic.url if course.assigned_faculty.profile.profile_pic else '',
+                'department': '',
+                'specialization': '',
+                'experience': 0,
+                'has_pic': bool(course.assigned_faculty.profile.profile_pic) if hasattr(course.assigned_faculty, 'profile') else False,
+                'pic_url': course.assigned_faculty.profile.profile_pic.url if hasattr(course.assigned_faculty, 'profile') and course.assigned_faculty.profile.profile_pic else '',
             }
-        except (FacultyProfile.DoesNotExist, Profile.DoesNotExist):
+        except Exception:
             faculty_data = {
                 'name': course.faculty_name,
                 'department': '',
@@ -1040,13 +1034,22 @@ def ai_chat(request):
     return JsonResponse({'error': "Invalid request"}, status=400)
 
 
-#  6. PREVIOUS DOCKER EXECUTION ENGINE (Remains intact as requested)
+#  6. PISTON API CODE EXECUTION ENGINE (Cloud-based, works on Render)
+
+# Language configuration for Piston API
+PISTON_LANGUAGES = {
+    'python': {'language': 'python', 'version': '3.10.0'},
+    'javascript': {'language': 'javascript', 'version': '18.15.0'},
+    'cpp': {'language': 'c++', 'version': '10.2.0'},
+    'java': {'language': 'java', 'version': '15.0.2'},
+}
 
 @csrf_exempt
 def execute_code_api(request):
     """
-    Local Docker Code Execution Engine.
-    Requires Docker to be installed and 'local-compiler' image to be built.
+    Cloud Code Execution Engine using Piston API.
+    Works on any hosting platform (Render, Heroku, etc.) without Docker.
+    Piston API: https://emkc.org/api/v2/piston/execute
     """
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
@@ -1060,76 +1063,83 @@ def execute_code_api(request):
         if not code.strip():
             return JsonResponse({'status': 'error', 'message': 'Code cannot be empty.'})
 
-        # 1. Create a unique folder and file for the student's code
-        unique_id = str(uuid.uuid4())
-        TEMP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_codes')
-        os.makedirs(TEMP_DIR, exist_ok=True)
+        # Validate the language
+        lang_config = PISTON_LANGUAGES.get(language)
+        if not lang_config:
+            return JsonResponse({'status': 'error', 'message': f'Unsupported language: {language}'})
+
+        # Build the Piston API request payload
+        piston_payload = {
+            'language': lang_config['language'],
+            'version': lang_config['version'],
+            'files': [
+                {
+                    'name': f'main.{"py" if language == "python" else "js" if language == "javascript" else "cpp" if language == "cpp" else "java"}',
+                    'content': code
+                }
+            ],
+            'stdin': user_input,
+            'run_timeout': 15000,       # 15 second timeout
+            'compile_timeout': 15000,   # 15 second compile timeout
+            'run_memory_limit': 256000000  # 256MB memory limit
+        }
+
+        # Call the Piston API
+        piston_response = requests.post(
+            'https://emkc.org/api/v2/piston/execute',
+            json=piston_payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=30  # HTTP request timeout
+        )
+
+        if piston_response.status_code != 200:
+            return JsonResponse({
+                'status': 'error', 
+                'output': f'Code execution service returned status {piston_response.status_code}. Please try again.'
+            })
+
+        result = piston_response.json()
         
-        # 2. Determine execution command based on selected language
-        if language == 'python':
-            file_ext = '.py'
-            run_cmd = ['python3', f'/app/{unique_id}{file_ext}']
-        elif language == 'javascript':
-            file_ext = '.js'
-            run_cmd = ['node', f'/app/{unique_id}{file_ext}']
-        elif language == 'cpp':
-            file_ext = '.cpp'
-            # C++ requires compilation first, then execution
-            run_cmd = ['sh', '-c', f'g++ /app/{unique_id}{file_ext} -o /app/{unique_id} && /app/{unique_id}']
-        elif language == 'java':
-            file_ext = '.java'
-            # Assuming the main class is named 'Main'
-            run_cmd = ['sh', '-c', f'javac /app/{unique_id}{file_ext} && cd /app && java Main']
+        # Extract the run output (Piston returns compile + run separately)
+        run_data = result.get('run', {})
+        compile_data = result.get('compile', {})
+        
+        # Check for compilation errors first (C++, Java)
+        if compile_data and compile_data.get('code') is not None and compile_data.get('code') != 0:
+            return JsonResponse({
+                'status': 'error',
+                'output': compile_data.get('stderr', '') or compile_data.get('output', 'Compilation failed.')
+            })
+        
+        # Check run results
+        stdout = run_data.get('stdout', '')
+        stderr = run_data.get('stderr', '')
+        exit_code = run_data.get('code', 0)
+        signal = run_data.get('signal')
+        
+        if signal == 'SIGKILL':
+            return JsonResponse({
+                'status': 'error',
+                'output': 'Timeout Error: Your code took too long to execute (Possible Infinite Loop).'
+            })
+        
+        if exit_code == 0:
+            final_output = stdout if stdout else "Execution completed (No output)"
+            return JsonResponse({'status': 'success', 'output': final_output})
         else:
-            return JsonResponse({'status': 'error', 'message': 'Unsupported language.'})
-
-        file_name = f"{unique_id}{file_ext}"
-        file_path = os.path.join(TEMP_DIR, file_name)
-
-        # 3. Write code to the temporary file
-        with open(file_path, 'w') as f:
-            f.write(code)
-
-        # 4. Prepare Docker run command
-        # Binds the TEMP_DIR to /app inside container, limits memory and CPU
-        docker_cmd = [
-            'docker', 'run', '--rm', '-i', 
-            '-v', f"{TEMP_DIR}:/app", 
-            '--network', 'none',      
-            '--memory', '256m',       
-            '--cpus', '0.5',          
-            'local-compiler'          
-        ] + run_cmd
-
-        # 5. Run the code safely with a timeout of 15 seconds, passing standard input
-        try:
-            process = subprocess.run(
-                docker_cmd, capture_output=True, text=True, input=user_input, timeout=15
-            )
-            output = process.stdout
-            error = process.stderr
+            error_output = stderr if stderr else stdout
+            if not error_output:
+                error_output = f"Program exited with code {exit_code}"
             
-            if process.returncode == 0:
-                result_status = 'success'
-                final_output = output if output else "Execution completed (No output)"
-            else:
-                result_status = 'error'
-                final_output = error if error else output
-                
-            if "EOFError: EOF when reading a line" in final_output:
-                final_output += "\n\n[HINT] Your code expects user input! Please provide it in the 'Custom Input' tab before running."
-
-        except subprocess.TimeoutExpired:
-            result_status = 'error'
-            final_output = "Timeout Error: Your code took too long to execute (Possible Infinite Loop)."
+            if "EOFError" in error_output or "NoSuchElementException" in error_output:
+                error_output += "\n\n[HINT] Your code expects user input! Please provide it in the 'Custom Input' tab before running."
             
-        finally:
-            # 6. Cleanup: Remove the temporary file after execution to save space
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            return JsonResponse({'status': 'error', 'output': error_output})
 
-        return JsonResponse({'status': result_status, 'output': final_output})
-
+    except requests.exceptions.Timeout:
+        return JsonResponse({'status': 'error', 'output': 'Timeout: The code execution service did not respond in time.'})
+    except requests.exceptions.ConnectionError:
+        return JsonResponse({'status': 'error', 'output': 'Connection Error: Unable to reach the code execution service. Please try again later.'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
@@ -1276,7 +1286,6 @@ def admin_dashboard(request):
         'exam_form': ExamForm(),
         'library_form': LibraryDocumentForm(),
         'lesson_form': LessonForm(),
-        'faculty_form': FacultyRegistrationForm(),
     }
     return render(request, 'custom_admin/dashboard.html', context)
 
@@ -1428,32 +1437,6 @@ def admin_student_course_activity(request, student_id, course_id):
 
 # --- Admin Action Views (Create) ---
 
-@staff_member_required
-def admin_faculty_list(request):
-    """
-    Dedicated view for Admin to manage and view all faculty members.
-    """
-    if request.method == 'POST':
-        form = FacultyRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            messages.success(request, f"Faculty '{user.first_name}' added successfully!")
-            return redirect('admin_faculty_list')
-        else:
-            messages.error(request, "Failed to add faculty. Username or Email might exist.")
-            
-    # GET Request: Fetch all faculties and their related data
-    faculties = User.objects.filter(is_faculty=True).prefetch_related('faculty_profile', 'assigned_courses')
-    faculty_form = FacultyRegistrationForm()
-    
-    total_faculties = faculties.count()
-    
-    context = {
-        'faculties': faculties,
-        'faculty_form': faculty_form,
-        'total_faculties': total_faculties
-    }
-    return render(request, 'custom_admin/admin_faculty_list.html', context)
 
 @staff_member_required
 def admin_create_course(request):

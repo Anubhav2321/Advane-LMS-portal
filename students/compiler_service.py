@@ -1,17 +1,26 @@
 # students/compiler_service.py
-import os
-import uuid
-import subprocess
+# Cloud Code Execution Engine using Piston API
+# Works on any hosting platform (Render, Heroku, etc.) without Docker.
+
 import json
+import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# Directory to temporarily store student codes
-TEMP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_codes')
-os.makedirs(TEMP_DIR, exist_ok=True)
+# Language configuration for Piston API
+PISTON_LANGUAGES = {
+    'python': {'language': 'python', 'version': '3.10.0'},
+    'javascript': {'language': 'javascript', 'version': '18.15.0'},
+    'cpp': {'language': 'c++', 'version': '10.2.0'},
+    'java': {'language': 'java', 'version': '15.0.2'},
+}
 
 @csrf_exempt
 def run_code_in_docker(request):
+    """
+    Cloud Code Execution using Piston API.
+    Name kept as run_code_in_docker for backward compatibility with urls.py.
+    """
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
         
@@ -19,81 +28,84 @@ def run_code_in_docker(request):
         data = json.loads(request.body)
         language = data.get('language', 'python')
         code = data.get('code', '')
+        user_input = data.get('user_input', '')
         
         if not code.strip():
             return JsonResponse({'status': 'error', 'message': 'Code cannot be empty.'})
 
-        # 1. Create a unique filename to prevent conflicts between students
-        unique_id = str(uuid.uuid4())
-        
-        # Determine file extension and run command based on language
-        if language == 'python':
-            file_ext = '.py'
-            run_cmd = ['python3', f'/app/{unique_id}{file_ext}']
-        elif language == 'javascript':
-            file_ext = '.js'
-            run_cmd = ['node', f'/app/{unique_id}{file_ext}']
-        elif language == 'cpp':
-            file_ext = '.cpp'
-            # C++ needs compilation first, then execution
-            run_cmd = ['sh', '-c', f'g++ /app/{unique_id}{file_ext} -o /app/{unique_id} && /app/{unique_id}']
-        elif language == 'java':
-            file_ext = '.java'
-            # For simplicity in this basic setup, we assume the class is named Main
-            run_cmd = ['sh', '-c', f'javac /app/{unique_id}{file_ext} && cd /app && java Main']
-        else:
+        # Validate language
+        lang_config = PISTON_LANGUAGES.get(language)
+        if not lang_config:
             return JsonResponse({'status': 'error', 'message': 'Unsupported language.'})
 
-        file_name = f"{unique_id}{file_ext}"
-        file_path = os.path.join(TEMP_DIR, file_name)
+        # File extension mapping
+        ext_map = {'python': 'py', 'javascript': 'js', 'cpp': 'cpp', 'java': 'java'}
 
-        # 2. Save the code to the temporary file
-        with open(file_path, 'w') as f:
-            f.write(code)
+        # Build Piston API payload
+        piston_payload = {
+            'language': lang_config['language'],
+            'version': lang_config['version'],
+            'files': [
+                {
+                    'name': f'main.{ext_map.get(language, "txt")}',
+                    'content': code
+                }
+            ],
+            'stdin': user_input,
+            'run_timeout': 15000,
+            'compile_timeout': 15000,
+            'run_memory_limit': 256000000
+        }
 
-        # 3. Build the Docker command
-        # We mount (bind) the temp directory to /app inside the container
-        docker_cmd = [
-            'docker', 'run', '--rm', 
-            '-v', f"{TEMP_DIR}:/app", # Share folder
-            '--network', 'none',      # Security: No internet access for student code
-            '--memory', '256m',       # Security: Limit memory
-            '--cpus', '0.5',          # Security: Limit CPU
-            'local-compiler'          # The image we built in Step 1
-        ] + run_cmd
+        # Call Piston API
+        piston_response = requests.post(
+            'https://emkc.org/api/v2/piston/execute',
+            json=piston_payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=30
+        )
 
-        # 4. Execute the command with a timeout (e.g., 5 seconds) to prevent infinite loops
-        try:
-            process = subprocess.run(
-                docker_cmd,
-                capture_output=True,
-                text=True,
-                timeout=5
-            )
-            
-            output = process.stdout
-            error = process.stderr
-            
-            if process.returncode == 0:
-                result_status = 'success'
-                final_output = output if output else "Execution completed (No output)"
-            else:
-                result_status = 'error'
-                final_output = error if error else output
+        if piston_response.status_code != 200:
+            return JsonResponse({
+                'status': 'error',
+                'output': f'Code execution service returned status {piston_response.status_code}. Please try again.'
+            })
 
-        except subprocess.TimeoutExpired:
-            result_status = 'error'
-            final_output = "Timeout Error: Your code took too long to execute (Possible Infinite Loop)."
-            
-        finally:
-            # 5. Cleanup: Always delete the temporary file after execution
-            if os.path.exists(file_path):
-                os.remove(file_path)
-                
-            # Note: For C++ and Java, compiled files (.class, executable) might remain in TEMP_DIR. 
-            # In a production app, you'd clean those up too based on the unique_id.
+        result = piston_response.json()
+        run_data = result.get('run', {})
+        compile_data = result.get('compile', {})
 
-        return JsonResponse({'status': result_status, 'output': final_output})
+        # Check compilation errors
+        if compile_data and compile_data.get('code') is not None and compile_data.get('code') != 0:
+            return JsonResponse({
+                'status': 'error',
+                'output': compile_data.get('stderr', '') or compile_data.get('output', 'Compilation failed.')
+            })
 
+        # Check run results
+        stdout = run_data.get('stdout', '')
+        stderr = run_data.get('stderr', '')
+        exit_code = run_data.get('code', 0)
+        signal = run_data.get('signal')
+
+        if signal == 'SIGKILL':
+            return JsonResponse({
+                'status': 'error',
+                'output': 'Timeout Error: Your code took too long to execute (Possible Infinite Loop).'
+            })
+
+        if exit_code == 0:
+            final_output = stdout if stdout else "Execution completed (No output)"
+            return JsonResponse({'status': 'success', 'output': final_output})
+        else:
+            error_output = stderr if stderr else stdout
+            if not error_output:
+                error_output = f"Program exited with code {exit_code}"
+            return JsonResponse({'status': 'error', 'output': error_output})
+
+    except requests.exceptions.Timeout:
+        return JsonResponse({'status': 'error', 'output': 'Timeout: The code execution service did not respond in time.'})
+    except requests.exceptions.ConnectionError:
+        return JsonResponse({'status': 'error', 'output': 'Connection Error: Unable to reach the code execution service.'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})

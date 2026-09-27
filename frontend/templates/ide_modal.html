@@ -122,7 +122,7 @@
         <div class="vscode-header">
             <div class="vscode-title">
                 <i class="fas fa-code" style="color: #007acc;"></i> 
-                <span id="vsTitleText">app.py - Local Execution Engine (Docker)</span>
+                <span id="vsTitleText">app.py - Cloud Execution Engine</span>
             </div>
             <div class="vscode-controls">
                 <i class="fas fa-expand" id="vsMaximizeBtn" title="Toggle Fullscreen"></i>
@@ -152,7 +152,7 @@
                 <div class="vscode-term-tabs">
                     <div class="vscode-term-tab">Terminal</div>
                 </div>
-                <pre id="vscodeOutput">Welcome to the integrated Docker terminal.&#10;Write your code above and click 'Run Code' to execute.&#10;Output will be displayed here...</pre>
+                <pre id="vscodeOutput">Welcome to the integrated Cloud terminal.&#10;Write your code above and click 'Run Code' to execute.&#10;Output will be displayed here...</pre>
             </div>
         </div>
     </div>
@@ -212,10 +212,10 @@
                     
                     // Update Title Bar dynamically
                     let titleSpan = document.getElementById('vsTitleText');
-                    if(lang === 'python') titleSpan.innerText = 'app.py - Local Engine (Docker)';
-                    if(lang === 'javascript') titleSpan.innerText = 'app.js - Local Engine (Docker)';
-                    if(lang === 'java') titleSpan.innerText = 'Main.java - Local Engine (Docker)';
-                    if(lang === 'cpp') titleSpan.innerText = 'main.cpp - Local Engine (Docker)';
+                    if(lang === 'python') titleSpan.innerText = 'app.py - Cloud Engine';
+                    if(lang === 'javascript') titleSpan.innerText = 'app.js - Cloud Engine';
+                    if(lang === 'java') titleSpan.innerText = 'Main.java - Cloud Engine';
+                    if(lang === 'cpp') titleSpan.innerText = 'main.cpp - Cloud Engine';
                 });
             }
         }, 800); // 800ms delay ensures Ace is fully downloaded before init

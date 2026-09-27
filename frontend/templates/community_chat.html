@@ -840,7 +840,7 @@
         <div class="vscode-container">
             <div class="vscode-header">
                 <div class="vscode-title">
-                    <i class="fas fa-code vs-title-icon"></i> <span id="vsTitleText">app.py - Local Execution Engine (Docker)</span>
+                    <i class="fas fa-code vs-title-icon"></i> <span id="vsTitleText">app.py - Cloud Execution Engine</span>
                 </div>
                 <div class="vscode-controls">
                     <i class="fas fa-expand" id="vsMaximizeBtn" title="Toggle Fullscreen"></i>
@@ -1399,10 +1399,10 @@
                         vsEditor.setValue(boilerplates[lang], 1);
                         
                         let titleSpan = document.getElementById('vsTitleText');
-                        if(lang === 'python') titleSpan.innerText = 'app.py - Local Engine (Docker)';
-                        if(lang === 'javascript') titleSpan.innerText = 'app.js - Local Engine (Docker)';
-                        if(lang === 'java') titleSpan.innerText = 'Main.java - Local Engine (Docker)';
-                        if(lang === 'cpp') titleSpan.innerText = 'main.cpp - Local Engine (Docker)';
+                        if(lang === 'python') titleSpan.innerText = 'app.py - Cloud Engine';
+                        if(lang === 'javascript') titleSpan.innerText = 'app.js - Cloud Engine';
+                        if(lang === 'java') titleSpan.innerText = 'Main.java - Cloud Engine';
+                        if(lang === 'cpp') titleSpan.innerText = 'main.cpp - Cloud Engine';
                     });
                 }
             }, 500);
@@ -1456,7 +1456,7 @@
             // UI Updates for Loading State
             vsRunBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
             vsRunBtn.disabled = true;
-            document.getElementById('vsTermStatus').innerHTML = '<span style="color:#007acc;">Running inside Docker...</span>';
+            document.getElementById('vsTermStatus').innerHTML = '<span style="color:#007acc;">Running in Cloud...</span>';
             document.getElementById('vsTermTime').style.display = 'none';
             vsOutput.innerHTML = `<span style="color:#888;">Compiling and executing...</span>`;
 

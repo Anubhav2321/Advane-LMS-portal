@@ -5,13 +5,12 @@ from .models import (
     Notification, LiveClass, LibraryDocument, 
     Exam, Question, QuizResult, Quiz,
     CourseGroupMessage,
-    # 🚀 NEW: IMPORT FACULTY AND AI BOUNTY MODELS HERE 
-    FacultyProfile, LessonComment, DynamicBountyProblem, 
+    LessonComment, DynamicBountyProblem, 
     ProblemTestCase, BountySubmission, MessageReaction,
     AICodeSubmission, StudyRoadmap, ProctoringLog, AIVideoNote
 )
 
-# 1. Custom User Admin (Student/Teacher/Faculty Info)
+# 1. Custom User Admin (Student/Teacher Info)
 
 class ProfileInline(admin.StackedInline):
     model = Profile
@@ -20,28 +19,17 @@ class ProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline,)
-    # 🚀 UPDATED: Added 'is_faculty' and 'lms_coins' to list display 
-    list_display = ('username', 'email', 'first_name', 'is_student', 'is_teacher', 'is_faculty', 'student_level', 'lms_coins')
-    list_filter = ('is_student', 'is_teacher', 'is_faculty', 'student_level')
+    list_display = ('username', 'email', 'first_name', 'is_student', 'is_teacher', 'student_level', 'lms_coins')
+    list_filter = ('is_student', 'is_teacher', 'student_level')
     
-    # 🚀 UPDATED: Added 'is_faculty' and 'lms_coins' to fieldsets 
     fieldsets = UserAdmin.fieldsets + (
-        ('Academic Info', {'fields': ('is_student', 'is_teacher', 'is_faculty', 'student_level', 'stream', 'lms_coins')}),
+        ('Academic Info', {'fields': ('is_student', 'is_teacher', 'student_level', 'stream', 'lms_coins')}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Academic Info', {'fields': ('is_student', 'is_teacher', 'is_faculty', 'student_level', 'stream', 'lms_coins')}),
+        ('Academic Info', {'fields': ('is_student', 'is_teacher', 'student_level', 'stream', 'lms_coins')}),
     )
 
 admin.site.register(User, CustomUserAdmin)
-# Profile is registered inline, but you can register it separately if needed
-# admin.site.register(Profile) 
-
-# 🚀 NEW: FACULTY PROFILE ADMIN 
-@admin.register(FacultyProfile)
-class FacultyProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'department', 'experience_years', 'salary', 'specialization')
-    search_fields = ('user__username', 'department', 'specialization')
-    list_filter = ('department', 'background')
 
 
 # 2. Course & Lesson Admin
@@ -53,10 +41,8 @@ class LessonInline(admin.TabularInline):
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     inlines = [LessonInline]
-    # 🚀 UPDATED: Added assigned_faculty to list_display 
-    list_display = ('title', 'assigned_faculty', 'price', 'total_modules', 'is_published', 'is_coin_purchasable', 'created_at')
-    # 🚀 UPDATED: Added assigned_faculty to list_filter 
-    list_filter = ('is_published', 'difficulty_level', 'is_coin_purchasable', 'assigned_faculty')
+    list_display = ('title', 'faculty_name', 'price', 'total_modules', 'is_published', 'is_coin_purchasable', 'created_at')
+    list_filter = ('is_published', 'difficulty_level', 'is_coin_purchasable')
     search_fields = ('title', 'description', 'faculty_name')
     prepopulated_fields = {'slug': ('title',)}
 
@@ -94,7 +80,7 @@ admin.site.register(LiveClass)
 admin.site.register(LibraryDocument)
 admin.site.register(QuizResult)
 admin.site.register(Quiz) # Dummy Quiz model registered if needed   
-admin.site.register(LessonComment) # 🚀 NEW: Added Lesson Comment
+admin.site.register(LessonComment)
 
 #  5. COMMUNITY CHAT ADMIN 
 
@@ -104,9 +90,9 @@ class CourseGroupMessageAdmin(admin.ModelAdmin):
     list_filter = ('course', 'created_at', 'is_pinned', 'is_bounty_resolved')
     search_fields = ('text', 'sender__username', 'course__title')
 
-admin.site.register(MessageReaction) # 🚀 NEW: Added Reactions
+admin.site.register(MessageReaction)
 
-#  6. NEW: AI & BOUNTY ARENA ADMIN 
+#  6. AI & BOUNTY ARENA ADMIN 
 
 @admin.register(DynamicBountyProblem)
 class DynamicBountyProblemAdmin(admin.ModelAdmin):
