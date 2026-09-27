@@ -439,13 +439,7 @@
                 </a>
             </li>
 
-            <li>
-                <a href="{% url 'admin_faculty_list' %}" class="{% if 'faculties' in request.resolver_match.url_name %}active{% endif %}">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Faculties</span>
-                </a>
-            </li>
-            
+
             <li>
                 <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-book-open"></i>

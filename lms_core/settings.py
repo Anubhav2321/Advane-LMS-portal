@@ -140,9 +140,8 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # --- ALLAUTH & GOOGLE OAUTH SETTINGS ---
 
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 # --- Skip the intermediate confirmation page ---
 SOCIALACCOUNT_LOGIN_ON_GET = True 
