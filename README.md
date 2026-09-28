@@ -356,6 +356,7 @@ Learning-365 introduces a virtual learning currency called:
 
 Students can earn coins through meaningful learning activities.
 
+
 For example:
 
 ```text
