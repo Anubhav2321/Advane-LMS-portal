@@ -1,7 +1,16 @@
 import os
+import re
 from groq import Groq
 from django.conf import settings
 from .models import Course  # Importing Course model to get real data
+
+# Helper: Strip <think>...</think> tags from Qwen model responses
+def strip_think_tags(text):
+    """Removes <think>...</think> blocks that Qwen models add."""
+    if not text:
+        return text
+    cleaned = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    return cleaned.strip()
 
 def get_course_context():
     """
@@ -71,13 +80,13 @@ def generate_learning_assistant_response(user_message, chat_history=[]):
         # 5. Call AI API
         chat_completion = client.chat.completions.create(
             messages=messages,
-            # UPDATE: Changed to a stable model with better free-tier limits
-            model="llama3-8b-8192",  # Updated to stable llama3
+            model="qwen/qwen3.8-27b",  # Updated to supported model
             temperature=0.7,         
             max_tokens=400,
         )
-        return chat_completion.choices[0].message.content
+        raw = chat_completion.choices[0].message.content
+        return strip_think_tags(raw)
 
     except Exception as e:
         print(f"AI Error: {e}")
-        return "I'm having a bit of trouble connecting to my brain right now! 🧠💥 Please try again in a moment."
+        return "I'm having a bit of trouble connecting to my brain right now! Please try again in a moment."

@@ -868,12 +868,35 @@ def generate_quiz_view(request):
             if len(extracted_text) < 50:
                 return JsonResponse({'status': 'error', 'message': 'File is empty or unreadable.'}, status=400)
 
-            # 4. Generate 10-15 Questions
-            generated_questions = generate_quiz_from_text(extracted_text, num_questions=15)
+            # 4. Generate Questions via AI
+            generated_questions = generate_quiz_from_text(extracted_text, num_questions=5)
             
-            time.sleep(1) # Simulation delay
+            if not generated_questions:
+                return JsonResponse({'status': 'error', 'message': 'AI could not generate questions. Please try again.'}, status=500)
+
+            # 5. Transform AI format to frontend format
+            # AI returns: {"question": "...", "options": ["A","B","C","D"], "answer": 0}
+            # Frontend expects: {"question_text": "...", "option_a": "...", ..., "correct_option": "A"}
+            option_letters = ['A', 'B', 'C', 'D']
+            formatted_questions = []
+            for q in generated_questions:
+                opts = q.get('options', [])
+                correct_idx = q.get('answer', 0)
+                formatted_q = {
+                    'question_text': q.get('question', ''),
+                    'option_a': opts[0] if len(opts) > 0 else '-',
+                    'option_b': opts[1] if len(opts) > 1 else '-',
+                    'option_c': opts[2] if len(opts) > 2 else '-',
+                    'option_d': opts[3] if len(opts) > 3 else '-',
+                    'correct_option': option_letters[correct_idx] if correct_idx < len(option_letters) else 'A',
+                    # Keep original format too for save_quiz_view
+                    'question': q.get('question', ''),
+                    'options': opts,
+                    'answer': correct_idx,
+                }
+                formatted_questions.append(formatted_q)
             
-            return JsonResponse({'status': 'success', 'quiz': generated_questions})
+            return JsonResponse({'status': 'success', 'quiz': formatted_questions})
 
         except Exception as e:
             print(f"Error generating quiz: {e}")

@@ -1303,6 +1303,7 @@
     // CHART.JS INITIALIZATIONS                      //
     // ============================================= //
 
+    try {
     const chartDefaults = {
         responsive: true,
         maintainAspectRatio: true,
@@ -1530,6 +1531,9 @@
             }
         }
     });
+    } catch (chartError) {
+        console.warn('Chart initialization error (non-critical):', chartError);
+    }
 
     // ============================================= //
     // AI QUIZ MODAL LOGIC                           //
@@ -1540,6 +1544,7 @@
     let currentCourseId = null;
 
     async function openQuizModal(docId, title, courseId) {
+        console.log('openQuizModal called:', docId, title, courseId);
         const modal = document.getElementById('quizModal');
         const loader = document.getElementById('quizLoader');
         const content = document.getElementById('quizContent');
@@ -1571,21 +1576,38 @@
             const data = await response.json();
             loader.style.display = 'none';
 
-            if (data.status === 'success') {
+            if (data.status === 'success' && data.quiz && data.quiz.length > 0) {
                 currentQuestions = data.quiz;
                 saveBtn.style.display = 'inline-block';
                 renderQuestions(data.quiz);
+            } else if (data.status === 'success' && (!data.quiz || data.quiz.length === 0)) {
+                content.innerHTML = `<div style="text-align:center; padding:40px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:40px; color:var(--accent-amber); margin-bottom:15px;"></i>
+                    <p style="color:var(--accent-amber);">AI could not generate questions from this document. The document may be too short or unreadable.</p>
+                    <p style="color:var(--text-muted); margin-top:10px; font-size:0.85rem;">Try uploading a PDF/DOCX with more text content.</p>
+                </div>`;
             } else {
-                content.innerHTML = `<p style="color:var(--accent-red); text-align:center;">Error: ${data.message}</p>`;
+                content.innerHTML = `<div style="text-align:center; padding:40px;">
+                    <i class="fas fa-times-circle" style="font-size:40px; color:var(--accent-red); margin-bottom:15px;"></i>
+                    <p style="color:var(--accent-red);">Error: ${data.message || 'Unknown error occurred'}</p>
+                </div>`;
             }
         } catch (error) {
             loader.style.display = 'none';
-            content.innerHTML = `<p style="color:var(--accent-red); text-align:center;">Network Error or Server Timeout.</p>`;
+            content.innerHTML = `<div style="text-align:center; padding:40px;">
+                <i class="fas fa-wifi" style="font-size:40px; color:var(--accent-red); margin-bottom:15px;"></i>
+                <p style="color:var(--accent-red);">Network Error or Server Timeout.</p>
+                <p style="color:var(--text-muted); margin-top:10px; font-size:0.85rem;">Please check your internet connection and try again.</p>
+            </div>`;
         }
     }
 
     function renderQuestions(questions) {
         const content = document.getElementById('quizContent');
+        if (!questions || questions.length === 0) {
+            content.innerHTML = '<p style="color:var(--accent-amber); text-align:center; padding:30px;">No questions were generated.</p>';
+            return;
+        }
         let html = '<div class="generated-quiz-list">';
         questions.forEach((q, idx) => {
             html += `
