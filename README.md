@@ -125,6 +125,7 @@ Premium courses can contain:
 
 This creates a foundation for building a scalable **free + premium educational platform**.
 
+
 ---
 
 # 🎥 4. Live Class System
