@@ -1,6 +1,6 @@
 # 🎓 Learning-365 — AI-Powered Learning Management Ecosystem
 
-### *Learn. Practice. Compete. Build. Repeat — 365 Days.*
+### _Learn. Practice. Compete. Build. Repeat — 365 Days._
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" />
@@ -9,7 +9,6 @@
   <img src="https://img.shields.io/badge/AI-Groq%20Llama-F55036?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Database-SQLite%20%2F%20PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
 </p>
-
 
 <p align="center">
   <strong>Learning-365</strong> is a next-generation AI-powered Learning Management System designed to combine structured education, AI-driven coding practice, digital learning resources, examinations, gamification, community interaction, and administrative management into one unified ecosystem.
@@ -27,26 +26,25 @@
 
 It is a complete digital learning ecosystem where students can:
 
-* 🔐 Create an account and securely log in
-* 🌐 Sign in using Google OAuth
-* 📚 Enroll in multiple courses
-* 💎 Access premium courses
-* 🎥 Attend live classes
-* 📖 Read and download learning resources
-* 📂 Upload and download different types of educational files
-* 🤖 Practice AI-generated coding problems
-* 🧠 Take AI-generated examinations
-* 🪙 Earn and spend LMS Coins
-* 🏆 Compete on a global leaderboard
-* 📊 Track their learning activity for the last 365 days
-* 👤 Build a personalized premium student profile
-* 💬 Interact with other learners through the community system
-* ⚙️ Manage their complete learning journey from one dashboard
+- 🔐 Create an account and securely log in
+- 🌐 Sign in using Google OAuth
+- 📚 Enroll in multiple courses
+- 💎 Access premium courses
+- 🎥 Attend live classes
+- 📖 Read and download learning resources
+- 📂 Upload and download different types of educational files
+- 🤖 Practice AI-generated coding problems
+- 🧠 Take AI-generated examinations
+- 🪙 Earn and spend LMS Coins
+- 🏆 Compete on a global leaderboard
+- 📊 Track their learning activity for the last 365 days
+- 👤 Build a personalized premium student profile
+- 💬 Interact with other learners through the community system
+- ⚙️ Manage their complete learning journey from one dashboard
 
 For administrators, Learning-365 provides a dedicated management environment to operate the entire LMS ecosystem.
 
 ---
-
 
 # ✨ Core Platform Features
 
@@ -56,18 +54,17 @@ Learning-365 includes a complete authentication system rather than a static/demo
 
 ### Authentication Features
 
-
-* 👤 User Registration
-* 🔑 Secure Login
-* 🚪 Logout
-* 🔒 Password-based authentication
-* 🌐 **Sign in with Google**
-* 👨‍🎓 Student profile creation
-* 🖼️ Google profile picture synchronization
-* 📝 User profile management
-* 🔐 Session-based authentication
-* 🛡️ Protected student pages
-* ⚡ Automatic authentication state handling
+- 👤 User Registration
+- 🔑 Secure Login
+- 🚪 Logout
+- 🔒 Password-based authentication
+- 🌐 **Sign in with Google**
+- 👨‍🎓 Student profile creation
+- 🖼️ Google profile picture synchronization
+- 📝 User profile management
+- 🔐 Session-based authentication
+- 🛡️ Protected student pages
+- ⚡ Automatic authentication state handling
 
 The authentication architecture is designed to separate public pages, authenticated student areas, and administrator-only functionality.
 
@@ -81,16 +78,16 @@ Students can discover and access different courses from a centralized course lib
 
 ### Course Features
 
-* 📖 Multiple courses
-* 🏷️ Course categories
-* 📝 Course descriptions
-* 🎓 Course enrollment
-* 📊 Learning progress
-* 🎥 Video lessons
-* 📄 Course resources
-* 📚 Course materials
-* 🔗 Lesson-based learning structure
-* 💎 Premium course support
+- 📖 Multiple courses
+- 🏷️ Course categories
+- 📝 Course descriptions
+- 🎓 Course enrollment
+- 📊 Learning progress
+- 🎥 Video lessons
+- 📄 Course resources
+- 📚 Course materials
+- 🔗 Lesson-based learning structure
+- 💎 Premium course support
 
 ### Example Course Ecosystem
 
@@ -117,13 +114,13 @@ Learning-365 supports premium learning content for advanced learners.
 
 Premium courses can contain:
 
-* 🎥 Premium video lessons
-* 📄 Exclusive PDFs
-* 📦 Downloadable resources
-* 🧪 Premium examinations
-* 💻 Advanced coding challenges
-* 🎯 Specialized learning paths
-* 🔐 Restricted-access course materials
+- 🎥 Premium video lessons
+- 📄 Exclusive PDFs
+- 📦 Downloadable resources
+- 🧪 Premium examinations
+- 💻 Advanced coding challenges
+- 🎯 Specialized learning paths
+- 🔐 Restricted-access course materials
 
 This creates a foundation for building a scalable **free + premium educational platform**.
 
@@ -135,12 +132,12 @@ Learning-365 also supports live education instead of relying only on recorded le
 
 Students can access:
 
-* 🔴 Live class information
-* 📅 Class schedules
-* 🎓 Course-specific live sessions
-* 🔗 Live class access links
-* 📝 Class-related resources
-* 📚 Supporting study materials
+- 🔴 Live class information
+- 📅 Class schedules
+- 🎓 Course-specific live sessions
+- 🔗 Live class access links
+- 📝 Class-related resources
+- 📚 Supporting study materials
 
 The system can be extended to integrate platforms such as Google Meet, Zoom, or other live-class infrastructure.
 
@@ -150,19 +147,18 @@ The system can be extended to integrate platforms such as Google Meet, Zoom, or 
 
 The platform includes a centralized digital library for educational resources.
 
-
 Students can access different types of learning materials including:
 
-* 📕 PDF books
-* 📄 Notes
-* 📝 Documents
-* 📊 Presentations
-* 🗂️ ZIP resources
-* 🖼️ Images
-* 🎵 Audio resources
-* 🎬 Video resources
-* 💻 Source-code files
-* 📦 Other educational assets
+- 📕 PDF books
+- 📄 Notes
+- 📝 Documents
+- 📊 Presentations
+- 🗂️ ZIP resources
+- 🖼️ Images
+- 🎵 Audio resources
+- 🎬 Video resources
+- 💻 Source-code files
+- 📦 Other educational assets
 
 ### Resource Operations
 
@@ -198,10 +194,9 @@ This allows instructors/administrators to distribute course materials without re
 
 # 🤖 7. Syntax Singularity — AI Coding Arena
 
-## *An AI-generated LeetCode-style coding environment*
+## _An AI-generated LeetCode-style coding environment_
 
 One of the core features of Learning-365 is **Syntax Singularity**.
-
 
 Instead of depending entirely on a fixed database of coding questions, the system can use AI to dynamically generate coding practice challenges.
 
@@ -240,24 +235,24 @@ The experience is inspired by platforms such as **LeetCode**, but the challenge 
 
 Students can practice:
 
-* 🐍 Python
-* ☕ Java
-* 🌐 JavaScript
-* 💻 C/C++
-* 🧠 Data Structures
-* 🔢 Algorithms
-* 🗄️ SQL
-* 🔀 Custom programming topics
+- 🐍 Python
+- ☕ Java
+- 🌐 JavaScript
+- 💻 C/C++
+- 🧠 Data Structures
+- 🔢 Algorithms
+- 🗄️ SQL
+- 🔀 Custom programming topics
 
 ### AI Challenge Generation
 
 The AI can generate challenges based on:
 
-* Topic
-* Difficulty
-* Programming language
-* Problem type
-* Learning objective
+- Topic
+- Difficulty
+- Programming language
+- Problem type
+- Learning objective
 
 This makes the practice environment much more dynamic than a static question bank.
 
@@ -271,19 +266,18 @@ The AI-powered evaluation system can analyze the student's submitted solution an
 
 Possible evaluation areas include:
 
-* ✅ Correctness
-* 🧠 Logical approach
-* 📝 Syntax
-* ⚡ Efficiency
-* 🐛 Potential bugs
-* 📈 Complexity
-* 💡 Hints
-* 📚 Improvement suggestions
+- ✅ Correctness
+- 🧠 Logical approach
+- 📝 Syntax
+- ⚡ Efficiency
+- 🐛 Potential bugs
+- 📈 Complexity
+- 💡 Hints
+- 📚 Improvement suggestions
 
 The goal is to help students understand **why** their solution works or fails rather than simply showing a pass/fail result.
 
 ---
-
 
 # 🐳 9. Secure Docker Code Execution
 
@@ -323,34 +317,28 @@ This architecture provides a stronger isolation boundary for coding practice.
 Learning-365 includes an AI-powered examination layer.
 
 Instead of having only manually created questions, the platform can dynamically generate examination content using AI.
-
 ### AI Exam Capabilities
 
-* 🧠 AI-generated questions
-* 🎯 Topic-based exams
-* 📊 Difficulty-based questions
-* ⏱️ Timed examinations
-* 📝 Multiple-choice questions
-* 📈 Score calculation
-* 📊 Performance evaluation
-* 🏆 Result tracking
-* 💡 Learning feedback
-
+- 🧠 **AI Quiz Generator**: Upload PDF/DOCX files and extract text to automatically generate quizzes.
+- 🎯 Topic-based exams
+- 📊 Difficulty-based questions
+- ⏱️ Timed examinations
+- 📝 Multiple-choice questions
+- 📈 Score calculation
+- 📊 Performance evaluation
+- 🏆 Result tracking
+- 💡 Learning feedback
 
 ### Exam Flow
 
 ```text
-Select Course / Topic
+Upload Document (PDF/DOCX) or Select Topic
         ↓
-Select Difficulty
-        ↓
-Generate AI Examination
+AI Engine Extracts Text & Generates Questions
         ↓
 Attempt Questions
         ↓
 Submit Exam
-        ↓
-Evaluate Result
         ↓
 Score + Performance Analysis
 ```
@@ -401,11 +389,11 @@ The leaderboard can rank students based on their LMS Coin achievements.
 
 The system encourages:
 
-* Healthy competition
-* Consistent learning
-* Coding practice
-* Course completion
-* Community participation
+- Healthy competition
+- Consistent learning
+- Coding practice
+- Course completion
+- Community participation
 
 ---
 
@@ -415,16 +403,16 @@ Each student gets a dedicated profile ecosystem.
 
 The profile can display:
 
-* 👤 Profile picture
-* 🧑 Student information
-* 🪙 LMS Coins
-* 🏆 Rank
-* 📚 Enrolled courses
-* 🎓 Completed courses
-* 🧠 Coding activity
-* 🧪 Examination performance
-* 🔥 Learning streak
-* 📈 Activity history
+- 👤 Profile picture
+- 🧑 Student information
+- 🪙 LMS Coins
+- 🏆 Rank
+- 📚 Enrolled courses
+- 🎓 Completed courses
+- 🧠 Coding activity
+- 🧪 Examination performance
+- 🔥 Learning streak
+- 📈 Activity history
 
 ---
 
@@ -473,16 +461,16 @@ Students can communicate with other learners through a modern real-time-style in
 
 ### Community Features
 
-* 💬 Student-to-student communication
-* 🧵 Multi-threaded discussions
-* 📎 File attachments
-* 🖼️ Image sharing
-* 🎵 Audio sharing
-* 📄 Document sharing
-* 😀 Emoji support
-* 💻 Integrated coding editor
-* 🐳 Code execution
-* 🪙 Coin bounty system
+- 💬 Student-to-student communication
+- 🧵 Multi-threaded discussions
+- 📎 File attachments
+- 🖼️ Image sharing
+- 🎵 Audio sharing
+- 📄 Document sharing
+- 😀 Emoji support
+- 💻 Integrated coding editor
+- 🐳 Code execution
+- 🪙 Coin bounty system
 
 ---
 
@@ -522,14 +510,14 @@ Students can access a coding environment directly inside supported LMS interface
 
 The editor provides a familiar developer experience with:
 
-* Syntax highlighting
-* Code editing
-* Language selection
-* Run functionality
-* Execution output
-* Error output
-* Docker-powered execution
-* Code attachment to discussions
+- Syntax highlighting
+- Code editing
+- Language selection
+- Run functionality
+- Execution output
+- Error output
+- Docker-powered execution
+- Code attachment to discussions
 
 The objective is to reduce the friction between **learning → coding → testing → sharing**.
 
@@ -541,11 +529,11 @@ Learning-365 includes a productivity-focused study environment.
 
 ### Focus Mode
 
-* ⏱️ Pomodoro timer
-* 🎧 Lo-Fi study experience
-* 📚 Dedicated study environment
-* 🔥 Focus sessions
-* 📊 Activity tracking
+- ⏱️ Pomodoro timer
+- 🎧 Lo-Fi study experience
+- 📚 Dedicated study environment
+- 🔥 Focus sessions
+- 📊 Activity tracking
 
 Students can use Focus Mode while studying courses or practicing coding challenges.
 
@@ -563,42 +551,42 @@ Administrators can manage the core platform ecosystem.
 
 ### User Management
 
-* 👥 View students
-* 🔍 Search users
-* 📝 Manage student profiles
-* 🔐 Manage account access
-* 📊 Monitor user activity
+- 👥 View students
+- 🔍 Search users
+- 📝 Manage student profiles
+- 🔐 Manage account access
+- 📊 Monitor user activity
 
 ### Course Management
 
-* ➕ Create courses
-* ✏️ Edit courses
-* 🗑️ Remove courses
-* 📚 Manage lessons
-* 🎥 Manage course videos
-* 💎 Manage premium courses
-* 👨‍🎓 Manage enrollments
+- ➕ Create courses
+- ✏️ Edit courses
+- 🗑️ Remove courses
+- 📚 Manage lessons
+- 🎥 Manage course videos
+- 💎 Manage premium courses
+- 👨‍🎓 Manage enrollments
 
 ### Content Management
 
 Administrators can manage:
 
-* PDFs
-* Documents
-* Videos
-* Images
-* Notes
-* Source code
-* Course resources
-* Other educational files
+- PDFs
+- Documents
+- Videos
+- Images
+- Notes
+- Source code
+- Course resources
+- Other educational files
 
 ### Examination Management
 
-* Create exams
-* Manage questions
-* Configure difficulty
-* Review results
-* Monitor student performance
+- Create exams
+- Manage questions
+- Configure difficulty
+- Review results
+- Monitor student performance
 
 ### AI Configuration
 
@@ -606,12 +594,17 @@ The administrative architecture can also support management of AI-powered learni
 
 ---
 
-# 📊 20. Admin Dashboard
+# 📊 20. Admin Dashboard (Powered by Chart.js)
 
-The admin interface is designed as a centralized control center.
+The admin interface is designed as a centralized control center with **Real-time Chart.js Analytics**.
+
+### Advanced Analytics
+* **Daily Activity Chart:** Monitor learning engagement over the last 30 days.
+* **Course Metrics:** Track average progress and completion rates per course.
+* **Registration Trends:** View new student sign-ups via dynamic bar charts.
+* **Activity Breakdown:** A detailed doughnut chart dividing platform interactions.
 
 Possible operational metrics include:
-
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -622,14 +615,14 @@ Possible operational metrics include:
 │     ↓              ↓             ↓          │
 │  Analytics      Content       Revenue*      │
 │                                             │
-│  Exams          Resources      Activity      │
+│  Exams          Resources      Activity     │
 │     ↓              ↓             ↓          │
-│  Results       Downloads      Engagement     │
+│  Results       Downloads      Engagement    │
 │                                             │
 └─────────────────────────────────────────────┘
 ```
 
-*Revenue/payment functionality can be integrated as the platform evolves.
+\*Revenue/payment functionality can be integrated as the platform evolves.
 
 ---
 
@@ -639,14 +632,14 @@ Learning-365 follows a futuristic developer-focused visual identity.
 
 ### Design Philosophy
 
-* 🌌 Dark interface
-* 💎 Glassmorphism
-* ⚡ Neon accents
-* 🧊 Translucent cards
-* 💻 Developer-inspired components
-* 📊 Data visualization
-* ✨ Interactive animations
-* 🎯 Dashboard-oriented UX
+- 🌌 Dark interface
+- 💎 Glassmorphism
+- ⚡ Neon accents
+- 🧊 Translucent cards
+- 💻 Developer-inspired components
+- 📊 Data visualization
+- ✨ Interactive animations
+- 🎯 Dashboard-oriented UX
 
 The visual language is designed to make an educational platform feel closer to a **developer command center** than a traditional LMS.
 
@@ -657,18 +650,20 @@ The visual language is designed to make an educational platform feel closer to a
 Learning-365 has just received a massive upgrade focusing on the core user journey, cloud coding capabilities, and administrative control.
 
 ### 🌌 Next-Gen Landing Experience
-* **Immersive Hero & UI:** Completely redesigned landing page featuring a stunning, glassmorphic UI, dynamic cursor glow, and scroll-reveal animations.
-* **Feature Showcase:** Beautifully integrated visual sections for the AI Lab, 365-Day Heatmap, and Gamification pathways to instantly demonstrate platform value.
+
+- **Immersive Hero & UI:** Completely redesigned landing page featuring a stunning, glassmorphic UI, dynamic cursor glow, and scroll-reveal animations.
+- **Feature Showcase:** Beautifully integrated visual sections for the AI Lab, 365-Day Heatmap, and Gamification pathways to instantly demonstrate platform value.
 
 ### 💻 Syntax Singularity Cloud IDE & Security
-* **Advanced Browser IDE:** Upgraded the *Syntax Singularity* cloud coding interface to support 10+ languages with real-time AI code analysis and syntax highlighting.
-* **Secure Docker Execution:** Implemented a robust, isolated Docker-based execution pipeline, ensuring that student code runs in a highly secure, sandboxed environment.
-* **Password-Based Auth:** Added streamlined password-based authentication alongside the existing Google OAuth for flexible access.
 
+- **Advanced Browser IDE:** Upgraded the _Syntax Singularity_ cloud coding interface to support 10+ languages with real-time AI code analysis and syntax highlighting.
+- **Secure Docker Execution:** Implemented a robust, isolated Docker-based execution pipeline, ensuring that student code runs in a highly secure, sandboxed environment.
+- **Password-Based Auth:** Added streamlined password-based authentication alongside the existing Google OAuth for flexible access.
 
 ### 🎛️ Unified Dashboards & Panels
-* **Student Panel Revamp:** Transformed the Student Dashboard into a premium command center featuring detailed learning statistics, gamified LMS coin integration, and course progress tracking.
-* **Admin Control Center:** Overhauled the Admin Panel with deeper analytics and centralized control over the multi-course ecosystem and user progression.
+
+- **Student Panel Revamp:** Transformed the Student Dashboard into a premium command center featuring detailed learning statistics, gamified LMS coin integration, and course progress tracking.
+- **Admin Control Center:** Overhauled the Admin Panel with deeper analytics and centralized control over the multi-course ecosystem and user progression.
 
 ---
 
@@ -795,17 +790,16 @@ Security is an important part of the Learning-365 architecture.
 
 The platform is designed around:
 
-
-* 🔑 Authenticated sessions
-* 🛡️ Protected routes
-* 🔐 Environment-based secrets
-* 🚫 No API keys inside source code
-* 🐳 Isolated code execution
-* ⏱️ Execution time limits
-* 💾 Resource restrictions
-* 👨‍💼 Admin-only management areas
-* 🔒 CSRF protection through Django
-* 🧹 Temporary code cleanup
+- 🔑 Authenticated sessions
+- 🛡️ Protected routes
+- 🔐 Environment-based secrets
+- 🚫 No API keys inside source code
+- 🐳 Isolated code execution
+- ⏱️ Execution time limits
+- 💾 Resource restrictions
+- 👨‍💼 Admin-only management areas
+- 🔒 CSRF protection through Django
+- 🧹 Temporary code cleanup
 
 For production deployments, additional security hardening should be applied according to the hosting environment.
 
@@ -817,12 +811,12 @@ For production deployments, additional security hardening should be applied acco
 
 Before running Learning-365, install:
 
-* Python 3.10+
-* Git
-* Docker Desktop
-* A supported database
-* Groq API Key
-* Google OAuth credentials
+- Python 3.10+
+- Git
+- Docker Desktop
+- A supported database
+- Groq API Key
+- Google OAuth credentials
 
 ---
 
@@ -1009,15 +1003,15 @@ A typical deployment can include:
 
 For production:
 
-* Set `DEBUG=False`
-* Use a strong `SECRET_KEY`
-* Configure allowed hosts
-* Use PostgreSQL or another production database
-* Configure static/media storage
-* Secure OAuth credentials
-* Configure HTTPS
-* Harden Docker execution
-* Store secrets outside Git
+- Set `DEBUG=False`
+- Use a strong `SECRET_KEY`
+- Configure allowed hosts
+- Use PostgreSQL or another production database
+- Configure static/media storage
+- Secure OAuth credentials
+- Configure HTTPS
+- Harden Docker execution
+- Store secrets outside Git
 
 ---
 
@@ -1027,21 +1021,21 @@ Learning-365 is designed to grow into a complete EdTech ecosystem.
 
 ### Planned / Potential Extensions
 
-* [ ] 💳 Online payment integration
-* [ ] 💎 Subscription-based premium membership
-* [ ] 📜 Automatic course certificates
-* [ ] 🏅 Digital achievement badges
-* [ ] 🤝 Multiplayer 1v1 Coding Arena
-* [ ] 🧠 AI Personal Learning Assistant
-* [ ] 📊 Advanced student analytics
-* [ ] 🎯 AI-generated personalized learning paths
-* [ ] 📱 Progressive Web App / Mobile Application
-* [ ] 🔴 Integrated live-class infrastructure
-* [ ] 🔔 Real-time notifications
-* [ ] 🏆 Seasonal coding competitions
-* [ ] 👨‍🏫 Instructor dashboard
-* [ ] 📚 AI-powered course recommendations
-* [ ] 🧑‍💻 Advanced code similarity detection
+- [ ] 💳 Online payment integration
+- [ ] 💎 Subscription-based premium membership
+- [ ] 📜 Automatic course certificates
+- [ ] 🏅 Digital achievement badges
+- [ ] 🤝 Multiplayer 1v1 Coding Arena
+- [ ] 🧠 AI Personal Learning Assistant
+- [ ] 📊 Advanced student analytics
+- [ ] 🎯 AI-generated personalized learning paths
+- [ ] 📱 Progressive Web App / Mobile Application
+- [ ] 🔴 Integrated live-class infrastructure
+- [ ] 🔔 Real-time notifications
+- [ ] 🏆 Seasonal coding competitions
+- [ ] 👨‍🏫 Instructor dashboard
+- [ ] 📚 AI-powered course recommendations
+- [ ] 🧑‍💻 Advanced code similarity detection
 
 ---
 
@@ -1054,7 +1048,6 @@ Learning-365 is designed to grow into a complete EdTech ecosystem.
 💻 **Full-Stack Developer | AI Integration | UI/UX**
 
 🤖 Creator of **ARIS — Advanced Desktop AI Assistant**
-
 
 🧠 Interested in **Artificial Intelligence, Machine Learning, Full-Stack Development and Developer Tools**
 
