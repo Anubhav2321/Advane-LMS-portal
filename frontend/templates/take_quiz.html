@@ -1,140 +1,390 @@
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
     /* --- GLOBAL STYLES --- */
     :root {
         --bg-dark: #0a0a0f;
-        --panel-bg: #111;
-        --border-color: #333;
         --accent-color: #00d4ff;
+        --accent-glow: rgba(0, 212, 255, 0.5);
         --text-color: #e0e0e0;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        --danger-color: #ff3366;
     }
 
     body {
-        font-family: 'Rajdhani', sans-serif;
+        font-family: 'Outfit', sans-serif;
+        background: radial-gradient(circle at top left, #0d1321, #05070f 80%), 
+                    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
         background-color: var(--bg-dark);
         color: var(--text-color);
         user-select: none; /* Prevent Copy */
+        min-height: 100vh;
+        position: relative;
+    }
+
+    /* Background animated elements for glass effect */
+    .bg-shape {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(100px);
+        z-index: -1;
+        animation: float 15s infinite ease-in-out alternate;
+    }
+    .shape-1 {
+        width: 400px; height: 400px;
+        background: rgba(0, 212, 255, 0.15);
+        top: -100px; left: -100px;
+    }
+    .shape-2 {
+        width: 500px; height: 500px;
+        background: rgba(255, 51, 102, 0.1);
+        bottom: -150px; right: -150px;
+        animation-delay: -5s;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
     }
 
     /* --- EXAM WRAPPER --- */
     .quiz-wrapper {
+        width: 92%;
         max-width: 900px;
-        margin: 40px auto;
-        background: var(--panel-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 40px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        transition: 0.3s;
+        margin: 60px auto;
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 50px;
+        box-shadow: var(--glass-shadow);
+        transition: 0.4s ease;
+        position: relative;
+        z-index: 1;
+        box-sizing: border-box;
     }
 
     .blur-mode {
-        filter: blur(5px);
+        filter: blur(10px);
         pointer-events: none;
+        opacity: 0.6;
     }
 
     /* Header */
     .exam-header {
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 20px; margin-bottom: 30px;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 25px; 
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+        gap: 15px;
     }
     
-    .exam-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin: 0; }
+    .exam-title { 
+        font-size: 2rem; 
+        font-weight: 700; 
+        color: #fff; 
+        margin: 0; 
+        letter-spacing: 1px;
+    }
 
     .timer-badge {
-        background: rgba(255, 51, 102, 0.1);
-        border: 1px solid #ff3366;
-        color: #ff3366;
-        padding: 8px 15px;
-        border-radius: 5px;
-        font-family: 'Orbitron', sans-serif;
+        background: rgba(255, 51, 102, 0.15);
+        border: 1px solid rgba(255, 51, 102, 0.3);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        color: var(--danger-color);
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-family: 'Space Grotesk', sans-serif;
         font-weight: bold;
-        display: flex; align-items: center; gap: 8px;
+        font-size: 1.2rem;
+        display: flex; 
+        align-items: center; 
+        gap: 10px;
+        box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
     }
 
     /* Questions */
     .q-box {
-        margin-bottom: 30px; padding-bottom: 20px;
-        border-bottom: 1px solid #222;
+        margin-bottom: 40px; 
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        transition: 0.3s;
+    }
+    .q-box:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
     
     .q-text {
-        font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 15px;
+        font-size: 1.4rem; 
+        font-weight: 600; 
+        color: #fff; 
+        margin-bottom: 25px;
+        line-height: 1.5;
     }
 
     .option-label {
-        display: block;
-        padding: 12px 15px; margin-bottom: 10px;
-        background: #1a1a1a;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        padding: 16px 20px; 
+        margin-bottom: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
         cursor: pointer;
-        transition: 0.2s;
-        font-size: 1rem; color: #ccc;
+        transition: all 0.3s ease;
+        font-size: 1.1rem; 
+        color: #ccc;
     }
     .option-label:hover {
         border-color: var(--accent-color);
-        background: rgba(0, 212, 255, 0.05);
+        background: rgba(0, 212, 255, 0.1);
         color: #fff;
+        transform: translateX(8px);
     }
     
-    input[type="radio"] { margin-right: 10px; accent-color: var(--accent-color); }
+    input[type="radio"] { 
+        margin-right: 15px; 
+        accent-color: var(--accent-color);
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
 
     /* Submit Button */
     .submit-btn {
-        width: 100%; padding: 15px;
-        background: var(--accent-color); border: none;
-        color: #000; font-weight: bold; font-size: 1.1rem;
-        cursor: pointer; border-radius: 8px;
-        transition: 0.3s; text-transform: uppercase;
+        width: 100%; 
+        padding: 18px;
+        background: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
+        border: none;
+        color: #fff; 
+        font-weight: 700; 
+        font-size: 1.25rem;
+        cursor: pointer; 
+        border-radius: 16px;
+        transition: 0.3s; 
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        margin-top: 10px;
     }
-    .submit-btn:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
+    .submit-btn:hover { 
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6); 
+    }
 
-    /* --- RULES MODAL (Clean Style) --- */
+    /* --- RULES MODAL (Glass Style) --- */
     #rules-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.9); z-index: 9999;
+        background: rgba(0,0,0,0.6); 
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 9999;
         display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
     }
     
     .modal-card {
-        background: #111;
-        border: 1px solid var(--accent-color);
-        width: 550px; padding: 40px;
-        border-radius: 12px; text-align: center;
-        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        background: var(--glass-bg);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        width: 100%;
+        max-width: 600px; 
+        padding: 45px;
+        border-radius: 24px; 
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 212, 255, 0.1);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-sizing: border-box;
     }
     
-    .modal-title { font-size: 1.5rem; color: #fff; margin-bottom: 20px; font-weight: 700; }
+    .modal-title { font-size: 2rem; color: #fff; margin-bottom: 25px; font-weight: 700; letter-spacing: 1px; }
     
-    .rules-list { text-align: left; margin: 20px 0; color: #aaa; font-size: 0.95rem; line-height: 1.8; }
-    .rules-list li { margin-bottom: 8px; }
-    .rules-list i { color: #ff3366; width: 20px; }
+    .rules-list { 
+        text-align: left; 
+        margin: 30px 0; 
+        color: #ddd; 
+        font-size: 1.1rem; 
+        line-height: 1.8; 
+        list-style: none;
+        padding: 0;
+    }
+    .rules-list li { 
+        margin-bottom: 12px; 
+        padding: 15px 20px;
+        background: rgba(0,0,0,0.25);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+    }
+    .rules-list i { color: var(--danger-color); width: 35px; font-size: 1.3rem; flex-shrink: 0; }
 
     .start-btn {
-        background: var(--accent-color); border: none;
-        color: #000; padding: 12px 30px; border-radius: 5px;
-        font-weight: bold; cursor: pointer; font-size: 1rem;
+        background: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
+        border: none;
+        color: #fff; 
+        padding: 16px 40px; 
+        border-radius: 50px;
+        font-weight: 700; 
+        cursor: pointer; 
+        font-size: 1.15rem;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        transition: 0.3s;
+        width: 100%;
+    }
+    .start-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6); 
     }
 
     /* --- WARNING OVERLAY --- */
     #warning-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #000; z-index: 10000;
+        background: rgba(10, 0, 0, 0.95);
+        backdrop-filter: blur(15px);
+        z-index: 10000;
         display: none; flex-direction: column;
         align-items: center; justify-content: center;
-        border: 5px solid #ff3366;
+        border: 8px solid var(--danger-color);
+        box-sizing: border-box;
+        padding: 20px;
+        text-align: center;
     }
-    .warning-icon { font-size: 5rem; color: #ff3366; margin-bottom: 20px; }
-    .warning-text { font-size: 2.5rem; color: #fff; font-weight: bold; }
+    .warning-icon { font-size: 7rem; color: var(--danger-color); margin-bottom: 30px; filter: drop-shadow(0 0 20px rgba(255,51,102,0.6)); }
+    .warning-text { font-size: 3.5rem; color: #fff; font-weight: bold; letter-spacing: 3px; }
 
+    /* --- RESPONSIVENESS (Mobile & Tablet) --- */
+    @media (max-width: 992px) {
+        .quiz-wrapper { margin: 40px auto; padding: 40px; }
+        .exam-title { font-size: 1.8rem; }
+    }
+
+    @media (max-width: 768px) {
+        .quiz-wrapper {
+            margin: 20px auto;
+            padding: 30px 20px;
+            border-radius: 18px;
+            width: 95%;
+        }
+        .exam-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+        .timer-badge {
+            align-self: flex-start;
+            width: 100%;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .exam-title {
+            font-size: 1.5rem;
+        }
+        .q-box {
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .q-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        .option-label {
+            font-size: 1rem;
+            padding: 12px 15px;
+        }
+        .option-label:hover {
+            transform: translateX(4px);
+        }
+        .modal-card {
+            padding: 30px 20px;
+            border-radius: 18px;
+        }
+        .modal-title {
+            font-size: 1.6rem;
+        }
+        .rules-list {
+            font-size: 1rem;
+        }
+        .rules-list li {
+            padding: 12px;
+        }
+        .start-btn {
+            font-size: 1.05rem;
+            padding: 14px 20px;
+        }
+        .submit-btn {
+            font-size: 1.15rem;
+            padding: 15px;
+        }
+        .warning-text {
+            font-size: 2.2rem;
+        }
+        .warning-icon { font-size: 5rem; }
+    }
+
+    @media (max-width: 480px) {
+        .quiz-wrapper {
+            padding: 25px 15px;
+            border-radius: 15px;
+            margin: 15px auto;
+            width: 96%;
+        }
+        .exam-title {
+            font-size: 1.3rem;
+        }
+        .q-text {
+            font-size: 1.1rem;
+        }
+        .option-label {
+            font-size: 0.95rem;
+            padding: 10px 15px;
+        }
+        .submit-btn {
+            font-size: 1.1rem;
+            padding: 14px;
+        }
+        .modal-card {
+            padding: 25px 15px;
+        }
+        .modal-title {
+            font-size: 1.4rem;
+        }
+        .rules-list li {
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+        .start-btn {
+            font-size: 1rem;
+        }
+        .warning-text {
+            font-size: 1.8rem;
+        }
+        .warning-icon { font-size: 4rem; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+
+<!-- Animated Background Shapes for Glass Effect -->
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
 
 <div id="rules-modal">
     <div class="modal-card">

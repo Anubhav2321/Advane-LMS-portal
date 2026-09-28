@@ -72,7 +72,7 @@ def generate_learning_assistant_response(user_message, chat_history=[]):
         chat_completion = client.chat.completions.create(
             messages=messages,
             # UPDATE: Changed to a stable model with better free-tier limits
-            model="llama-3.1-8b-instant",  # Updated from qwen
+            model="llama3-8b-8192",  # Updated to stable llama3
             temperature=0.7,         
             max_tokens=400,
         )

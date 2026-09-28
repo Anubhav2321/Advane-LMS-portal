@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
@@ -21,7 +21,7 @@
     body {
         background-color: var(--bg-dark);
         color: var(--text-main);
-        font-family: 'Rajdhani', sans-serif;
+        font-family: 'Outfit', sans-serif;
         overflow: hidden; /* Prevent body scroll */
     }
 
@@ -69,7 +69,7 @@
     }
 
     .lesson-header h1 {
-        font-family: 'Orbitron', sans-serif;
+        font-family: 'Space Grotesk', sans-serif;
         font-size: 1.8rem;
         color: #fff;
         margin-bottom: 10px;
@@ -124,7 +124,7 @@
     
     .tab-btn {
         background: transparent; border: none; color: #888; 
-        font-size: 1.1rem; font-family: 'Orbitron', sans-serif;
+        font-size: 1.1rem; font-family: 'Space Grotesk', sans-serif;
         padding: 12px 0; cursor: pointer; position: relative; 
         transition: 0.3s; font-weight: 600; text-transform: uppercase;
         letter-spacing: 1px;
@@ -148,7 +148,7 @@
         border: 1px solid var(--border-color);
         border-radius: 15px; padding: 30px; margin-bottom: 20px;
     }
-    .overview-box h3 { color: #fff; font-family: 'Orbitron', sans-serif; margin-bottom: 15px; }
+    .overview-box h3 { color: #fff; font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px; }
     .overview-box p { color: #aaa; line-height: 1.6; font-size: 1.05rem; }
 
     /* --- ENHANCED INSTRUCTOR CARD --- */
@@ -208,7 +208,7 @@
         background: rgba(0,0,0,0.2);
     }
     .sidebar-header h3 {
-        font-family: 'Orbitron', sans-serif;
+        font-family: 'Space Grotesk', sans-serif;
         font-size: 1.1rem;
         color: #fff;
         margin-bottom: 10px;
@@ -297,7 +297,7 @@
     }
 
     .lesson-percent-badge {
-        font-family: 'Orbitron', sans-serif;
+        font-family: 'Space Grotesk', sans-serif;
         font-size: 0.62rem;
         color: #666;
         font-weight: 600;
@@ -411,7 +411,7 @@
                 <div class="overview-box">
                     <form method="POST" class="comment-form" style="margin-bottom: 60px;">
                         {% csrf_token %}
-                        <textarea name="text" rows="4" placeholder="Ask a question or share your thoughts on this lesson..." required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 15px; border-radius: 10px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; resize: vertical;"></textarea>
+                        <textarea name="text" rows="4" placeholder="Ask a question or share your thoughts on this lesson..." required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 15px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 1rem; resize: vertical;"></textarea>
                         <button type="submit" name="submit_comment" style="margin-top: 15px; padding: 10px 30px; background: linear-gradient(45deg, var(--neon-purple), #8a2be2); border: none; color: white; border-radius: 50px; cursor: pointer; font-weight: 700; text-transform: uppercase; float: right;">
                             Post Comment <i class="fas fa-paper-plane"></i>
                         </button>

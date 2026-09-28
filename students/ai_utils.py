@@ -35,7 +35,7 @@ def get_groq_response(system_instruction, user_message):
                 }
             ],
             #  UPDATE: Changed to a stable model with better free-tier limits
-            model="llama-3.1-8b-instant",  # Updated from qwen
+            model="llama3-8b-8192",  # Updated to stable llama3
             temperature=0.5,
             max_tokens=800,
         )
