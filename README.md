@@ -176,6 +176,7 @@ while administrators can manage the available resources.
 
 Learning-365 supports educational file management inside the LMS.
 
+
 Depending on the resource type, the platform can provide:
 
 ```text
