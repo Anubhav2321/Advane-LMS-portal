@@ -67,6 +67,7 @@ Learning-365 includes a complete authentication system rather than a static/demo
 - 🛡️ Protected student pages
 - ⚡ Automatic authentication state handling
 
+
 The authentication architecture is designed to separate public pages, authenticated student areas, and administrator-only functionality.
 
 ---
