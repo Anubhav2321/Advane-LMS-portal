@@ -1,516 +1,526 @@
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ exam.title }} | Secure Exam</title>
+<meta name="description" content="Secure proctored assessment: {{ exam.title }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    /* --- GLOBAL STYLES --- */
     :root {
-        --bg-dark: #0a0a0f;
-        --accent-color: #00d4ff;
-        --accent-glow: rgba(0, 212, 255, 0.5);
-        --text-color: #e0e0e0;
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --glass-border: rgba(255, 255, 255, 0.08);
-        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        --danger-color: #ff3366;
+        --bg: #07090e;
+        --panel: rgba(255,255,255,0.035);
+        --panel-2: rgba(255,255,255,0.055);
+        --border: rgba(255,255,255,0.08);
+        --text: #e8ecf4;
+        --muted: #8b93a7;
+        --cyan: #22d3ee;
+        --blue: #3b82f6;
+        --purple: #a855f7;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --red: #f43f5e;
     }
-
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
     body {
-        font-family: 'Outfit', sans-serif;
-        background: radial-gradient(circle at top left, #0d1321, #05070f 80%), 
-                    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-        background-color: var(--bg-dark);
-        color: var(--text-color);
-        user-select: none; /* Prevent Copy */
+        font-family: 'Inter', sans-serif;
+        background: radial-gradient(1000px 500px at 10% -10%, rgba(59,130,246,0.12), transparent 60%),
+                    radial-gradient(800px 500px at 100% 110%, rgba(168,85,247,0.10), transparent 60%),
+                    var(--bg);
+        color: var(--text);
+        user-select: none; -webkit-user-select: none;
         min-height: 100vh;
-        position: relative;
+    }
+    .glass {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
     }
 
-    /* Background animated elements for glass effect */
-    .bg-shape {
-        position: fixed;
-        border-radius: 50%;
-        filter: blur(100px);
-        z-index: -1;
-        animation: float 15s infinite ease-in-out alternate;
+    /* Top bar */
+    .topbar {
+        position: sticky; top: 0; z-index: 50;
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        padding: 14px 28px;
+        background: rgba(7,9,14,0.75);
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
     }
-    .shape-1 {
-        width: 400px; height: 400px;
-        background: rgba(0, 212, 255, 0.15);
-        top: -100px; left: -100px;
+    .exam-name { font-weight: 700; font-size: 1rem; letter-spacing: .3px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .exam-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .exam-name i { color: var(--cyan); }
+    .top-right { display: flex; align-items: center; gap: 12px; }
+    .chip {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 14px; border-radius: 999px;
+        font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .9rem;
+        border: 1px solid var(--border); background: var(--panel-2);
     }
-    .shape-2 {
-        width: 500px; height: 500px;
-        background: rgba(255, 51, 102, 0.1);
-        bottom: -150px; right: -150px;
-        animation-delay: -5s;
+    .chip.timer.low { color: var(--red); border-color: rgba(244,63,94,.4); background: rgba(244,63,94,.1); }
+    .chip.strikes { color: var(--green); }
+    .chip.strikes.warn { color: var(--amber); border-color: rgba(251,191,36,.4); }
+    .chip.strikes.bad { color: var(--red); border-color: rgba(244,63,94,.4); }
+
+    /* Layout */
+    .layout { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 24px; max-width: 1180px; margin: 32px auto; padding: 0 20px; }
+    .main-card { padding: 34px 38px 0; overflow: hidden; }
+    .q-meta { display: flex; justify-content: space-between; align-items: center; }
+    .q-label { color: var(--cyan); font-size: .78rem; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+    .flag-btn {
+        background: transparent; border: 1px solid var(--border); color: var(--muted);
+        padding: 7px 14px; border-radius: 999px; font: 600 .8rem 'Inter'; cursor: pointer; transition: .2s;
+    }
+    .flag-btn:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
+    .flag-btn.on { color: var(--amber); border-color: rgba(251,191,36,.5); background: rgba(251,191,36,.08); }
+    .q-text { font-size: 1.55rem; font-weight: 700; line-height: 1.4; margin: 14px 0 28px; color: #fff; }
+
+    .q-slide { display: none; }
+    .q-slide.active { display: block; }
+
+    .opt {
+        display: flex; align-items: center; gap: 16px;
+        padding: 16px 20px; margin-bottom: 12px;
+        background: rgba(255,255,255,0.025);
+        border: 1px solid var(--border); border-radius: 14px;
+        cursor: pointer; transition: border-color .2s, background .2s;
+        font-size: 1.02rem; color: #cfd5e3;
+    }
+    .opt:hover { border-color: rgba(59,130,246,.45); background: rgba(59,130,246,.06); }
+    .opt input { position: absolute; opacity: 0; pointer-events: none; }
+    .badge {
+        width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+        display: grid; place-items: center;
+        background: rgba(255,255,255,0.07); color: #aab2c5;
+        font-size: .78rem; font-weight: 700; transition: .2s;
+    }
+    .opt.selected { border-color: rgba(59,130,246,.6); background: rgba(59,130,246,.1); color: #fff; box-shadow: 0 0 0 1px rgba(59,130,246,.25); }
+    .opt.selected .badge { background: var(--blue); color: #fff; }
+
+    .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; gap: 10px; }
+    .btn {
+        border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+        padding: 11px 22px; border-radius: 12px; font: 600 .92rem 'Inter'; cursor: pointer; transition: .2s;
+    }
+    .btn:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+    .btn:disabled { opacity: .35; cursor: not-allowed; }
+    .btn.primary { background: linear-gradient(135deg, var(--blue), var(--purple)); border-color: transparent; color: #fff; }
+    .btn.primary:hover:not(:disabled) { filter: brightness(1.1); }
+    .btn.success { background: linear-gradient(135deg, #10b981, #059669); border-color: transparent; color: #fff; }
+    .btn.danger { background: linear-gradient(135deg, #f43f5e, #be123c); border-color: transparent; color: #fff; }
+
+    /* Footer progress (matches reference) */
+    .foot {
+        display: flex; align-items: center; gap: 16px;
+        margin: 26px -38px 0; padding: 16px 38px;
+        border-top: 1px solid var(--border); background: rgba(0,0,0,.25);
+    }
+    .track { flex: 1; height: 6px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--purple)); border-radius: 99px; transition: width .35s ease; }
+    .counter { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: .85rem; }
+    .score-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 16px; border-radius: 999px;
+        background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3);
+        color: var(--green); font-weight: 700; font-size: .85rem;
     }
 
-    @keyframes float {
-        0% { transform: translate(0, 0); }
-        100% { transform: translate(50px, 50px); }
+    /* Side panel */
+    .side { padding: 24px; height: fit-content; position: sticky; top: 88px; }
+    .side h3 { margin: 0 0 16px; font-size: .78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+    .palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .pal {
+        aspect-ratio: 1; border-radius: 10px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        font: 700 .85rem 'JetBrains Mono'; cursor: pointer; transition: .15s; position: relative;
     }
+    .pal:hover { border-color: rgba(255,255,255,.25); color: #fff; }
+    .pal.answered { background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.5); color: #fff; }
+    .pal.flagged::after { content: ''; position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+    .pal.current { outline: 2px solid var(--cyan); outline-offset: 1px; color: #fff; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; font-size: .75rem; color: var(--muted); }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px; text-align: center; }
+    .stat { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; padding: 10px 4px; }
+    .stat b { display: block; font: 700 1.15rem 'JetBrains Mono'; color: #fff; }
+    .stat small { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .8px; }
+    .shortcuts { margin-top: 16px; font-size: .72rem; color: var(--muted); line-height: 1.8; border-top: 1px solid var(--border); padding-top: 14px; }
+    kbd { background: rgba(255,255,255,.08); border: 1px solid var(--border); padding: 1px 6px; border-radius: 5px; font-family: 'JetBrains Mono'; font-size: .7rem; color: #cfd5e3; }
 
-    /* --- EXAM WRAPPER --- */
-    .quiz-wrapper {
-        width: 92%;
-        max-width: 900px;
-        margin: 60px auto;
-        background: var(--glass-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 50px;
-        box-shadow: var(--glass-shadow);
-        transition: 0.4s ease;
-        position: relative;
-        z-index: 1;
-        box-sizing: border-box;
+    /* Overlays */
+    .overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        display: none; align-items: center; justify-content: center; padding: 20px;
+        background: rgba(4,6,10,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     }
+    .overlay.show { display: flex; }
+    .modal { width: 100%; max-width: 560px; padding: 38px; text-align: center; }
+    .modal .icon { font-size: 2.2rem; margin-bottom: 14px; color: var(--cyan); }
+    .modal.warn .icon { color: var(--amber); }
+    .modal.bad .icon { color: var(--red); }
+    .modal h2 { margin: 0 0 8px; font-size: 1.6rem; }
+    .modal p { color: var(--muted); margin: 0 0 18px; line-height: 1.6; }
+    .rules { list-style: none; padding: 0; margin: 20px 0 26px; text-align: left; }
+    .rules li { display: flex; gap: 14px; align-items: flex-start; padding: 12px 16px; margin-bottom: 8px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; font-size: .9rem; color: #cfd5e3; }
+    .rules i { color: var(--cyan); margin-top: 3px; width: 16px; text-align: center; }
+    .modal .btn { width: 100%; padding: 14px; font-size: 1rem; }
+    .modal .btn-row { display: flex; gap: 10px; }
+    .sum-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 18px 0 22px; }
 
-    .blur-mode {
-        filter: blur(10px);
-        pointer-events: none;
-        opacity: 0.6;
-    }
+    .blurred { filter: blur(14px); pointer-events: none; }
 
-    /* Header */
-    .exam-header {
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 25px; 
-        margin-bottom: 35px;
-        flex-wrap: wrap;
-        gap: 15px;
+    @media (max-width: 960px) {
+        .layout { grid-template-columns: 1fr; }
+        .side { position: static; order: 2; }
+        .main-card { padding: 24px 22px 0; }
+        .foot { margin: 22px -22px 0; padding: 14px 22px; flex-wrap: wrap; }
+        .q-text { font-size: 1.25rem; }
+        .topbar { padding: 12px 16px; }
     }
-    
-    .exam-title { 
-        font-size: 2rem; 
-        font-weight: 700; 
-        color: #fff; 
-        margin: 0; 
-        letter-spacing: 1px;
-    }
-
-    .timer-badge {
-        background: rgba(255, 51, 102, 0.15);
-        border: 1px solid rgba(255, 51, 102, 0.3);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        color: var(--danger-color);
-        padding: 12px 25px;
-        border-radius: 50px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: bold;
-        font-size: 1.2rem;
-        display: flex; 
-        align-items: center; 
-        gap: 10px;
-        box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
-    }
-
-    /* Questions */
-    .q-box {
-        margin-bottom: 40px; 
-        padding: 30px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 16px;
-        transition: 0.3s;
-    }
-    .q-box:hover {
-        background: rgba(255, 255, 255, 0.04);
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-    
-    .q-text {
-        font-size: 1.4rem; 
-        font-weight: 600; 
-        color: #fff; 
-        margin-bottom: 25px;
-        line-height: 1.5;
-    }
-
-    .option-label {
-        display: flex;
-        align-items: center;
-        padding: 16px 20px; 
-        margin-bottom: 12px;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1.1rem; 
-        color: #ccc;
-    }
-    .option-label:hover {
-        border-color: var(--accent-color);
-        background: rgba(0, 212, 255, 0.1);
-        color: #fff;
-        transform: translateX(8px);
-    }
-    
-    input[type="radio"] { 
-        margin-right: 15px; 
-        accent-color: var(--accent-color);
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
-    /* Submit Button */
-    .submit-btn {
-        width: 100%; 
-        padding: 18px;
-        background: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
-        border: none;
-        color: #fff; 
-        font-weight: 700; 
-        font-size: 1.25rem;
-        cursor: pointer; 
-        border-radius: 16px;
-        transition: 0.3s; 
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
-        margin-top: 10px;
-    }
-    .submit-btn:hover { 
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6); 
-    }
-
-    /* --- RULES MODAL (Glass Style) --- */
-    #rules-modal {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6); 
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        z-index: 9999;
-        display: flex; align-items: center; justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-    
-    .modal-card {
-        background: var(--glass-bg);
-        border: 1px solid rgba(0, 212, 255, 0.3);
-        width: 100%;
-        max-width: 600px; 
-        padding: 45px;
-        border-radius: 24px; 
-        text-align: center;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 212, 255, 0.1);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-sizing: border-box;
-    }
-    
-    .modal-title { font-size: 2rem; color: #fff; margin-bottom: 25px; font-weight: 700; letter-spacing: 1px; }
-    
-    .rules-list { 
-        text-align: left; 
-        margin: 30px 0; 
-        color: #ddd; 
-        font-size: 1.1rem; 
-        line-height: 1.8; 
-        list-style: none;
-        padding: 0;
-    }
-    .rules-list li { 
-        margin-bottom: 12px; 
-        padding: 15px 20px;
-        background: rgba(0,0,0,0.25);
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.05);
-        display: flex;
-        align-items: center;
-    }
-    .rules-list i { color: var(--danger-color); width: 35px; font-size: 1.3rem; flex-shrink: 0; }
-
-    .start-btn {
-        background: linear-gradient(135deg, #00d4ff 0%, #0077ff 100%);
-        border: none;
-        color: #fff; 
-        padding: 16px 40px; 
-        border-radius: 50px;
-        font-weight: 700; 
-        cursor: pointer; 
-        font-size: 1.15rem;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
-        transition: 0.3s;
-        width: 100%;
-    }
-    .start-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6); 
-    }
-
-    /* --- WARNING OVERLAY --- */
-    #warning-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(10, 0, 0, 0.95);
-        backdrop-filter: blur(15px);
-        z-index: 10000;
-        display: none; flex-direction: column;
-        align-items: center; justify-content: center;
-        border: 8px solid var(--danger-color);
-        box-sizing: border-box;
-        padding: 20px;
-        text-align: center;
-    }
-    .warning-icon { font-size: 7rem; color: var(--danger-color); margin-bottom: 30px; filter: drop-shadow(0 0 20px rgba(255,51,102,0.6)); }
-    .warning-text { font-size: 3.5rem; color: #fff; font-weight: bold; letter-spacing: 3px; }
-
-    /* --- RESPONSIVENESS (Mobile & Tablet) --- */
-    @media (max-width: 992px) {
-        .quiz-wrapper { margin: 40px auto; padding: 40px; }
-        .exam-title { font-size: 1.8rem; }
-    }
-
-    @media (max-width: 768px) {
-        .quiz-wrapper {
-            margin: 20px auto;
-            padding: 30px 20px;
-            border-radius: 18px;
-            width: 95%;
-        }
-        .exam-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-            padding-bottom: 20px;
-        }
-        .timer-badge {
-            align-self: flex-start;
-            width: 100%;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-        .exam-title {
-            font-size: 1.5rem;
-        }
-        .q-box {
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-        .q-text {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-        }
-        .option-label {
-            font-size: 1rem;
-            padding: 12px 15px;
-        }
-        .option-label:hover {
-            transform: translateX(4px);
-        }
-        .modal-card {
-            padding: 30px 20px;
-            border-radius: 18px;
-        }
-        .modal-title {
-            font-size: 1.6rem;
-        }
-        .rules-list {
-            font-size: 1rem;
-        }
-        .rules-list li {
-            padding: 12px;
-        }
-        .start-btn {
-            font-size: 1.05rem;
-            padding: 14px 20px;
-        }
-        .submit-btn {
-            font-size: 1.15rem;
-            padding: 15px;
-        }
-        .warning-text {
-            font-size: 2.2rem;
-        }
-        .warning-icon { font-size: 5rem; }
-    }
-
-    @media (max-width: 480px) {
-        .quiz-wrapper {
-            padding: 25px 15px;
-            border-radius: 15px;
-            margin: 15px auto;
-            width: 96%;
-        }
-        .exam-title {
-            font-size: 1.3rem;
-        }
-        .q-text {
-            font-size: 1.1rem;
-        }
-        .option-label {
-            font-size: 0.95rem;
-            padding: 10px 15px;
-        }
-        .submit-btn {
-            font-size: 1.1rem;
-            padding: 14px;
-        }
-        .modal-card {
-            padding: 25px 15px;
-        }
-        .modal-title {
-            font-size: 1.4rem;
-        }
-        .rules-list li {
-            font-size: 0.9rem;
-            padding: 10px;
-        }
-        .start-btn {
-            font-size: 1rem;
-        }
-        .warning-text {
-            font-size: 1.8rem;
-        }
-        .warning-icon { font-size: 4rem; }
-    }
+    @media print { body { display: none; } }
 </style>
-{% endblock %}
+</head>
+<body>
 
-{% block content %}
-
-<!-- Animated Background Shapes for Glass Effect -->
-<div class="bg-shape shape-1"></div>
-<div class="bg-shape shape-2"></div>
-
-<div id="rules-modal">
-    <div class="modal-card">
-        <i class="fas fa-file-contract" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 15px;"></i>
-        <div class="modal-title">Exam Instructions</div>
-        
-        <ul class="rules-list">
-            <li><i class="fas fa-expand"></i> <b>Fullscreen Mode:</b> The exam works best in fullscreen.</li>
-            <li><i class="fas fa-exclamation-triangle"></i> <b>No Tab Switching:</b> Leaving the window will cancel the exam.</li>
-            <li><i class="fas fa-clock"></i> <b>Time Limit:</b> {{ exam.duration_minutes }} Minutes. Auto-submit on zero.</li>
-            <li><i class="fas fa-ban"></i> <b>Anti-Cheat:</b> Copying questions is disabled.</li>
+<!-- RULES -->
+<div class="overlay show" id="rulesOverlay">
+    <div class="modal glass">
+        <div class="icon"><i class="fas fa-shield-halved"></i></div>
+        <h2>{{ exam.title }}</h2>
+        <p>This is a proctored assessment. Please read the rules before you begin.</p>
+        <ul class="rules">
+            <li><i class="fas fa-expand"></i><span><b>Fullscreen is mandatory.</b> Leaving fullscreen pauses the exam and records a violation.</span></li>
+            <li><i class="fas fa-window-restore"></i><span><b>No floating windows.</b> Switching tabs, apps, split-screen or overlay windows is detected.</span></li>
+            <li><i class="fas fa-triangle-exclamation"></i><span><b>3 violations = auto-submit.</b> Your current answers will be submitted automatically.</span></li>
+            <li><i class="fas fa-ban"></i><span><b>Copy, paste, right-click, DevTools and printing are blocked.</b></span></li>
+            <li><i class="fas fa-clock"></i><span><b>{{ exam.duration_minutes }} minutes.</b> Time continues even if you refresh. Answers autosave.</span></li>
         </ul>
-
-        <button class="start-btn" onclick="startExam()">I Understand & Start</button>
+        <button class="btn primary" id="startBtn" type="button"><span id="startLabel">I Understand &amp; Start</span></button>
     </div>
 </div>
 
-<div id="warning-overlay">
-    <i class="fas fa-ban warning-icon"></i>
-    <div class="warning-text">EXAM TERMINATED</div>
-    <p style="color:#aaa; margin-top:10px;">Security violation detected (Tab Switch).</p>
-    <a href="{% url 'dashboard' %}" style="margin-top: 30px; color: #fff; text-decoration: underline;">Return to Dashboard</a>
+<!-- VIOLATION -->
+<div class="overlay" id="violationOverlay">
+    <div class="modal glass warn" id="violationModal">
+        <div class="icon"><i class="fas fa-triangle-exclamation"></i></div>
+        <h2 id="vTitle">Violation Detected</h2>
+        <p id="vText"></p>
+        <button class="btn primary" id="resumeBtn" type="button">Return to Fullscreen &amp; Continue</button>
+    </div>
 </div>
 
-<div class="quiz-wrapper blur-mode" id="quiz-box">
-    
-    <div class="exam-header">
-        <h2 class="exam-title">{{ exam.title }}</h2>
-        <div class="timer-badge">
-            <i class="fas fa-stopwatch"></i> <span id="time-display">00:00</span>
+<!-- SUBMIT CONFIRM -->
+<div class="overlay" id="submitOverlay">
+    <div class="modal glass">
+        <div class="icon"><i class="fas fa-paper-plane"></i></div>
+        <h2>Submit Exam?</h2>
+        <p id="submitMsg">Review your progress before submitting.</p>
+        <div class="sum-grid">
+            <div class="stat"><b id="sumAns">0</b><small>Answered</small></div>
+            <div class="stat"><b id="sumUn">0</b><small>Unanswered</small></div>
+            <div class="stat"><b id="sumFl">0</b><small>Flagged</small></div>
+        </div>
+        <div class="btn-row">
+            <button class="btn" type="button" id="cancelSubmit">Keep Reviewing</button>
+            <button class="btn success" type="button" id="confirmSubmit">Submit Now</button>
         </div>
     </div>
-
-    <form id="examForm" method="POST" action="{% url 'submit_quiz' exam.id %}">
-        {% csrf_token %}
-        
-        {% for q in exam.questions.all %}
-        <div class="q-box">
-            <div class="q-text">Q{{ forloop.counter }}. {{ q.question_text }}</div>
-            
-            <label class="option-label">
-                <input type="radio" name="q_{{ q.id }}" value="{{ q.option1 }}"> {{ q.option1 }}
-            </label>
-            <label class="option-label">
-                <input type="radio" name="q_{{ q.id }}" value="{{ q.option2 }}"> {{ q.option2 }}
-            </label>
-            <label class="option-label">
-                <input type="radio" name="q_{{ q.id }}" value="{{ q.option3 }}"> {{ q.option3 }}
-            </label>
-            <label class="option-label">
-                <input type="radio" name="q_{{ q.id }}" value="{{ q.option4 }}"> {{ q.option4 }}
-            </label>
-        </div>
-        {% endfor %}
-
-        <button type="submit" class="submit-btn">Submit Exam</button>
-    </form>
-
 </div>
 
-{% endblock %}
+<!-- TERMINATED -->
+<div class="overlay" id="endOverlay">
+    <div class="modal glass bad">
+        <div class="icon"><i class="fas fa-circle-xmark"></i></div>
+        <h2 id="endTitle">Exam Ended</h2>
+        <p id="endText">Submitting your answers…</p>
+    </div>
+</div>
 
-{% block extra_js %}
+<div id="app">
+    <header class="topbar">
+        <div class="exam-name"><i class="fas fa-graduation-cap"></i><span>{{ exam.title }}</span></div>
+        <div class="top-right">
+            <div class="chip strikes" id="strikeChip" title="Security violations"><i class="fas fa-shield-halved"></i><span id="strikeText">0/3</span></div>
+            <div class="chip timer" id="timerChip"><i class="fas fa-stopwatch"></i><span id="timeDisplay">--:--</span></div>
+        </div>
+    </header>
+
+    <div class="layout">
+        <form id="examForm" method="POST" action="{% url 'submit_quiz' exam.id %}" class="glass main-card" autocomplete="off">
+            {% csrf_token %}
+
+            {% for q in exam.questions.all %}
+            <section class="q-slide" data-index="{{ forloop.counter0 }}" data-qid="{{ q.id }}">
+                <div class="q-meta">
+                    <div class="q-label">Question {{ forloop.counter }} of {{ exam.questions.count }}</div>
+                    <button type="button" class="flag-btn" data-flag="{{ forloop.counter0 }}"><i class="fas fa-flag"></i> Flag</button>
+                </div>
+                <h1 class="q-text" style="margin-top:14px">{{ q.question_text }}</h1>
+
+                <label class="opt"><input type="radio" name="q_{{ q.id }}" value="{{ q.option1 }}"><span class="badge">A</span><span>{{ q.option1 }}</span></label>
+                <label class="opt"><input type="radio" name="q_{{ q.id }}" value="{{ q.option2 }}"><span class="badge">B</span><span>{{ q.option2 }}</span></label>
+                <label class="opt"><input type="radio" name="q_{{ q.id }}" value="{{ q.option3 }}"><span class="badge">C</span><span>{{ q.option3 }}</span></label>
+                <label class="opt"><input type="radio" name="q_{{ q.id }}" value="{{ q.option4 }}"><span class="badge">D</span><span>{{ q.option4 }}</span></label>
+            </section>
+            {% empty %}
+            <p class="q-text">No questions available for this exam.</p>
+            {% endfor %}
+
+            <div class="nav-row">
+                <button type="button" class="btn" id="prevBtn"><i class="fas fa-arrow-left"></i> Previous</button>
+                <button type="button" class="btn" id="clearBtn">Clear</button>
+                <button type="button" class="btn primary" id="nextBtn">Next <i class="fas fa-arrow-right"></i></button>
+                <button type="button" class="btn success" id="finishBtn" style="display:none">Finish &amp; Submit</button>
+            </div>
+
+            <div class="foot">
+                <div class="track"><div class="fill" id="fill"></div></div>
+                <div class="counter" id="counter">0 / 0</div>
+                <div class="score-pill"><i class="fas fa-star"></i><span id="pct">0%</span></div>
+            </div>
+        </form>
+
+        <aside class="glass side">
+            <h3>Question Navigator</h3>
+            <div class="stats">
+                <div class="stat"><b id="stAns">0</b><small>Done</small></div>
+                <div class="stat"><b id="stLeft">0</b><small>Left</small></div>
+                <div class="stat"><b id="stFlag">0</b><small>Flag</small></div>
+            </div>
+            <div class="palette" id="palette"></div>
+            <div class="legend">
+                <span><i style="background:rgba(59,130,246,.5)"></i>Answered</span>
+                <span><i style="background:var(--amber)"></i>Flagged</span>
+                <span><i style="outline:2px solid var(--cyan)"></i>Current</span>
+            </div>
+            <button type="button" class="btn success" id="sideSubmit" style="width:100%">Submit Exam</button>
+            <div class="shortcuts">
+                <kbd>A</kbd>–<kbd>D</kbd> select &nbsp; <kbd>←</kbd><kbd>→</kbd> navigate &nbsp; <kbd>F</kbd> flag
+            </div>
+        </aside>
+    </div>
+</div>
+
 <script>
-    let timeLeft = parseInt('{{ exam.duration_minutes }}', 10) * 60; 
-    let timerInterval;
-    let examActive = false;
+(function () {
+    const $ = (id) => document.getElementById(id);
+    const form = $('examForm');
+    const slides = Array.from(document.querySelectorAll('.q-slide'));
+    const total = slides.length;
+    const MAX_STRIKES = 3;
+    const KEY = 'exam_state_{{ exam.id }}_{{ request.user.id }}';
+    const DURATION = parseInt('{{ exam.duration_minutes }}', 10) * 60 * 1000;
 
-    // --- START ---
-    function startExam() {
-        document.getElementById('rules-modal').style.display = 'none';
-        const quizBox = document.getElementById('quiz-box');
-        quizBox.classList.remove('blur-mode');
-        
-        examActive = true;
-        enterFullScreen();
-        startTimer();
+    let state = { answers: {}, flags: [], strikes: 0, endAt: null, started: false, log: [] };
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) state = Object.assign(state, s); } catch (e) {}
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+    let current = 0, active = false, submitting = false, paused = false, lastViolation = 0, timerId = null, guardId = null;
+
+    $('app').classList.add('blurred');
+
+    /* ---------- Render / navigation ---------- */
+    function buildPalette() {
+        const p = $('palette'); p.innerHTML = '';
+        slides.forEach((_, i) => {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'pal'; b.textContent = i + 1; b.dataset.i = i;
+            b.addEventListener('click', () => go(i));
+            p.appendChild(b);
+        });
     }
+    function answeredCount() { return slides.filter(s => state.answers[s.dataset.qid] !== undefined).length; }
 
-    // --- TIMER ---
-    function startTimer() {
-        const display = document.getElementById('time-display');
-        
-        timerInterval = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                document.getElementById('examForm').submit();
-            } else {
-                let minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                display.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                timeLeft--;
-                
-                // Red warning when < 1 min
-                if (timeLeft < 60) {
-                    display.parentElement.style.borderColor = "red";
-                    display.parentElement.style.color = "red";
-                }
-            }
-        }, 1000);
+    function refresh() {
+        slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        const ans = answeredCount();
+        document.querySelectorAll('.pal').forEach((b, i) => {
+            const qid = slides[i].dataset.qid;
+            b.classList.toggle('answered', state.answers[qid] !== undefined);
+            b.classList.toggle('flagged', state.flags.includes(i));
+            b.classList.toggle('current', i === current);
+        });
+        slides.forEach((s, i) => {
+            const qid = s.dataset.qid;
+            s.querySelectorAll('.opt').forEach(o => {
+                const r = o.querySelector('input');
+                const on = state.answers[qid] === r.value;
+                r.checked = on; o.classList.toggle('selected', on);
+            });
+            const fb = s.querySelector('.flag-btn');
+            fb.classList.toggle('on', state.flags.includes(i));
+        });
+        $('fill').style.width = total ? ((current + 1) / total * 100) + '%' : '0';
+        $('counter').textContent = (current + 1) + ' / ' + total;
+        $('pct').textContent = (total ? Math.round(ans / total * 100) : 0) + '%';
+        $('stAns').textContent = ans; $('stLeft').textContent = total - ans; $('stFlag').textContent = state.flags.length;
+        $('prevBtn').disabled = current === 0;
+        const last = current === total - 1;
+        $('nextBtn').style.display = last ? 'none' : '';
+        $('finishBtn').style.display = last ? '' : 'none';
     }
+    function go(i) { if (i < 0 || i >= total) return; current = i; refresh(); }
 
-    // --- SECURITY ---
-    document.addEventListener("visibilitychange", function() {
-        if (document.hidden && examActive) terminateExam();
+    function choose(qid, value) {
+        state.answers[qid] = value; save(); refresh();
+    }
+    slides.forEach(s => {
+        s.querySelectorAll('.opt input').forEach(r => r.addEventListener('change', () => active && choose(s.dataset.qid, r.value)));
+        s.querySelector('.flag-btn').addEventListener('click', () => toggleFlag());
     });
+    function toggleFlag() {
+        const i = state.flags.indexOf(current);
+        if (i >= 0) state.flags.splice(i, 1); else state.flags.push(current);
+        save(); refresh();
+    }
+    $('prevBtn').onclick = () => go(current - 1);
+    $('nextBtn').onclick = () => go(current + 1);
+    $('clearBtn').onclick = () => { delete state.answers[slides[current].dataset.qid]; save(); refresh(); };
 
-    window.onblur = function() {
-        if (examActive) terminateExam();
+    /* ---------- Timer ---------- */
+    function tick() {
+        const left = Math.max(0, state.endAt - Date.now());
+        const m = Math.floor(left / 60000), s = Math.floor(left % 60000 / 1000);
+        $('timeDisplay').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        $('timerChip').classList.toggle('low', left < 60000);
+        if (left <= 0) finalSubmit('Time is up', 'Your answers are being submitted automatically.');
+    }
+
+    /* ---------- Submission ---------- */
+    function openSubmit() {
+        const ans = answeredCount();
+        $('sumAns').textContent = ans; $('sumUn').textContent = total - ans; $('sumFl').textContent = state.flags.length;
+        $('submitMsg').textContent = ans < total ? 'You still have unanswered questions.' : 'All questions answered. Ready to submit.';
+        $('submitOverlay').classList.add('show');
+    }
+    $('finishBtn').onclick = openSubmit; $('sideSubmit').onclick = openSubmit;
+    $('cancelSubmit').onclick = () => $('submitOverlay').classList.remove('show');
+    $('confirmSubmit').onclick = () => finalSubmit();
+
+    function finalSubmit(title, text) {
+        if (submitting) return;
+        submitting = true; active = false;
+        clearInterval(timerId); clearInterval(guardId);
+        ['submitOverlay', 'violationOverlay'].forEach(id => $(id).classList.remove('show'));
+        if (title) {
+            $('endTitle').textContent = title; $('endText').textContent = text || '';
+            $('endOverlay').classList.add('show');
+        }
+        form.querySelectorAll('input[name="violations"]').forEach(n => n.remove());
+        const v = document.createElement('input');
+        v.type = 'hidden'; v.name = 'violations'; v.value = state.strikes; form.appendChild(v);
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        setTimeout(() => form.submit(), title ? 1800 : 50);
+    }
+    form.addEventListener('submit', (e) => { if (!submitting) { e.preventDefault(); openSubmit(); } });
+
+    /* ---------- Anti-cheat ---------- */
+    function updateStrikes() {
+        $('strikeText').textContent = state.strikes + '/' + MAX_STRIKES;
+        const c = $('strikeChip');
+        c.classList.toggle('warn', state.strikes === 1 || state.strikes === 2 && false);
+        c.classList.toggle('warn', state.strikes > 0 && state.strikes < MAX_STRIKES - 1);
+        c.classList.toggle('bad', state.strikes >= MAX_STRIKES - 1);
+    }
+    function violation(reason) {
+        if (!active || submitting) return;
+        const now = Date.now();
+        if (now - lastViolation < 1500) return; // one event burst = one violation
+        lastViolation = now;
+        state.strikes++; state.log.push({ t: now, r: reason }); save(); updateStrikes();
+
+        if (state.strikes >= MAX_STRIKES) {
+            finalSubmit('Exam Terminated', 'Maximum violations reached. Your answers have been auto-submitted.');
+            return;
+        }
+        paused = true;
+        $('app').classList.add('blurred');
+        const left = MAX_STRIKES - state.strikes;
+        $('vTitle').textContent = 'Violation ' + state.strikes + ' of ' + MAX_STRIKES;
+        $('vText').textContent = reason + '. ' + left + ' more violation' + (left > 1 ? 's' : '') + ' will auto-submit your exam.';
+        $('violationOverlay').classList.add('show');
+    }
+    $('resumeBtn').onclick = async () => {
+        await enterFullscreen();
+        paused = false;
+        $('violationOverlay').classList.remove('show');
+        $('app').classList.remove('blurred');
+        lastViolation = Date.now();
     };
 
-    function terminateExam() {
-        examActive = false;
-        clearInterval(timerInterval);
-        document.getElementById('quiz-box').style.display = 'none';
-        document.getElementById('warning-overlay').style.display = 'flex';
+    function enterFullscreen() {
+        const el = document.documentElement;
+        try { return (el.requestFullscreen || el.webkitRequestFullscreen).call(el); } catch (e) { return Promise.resolve(); }
+    }
+    const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+    document.addEventListener('visibilitychange', () => { if (document.hidden) violation('You switched tabs or minimised the window'); });
+    window.addEventListener('blur', () => violation('The exam window lost focus (another window or app was opened)'));
+    document.addEventListener('fullscreenchange', () => { if (!isFs()) violation('You exited fullscreen mode'); });
+    document.addEventListener('webkitfullscreenchange', () => { if (!isFs()) violation('You exited fullscreen mode'); });
+    document.documentElement.addEventListener('mouseleave', (e) => { if (e.clientY <= 0 && !paused) violation('Cursor left the exam window from the top'); });
+
+    // Guard loop: devtools / split-screen / resize detection + focus check
+    function guard() {
+        if (!active || paused || submitting) return;
+        if (!document.hasFocus()) return violation('The exam window lost focus');
+        if (!isFs()) return violation('Fullscreen mode is not active');
+        const dw = window.outerWidth - window.innerWidth, dh = window.outerHeight - window.innerHeight;
+        if (dw > 200 || dh > 250) return violation('Developer tools or a docked window was detected');
+        if (Math.abs(window.innerWidth - screen.width) > 40 || Math.abs(window.innerHeight - screen.height) > 80) return violation('Window size changed (split-screen or floating window)');
     }
 
-    // Anti-Cheat
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('copy', e => e.preventDefault());
-    document.addEventListener('paste', e => e.preventDefault());
+    ['contextmenu', 'copy', 'cut', 'paste', 'dragstart', 'selectstart'].forEach(ev =>
+        document.addEventListener(ev, e => { if (active) e.preventDefault(); }));
+    window.addEventListener('beforeprint', () => violation('Printing is not allowed'));
 
-    function enterFullScreen() {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) elem.requestFullscreen();
-    }
+    document.addEventListener('keydown', (e) => {
+        if (!active || paused) return;
+        const k = e.key, kl = k.toLowerCase(), ctrl = e.ctrlKey || e.metaKey;
+        const blocked = k === 'F12' || k === 'PrintScreen' || k === 'F11' ||
+            (ctrl && e.shiftKey && ['i', 'j', 'c', 'k'].includes(kl)) ||
+            (ctrl && ['u', 's', 'p', 'c', 'v', 'x', 'a', 'f', 'g', 'l', 't', 'n', 'w'].includes(kl)) ||
+            (e.altKey && ['Tab', 'F4'].includes(k)) || k === 'Meta' || k === 'ContextMenu';
+        if (blocked) {
+            e.preventDefault(); e.stopPropagation();
+            if (k === 'F12' || (ctrl && e.shiftKey)) violation('Developer tools shortcut used');
+            if (k === 'PrintScreen') { try { navigator.clipboard.writeText(''); } catch (_) {} violation('Screenshot key pressed'); }
+            return;
+        }
+        if (['a', 'b', 'c', 'd'].includes(kl)) {
+            const opts = slides[current].querySelectorAll('.opt input');
+            choose(slides[current].dataset.qid, opts[kl.charCodeAt(0) - 97].value);
+        } else if (['1', '2', '3', '4'].includes(k)) {
+            choose(slides[current].dataset.qid, slides[current].querySelectorAll('.opt input')[+k - 1].value);
+        } else if (k === 'ArrowRight') go(current + 1);
+        else if (k === 'ArrowLeft') go(current - 1);
+        else if (kl === 'f') toggleFlag();
+    }, true);
+
+    window.addEventListener('beforeunload', (e) => { if (active && !submitting) { e.preventDefault(); e.returnValue = ''; } });
+
+    /* ---------- Start ---------- */
+    if (state.started && state.endAt) $('startLabel').textContent = 'Resume Exam';
+    if (!total) $('startBtn').disabled = true;
+
+    $('startBtn').onclick = async () => {
+        if (!state.started) { state.started = true; state.endAt = Date.now() + DURATION; save(); }
+        if (Date.now() >= state.endAt) { $('rulesOverlay').classList.remove('show'); active = true; return finalSubmit('Time is up', 'Your answers are being submitted automatically.'); }
+        await enterFullscreen();
+        $('rulesOverlay').classList.remove('show');
+        $('app').classList.remove('blurred');
+        active = true; lastViolation = Date.now() + 1500;
+        updateStrikes(); refresh(); tick();
+        timerId = setInterval(tick, 1000);
+        setTimeout(() => { guardId = setInterval(guard, 1500); }, 2500);
+    };
+
+    buildPalette(); updateStrikes(); refresh();
+})();
 </script>
-{% endblock %}
+</body>
+</html>
