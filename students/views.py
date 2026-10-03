@@ -1869,6 +1869,14 @@ def generate_ai_challenge(request):
             language = data.get('language', 'python')
             topic = data.get('topic', 'Logic') # Now accepts user-typed topic
             difficulty = data.get('difficulty', 'Easy')
+            challenge_type = data.get('challenge_type', 'solve')
+            type_instructions = {
+                'solve': '',
+                'debug': 'CHALLENGE TYPE OVERRIDE: This is a DEBUGGING challenge. `base_code` MUST be a complete but BUGGY implementation (2-3 subtle bugs) that the student must find and fix. The problem statement must describe the expected behaviour, not the bugs.',
+                'fill': 'CHALLENGE TYPE OVERRIDE: This is a FILL-IN-THE-BLANKS challenge. `base_code` MUST be an almost complete solution where the key lines are replaced by `___` placeholders (3-5 blanks) that the student must complete.',
+                'optimize': 'CHALLENGE TYPE OVERRIDE: This is an OPTIMIZATION challenge. `base_code` MUST be a correct but slow brute-force solution. The student must rewrite it to meet the stated time complexity in Constraints.',
+            }
+            type_note = type_instructions.get(challenge_type, '')
             
             course_obj = get_object_or_404(Course, id=course_id)
             groq_api_key = getattr(settings, 'GROQ_API_KEY', os.environ.get('GROQ_API_KEY', ''))
@@ -1894,6 +1902,7 @@ def generate_ai_challenge(request):
             
             CRITICAL INSTRUCTION FOR `base_code`: 
             You MUST NOT provide the solution. Provide ONLY the empty function signature/template for the student to start with. The function body MUST be empty (use `pass` in Python, or empty brackets `{{}}` in other languages). DO NOT write the actual logic.
+            {type_note}
             
             Return ONLY a valid JSON object without markdown tags:
             {{

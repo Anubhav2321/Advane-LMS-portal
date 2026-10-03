@@ -8,265 +8,228 @@
     
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* --- GLOBAL VARIABLES --- */
         :root {
-            --bg-dark: #0a0a0f;
-            --sidebar-bg: #050507; /* Darker sidebar */
-            --border-color: #1f1f25;
-            --accent-cyan: #00d4ff;
-            --text-main: #e0e0e0;
-            --text-muted: #888;
-            --danger-color: #ff3366;
+            --bg-dark: #07090e;
+            --sidebar-bg: rgba(10, 12, 18, 0.92);
+            --border-color: rgba(255, 255, 255, 0.07);
+            --accent-cyan: #22d3ee;
+            --accent-blue: #3b82f6;
+            --accent-purple: #a855f7;
+            --text-main: #e8ecf4;
+            --text-muted: #8b93a7;
+            --danger-color: #f43f5e;
+            --sidebar-w: 272px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
+        html, body { height: 100%; }
+
+        body.lms-body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
-            height: 100vh;
-            display: flex;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR DESIGN (Clean & Simple) --- */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
+        /* =====================================================
+           APP SHELL - sidebar is position:fixed and namespaced
+           (lms-*) so no page stylesheet can move or restyle it.
+           ===================================================== */
+        .lms-shell {
+            position: fixed; inset: 0;
+            display: block;
+            background:
+                radial-gradient(900px 480px at 0% 0%, rgba(59,130,246,0.10), transparent 60%),
+                radial-gradient(700px 420px at 100% 100%, rgba(168,85,247,0.08), transparent 60%),
+                var(--bg-dark);
+        }
+
+        #lmsSidebar.lms-sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-w); min-width: var(--sidebar-w); max-width: var(--sidebar-w);
+            display: flex; flex-direction: column;
+            padding: 26px 16px 18px;
             background: var(--sidebar-bg);
+            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
             border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 30px 20px;
-            flex-shrink: 0;
-            transition: 0.3s ease;
-            position: relative;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.35), inset -1px 0 0 rgba(255,255,255,0.03);
             z-index: 1000;
+            transform: none;
         }
 
-        /* Brand Logo (Restored to original) */
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 50px;
-            padding-left: 10px;
+        #lmsSidebar .lms-brand {
+            display: flex; align-items: center; gap: 12px;
+            padding: 4px 12px 22px; margin-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
         }
-        
-        .brand-icon {
-            font-size: 2rem;
-            color: var(--accent-cyan);
+        #lmsSidebar .lms-brand-icon {
+            width: 42px; height: 42px; border-radius: 12px;
+            display: grid; place-items: center; font-size: 1.15rem; color: #fff;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            box-shadow: 0 8px 22px rgba(99,102,241,0.35);
+        }
+        #lmsSidebar .lms-brand-text {
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; color: #fff; line-height: 1;
+        }
+        #lmsSidebar .lms-brand-text span { color: var(--accent-cyan); }
+        #lmsSidebar .lms-brand-sub { display: block; margin-top: 4px; font: 600 .62rem 'Inter', sans-serif; letter-spacing: 1.8px; text-transform: uppercase; color: var(--text-muted); }
+
+        #lmsSidebar .lms-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 2px; }
+        #lmsSidebar .lms-scroll::-webkit-scrollbar { width: 0; }
+
+        #lmsSidebar .lms-section {
+            padding: 14px 14px 8px; font: 700 .64rem 'Inter', sans-serif;
+            letter-spacing: 1.8px; text-transform: uppercase; color: #5d6479;
         }
 
-        .brand-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
+        #lmsSidebar .lms-nav { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+
+        #lmsSidebar .lms-link {
+            position: relative;
+            display: flex; align-items: center; gap: 14px;
+            height: 46px; padding: 0 14px;
+            color: var(--text-muted); text-decoration: none;
+            font: 600 .95rem 'Inter', sans-serif; letter-spacing: .1px;
+            border-radius: 12px; border: 1px solid transparent;
+            transition: background .2s, color .2s, border-color .2s;
+            white-space: nowrap;
+        }
+        #lmsSidebar .lms-link i { width: 22px; text-align: center; font-size: 1.02rem; flex-shrink: 0; }
+        #lmsSidebar .lms-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        #lmsSidebar .lms-link.active {
             color: #fff;
-            line-height: 1;
+            background: linear-gradient(135deg, rgba(59,130,246,0.20), rgba(168,85,247,0.14));
+            border-color: rgba(99,102,241,0.35);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
         }
-        
-        .brand-text span {
-            color: var(--accent-cyan);
+        #lmsSidebar .lms-link.active::before {
+            content: ''; position: absolute; left: -17px; top: 10px; bottom: 10px; width: 4px;
+            border-radius: 0 4px 4px 0; background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
         }
+        #lmsSidebar .lms-link.active i { color: var(--accent-cyan); }
 
-        /* Navigation Links */
-        .nav-links {
-            list-style: none;
-            flex: 1;
-            display: flex; flex-direction: column; gap: 15px;
+        #lmsSidebar .lms-badge {
+            margin-left: auto; padding: 2px 8px; border-radius: 99px;
+            font: 700 .62rem 'Inter', sans-serif; letter-spacing: .8px; text-transform: uppercase;
+            color: var(--accent-cyan); background: rgba(34,211,238,0.10); border: 1px solid rgba(34,211,238,0.35);
         }
+        #lmsSidebar .lms-link.switch-admin { color: #fbbf24; }
+        #lmsSidebar .lms-link.switch-faculty { color: var(--accent-cyan); }
 
-        .nav-item a {
-            display: flex; align-items: center; gap: 15px;
-            padding: 12px 20px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.2s ease-in-out;
+        #lmsSidebar .lms-foot { padding-top: 16px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; }
+        #lmsSidebar .lms-user {
+            display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+            border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color);
         }
+        #lmsSidebar .lms-avatar {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: grid; place-items: center; font: 700 .9rem 'Inter', sans-serif; color: #fff;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        }
+        #lmsSidebar .lms-user-name { font: 600 .88rem 'Inter', sans-serif; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #lmsSidebar .lms-user-role { font: 500 .7rem 'Inter', sans-serif; color: var(--text-muted); }
+        #lmsSidebar .lms-user-info { min-width: 0; }
 
-        /* Hover State (Simple) */
-        .nav-item a:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+        #lmsSidebar .lms-logout {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            height: 44px; border-radius: 12px; text-decoration: none;
+            font: 700 .88rem 'Inter', sans-serif; color: var(--danger-color);
+            background: rgba(244,63,94,0.06); border: 1px solid rgba(244,63,94,0.22);
+            transition: background .2s, border-color .2s;
         }
-
-        /* Active State (Your Screenshot Style) */
-        .nav-item a.active {
-            background: rgba(0, 212, 255, 0.1); /* Subtle Cyan Tint */
-            color: var(--accent-cyan);
-            border-left: 3px solid var(--accent-cyan); /* Simple accent line */
-        }
-
-        .nav-item a i { 
-            width: 25px; text-align: center; 
-            font-size: 1.2rem;
-        }
-
-        /* 🚀 NEW: Neon Badge Style for Syntax Singularity */
-        .badge-neon {
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan);
-            padding: 2px 8px;
-            font-size: 0.75rem;
-            border-radius: 6px;
-            margin-left: auto; /* Pushes the badge to the right edge */
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-            animation: pulseNeon 2s infinite alternate;
-        }
-
-        @keyframes pulseNeon {
-            0% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.2); }
-            100% { box-shadow: 0 0 12px rgba(0, 212, 255, 0.6); }
-        }
-
-        /* Logout Button (Bottom) */
-        .logout-container {
-            margin-top: auto;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        .logout-btn {
-            display: flex; align-items: center; gap: 10px;
-            padding: 12px 20px;
-            color: var(--danger-color);
-            text-decoration: none;
-            font-weight: 700;
-            border: 1px solid rgba(255, 51, 102, 0.2);
-            border-radius: 10px;
-            transition: 0.2s;
-            background: rgba(255, 51, 102, 0.05);
-            justify-content: center;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 51, 102, 0.1);
-            border-color: var(--danger-color);
-        }
+        #lmsSidebar .lms-logout:hover { background: rgba(244,63,94,0.12); border-color: var(--danger-color); }
 
         /* --- MAIN CONTENT AREA --- */
         .main-content {
-            flex: 1;
-            height: 100vh;
-            overflow-y: auto;
-            position: relative;
-            background-color: var(--bg-dark); /* Solid clean background */
+            position: absolute; top: 0; bottom: 0; right: 0;
+            left: var(--sidebar-w);
+            overflow-y: auto; overflow-x: hidden;
+            scrollbar-gutter: stable;
         }
-
-        /* Scrollbar Styling */
         .main-content::-webkit-scrollbar { width: 8px; }
-        .main-content::-webkit-scrollbar-track { background: var(--bg-dark); }
-        .main-content::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .main-content::-webkit-scrollbar-thumb:hover { background: #555; }
+        .main-content::-webkit-scrollbar-track { background: transparent; }
+        .main-content::-webkit-scrollbar-thumb { background: #2a2f3d; border-radius: 10px; }
+        .main-content::-webkit-scrollbar-thumb:hover { background: #3b4155; }
 
-        /* Mobile Toggle */
-        .menu-toggle {
-            display: none;
-            position: fixed; top: 20px; right: 20px; z-index: 2000;
-            background: #111; color: #fff; border: 1px solid #333;
-            padding: 10px; border-radius: 8px; cursor: pointer;
+        /* Mobile */
+        .lms-menu-toggle {
+            display: none; position: fixed; top: 16px; right: 16px; z-index: 2000;
+            background: rgba(15,18,26,0.9); color: #fff; border: 1px solid var(--border-color);
+            padding: 10px 12px; border-radius: 10px; cursor: pointer;
         }
+        .lms-scrim { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); }
+        .lms-scrim.show { display: block; }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                position: fixed; left: -260px; height: 100%; box-shadow: 10px 0 30px rgba(0,0,0,0.8);
-            }
-            .sidebar.active { left: 0; }
-            .menu-toggle { display: block; }
-            .main-content { width: 100%; }
+            #lmsSidebar.lms-sidebar { transform: translateX(-100%); transition: transform .25s ease; }
+            #lmsSidebar.lms-sidebar.active { transform: translateX(0); }
+            .main-content { left: 0; }
+            .lms-menu-toggle { display: block; }
         }
-
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="lms-body">
 
-    <button class="menu-toggle" onclick="toggleSidebar()">
+    <button class="lms-menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
         <i class="fas fa-bars"></i>
     </button>
+    <div class="lms-scrim" id="lmsScrim" onclick="toggleSidebar()"></div>
 
-    <nav class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="fas fa-graduation-cap brand-icon"></i>
-            <div class="brand-text">Learning-<span>365</span></div>
+    <div class="lms-shell">
+    <nav class="lms-sidebar" id="lmsSidebar">
+        <div class="lms-brand">
+            <div class="lms-brand-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div>
+                <div class="lms-brand-text">Learning-<span>365</span></div>
+                <span class="lms-brand-sub">Student Panel</span>
+            </div>
         </div>
 
-        <ul class="nav-links">
-            <li class="nav-item">
-                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <i class="fas fa-th-large"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'all_courses' %}" class="{% if request.resolver_match.url_name == 'all_courses' %}active{% endif %}">
-                    <i class="fas fa-book-open"></i> All Courses
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'live_classes' %}" class="{% if request.resolver_match.url_name == 'live_classes' %}active{% endif %}">
-                    <i class="fas fa-video"></i> Live Classes
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'library' %}" class="{% if request.resolver_match.url_name == 'library' %}active{% endif %}">
-                    <i class="fas fa-folder"></i> Library
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{% url 'syntax_singularity' %}" class="{% if request.resolver_match.url_name == 'syntax_singularity' %}active{% endif %}">
-                    <i class="fas fa-laptop-code"></i> Syntax Singularity
-                    <span class="badge-neon">New</span>
-                </a>
-            </li>
+        <div class="lms-scroll">
+            {% with url_name=request.resolver_match.url_name %}
+            <div class="lms-section">Learn</div>
+            <ul class="lms-nav">
+                <li><a href="{% url 'dashboard' %}" class="lms-link {% if url_name == 'dashboard' %}active{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="{% url 'all_courses' %}" class="lms-link {% if url_name == 'all_courses' or url_name == 'course_watch' %}active{% endif %}"><i class="fas fa-book-open"></i> All Courses</a></li>
+                <li><a href="{% url 'live_classes' %}" class="lms-link {% if url_name == 'live_classes' %}active{% endif %}"><i class="fas fa-video"></i> Live Classes</a></li>
+                <li><a href="{% url 'library' %}" class="lms-link {% if url_name == 'library' %}active{% endif %}"><i class="fas fa-folder"></i> Library</a></li>
+            </ul>
 
-            <li class="nav-item">
-                <a href="{% url 'student_exam_list' %}" class="{% if request.resolver_match.url_name == 'student_exam_list' or request.resolver_match.url_name == 'take_exam' %}active{% endif %}">
-                    <i class="fas fa-edit"></i> AI Exams
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
-                    <i class="fas fa-user"></i> Profile
-                </a>
-            </li>
+            <div class="lms-section">Practice</div>
+            <ul class="lms-nav">
+                <li><a href="{% url 'syntax_singularity' %}" class="lms-link {% if url_name == 'syntax_singularity' %}active{% endif %}"><i class="fas fa-laptop-code"></i> Syntax Singularity <span class="lms-badge">New</span></a></li>
+                <li><a href="{% url 'student_exam_list' %}" class="lms-link {% if url_name == 'student_exam_list' or url_name == 'take_exam' or url_name == 'take_quiz' %}active{% endif %}"><i class="fas fa-edit"></i> AI Exams</a></li>
+            </ul>
 
-            <div class="nav-divider" style="height:1px; background:rgba(255,255,255,0.1); margin: 15px 0;"></div>
+            <div class="lms-section">Account</div>
+            <ul class="lms-nav">
+                <li><a href="{% url 'profile' %}" class="lms-link {% if url_name == 'profile' %}active{% endif %}"><i class="fas fa-user"></i> Profile</a></li>
+                {% if request.user.is_superuser or request.user.is_staff %}
+                <li><a href="{% url 'admin_dashboard' %}" class="lms-link switch-admin"><i class="fas fa-shield-halved"></i> Switch to Admin</a></li>
+                {% endif %}
+                {% if request.user.is_teacher or request.user.is_faculty %}
+                <li><a href="{% url 'faculty_dashboard' %}" class="lms-link switch-faculty"><i class="fas fa-chalkboard-teacher"></i> Switch to Faculty</a></li>
+                {% endif %}
+            </ul>
+            {% endwith %}
+        </div>
 
-            {% if request.user.is_superuser or request.user.is_staff %}
-            <li class="nav-item">
-                <a href="{% url 'admin_dashboard' %}" style="color: #ffaa00;">
-                    <i class="fas fa-shield-halved"></i> Switch to Admin
-                </a>
-            </li>
-            {% endif %}
-
-            {% if request.user.is_teacher or request.user.is_faculty %}
-            <li class="nav-item">
-                <a href="{% url 'faculty_dashboard' %}" style="color: #00d4ff;">
-                    <i class="fas fa-chalkboard-teacher"></i> Switch to Faculty
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-
-        <div class="logout-container">
-            <a href="{% url 'logout' %}" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Sign Out
-            </a>
+        <div class="lms-foot">
+            <div class="lms-user">
+                <div class="lms-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                <div class="lms-user-info">
+                    <div class="lms-user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                    <div class="lms-user-role">Student</div>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="lms-logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
         </div>
     </nav>
 
@@ -274,10 +237,12 @@
         {% block content %}
         {% endblock %}
     </main>
+    </div>
 
     <script>
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('lmsSidebar').classList.toggle('active');
+            document.getElementById('lmsScrim').classList.toggle('show');
         }
     </script>
 

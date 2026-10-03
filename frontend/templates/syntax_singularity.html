@@ -3,293 +3,370 @@
 
 {% block content %}
 <style>
-    /* LeetCode Style UI Overhaul */
-    .ss-container {
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh - 80px); 
+    .ss-root {
+        --c-panel: rgba(255,255,255,0.035);
+        --c-panel-2: rgba(255,255,255,0.06);
+        --c-border: rgba(255,255,255,0.08);
+        --c-text: #e8ecf4;
+        --c-muted: #8b93a7;
+        --c-cyan: #22d3ee;
+        --c-blue: #3b82f6;
+        --c-purple: #a855f7;
+        --c-green: #34d399;
+        --c-amber: #fbbf24;
+        --c-red: #f43f5e;
+        font-family: 'Inter', sans-serif;
+        color: var(--c-text);
+        height: 100vh;
         width: 100%;
-        font-family: 'Outfit', sans-serif;
-        padding: 0 10px;
-        box-sizing: border-box;
         position: relative;
+        box-sizing: border-box;
+    }
+    .ss-root *, .ss-root *::before, .ss-root *::after { box-sizing: border-box; }
+
+    .glass-p {
+        background: var(--c-panel);
+        border: 1px solid var(--c-border);
+        border-radius: 18px;
+        backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
     }
 
-    /* --- SETUP VIEW (Step 1) --- */
-    #setup-view {
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: radial-gradient(circle at center, rgba(15,15,25,0.8) 0%, rgba(5,5,10,0.95) 100%);
-        z-index: 50;
-        backdrop-filter: blur(10px);
-        padding: 20px;
-    }
+    /* ================= SETUP ================= */
+    #setup-view { height: 100%; overflow-y: auto; padding: 40px 44px 60px; }
+    #setup-view::-webkit-scrollbar { width: 0; }
+    .setup-wrap { max-width: 1180px; margin: 0 auto; }
 
-    .setup-card {
-        background: rgba(20, 20, 30, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px;
-        box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 2px 15px rgba(255,255,255,0.05);
-        padding: 50px;
-        width: 100%; max-width: 1100px;
-        backdrop-filter: blur(25px) saturate(150%);
-        text-align: center;
-    }
+    .setup-hero { margin-bottom: 34px; }
+    .eyebrow { color: var(--c-cyan); font-size: .75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .setup-hero h1 { margin: 0 0 10px; font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; color: #fff; }
+    .setup-hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--c-cyan), var(--c-purple)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .setup-hero p { margin: 0; color: var(--c-muted); max-width: 560px; line-height: 1.65; }
 
-    .setup-header { margin-bottom: 35px; }
-    .setup-header i { font-size: 3.5rem; color: #00d4ff; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.6)); }
-    .setup-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; color: #fff; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255,255,255,0.2); margin-bottom: 8px; }
-    .setup-header p { color: #888; font-family: 'Outfit', sans-serif; font-size: 1.1rem; }
-    
-    .setup-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px; }
-    
-    .form-group { text-align: left; position: relative; }
-    .form-label { display: block; margin-bottom: 10px; font-size: 0.85rem; color: #00d4ff; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; }
-    
-    .setup-control {
-        width: 100%; padding: 16px 20px;
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        color: white; font-size: 1.05rem; font-family: 'Outfit', sans-serif;
-        outline: none; transition: all 0.3s ease;
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-    }
-    .setup-control:focus { 
-        border-color: #00d4ff; 
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 20px rgba(0, 212, 255, 0.2); 
-        background: rgba(0, 0, 0, 0.5); 
-    }
-    .setup-control option { background: #111; color: #fff; }
-    
-    .btn-massive {
-        width: 100%; padding: 18px; 
-        background: linear-gradient(135deg, #00d4ff, #0055ff);
-        color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1.15rem;
-        cursor: pointer; transition: all 0.3s ease; font-family: 'Space Grotesk', sans-serif;
-        text-transform: uppercase; letter-spacing: 2px; margin-top: 15px;
-        box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4), inset 0 2px 5px rgba(255,255,255,0.2);
-    }
-    .btn-massive:hover { 
-        transform: translateY(-3px) scale(1.02); 
-        box-shadow: 0 15px 40px rgba(0, 212, 255, 0.6), inset 0 2px 5px rgba(255,255,255,0.3); 
-    }
-    .btn-massive:active { transform: translateY(1px); }
-    .btn-massive:disabled { background: #333; color: #777; box-shadow: none; transform: none; cursor: not-allowed; }
+    .setup-split { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 44px; align-items: start; }
 
-    /* --- WORKSPACE VIEW (Step 2) --- */
-    #workspace-view {
-        display: none;
-        flex-direction: column;
-        height: 100%;
-        animation: fadeIn 0.5s ease;
-    }
+    .sec { padding: 26px 0; border-top: 1px solid var(--c-border); }
+    .sec:first-child { border-top: none; padding-top: 0; }
+    .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+    .sec-num { font: 700 .75rem 'JetBrains Mono', monospace; color: var(--c-cyan); }
+    .sec-title { font-size: 1rem; font-weight: 700; color: #fff; }
+    .sec-hint { margin-left: auto; font-size: .78rem; color: var(--c-muted); }
 
-    .ss-top-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: rgba(15, 15, 20, 0.95);
-        padding: 12px 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        margin-bottom: 15px;
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field label { display: block; font-size: .72rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--c-muted); margin-bottom: 8px; }
+    .control {
+        width: 100%; padding: 14px 16px; border-radius: 12px; outline: none;
+        background: rgba(255,255,255,0.04); border: 1px solid var(--c-border); color: #fff;
+        font: 500 .95rem 'Inter', sans-serif; transition: .2s;
     }
-    
-    .ss-brand {
-        display: flex; align-items: center; gap: 10px;
-        color: #00d4ff; font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700; font-size: 1.1rem;
-    }
-    
-    .btn-danger {
-        background: rgba(255, 51, 102, 0.1); color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3);
-        padding: 8px 15px; border-radius: 6px; font-weight: 700; font-size: 0.9rem;
-        cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
-    }
-    .btn-danger:hover { background: #ff3366; color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4); }
+    .control:focus { border-color: rgba(59,130,246,.65); box-shadow: 0 0 0 3px rgba(59,130,246,.15); background: rgba(255,255,255,0.06); }
+    .control option { background: #11141c; color: #fff; }
 
-    /* --- SPLIT WORKSPACE --- */
-    .ss-workspace {
-        display: flex;
-        flex: 1;
-        gap: 15px;
-        overflow: hidden;
+    /* Type selector: segmented list (not cards) */
+    .type-list { display: flex; flex-direction: column; border: 1px solid var(--c-border); border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.02); }
+    .type-opt {
+        display: flex; align-items: center; gap: 16px; padding: 15px 18px; cursor: pointer;
+        border: none; background: transparent; color: var(--c-muted); text-align: left; width: 100%;
+        border-bottom: 1px solid var(--c-border); transition: background .2s, color .2s; font-family: inherit;
     }
-    
-    .ss-pane {
-        background: rgba(15, 15, 20, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-    
-    /* Left Pane */
-    .ss-left-pane { width: 40%; backdrop-filter: blur(20px); }
-    
-    .ss-pane-header {
-        background: rgba(0,0,0,0.4); padding: 10px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-family: 'Space Grotesk', sans-serif;
-        font-size: 0.85rem; color: #888; display: flex; align-items: center; gap: 8px;
-    }
-    
-    .ss-problem-content { padding: 25px; overflow-y: auto; flex: 1; }
-    .ss-problem-content::-webkit-scrollbar { width: 6px; }
-    .ss-problem-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-    
-    .ss-q-title { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 15px; }
-    .ss-q-badges { display: flex; gap: 10px; margin-bottom: 25px; }
-    .ss-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
-    .badge-easy { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
-    .badge-medium { background: rgba(255, 215, 0, 0.1); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3); }
-    .badge-hard { background: rgba(255, 51, 102, 0.1); color: #ff3366; border: 1px solid rgba(255, 51, 102, 0.3); }
-    .badge-coin { background: rgba(255, 215, 0, 0.05); color: #ffaa00; border: 1px solid rgba(255, 215, 0, 0.2); }
-    
-    .ss-q-desc { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 1.05rem; line-height: 1.6; color: #ddd; }
-    .ss-q-desc h1, .ss-q-desc h2, .ss-q-desc h3 { font-family: 'Outfit', sans-serif; color: #fff; margin-top: 20px; margin-bottom: 10px; }
-    .ss-q-desc code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #00d4ff; font-family: 'Consolas', monospace; font-size: 0.95rem; }
-    .ss-q-desc pre { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; margin: 15px 0; }
-    .ss-q-desc pre code { background: none; padding: 0; color: #a5d6ff; }
-    .ss-q-desc ul { margin-left: 20px; margin-bottom: 15px; }
+    .type-opt:last-child { border-bottom: none; }
+    .type-opt:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .type-opt .t-ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,255,255,0.06); font-size: .9rem; flex-shrink: 0; transition: .2s; }
+    .type-opt .t-body b { display: block; font-size: .95rem; font-weight: 600; color: inherit; }
+    .type-opt .t-body small { font-size: .78rem; color: var(--c-muted); }
+    .type-opt .t-radio { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #3a4054; display: grid; place-items: center; transition: .2s; flex-shrink: 0; }
+    .type-opt.active { background: linear-gradient(90deg, rgba(59,130,246,0.14), rgba(168,85,247,0.06)); color: #fff; }
+    .type-opt.active .t-ico { background: linear-gradient(135deg, var(--c-blue), var(--c-purple)); color: #fff; }
+    .type-opt.active .t-radio { border-color: var(--c-blue); }
+    .type-opt.active .t-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c-blue); }
 
-    /* --- ANIMATIONS --- */
-    .fade-in-up {
-        animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    .seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--c-border); width: 100%; }
+    .seg button { flex: 1; padding: 11px 12px; border: none; border-radius: 9px; background: transparent; color: var(--c-muted); font: 600 .88rem 'Inter', sans-serif; cursor: pointer; transition: .2s; }
+    .seg button:hover { color: #fff; }
+    .seg button.active { color: #fff; }
+    .seg button.active[data-v="Easy"] { background: rgba(52,211,153,.16); color: var(--c-green); }
+    .seg button.active[data-v="Medium"] { background: rgba(251,191,36,.16); color: var(--c-amber); }
+    .seg button.active[data-v="Hard"] { background: rgba(244,63,94,.16); color: var(--c-red); }
 
-    /* Right Pane */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip-btn { padding: 6px 13px; border-radius: 99px; border: 1px solid var(--c-border); background: rgba(255,255,255,0.03); color: var(--c-muted); font: 600 .76rem 'Inter', sans-serif; cursor: pointer; transition: .2s; }
+    .chip-btn:hover { color: #fff; border-color: rgba(59,130,246,.5); background: rgba(59,130,246,.1); }
+
+    /* Brief panel */
+    .brief { padding: 26px; position: sticky; top: 0; }
+    .brief h3 { margin: 0 0 4px; font-size: 1.05rem; color: #fff; }
+    .brief .sub { color: var(--c-muted); font-size: .8rem; margin-bottom: 20px; }
+    .brief-row { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-top: 1px solid var(--c-border); font-size: .85rem; }
+    .brief-row span { color: var(--c-muted); }
+    .brief-row b { color: #fff; font-weight: 600; text-align: right; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reward { display: flex; align-items: center; justify-content: space-between; margin: 18px 0; padding: 14px 16px; border-radius: 14px; background: rgba(251,191,36,.07); border: 1px solid rgba(251,191,36,.25); }
+    .reward span { color: var(--c-muted); font-size: .8rem; }
+    .reward b { font: 700 1.3rem 'JetBrains Mono', monospace; color: var(--c-amber); }
+    .progress-line { height: 5px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; margin-bottom: 18px; }
+    .progress-line i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--c-cyan), var(--c-purple)); transition: width .3s; }
+
+    .btn-generate {
+        width: 100%; padding: 15px; border: none; border-radius: 13px; cursor: pointer;
+        background: linear-gradient(135deg, var(--c-blue), var(--c-purple)); color: #fff;
+        font: 700 .95rem 'Inter', sans-serif; letter-spacing: .4px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        box-shadow: 0 10px 28px rgba(99,102,241,.35); transition: filter .2s;
+    }
+    .btn-generate:hover:not(:disabled) { filter: brightness(1.12); }
+    .btn-generate:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+    /* ================= WORKSPACE ================= */
+    #workspace-view { display: none; flex-direction: column; height: 100%; padding: 18px 22px 18px; gap: 14px; }
+
+    .ss-top-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 18px; flex-shrink: 0; }
+    .ss-brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: .95rem; color: #fff; }
+    .ss-brand .logo { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--c-blue), var(--c-purple)); font-size: .9rem; }
+    .ss-brand small { color: var(--c-muted); font-weight: 500; margin-left: 4px; }
+    .top-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 99px; font: 600 .78rem 'Inter', sans-serif; background: rgba(255,255,255,0.05); border: 1px solid var(--c-border); color: #cfd5e3; }
+    .pill.mono { font-family: 'JetBrains Mono', monospace; }
+    .pill i { color: var(--c-cyan); }
+    .btn-end { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; cursor: pointer; font: 700 .8rem 'Inter', sans-serif; color: var(--c-red); background: rgba(244,63,94,.07); border: 1px solid rgba(244,63,94,.28); transition: .2s; }
+    .btn-end:hover { background: var(--c-red); color: #fff; }
+
+    .ss-workspace { display: flex; flex: 1; gap: 14px; min-height: 0; }
+    .ss-pane { display: flex; flex-direction: column; overflow: hidden; min-height: 0; border-radius: 16px; }
+    .ss-left-pane { width: 40%; }
     .ss-right-pane { width: 60%; }
-    
-    #editor { flex: 1; font-size: 16px; }
-    
-    .ss-terminal-pane { height: 35%; background: #0d0d12; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; }
-    .ss-terminal-header { padding: 8px 15px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.05); color: #888; font-size: 0.8rem; font-family: 'Space Grotesk', sans-serif; display: flex; justify-content: space-between; align-items: center; }
-    .ss-terminal-content { padding: 15px; flex: 1; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.95rem; color: #ccc; }
-    
-    .btn-run { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
-    .btn-run:hover { background: #00ff88; color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.4); }
-    .btn-run:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .t-success { color: #00ff88; font-weight: bold; }
-    .t-error { color: #ff3366; font-weight: bold; }
-    .t-info { color: #00d4ff; }
-    .t-warning { color: #ffd700; }
-    
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .pane-head { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: rgba(0,0,0,0.28); border-bottom: 1px solid var(--c-border); font: 600 .78rem 'Inter', sans-serif; color: var(--c-muted); flex-shrink: 0; }
+    .pane-head i { color: var(--c-cyan); }
+    .pane-head .spacer { flex: 1; }
+
+    .ss-problem-content { padding: 26px; overflow-y: auto; flex: 1; }
+    .ss-problem-content::-webkit-scrollbar, .ss-terminal-content::-webkit-scrollbar { width: 6px; }
+    .ss-problem-content::-webkit-scrollbar-thumb, .ss-terminal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+    .ss-q-title { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 14px; letter-spacing: -.3px; }
+    .ss-q-badges { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+    .ss-badge { padding: 5px 12px; border-radius: 99px; font: 700 .72rem 'Inter', sans-serif; letter-spacing: .6px; text-transform: uppercase; }
+    .badge-easy { background: rgba(52,211,153,.1); color: var(--c-green); border: 1px solid rgba(52,211,153,.3); }
+    .badge-medium { background: rgba(251,191,36,.1); color: var(--c-amber); border: 1px solid rgba(251,191,36,.3); }
+    .badge-hard { background: rgba(244,63,94,.1); color: var(--c-red); border: 1px solid rgba(244,63,94,.3); }
+    .badge-coin { background: rgba(251,191,36,.06); color: var(--c-amber); border: 1px solid rgba(251,191,36,.22); }
+    .badge-type { background: rgba(59,130,246,.1); color: #7aa7ff; border: 1px solid rgba(59,130,246,.3); }
+
+    .ss-q-desc { font-size: 1rem; line-height: 1.7; color: #d4d9e6; }
+    .ss-q-desc h1, .ss-q-desc h2, .ss-q-desc h3 { color: #fff; margin: 22px 0 10px; font-size: 1.1rem; }
+    .ss-q-desc code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 5px; color: var(--c-cyan); font-family: 'JetBrains Mono', monospace; font-size: .88rem; }
+    .ss-q-desc pre { background: rgba(0,0,0,0.5); padding: 14px; border-radius: 12px; border: 1px solid var(--c-border); overflow-x: auto; margin: 14px 0; }
+    .ss-q-desc pre code { background: none; padding: 0; color: #a5d6ff; }
+    .ss-q-desc ul { margin-left: 20px; margin-bottom: 14px; }
+
+    /* Editor toolbar */
+    .ed-tools { display: flex; align-items: center; gap: 6px; }
+    .tool-btn { width: 30px; height: 28px; border-radius: 8px; border: 1px solid var(--c-border); background: rgba(255,255,255,0.04); color: #b9c0d2; cursor: pointer; font-size: .75rem; transition: .2s; display: grid; place-items: center; }
+    .tool-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .tool-btn.wide { width: auto; padding: 0 10px; gap: 6px; display: inline-flex; align-items: center; font: 600 .72rem 'Inter', sans-serif; }
+    .font-size-lbl { font: 600 .72rem 'JetBrains Mono', monospace; color: var(--c-muted); min-width: 30px; text-align: center; }
+
+    #editor { flex: 1; min-height: 0; font-size: 15px; }
+
+    /* Status bar (under editor) */
+    .status-bar { display: flex; align-items: center; gap: 16px; padding: 7px 16px; background: rgba(0,0,0,0.35); border-top: 1px solid var(--c-border); border-bottom: 1px solid var(--c-border); font: 500 .72rem 'JetBrains Mono', monospace; color: var(--c-muted); flex-shrink: 0; }
+    .status-bar .sp { flex: 1; }
+    .status-bar .ok { color: var(--c-green); }
+    .status-bar kbd { background: rgba(255,255,255,.08); border: 1px solid var(--c-border); padding: 1px 6px; border-radius: 5px; color: #cfd5e3; font-family: inherit; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-green); display: inline-block; margin-right: 6px; }
+    .dot.busy { background: var(--c-amber); }
+
+    /* Console */
+    .ss-terminal-pane { height: 34%; min-height: 150px; background: rgba(5,7,11,0.7); display: flex; flex-direction: column; flex-shrink: 0; }
+    .term-head { display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: rgba(0,0,0,0.35); border-bottom: 1px solid var(--c-border); }
+    .term-tab { padding: 7px 14px; border: none; background: transparent; color: var(--c-muted); font: 600 .76rem 'Inter', sans-serif; cursor: pointer; border-radius: 8px; transition: .2s; }
+    .term-tab:hover { color: #fff; }
+    .term-tab.active { color: #fff; background: rgba(255,255,255,.08); }
+    .term-head .sp { flex: 1; }
+    .btn-ghost { padding: 7px 12px; border-radius: 9px; border: 1px solid var(--c-border); background: transparent; color: var(--c-muted); font: 600 .74rem 'Inter', sans-serif; cursor: pointer; transition: .2s; }
+    .btn-ghost:hover { color: #fff; background: rgba(255,255,255,.06); }
+    .btn-run { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; margin-left: 6px; border-radius: 10px; border: none; cursor: pointer; font: 700 .78rem 'Inter', sans-serif; color: #04130c; background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 6px 18px rgba(16,185,129,.3); transition: filter .2s; }
+    .btn-run:hover:not(:disabled) { filter: brightness(1.1); }
+    .btn-run:disabled { opacity: .55; cursor: not-allowed; }
+    .ss-terminal-content { padding: 14px 18px; flex: 1; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: .84rem; line-height: 1.65; color: #c6ccdb; }
+    #scratchpad { flex: 1; width: 100%; resize: none; border: none; outline: none; background: transparent; color: #c6ccdb; padding: 14px 18px; font: 500 .84rem 'JetBrains Mono', monospace; line-height: 1.65; display: none; }
+    .t-success { color: var(--c-green); font-weight: 700; }
+    .t-error { color: var(--c-red); font-weight: 700; }
+    .t-info { color: var(--c-cyan); }
+    .t-warning { color: var(--c-amber); }
+
+    @media (max-width: 1000px) {
+        .setup-split { grid-template-columns: 1fr; gap: 28px; }
+        .brief { position: static; }
+        #setup-view { padding: 24px 18px 50px; }
+        .field-row { grid-template-columns: 1fr; }
+        .ss-workspace { flex-direction: column; overflow-y: auto; }
+        .ss-left-pane, .ss-right-pane { width: 100%; min-height: 420px; }
+        .setup-hero h1 { font-size: 1.9rem; }
+    }
 </style>
 
-<div class="ss-container">
-    
-    <!-- STEP 1: SETUP SCREEN -->
+<div class="ss-root">
+
+    <!-- ===== STEP 1: SETUP ===== -->
     <div id="setup-view">
-        <div class="setup-card fade-in-up">
-            <div class="setup-header">
-                <i class="fas fa-laptop-code"></i>
-                <h2>Initialize ARIS</h2>
-                <p>Configure your parameters to generate a custom assessment</p>
+        <div class="setup-wrap">
+            <div class="setup-hero">
+                <div class="eyebrow"><i class="fas fa-laptop-code"></i> ARIS Environment</div>
+                <h1>Syntax <em>Singularity</em></h1>
+                <p>Configure your session and ARIS will generate a custom coding challenge. Solve it in the live IDE to earn LMS Coins.</p>
             </div>
 
-            <div class="setup-form-grid">
-                <div class="form-group">
-                    <label class="form-label">Linked Course</label>
-                    <select id="courseSelect" class="setup-control" onchange="updateLanguages()">
-                        <option value="" disabled selected hidden>Choose an enrolled course</option>
-                        {% for enrollment in courses %}
-                            <option value="{{ enrollment.course.id }}">{{ enrollment.course.title }}</option>
-                        {% empty %}
-                            <option value="">No Enrolled Courses Found</option>
-                        {% endfor %}
-                    </select>
+            <div class="setup-split">
+                <div>
+                    <div class="sec">
+                        <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">Challenge Type</span><span class="sec-hint">How do you want to practise?</span></div>
+                        <div class="type-list" id="typeList">
+                            <button type="button" class="type-opt active" data-v="solve"><span class="t-ico"><i class="fas fa-code"></i></span><span class="t-body"><b>Solve from scratch</b><small>Write the full solution from an empty function</small></span><span class="t-radio"></span></button>
+                            <button type="button" class="type-opt" data-v="debug"><span class="t-ico"><i class="fas fa-bug"></i></span><span class="t-body"><b>Debug the code</b><small>Find and fix bugs hidden in a broken solution</small></span><span class="t-radio"></span></button>
+                            <button type="button" class="type-opt" data-v="fill"><span class="t-ico"><i class="fas fa-pen-to-square"></i></span><span class="t-body"><b>Fill in the blanks</b><small>Complete the missing lines of a nearly finished program</small></span><span class="t-radio"></span></button>
+                            <button type="button" class="type-opt" data-v="optimize"><span class="t-ico"><i class="fas fa-gauge-high"></i></span><span class="t-body"><b>Optimize it</b><small>Rewrite a slow brute-force into an efficient solution</small></span><span class="t-radio"></span></button>
+                        </div>
+                    </div>
+
+                    <div class="sec">
+                        <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">Course &amp; Language</span></div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="courseSelect">Linked Course</label>
+                                <select id="courseSelect" class="control" onchange="updateLanguages()">
+                                    <option value="" disabled selected hidden>Choose an enrolled course</option>
+                                    {% for enrollment in courses %}
+                                        <option value="{{ enrollment.course.id }}">{{ enrollment.course.title }}</option>
+                                    {% empty %}
+                                        <option value="">No Enrolled Courses Found</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="langSelect">Programming Language</label>
+                                <select id="langSelect" class="control">
+                                    <option value="" disabled selected hidden>Select environment</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sec">
+                        <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">Topic &amp; Difficulty</span></div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="topicInput">Target Topic</label>
+                                <input type="text" id="topicInput" class="control" placeholder="e.g., Arrays, Pointers, Graph Theory…">
+                            </div>
+                            <div class="field">
+                                <label>Difficulty Level</label>
+                                <div class="seg" id="diffSeg">
+                                    <button type="button" data-v="Easy">Easy</button>
+                                    <button type="button" data-v="Medium" class="active">Medium</button>
+                                    <button type="button" data-v="Hard">Hard</button>
+                                </div>
+                                <input type="hidden" id="diffSelect" value="Medium">
+                            </div>
+                        </div>
+                        <div class="chips" id="topicChips">
+                            <button type="button" class="chip-btn">Arrays</button>
+                            <button type="button" class="chip-btn">Strings</button>
+                            <button type="button" class="chip-btn">Recursion</button>
+                            <button type="button" class="chip-btn">Sorting</button>
+                            <button type="button" class="chip-btn">Hash Maps</button>
+                            <button type="button" class="chip-btn">Linked Lists</button>
+                            <button type="button" class="chip-btn">Dynamic Programming</button>
+                            <button type="button" class="chip-btn">Graphs</button>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Programming Language</label>
-                    <select id="langSelect" class="setup-control">
-                        <option value="" disabled selected hidden>Select environment</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Target Topic</label>
-                    <input type="text" id="topicInput" class="setup-control" placeholder="e.g., Arrays, Pointers, Graph Theory...">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Difficulty Level</label>
-                    <select id="diffSelect" class="setup-control">
-                        <option value="Easy">Easy</option>
-                        <option value="Medium" selected>Medium</option>
-                        <option value="Hard">Hard</option>
-                    </select>
-                </div>
+
+                <aside class="glass-p brief">
+                    <h3>Session Brief</h3>
+                    <div class="sub">Live summary of your challenge</div>
+                    <div class="progress-line"><i id="briefProgress"></i></div>
+                    <div class="brief-row"><span>Type</span><b id="bType">Solve from scratch</b></div>
+                    <div class="brief-row"><span>Course</span><b id="bCourse">—</b></div>
+                    <div class="brief-row"><span>Language</span><b id="bLang">—</b></div>
+                    <div class="brief-row"><span>Topic</span><b id="bTopic">—</b></div>
+                    <div class="brief-row"><span>Difficulty</span><b id="bDiff">Medium</b></div>
+                    <div class="reward"><span>Reward on success</span><b><span id="bCoins" style="color:inherit;font-size:inherit">30</span> <i class="fas fa-coins"></i></b></div>
+                    <button class="btn-generate" id="generateBtn" onclick="startChallenge()" disabled>
+                        <i class="fas fa-bolt"></i> Generate Challenge
+                    </button>
+                </aside>
             </div>
-            
-            <button class="btn-massive" id="generateBtn" onclick="startChallenge()">
-                <i class="fas fa-bolt"></i> Generate Challenge
-            </button>
         </div>
     </div>
 
-    <!-- STEP 2: WORKSPACE (Hidden by default) -->
+    <!-- ===== STEP 2: WORKSPACE ===== -->
     <div id="workspace-view">
-        
-        <div class="ss-top-bar">
+        <div class="ss-top-bar glass-p">
             <div class="ss-brand">
-                <i class="fas fa-code"></i> SYNTAX SINGULARITY <span style="color: #666; margin-left: 10px;">| ARIS Environment</span>
+                <div class="logo"><i class="fas fa-code"></i></div>
+                <div>SYNTAX SINGULARITY <small>| ARIS Environment</small></div>
             </div>
-            <button class="btn-danger" onclick="endSession()">
-                <i class="fas fa-power-off"></i> End Session
-            </button>
+            <div class="top-meta">
+                <span class="pill"><i class="fas fa-layer-group"></i><span id="pType">Solve</span></span>
+                <span class="pill mono"><i class="fas fa-stopwatch"></i><span id="sessTimer">00:00</span></span>
+                <button class="btn-end" onclick="endSession()"><i class="fas fa-power-off"></i> End Session</button>
+            </div>
         </div>
 
         <div class="ss-workspace">
-            
-            <!-- LEFT: PROBLEM DESCRIPTION -->
-            <div class="ss-pane ss-left-pane">
-                <div class="ss-pane-header">
-                    <i class="fas fa-file-alt"></i> problem_statement.md
-                </div>
+            <!-- LEFT -->
+            <div class="ss-pane ss-left-pane glass-p">
+                <div class="pane-head"><i class="fas fa-file-alt"></i> problem_statement.md</div>
                 <div class="ss-problem-content">
                     <div class="ss-q-title" id="qTitle">Problem Title</div>
                     <div class="ss-q-badges">
                         <span class="ss-badge" id="qDiff">Difficulty</span>
+                        <span class="ss-badge badge-type" id="qType">Solve</span>
                         <span class="ss-badge badge-coin"><i class="fas fa-coins"></i> <span id="qCoins">0</span> Coins</span>
                     </div>
                     <div class="ss-q-desc" id="qDesc">Loading description...</div>
                 </div>
             </div>
-            
-            <!-- RIGHT: IDE AND TERMINAL -->
-            <div class="ss-pane ss-right-pane">
-                <div class="ss-pane-header" id="fileTabName">
-                    <i class="fas fa-laptop-code"></i> solution.py
+
+            <!-- RIGHT -->
+            <div class="ss-pane ss-right-pane glass-p">
+                <div class="pane-head">
+                    <span id="fileTabName"><i class="fas fa-laptop-code"></i> solution.py</span>
+                    <span class="spacer"></span>
+                    <div class="ed-tools">
+                        <button class="tool-btn" onclick="changeFont(-1)" title="Smaller font"><i class="fas fa-minus"></i></button>
+                        <span class="font-size-lbl" id="fontLbl">15px</span>
+                        <button class="tool-btn" onclick="changeFont(1)" title="Larger font"><i class="fas fa-plus"></i></button>
+                        <button class="tool-btn wide" onclick="copyCode()" title="Copy code"><i class="far fa-copy"></i> Copy</button>
+                        <button class="tool-btn wide" onclick="resetCode()" title="Reset to starter code"><i class="fas fa-rotate-left"></i> Reset</button>
+                    </div>
                 </div>
-                
+
                 <div id="editor"></div>
-                
+
+                <div class="status-bar">
+                    <span id="cursorPos">Ln 1, Col 1</span>
+                    <span id="langLbl">Python</span>
+                    <span>Spaces: 4</span>
+                    <span class="sp"></span>
+                    <span id="saveState"><span class="dot"></span>Autosaved</span>
+                    <span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> Run</span>
+                </div>
+
                 <div class="ss-terminal-pane">
-                    <div class="ss-terminal-header">
-                        <span><i class="fas fa-terminal"></i> Console Output</span>
-                        <button class="btn-run" id="checkBtn" onclick="checkCode()">
-                            <i class="fas fa-play"></i> Run Code
-                        </button>
+                    <div class="term-head">
+                        <button class="term-tab active" id="tabOut" onclick="switchTerm('out')"><i class="fas fa-terminal"></i> Console</button>
+                        <button class="term-tab" id="tabNote" onclick="switchTerm('note')"><i class="far fa-note-sticky"></i> Scratchpad</button>
+                        <span class="sp"></span>
+                        <button class="btn-ghost" onclick="clearConsole()">Clear</button>
+                        <button class="btn-run" id="checkBtn" onclick="checkCode()"><i class="fas fa-play"></i> Run Code</button>
                     </div>
                     <div class="ss-terminal-content" id="aiFeedback">
-                        <span class="t-info">> ARIS Terminal Ready. Waiting for execution...</span>
+                        <span class="t-info">&gt; ARIS Terminal Ready. Waiting for execution...</span>
                     </div>
+                    <textarea id="scratchpad" placeholder="Jot down your approach, edge cases, complexity notes…" spellcheck="false"></textarea>
                 </div>
             </div>
-            
         </div>
     </div>
-
 </div>
 
 <!-- SCRIPTS -->
@@ -313,28 +390,98 @@
         return cookieValue;
     }
     const csrftoken = getCookie('csrftoken');
+    const $ = (id) => document.getElementById(id);
 
     // --- 2. IDE Configuration ---
     const editor = ace.edit("editor");
     editor.setTheme("ace/theme/dracula");
     editor.session.setMode("ace/mode/python");
+    let fontPx = parseInt(localStorage.getItem('ss_font') || '15', 10);
     editor.setOptions({
-        fontSize: "16px",
+        fontSize: fontPx + "px",
         showPrintMargin: false,
         cursorStyle: "smooth",
-        fontFamily: "'Fira Code', 'Consolas', monospace",
+        fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
         wrap: true,
         tabSize: 4,
         useSoftTabs: true
     });
+    $('fontLbl').textContent = fontPx + 'px';
+    editor.commands.addCommand({ name: 'runCode', bindKey: { win: 'Ctrl-Enter', mac: 'Command-Enter' }, exec: () => checkCode() });
+
+    function changeFont(d) {
+        fontPx = Math.min(24, Math.max(11, fontPx + d));
+        editor.setFontSize(fontPx + 'px');
+        $('fontLbl').textContent = fontPx + 'px';
+        localStorage.setItem('ss_font', fontPx);
+    }
+    function copyCode() {
+        navigator.clipboard.writeText(editor.getValue()).then(() => {
+            const s = $('saveState'); s.innerHTML = '<span class="dot"></span>Copied to clipboard';
+            setTimeout(() => s.innerHTML = '<span class="dot"></span>Autosaved', 1500);
+        });
+    }
+    function resetCode() {
+        const base = localStorage.getItem('ss_base_code');
+        if (base !== null && confirm('Reset editor to the starter code? Your changes will be lost.')) editor.setValue(base, -1);
+    }
+    function clearConsole() { $('aiFeedback').innerHTML = '<span class="t-info">&gt; Console cleared.</span>'; }
+    function switchTerm(which) {
+        const out = which === 'out';
+        $('aiFeedback').style.display = out ? 'block' : 'none';
+        $('scratchpad').style.display = out ? 'none' : 'block';
+        $('tabOut').classList.toggle('active', out);
+        $('tabNote').classList.toggle('active', !out);
+    }
+    $('scratchpad').addEventListener('input', e => localStorage.setItem('ss_notes', e.target.value));
+
+    editor.selection.on('changeCursor', () => {
+        const p = editor.getCursorPosition();
+        $('cursorPos').textContent = 'Ln ' + (p.row + 1) + ', Col ' + (p.column + 1);
+    });
+
+    // --- Setup form interactions ---
+    const TYPE_LABELS = { solve: 'Solve from scratch', debug: 'Debug the code', fill: 'Fill in the blanks', optimize: 'Optimize it' };
+    const COINS = { Easy: 10, Medium: 30, Hard: 100 };
+    let challengeType = 'solve';
+
+    function updateBrief() {
+        const cs = $('courseSelect'), ls = $('langSelect');
+        const course = cs.value ? cs.options[cs.selectedIndex].text : '—';
+        const lang = ls.value ? ls.options[ls.selectedIndex].text : '—';
+        const topic = $('topicInput').value.trim();
+        const diff = $('diffSelect').value;
+        $('bType').textContent = TYPE_LABELS[challengeType];
+        $('bCourse').textContent = course;
+        $('bLang').textContent = lang;
+        $('bTopic').textContent = topic || '—';
+        $('bDiff').textContent = diff;
+        $('bCoins').textContent = COINS[diff];
+        const done = [cs.value, ls.value, topic].filter(Boolean).length;
+        $('briefProgress').style.width = (done / 3 * 100) + '%';
+        $('generateBtn').disabled = done < 3;
+    }
+    document.querySelectorAll('#typeList .type-opt').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('#typeList .type-opt').forEach(x => x.classList.remove('active'));
+        b.classList.add('active'); challengeType = b.dataset.v; updateBrief();
+    }));
+    document.querySelectorAll('#diffSeg button').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('#diffSeg button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active'); $('diffSelect').value = b.dataset.v; updateBrief();
+    }));
+    document.querySelectorAll('#topicChips .chip-btn').forEach(b => b.addEventListener('click', () => {
+        $('topicInput').value = b.textContent; updateBrief();
+    }));
+    ['courseSelect', 'langSelect'].forEach(id => $(id).addEventListener('change', updateBrief));
+    $('topicInput').addEventListener('input', updateBrief);
 
     // --- 3. Language Filtering ---
     const courseLangMap = JSON.parse('{{ course_language_map_json|escapejs }}');
     function updateLanguages() {
-        const courseId = document.getElementById('courseSelect').value;
-        const langSelect = document.getElementById('langSelect');
+        const courseId = $('courseSelect').value;
+        const langSelect = $('langSelect');
         langSelect.innerHTML = '<option value="" disabled selected hidden>Select Language</option>';
         if (courseId && courseLangMap[courseId]) {
             const langs = courseLangMap[courseId];
@@ -342,97 +489,110 @@
                 const opt = document.createElement('option');
                 opt.value = lang.toLowerCase();
                 let display = lang;
-                if(lang.toLowerCase() === 'cpp') display = "C++";
-                else if(lang.toLowerCase() === 'python') display = "Python";
-                else if(lang.toLowerCase() === 'java') display = "Java";
-                else if(lang.toLowerCase() === 'javascript') display = "JavaScript";
+                if (lang.toLowerCase() === 'cpp') display = "C++";
+                else if (lang.toLowerCase() === 'python') display = "Python";
+                else if (lang.toLowerCase() === 'java') display = "Java";
+                else if (lang.toLowerCase() === 'javascript') display = "JavaScript";
                 opt.textContent = display;
                 langSelect.appendChild(opt);
             });
-            if(langs.length === 1) langSelect.value = langs[0].toLowerCase();
+            if (langs.length === 1) langSelect.value = langs[0].toLowerCase();
         }
+        updateBrief();
     }
 
     // --- 4. State Persistence (localStorage) ---
     let currentProblemId = null;
+    let sessionTimerId = null;
 
-    // Autosave Code when typing
-    editor.session.on('change', function() {
-        if (currentProblemId) {
-            localStorage.setItem('ss_saved_code', editor.getValue());
-        }
+    let saveTimeout = null;
+    editor.session.on('change', function () {
+        if (!currentProblemId) return;
+        localStorage.setItem('ss_saved_code', editor.getValue());
+        $('saveState').innerHTML = '<span class="dot busy"></span>Saving…';
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => $('saveState').innerHTML = '<span class="dot"></span>Autosaved', 600);
     });
 
-    // Load State on Page Load
-    window.onload = function() {
+    function startSessionTimer() {
+        let start = parseInt(localStorage.getItem('ss_started') || '0', 10);
+        if (!start) { start = Date.now(); localStorage.setItem('ss_started', start); }
+        const tick = () => {
+            const s = Math.floor((Date.now() - start) / 1000);
+            $('sessTimer').textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+        };
+        tick(); clearInterval(sessionTimerId); sessionTimerId = setInterval(tick, 1000);
+    }
+
+    window.onload = function () {
+        updateBrief();
         const savedProblemId = localStorage.getItem('ss_problem_id');
         if (savedProblemId) {
-            // Restore Session
             currentProblemId = savedProblemId;
-            document.getElementById('qTitle').innerText = localStorage.getItem('ss_title');
-            
+            $('qTitle').innerText = localStorage.getItem('ss_title');
+
             const diff = localStorage.getItem('ss_diff');
-            const badge = document.getElementById('qDiff');
+            const badge = $('qDiff');
             badge.innerText = diff;
             badge.className = 'ss-badge';
-            if(diff === 'Easy') badge.classList.add('badge-easy');
-            if(diff === 'Medium') badge.classList.add('badge-medium');
-            if(diff === 'Hard') badge.classList.add('badge-hard');
-            
-            document.getElementById('qCoins').innerText = localStorage.getItem('ss_coins');
-            document.getElementById('qDesc').innerHTML = localStorage.getItem('ss_desc');
-            
+            if (diff === 'Easy') badge.classList.add('badge-easy');
+            if (diff === 'Medium') badge.classList.add('badge-medium');
+            if (diff === 'Hard') badge.classList.add('badge-hard');
+
+            const t = localStorage.getItem('ss_type') || 'solve';
+            $('qType').innerText = TYPE_LABELS[t] || 'Solve';
+            $('pType').innerText = TYPE_LABELS[t] || 'Solve';
+
+            $('qCoins').innerText = localStorage.getItem('ss_coins');
+            $('qDesc').innerHTML = localStorage.getItem('ss_desc');
+
             const lang = localStorage.getItem('ss_lang');
             let mode = lang === 'cpp' ? 'c_cpp' : lang;
             editor.session.setMode("ace/mode/" + mode);
-            
-            let ext = ".txt";
-            if(lang === 'python') ext = ".py";
-            if(lang === 'cpp') ext = ".cpp";
-            if(lang === 'java') ext = ".java";
-            if(lang === 'javascript') ext = ".js";
-            document.getElementById('fileTabName').innerHTML = `<i class="fas fa-laptop-code"></i> solution${ext}`;
-            
-            // Restore Code
+
+            let ext = ".txt", label = lang;
+            if (lang === 'python') { ext = ".py"; label = 'Python'; }
+            if (lang === 'cpp') { ext = ".cpp"; label = 'C++'; }
+            if (lang === 'java') { ext = ".java"; label = 'Java'; }
+            if (lang === 'javascript') { ext = ".js"; label = 'JavaScript'; }
+            $('fileTabName').innerHTML = `<i class="fas fa-laptop-code"></i> solution${ext}`;
+            $('langLbl').textContent = label;
+
             const savedCode = localStorage.getItem('ss_saved_code');
-            if(savedCode) {
-                editor.setValue(savedCode, -1);
-            }
-            
-            // Show Workspace
-            document.getElementById('setup-view').style.display = 'none';
-            document.getElementById('workspace-view').style.display = 'flex';
+            if (savedCode) editor.setValue(savedCode, -1);
+            $('scratchpad').value = localStorage.getItem('ss_notes') || '';
+
+            $('setup-view').style.display = 'none';
+            $('workspace-view').style.display = 'flex';
+            editor.resize();
+            startSessionTimer();
         }
     };
+    window.addEventListener('resize', () => editor.resize());
 
     function endSession() {
-        if(confirm("End current session? Unsaved progress will be lost!")) {
-            localStorage.removeItem('ss_problem_id');
-            localStorage.removeItem('ss_title');
-            localStorage.removeItem('ss_diff');
-            localStorage.removeItem('ss_coins');
-            localStorage.removeItem('ss_desc');
-            localStorage.removeItem('ss_lang');
-            localStorage.removeItem('ss_saved_code');
-            
-            document.getElementById('workspace-view').style.display = 'none';
-            document.getElementById('setup-view').style.display = 'flex';
+        if (confirm("End current session? Unsaved progress will be lost!")) {
+            ['ss_problem_id', 'ss_title', 'ss_diff', 'ss_coins', 'ss_desc', 'ss_lang', 'ss_saved_code', 'ss_base_code', 'ss_type', 'ss_started', 'ss_notes']
+                .forEach(k => localStorage.removeItem(k));
+            clearInterval(sessionTimerId);
+            $('workspace-view').style.display = 'none';
+            $('setup-view').style.display = 'block';
             currentProblemId = null;
         }
     }
 
     // --- 5. Generate Challenge ---
     async function startChallenge() {
-        const courseId = document.getElementById('courseSelect').value;
-        const lang = document.getElementById('langSelect').value;
-        const topic = document.getElementById('topicInput').value.trim();
-        const diff = document.getElementById('diffSelect').value;
+        const courseId = $('courseSelect').value;
+        const lang = $('langSelect').value;
+        const topic = $('topicInput').value.trim();
+        const diff = $('diffSelect').value;
 
-        if(!courseId) { alert("Please select a course!"); return; }
-        if(!lang) { alert("Please select a language!"); return; }
-        if(!topic) { alert("Please type a topic!"); return; }
+        if (!courseId) { alert("Please select a course!"); return; }
+        if (!lang) { alert("Please select a language!"); return; }
+        if (!topic) { alert("Please type a topic!"); return; }
 
-        const genBtn = document.getElementById('generateBtn');
+        const genBtn = $('generateBtn');
         genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing...';
         genBtn.disabled = true;
 
@@ -440,28 +600,28 @@
             const response = await fetch("{% url 'generate_challenge' %}", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
-                body: JSON.stringify({ course_id: courseId, language: lang, topic: topic, difficulty: diff })
+                body: JSON.stringify({ course_id: courseId, language: lang, topic: topic, difficulty: diff, challenge_type: challengeType })
             });
 
             const data = await response.json();
 
             if (data.status === 'success') {
-                currentProblemId = data.problem_id; 
-                
-                // Save to localStorage
+                currentProblemId = data.problem_id;
+
                 localStorage.setItem('ss_problem_id', currentProblemId);
                 localStorage.setItem('ss_title', data.title);
                 localStorage.setItem('ss_diff', data.difficulty);
                 localStorage.setItem('ss_coins', data.base_coins);
                 localStorage.setItem('ss_lang', lang);
+                localStorage.setItem('ss_type', challengeType);
                 localStorage.setItem('ss_saved_code', data.base_code);
-                
-                // Parse markdown description and save HTML to storage
+                localStorage.setItem('ss_base_code', data.base_code);
+                localStorage.setItem('ss_started', Date.now());
+                localStorage.removeItem('ss_notes');
+
                 const parsedHtml = marked.parse(data.description);
                 localStorage.setItem('ss_desc', parsedHtml);
-                
-                // Reload page to automatically trigger the window.onload restoration logic
-                // This ensures a clean transition and state setup
+
                 window.location.reload();
             } else {
                 alert("Error: " + data.message);
@@ -480,8 +640,9 @@
         if (!currentProblemId) return;
 
         const code = editor.getValue();
-        const checkBtn = document.getElementById('checkBtn');
-        const feedbackBox = document.getElementById('aiFeedback');
+        const checkBtn = $('checkBtn');
+        const feedbackBox = $('aiFeedback');
+        switchTerm('out');
 
         checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
         checkBtn.disabled = true;
@@ -497,7 +658,7 @@
             const data = await response.json();
 
             if (data.status === 'success') {
-                if(data.is_correct) {
+                if (data.is_correct) {
                     feedbackBox.innerHTML = `
                         <div class="t-success">> EXECUTION SUCCESSFUL - All tests passed!</div>
                         <div class="t-info">> STATUS: PERFECT LOGIC MATCH</div>
