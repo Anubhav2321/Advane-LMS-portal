@@ -3,304 +3,187 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-    /* --- GLOBAL THEME --- */
-    :root {
-        --bg-dark: #0a0a0f;
-        --card-bg: #13131a;
-        --border-color: #2a2a35;
-        --neon-purple: #bc13fe; /* Primary accent for Library */
-        --neon-blue: #00f3ff;
-        --text-main: #e0e0e0;
-        --glass: rgba(19, 19, 26, 0.95);
-    }
+    .lb { --bg:#07090e; --panel:rgba(255,255,255,0.035); --panel2:rgba(255,255,255,0.06); --border:rgba(255,255,255,0.08);
+          --text:#e8ecf4; --muted:#8b93a7; --cyan:#22d3ee; --blue:#3b82f6; --purple:#a855f7; --green:#34d399; --amber:#fbbf24; --red:#f43f5e;
+          font-family:'Inter',sans-serif; color:var(--text); max-width:1320px; margin:0 auto; padding:36px 32px 60px; position:relative; }
+    .lb *, .lb *::before, .lb *::after { box-sizing:border-box; }
+    .lb::before { content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+        background:radial-gradient(700px 360px at 8% 0%, rgba(59,130,246,.14), transparent 65%), radial-gradient(600px 360px at 95% 20%, rgba(168,85,247,.11), transparent 65%); }
+    .lb .glass { background:var(--panel); border:1px solid var(--border); border-radius:20px; backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+        box-shadow:0 10px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.07); }
 
-    body {
-        font-family: 'Outfit', sans-serif;
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-    }
+    .lb-hero { padding:34px 40px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; margin-bottom:24px; }
+    .lb-eyebrow { color:var(--cyan); font-size:.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
+    .lb-hero h1 { margin:0 0 8px; font-size:2.1rem; font-weight:800; letter-spacing:-.5px; color:#fff; }
+    .lb-hero p { margin:0; color:var(--muted); max-width:520px; line-height:1.6; }
+    .lb-stats { display:grid; grid-template-columns:repeat(3, minmax(110px,1fr)); gap:12px; }
+    .lb-stat { padding:16px 20px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--border); }
+    .lb-stat b { display:block; font:700 1.5rem 'JetBrains Mono',monospace; color:#fff; }
+    .lb-stat small { color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:1px; }
 
-    .container-fluid {
-        padding: 40px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
+    .lb-toolbar { display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:24px; }
+    .lb-cats { display:flex; gap:8px; flex-wrap:wrap; }
+    .lb-cat { padding:9px 18px; border-radius:99px; border:1px solid var(--border); background:var(--panel); color:var(--muted); font:600 .82rem 'Inter',sans-serif; cursor:pointer; transition:.2s; }
+    .lb-cat:hover { color:#fff; }
+    .lb-cat.active { color:#fff; border-color:transparent; background:linear-gradient(135deg,var(--blue),var(--purple)); box-shadow:0 6px 18px rgba(99,102,241,.35); }
+    .lb-controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .lb-search { position:relative; }
+    .lb-search i { position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem; }
+    .lb-input { width:280px; padding:11px 16px 11px 40px; border-radius:12px; outline:none; background:var(--panel); border:1px solid var(--border); color:var(--text); font:500 .88rem 'Inter',sans-serif; transition:.2s; }
+    .lb-input:focus { border-color:rgba(59,130,246,.6); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    .lb-view { display:inline-flex; padding:4px; gap:4px; border-radius:12px; background:var(--panel); border:1px solid var(--border); }
+    .lb-view button { width:36px; height:34px; border:none; border-radius:8px; background:transparent; color:var(--muted); cursor:pointer; transition:.2s; }
+    .lb-view button.active { background:rgba(255,255,255,.1); color:#fff; }
 
-    /* --- HEADER SECTION --- */
-    .header-section {
-        background: linear-gradient(90deg, #13131a 0%, #1a1a24 100%);
-        border: 1px solid var(--border-color);
-        border-left: 5px solid var(--neon-purple);
-        border-radius: 15px;
-        padding: 30px 40px;
-        margin-bottom: 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        animation: fadeInDown 0.8s ease-out;
-    }
+    .lb-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:20px; }
+    .lb-grid.list { grid-template-columns:1fr; gap:12px; }
 
-    @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    .doc { padding:24px; display:flex; flex-direction:column; gap:16px; transition:border-color .25s, transform .25s, box-shadow .25s; }
+    .doc:hover { border-color:rgba(59,130,246,.5); transform:translateY(-3px); box-shadow:0 16px 44px rgba(0,0,0,.5); }
+    .doc-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+    .doc-ico { width:48px; height:48px; border-radius:14px; display:grid; place-items:center; font-size:1.3rem; }
+    .doc-ico.pdf { color:#fb7185; background:rgba(244,63,94,.1); border:1px solid rgba(244,63,94,.28); }
+    .doc-ico.word { color:#60a5fa; background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.28); }
+    .doc-ico.other { color:var(--cyan); background:rgba(34,211,238,.1); border:1px solid rgba(34,211,238,.28); }
+    .doc-tag { padding:5px 12px; border-radius:99px; font-size:.68rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--cyan); background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.3); }
+    .doc-name { margin:0; font-size:1.08rem; font-weight:700; color:#fff; line-height:1.4; }
+    .doc-meta { display:flex; gap:14px; color:var(--muted); font-size:.78rem; flex-wrap:wrap; }
+    .doc-meta span { display:flex; align-items:center; gap:6px; }
+    .doc-actions { display:flex; gap:10px; margin-top:auto; }
+    .btn-dl { flex:1; display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; border-radius:12px; text-decoration:none; color:#fff; font:700 .85rem 'Inter',sans-serif;
+        background:linear-gradient(135deg,var(--blue),var(--purple)); box-shadow:0 8px 22px rgba(99,102,241,.3); transition:filter .2s; }
+    .btn-dl:hover { filter:brightness(1.12); color:#fff; text-decoration:none; }
+    .btn-view { padding:12px 16px; border-radius:12px; text-decoration:none; color:var(--text); background:var(--panel2); border:1px solid var(--border); font:600 .85rem 'Inter',sans-serif; transition:.2s; }
+    .btn-view:hover { background:rgba(255,255,255,.12); color:#fff; text-decoration:none; }
 
-    .title-area h2 {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2rem;
-        margin: 0 0 5px 0;
-        color: #fff;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        display: flex; align-items: center; gap: 15px;
-    }
-    .title-area h2 i { color: var(--neon-purple); text-shadow: 0 0 15px var(--neon-purple); }
-    .title-area p { color: #888; font-size: 0.95rem; margin: 0; }
+    .lb-grid.list .doc { flex-direction:row; align-items:center; padding:16px 22px; gap:20px; }
+    .lb-grid.list .doc-top { gap:16px; align-items:center; }
+    .lb-grid.list .doc-name { flex:1; }
+    .lb-grid.list .doc-actions { margin-top:0; }
+    .lb-grid.list .btn-dl { flex:none; padding:11px 22px; }
 
-    /* --- CONTROLS (Search & Filter) --- */
-    .controls-wrapper {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
+    .lb-empty { text-align:center; padding:70px 20px; }
+    .lb-empty i { font-size:2.4rem; color:#3a4054; margin-bottom:16px; }
+    .lb-empty div { color:var(--muted); font-weight:600; }
+    .lb-foot { margin-top:30px; text-align:center; color:#5d6479; font-size:.78rem; }
+    .lb .hidden { display:none !important; }
 
-    .custom-select {
-        background: #0a0a0f;
-        border: 1px solid var(--border-color);
-        color: #aaa;
-        padding: 10px 20px;
-        border-radius: 50px;
-        font-family: 'Outfit', sans-serif;
-        outline: none;
-        cursor: pointer;
-        transition: 0.3s;
+    @media (max-width:900px) {
+        .lb { padding:20px 14px 40px; }
+        .lb-hero { padding:24px; }
+        .lb-stats { width:100%; }
+        .lb-input { width:100%; }
+        .lb-controls, .lb-search { width:100%; }
+        .lb-grid.list .doc { flex-direction:column; align-items:flex-start; }
     }
-    .custom-select:hover, .custom-select:focus {
-        border-color: var(--neon-purple);
-        color: #fff;
-        box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
-    }
-
-    .search-box {
-        position: relative;
-        width: 300px;
-    }
-    .search-input {
-        width: 100%;
-        padding: 10px 20px;
-        padding-left: 40px;
-        background: #0a0a0f;
-        border: 1px solid var(--border-color);
-        color: #fff;
-        border-radius: 50px;
-        font-family: 'Outfit', sans-serif;
-        outline: none;
-        transition: 0.3s;
-    }
-    .search-input:focus {
-        border-color: var(--neon-purple);
-        box-shadow: 0 0 15px rgba(188, 19, 254, 0.2);
-    }
-    .search-icon {
-        position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-        color: #666; font-size: 0.9rem;
-    }
-
-    /* --- DOCUMENT LIST (Cards Row Style) --- */
-    .doc-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .doc-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 20px 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        animation: fadeInUp 0.5s ease-out forwards;
-        opacity: 0;
-    }
-
-    /* Stagger Animation */
-    .doc-card:nth-child(1) { animation-delay: 0.1s; }
-    .doc-card:nth-child(2) { animation-delay: 0.2s; }
-    .doc-card:nth-child(3) { animation-delay: 0.3s; }
-    .doc-card:nth-child(4) { animation-delay: 0.4s; }
-    .doc-card:nth-child(5) { animation-delay: 0.5s; }
-
-    @keyframes fadeInUp {
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .doc-card:hover {
-        border-color: var(--neon-purple);
-        background: rgba(19, 19, 26, 0.8);
-        box-shadow: 0 0 20px rgba(188, 19, 254, 0.1);
-        transform: translateX(5px);
-    }
-
-    /* Left Accent Line on Hover */
-    .doc-card::before {
-        content: ''; position: absolute; top: 0; left: 0; bottom: 0;
-        width: 3px; background: var(--neon-purple);
-        opacity: 0; transition: 0.3s;
-    }
-    .doc-card:hover::before { opacity: 1; }
-
-    /* Icon Box */
-    .file-icon {
-        width: 50px; height: 50px;
-        background: rgba(188, 19, 254, 0.1);
-        border: 1px solid rgba(188, 19, 254, 0.3);
-        border-radius: 10px;
-        display: flex; justify-content: center; align-items: center;
-        font-size: 1.5rem; color: var(--neon-purple);
-        margin-right: 20px;
-        box-shadow: 0 0 10px rgba(188, 19, 254, 0.1);
-    }
-
-    .doc-info { flex: 1; }
-    .doc-name {
-        font-size: 1.1rem; font-weight: 700; color: #fff;
-        margin-bottom: 4px; display: block;
-    }
-    .doc-meta { font-size: 0.85rem; color: #888; }
-
-    .badge-category {
-        background: rgba(0, 243, 255, 0.1);
-        color: var(--neon-blue);
-        border: 1px solid rgba(0, 243, 255, 0.3);
-        padding: 5px 15px; border-radius: 20px;
-        font-size: 0.75rem; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 1px;
-        margin-right: 30px;
-    }
-
-    .upload-date {
-        color: #666; font-size: 0.9rem; margin-right: 30px;
-        display: flex; align-items: center; gap: 8px;
-    }
-
-    .btn-download {
-        background: transparent;
-        color: #fff;
-        border: 1px solid var(--neon-purple);
-        padding: 8px 25px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: 0.3s;
-        display: flex; align-items: center; gap: 8px;
-    }
-    .btn-download:hover {
-        background: var(--neon-purple);
-        color: #000;
-        box-shadow: 0 0 15px rgba(188, 19, 254, 0.4);
-    }
-
-    /* --- EMPTY STATE --- */
-    .empty-state {
-        text-align: center; padding: 80px;
-        border: 1px dashed var(--border-color);
-        border-radius: 15px; margin-top: 20px;
-        background: rgba(19, 19, 26, 0.5);
-    }
-    .empty-icon { font-size: 3rem; color: #333; margin-bottom: 20px; }
-
-    /* Responsive */
-    @media (max-width: 992px) {
-        .doc-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-        .doc-info { margin-bottom: 10px; }
-        .badge-category, .upload-date { margin-bottom: 10px; }
-        .btn-download { width: 100%; justify-content: center; }
-    }
-
 </style>
 
-<div class="container-fluid">
+<div class="lb">
 
-    <div class="header-section">
-        <div class="title-area">
-            <h2><i class="fas fa-microchip"></i> Digital Archive</h2>
-            <p>Access encrypted knowledge modules, notes, and references.</p>
+    <section class="glass lb-hero">
+        <div>
+            <div class="lb-eyebrow">Student Panel</div>
+            <h1>Digital Library</h1>
+            <p>Notes, references and study material from your enrolled courses, ready to view or download.</p>
         </div>
+        <div class="lb-stats">
+            <div class="lb-stat"><b id="stDocs">0</b><small>Documents</small></div>
+            <div class="lb-stat"><b id="stCats">0</b><small>Categories</small></div>
+            <div class="lb-stat"><b id="stPdf">0</b><small>PDF Files</small></div>
+        </div>
+    </section>
 
-        <div class="controls-wrapper">
-            <select class="custom-select">
-                <option>All Categories</option>
-                <option>System Notes</option>
-                <option>Blueprints</option>
-                <option>Classified</option>
-            </select>
-
-            <div class="search-box">
-                <i class="fas fa-search search-icon"></i>
-                <form method="GET">
-                    <input type="text" name="search" class="search-input" placeholder="Search database..." value="{{ request.GET.search|default:'' }}">
-                </form>
+    <div class="lb-toolbar">
+        <div class="lb-cats" id="catBar"></div>
+        <div class="lb-controls">
+            <form method="GET" class="lb-search" id="searchForm">
+                <i class="fas fa-search"></i>
+                <input type="search" name="search" id="searchInput" class="lb-input" placeholder="Search documents…" value="{{ request.GET.search|default:'' }}" aria-label="Search documents">
+            </form>
+            <div class="lb-view">
+                <button type="button" id="viewGrid" class="active" title="Grid view"><i class="fas fa-table-cells-large"></i></button>
+                <button type="button" id="viewList" title="List view"><i class="fas fa-list"></i></button>
             </div>
         </div>
     </div>
 
-    <div class="doc-list">
+    {% if documents %}
+    <div class="lb-grid" id="docGrid">
         {% for doc in documents %}
-        <div class="doc-card">
-            
-            <div style="display: flex; align-items: center;">
-                <div class="file-icon">
-                    {% if "pdf" in doc.file.name %}
-                        <i class="fas fa-file-pdf"></i>
-                    {% elif "doc" in doc.file.name %}
-                        <i class="fas fa-file-word"></i>
-                    {% else %}
-                        <i class="fas fa-file-alt"></i>
-                    {% endif %}
-                </div>
-
-                <div class="doc-info">
-                    <span class="doc-name">{{ doc.title }}</span>
-                    <span class="doc-meta">FORMAT: PDF • SECURE</span>
-                </div>
+        <article class="glass doc" data-cat="{{ doc.category|default:'General' }}" data-title="{{ doc.title|lower }}" data-pdf="{% if 'pdf' in doc.file.name|lower %}1{% else %}0{% endif %}">
+            <div class="doc-top">
+                {% if 'pdf' in doc.file.name|lower %}
+                    <div class="doc-ico pdf"><i class="fas fa-file-pdf"></i></div>
+                {% elif 'doc' in doc.file.name|lower %}
+                    <div class="doc-ico word"><i class="fas fa-file-word"></i></div>
+                {% else %}
+                    <div class="doc-ico other"><i class="fas fa-file-alt"></i></div>
+                {% endif %}
+                <h3 class="doc-name">{{ doc.title }}</h3>
+                <span class="doc-tag">{{ doc.category|default:"General" }}</span>
             </div>
-
-            <span class="badge-category">{{ doc.category|default:"General" }}</span>
-
-            <div class="upload-date">
-                <i class="far fa-calendar-alt"></i> {{ doc.uploaded_at|date:"d M, Y" }}
+            <div class="doc-meta">
+                <span><i class="far fa-calendar-alt"></i> {{ doc.uploaded_at|date:"d M, Y" }}</span>
+                <span><i class="fas fa-lock"></i> Secure</span>
             </div>
-
-            <a href="{{ doc.file.url }}" download class="btn-download">
-                DOWNLOAD <i class="fas fa-download"></i>
-            </a>
-
-        </div>
-        {% empty %}
-            <div class="empty-state">
-                <i class="fas fa-box-open empty-icon"></i>
-                <h3 style="color: #666; margin-bottom: 10px;">Archive Empty</h3>
-                <p style="color: #444;">No documents found in the database.</p>
+            <div class="doc-actions">
+                <a href="{{ doc.file.url }}" target="_blank" class="btn-view"><i class="far fa-eye"></i> View</a>
+                <a href="{{ doc.file.url }}" download class="btn-dl"><i class="fas fa-download"></i> Download</a>
             </div>
+        </article>
         {% endfor %}
     </div>
+    <div class="glass lb-empty hidden" id="noMatch"><i class="fas fa-magnifying-glass"></i><div>No documents match your filters</div></div>
+    {% else %}
+    <div class="glass lb-empty"><i class="fas fa-box-open"></i><div>Library is empty — no documents found</div></div>
+    {% endif %}
 
-    <div style="margin-top: 30px; text-align: center; color: #555; font-size: 0.8rem;">
-        <i class="fas fa-shield-alt"></i> Secure Server Connection • End-to-End Encrypted
-    </div>
-
+    <div class="lb-foot"><i class="fas fa-shield-alt"></i> Secure server connection · End-to-end encrypted</div>
 </div>
+
+<script>
+(function () {
+    const cards = Array.from(document.querySelectorAll('#docGrid .doc'));
+    const grid = document.getElementById('docGrid');
+    if (!cards.length) return;
+
+    const cats = ['All'].concat([...new Set(cards.map(c => c.dataset.cat))].sort());
+    let activeCat = 'All';
+    const bar = document.getElementById('catBar');
+    cats.forEach(c => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'lb-cat' + (c === 'All' ? ' active' : ''); b.textContent = c;
+        b.onclick = () => { activeCat = c; bar.querySelectorAll('.lb-cat').forEach(x => x.classList.toggle('active', x === b)); apply(); };
+        bar.appendChild(b);
+    });
+
+    document.getElementById('stDocs').textContent = cards.length;
+    document.getElementById('stCats').textContent = cats.length - 1;
+    document.getElementById('stPdf').textContent = cards.filter(c => c.dataset.pdf === '1').length;
+
+    const input = document.getElementById('searchInput');
+    function apply() {
+        const q = input.value.trim().toLowerCase();
+        let n = 0;
+        cards.forEach(c => {
+            const ok = (activeCat === 'All' || c.dataset.cat === activeCat) && (!q || c.dataset.title.includes(q));
+            c.classList.toggle('hidden', !ok); if (ok) n++;
+        });
+        document.getElementById('noMatch').classList.toggle('hidden', n > 0);
+    }
+    input.addEventListener('input', apply);
+    document.getElementById('searchForm').addEventListener('submit', e => e.preventDefault());
+
+    const gBtn = document.getElementById('viewGrid'), lBtn = document.getElementById('viewList');
+    function setView(list) {
+        grid.classList.toggle('list', list); gBtn.classList.toggle('active', !list); lBtn.classList.toggle('active', list);
+        localStorage.setItem('lib_view', list ? 'list' : 'grid');
+    }
+    gBtn.onclick = () => setView(false); lBtn.onclick = () => setView(true);
+    setView(localStorage.getItem('lib_view') === 'list');
+    apply();
+})();
+</script>
 
 {% endblock %}
