@@ -44,6 +44,36 @@ class User(AbstractUser):
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip() or self.username
 
+    @property
+    def profile_pic_url(self):
+        """
+        Returns high-resolution, crystal-clear profile picture URL.
+        Checks uploaded profile image first, then linked Google SocialAccount picture.
+        """
+        try:
+            if hasattr(self, 'profile') and self.profile and self.profile.profile_pic:
+                name = self.profile.profile_pic.name
+                if name and name != 'profile_pics/default.png':
+                    return self.profile.profile_pic.url
+        except Exception:
+            pass
+
+        try:
+            from allauth.socialaccount.models import SocialAccount
+            social = SocialAccount.objects.filter(user=self, provider='google').first()
+            if social and social.extra_data:
+                pic = social.extra_data.get('picture')
+                if pic:
+                    for low_res in ['=s96-c', '=s50-c', '=s64-c', '=s100']:
+                        if low_res in pic:
+                            pic = pic.replace(low_res, '=s384-c')
+                            break
+                    return pic
+        except Exception:
+            pass
+
+        return None
+
 # 2. PROFILE MODEL
 
 class Profile(models.Model):
@@ -553,7 +583,14 @@ def fetch_google_profile_pic(request, user, **kwargs):
             if not user.profile.profile_pic:
                 picture_url = social_account.extra_data.get('picture')
                 if picture_url:
-                    response = requests.get(picture_url)
+                    high_res_url = picture_url
+                    for low_res in ['=s96-c', '=s50-c', '=s64-c']:
+                        if low_res in high_res_url:
+                            high_res_url = high_res_url.replace(low_res, '=s384-c')
+                            break
+                    response = requests.get(high_res_url)
+                    if response.status_code != 200:
+                        response = requests.get(picture_url)
                     if response.status_code == 200:
                         file_name = f"{user.username}_google_pic.jpg"
                         user.profile.profile_pic.save(file_name, ContentFile(response.content), save=True)
