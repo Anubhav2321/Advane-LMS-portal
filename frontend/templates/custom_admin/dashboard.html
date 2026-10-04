@@ -1216,11 +1216,11 @@
                             </div>
                         </div>
                         {% if doc.course %}
-                            <button class="quiz-btn" onclick="openQuizModal({{ doc.id }}, '{{ doc.title|escapejs }}', {{ doc.course.id }})">
+                            <button class="quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title }}" data-course-id="{{ doc.course.id }}" onclick="openQuizModal(this)">
                                 <i class="fas fa-magic"></i> AI Quiz
                             </button>
                         {% else %}
-                            <button class="quiz-btn" onclick="openQuizModal({{ doc.id }}, '{{ doc.title|escapejs }}', null)">
+                            <button class="quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title }}" onclick="openQuizModal(this)">
                                 <i class="fas fa-magic"></i> AI Quiz
                             </button>
                         {% endif %}
@@ -1544,6 +1544,12 @@
     let currentCourseId = null;
 
     async function openQuizModal(docId, title, courseId) {
+        if (docId && (docId instanceof HTMLElement || docId.dataset)) {
+            const btn = docId;
+            title = btn.dataset.title || btn.getAttribute('data-title') || '';
+            courseId = btn.dataset.courseId ? parseInt(btn.dataset.courseId) : null;
+            docId = btn.dataset.docId || btn.getAttribute('data-doc-id');
+        }
         console.log('openQuizModal called:', docId, title, courseId);
         const modal = document.getElementById('quizModal');
         const loader = document.getElementById('quizLoader');
