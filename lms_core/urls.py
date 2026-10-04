@@ -28,6 +28,9 @@ from students.views import (
     payment_page,
     process_payment,
     purchase_with_coins, # 🪙 NEW: Imported for Coin Payment
+    validate_coupon,
+    payment_receipt,
+    payment_history,
 
     # 👉 🚀 NEW: SYNTAX SINGULARITY (AI Coding Arena)
     syntax_singularity_view,
@@ -121,6 +124,9 @@ urlpatterns = [
     
     #  NEW: BUY COURSE WITH COINS URL 
     path('courses/payment/<int:course_id>/coin-purchase/', purchase_with_coins, name='purchase_with_coins'),
+    path('courses/payment/<int:course_id>/coupon/', validate_coupon, name='validate_coupon'),
+    path('payments/receipt/<str:txn_id>/', payment_receipt, name='payment_receipt'),
+    path('payments/history/', payment_history, name='payment_history'),
 
     # Watch Course
     path('courses/watch/<int:course_id>/', course_watch, name='course_watch'),

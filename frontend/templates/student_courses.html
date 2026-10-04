@@ -36,7 +36,11 @@
     .cs-search button:hover { background:var(--cs-cyan); color:#000; }
     .cs-chips { display:flex; gap:8px; flex-wrap:wrap; }
     .cs-chip { padding:9px 18px; border-radius:50px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03);
-        color:#a8a8bc; font-weight:600; font-size:.85rem; cursor:pointer; transition:.25s; font-family:inherit; }
+        color:#a8a8bc; font-weight:600; font-size:.85rem; cursor:pointer; transition:.25s; font-family:inherit; text-decoration:none; }
+    .cs-count { color:#6d6d82; font-size:.85rem; margin:-8px 4px 18px; }
+    .cs-owned { padding:11px 20px; border-radius:13px; text-decoration:none; font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:1px;
+        background:rgba(0,255,136,.12); border:1px solid rgba(0,255,136,.4); color:#00ff88; white-space:nowrap; transition:.3s; }
+    .cs-owned:hover { background:#00ff88; color:#00170c; }
     .cs-chip:hover { color:#fff; border-color:rgba(255,255,255,.25); }
     .cs-chip.active { background:rgba(0,243,255,.12); border-color:var(--cs-cyan); color:var(--cs-cyan); box-shadow:0 0 14px rgba(0,243,255,.15); }
     .cs-select { padding:10px 16px; border-radius:12px; background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; outline:none; cursor:pointer; }
@@ -103,37 +107,40 @@
             <p>Pay with Card, UPI, Net Banking, Wallets or LMS Coins.</p>
         </div>
         <div class="cs-wallet">
-            <div class="cs-wallet-box gold"><small>Your Coins</small><strong><i class="fas fa-coins"></i> {{ request.user.lms_coins|default:0 }}</strong></div>
+            <div class="cs-wallet-box gold"><small>Your Coins</small><strong><i class="fas fa-coins"></i> {{ user_coins }}</strong></div>
             <div class="cs-wallet-box green"><small>Secure Checkout</small><strong><i class="fas fa-shield-alt"></i> 256-bit</strong></div>
         </div>
     </div>
 
     <div class="cs-glass cs-toolbar">
-        <form method="GET" class="cs-search">
+        <form method="GET" class="cs-search" id="cs-search-form">
             <input type="text" name="search" id="cs-search-input" placeholder="Search courses..." value="{{ search_query|default:'' }}">
+            <input type="hidden" name="filter" value="{{ active_filter }}">
+            <input type="hidden" name="sort" value="{{ active_sort }}">
             <button type="submit" title="Search"><i class="fas fa-search"></i></button>
         </form>
-        <div class="cs-chips" id="cs-chips">
-            <button type="button" class="cs-chip active" data-filter="all">All</button>
-            <button type="button" class="cs-chip" data-filter="paid">Paid</button>
-            <button type="button" class="cs-chip" data-filter="free">Free</button>
-            <button type="button" class="cs-chip" data-filter="coin"><i class="fas fa-coins"></i> Coin Unlock</button>
+        <div class="cs-chips">
+            <a class="cs-chip {% if active_filter == 'all' %}active{% endif %}" href="?filter=all&sort={{ active_sort }}&search={{ search_query|urlencode }}">All</a>
+            <a class="cs-chip {% if active_filter == 'paid' %}active{% endif %}" href="?filter=paid&sort={{ active_sort }}&search={{ search_query|urlencode }}">Paid</a>
+            <a class="cs-chip {% if active_filter == 'free' %}active{% endif %}" href="?filter=free&sort={{ active_sort }}&search={{ search_query|urlencode }}">Free</a>
+            <a class="cs-chip {% if active_filter == 'coin' %}active{% endif %}" href="?filter=coin&sort={{ active_sort }}&search={{ search_query|urlencode }}"><i class="fas fa-coins"></i> Coin Unlock</a>
         </div>
-        <select class="cs-select" id="cs-sort" title="Sort courses">
-            <option value="default">Sort: Featured</option>
-            <option value="low">Price: Low to High</option>
-            <option value="high">Price: High to Low</option>
-            <option value="az">Title: A–Z</option>
-        </select>
+        <form method="GET" id="cs-sort-form">
+            <input type="hidden" name="search" value="{{ search_query|default:'' }}">
+            <input type="hidden" name="filter" value="{{ active_filter }}">
+            <select class="cs-select" name="sort" title="Sort courses" onchange="this.form.submit()">
+                <option value="default" {% if active_sort == 'default' %}selected{% endif %}>Sort: Newest</option>
+                <option value="low" {% if active_sort == 'low' %}selected{% endif %}>Price: Low to High</option>
+                <option value="high" {% if active_sort == 'high' %}selected{% endif %}>Price: High to Low</option>
+                <option value="az" {% if active_sort == 'az' %}selected{% endif %}>Title: A–Z</option>
+            </select>
+        </form>
     </div>
+    <div class="cs-count">{{ total_results }} course{{ total_results|pluralize }} found</div>
 
     <div class="cs-grid" id="cs-grid">
         {% for course in courses %}
-        <div class="cs-glass cs-card"
-             data-title="{{ course.title|lower }}"
-             data-price="{{ course.price|default:0 }}"
-             data-free="{% if course.price > 0 %}0{% else %}1{% endif %}"
-             data-coin="{% if course.is_coin_purchasable %}1{% else %}0{% endif %}">
+        <div class="cs-glass cs-card">
             <div class="cs-thumb">
                 <span class="cs-badge">{{ course.difficulty_level }}</span>
                 {% if course.price > 0 %}{% if course.is_coin_purchasable %}<span class="cs-ribbon">COINS OK</span>{% endif %}{% else %}<span class="cs-ribbon free">FREE</span>{% endif %}
@@ -166,10 +173,14 @@
                             <div class="cs-coin" title="Can be purchased with LMS Coins"><i class="fas fa-coins"></i> {{ course.coin_price }} Coins</div>
                         {% endif %}
                     </div>
-                    <a href="{% url 'enroll_course' course.id %}" class="cs-buy">{% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i></a>
+                    {% if course.id in enrolled_ids %}
+                        <a href="{% url 'course_watch' course.id %}" class="cs-owned"><i class="fas fa-play"></i> Continue</a>
+                    {% else %}
+                        <a href="{% url 'enroll_course' course.id %}" class="cs-buy">{% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i></a>
+                    {% endif %}
                 </div>
 
-                {% if course.price > 0 %}
+                {% if course.price > 0 and course.id not in enrolled_ids %}
                 <div class="cs-accept">
                     <small>Pay with</small>
                     <span class="cs-pm"><img src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
@@ -192,57 +203,14 @@
             <a href="{% url 'all_courses' %}">View All Courses</a>
         </div>
         {% endfor %}
-        <div class="cs-empty hidden-empty" id="cs-filter-empty" style="display:none;">
-            <i class="fas fa-filter"></i>
-            <h3>No courses match this filter.</h3>
-        </div>
     </div>
 
     {% if courses.has_other_pages %}
     <div class="cs-pager">
-        {% if courses.has_previous %}<a href="?page={{ courses.previous_page_number }}">&laquo; Prev</a>{% endif %}
+        {% if courses.has_previous %}<a href="?page={{ courses.previous_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">&laquo; Prev</a>{% endif %}
         <span class="active">{{ courses.number }}</span>
-        {% if courses.has_next %}<a href="?page={{ courses.next_page_number }}">Next &raquo;</a>{% endif %}
+        {% if courses.has_next %}<a href="?page={{ courses.next_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">Next &raquo;</a>{% endif %}
     </div>
     {% endif %}
 </div>
-
-<script>
-(function () {
-    const grid = document.getElementById('cs-grid');
-    const cards = Array.from(grid.querySelectorAll('.cs-card'));
-    const chips = document.querySelectorAll('.cs-chip');
-    const sortSel = document.getElementById('cs-sort');
-    const emptyMsg = document.getElementById('cs-filter-empty');
-    let filter = 'all';
-
-    function apply() {
-        let visible = 0;
-        cards.forEach(c => {
-            const ok = filter === 'all'
-                || (filter === 'free' && c.dataset.free === '1')
-                || (filter === 'paid' && c.dataset.free === '0')
-                || (filter === 'coin' && c.dataset.coin === '1');
-            c.classList.toggle('hidden', !ok);
-            if (ok) visible++;
-        });
-        emptyMsg.style.display = (cards.length && !visible) ? 'block' : 'none';
-    }
-    function sortCards() {
-        const v = sortSel.value;
-        const sorted = cards.slice();
-        if (v === 'low') sorted.sort((a, b) => a.dataset.price - b.dataset.price);
-        if (v === 'high') sorted.sort((a, b) => b.dataset.price - a.dataset.price);
-        if (v === 'az') sorted.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
-        sorted.forEach(c => grid.insertBefore(c, emptyMsg));
-    }
-    chips.forEach(ch => ch.addEventListener('click', () => {
-        chips.forEach(x => x.classList.remove('active'));
-        ch.classList.add('active');
-        filter = ch.dataset.filter;
-        apply();
-    }));
-    sortSel.addEventListener('change', sortCards);
-})();
-</script>
 {% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .rc-page { font-family:'Outfit',sans-serif; max-width:640px; margin:30px auto; padding:0 16px; color:#e6e6ee; }
+    .rc-card { background:linear-gradient(145deg,rgba(24,24,36,.78),rgba(12,12,20,.92)); border:1px solid rgba(255,255,255,.08);
+        backdrop-filter:blur(24px); border-radius:24px; padding:34px; box-shadow:0 25px 60px rgba(0,0,0,.45); position:relative; overflow:hidden; }
+    .rc-check { width:84px; height:84px; border-radius:50%; background:#00ff88; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; box-shadow:0 0 40px rgba(0,255,136,.45); }
+    .rc-check.gold { background:#ffd700; box-shadow:0 0 40px rgba(255,215,0,.45); }
+    .rc-check i { color:#000; font-size:2.4rem; }
+    .rc-title { text-align:center; font-family:'Space Grotesk',sans-serif; font-size:1.6rem; color:#fff; margin:0; }
+    .rc-sub { text-align:center; color:#8a8aa0; margin:6px 0 26px; font-size:.9rem; }
+    .rc-row { display:flex; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px dashed rgba(255,255,255,.08); font-size:.93rem; }
+    .rc-row span:first-child { color:#8a8aa0; }
+    .rc-row span:last-child { color:#fff; font-weight:600; text-align:right; }
+    .rc-total { display:flex; justify-content:space-between; align-items:center; margin-top:18px; padding:16px 18px; border-radius:16px; background:rgba(0,255,136,.07); border:1px solid rgba(0,255,136,.25); }
+    .rc-total.gold { background:rgba(255,215,0,.07); border-color:rgba(255,215,0,.3); }
+    .rc-total strong { font-family:'Space Grotesk'; font-size:1.7rem; color:#00ff88; }
+    .rc-total.gold strong { color:#ffd700; }
+    .rc-actions { display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
+    .rc-btn { flex:1; min-width:150px; text-align:center; padding:14px; border-radius:14px; font-weight:700; text-decoration:none; transition:.25s; cursor:pointer; font-family:inherit; font-size:.9rem; border:none; }
+    .rc-btn.primary { background:linear-gradient(135deg,#00f3ff,#0088ff); color:#001018; }
+    .rc-btn.ghost { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:#ddd; }
+    .rc-btn:hover { transform:translateY(-2px); }
+    @media print { body * { visibility:hidden; } .rc-card, .rc-card * { visibility:visible; } .rc-card { position:absolute; left:0; top:0; width:100%; } .rc-actions { display:none; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rc-page">
+    <div class="rc-card">
+        <div class="rc-check {% if payment.method == 'coins' %}gold{% endif %}"><i class="fas fa-check"></i></div>
+        <h1 class="rc-title">{% if payment.method == 'coins' %}Course Unlocked!{% else %}Payment Successful{% endif %}</h1>
+        <p class="rc-sub">Receipt for your purchase on {{ payment.created_at|date:"d M Y, h:i A" }}</p>
+
+        <div class="rc-row"><span>Transaction ID</span><span>{{ payment.txn_id }}</span></div>
+        <div class="rc-row"><span>Course</span><span>{{ course.title|default:"(course removed)" }}</span></div>
+        <div class="rc-row"><span>Payment method</span><span>{{ payment.get_method_display }}{% if payment.instrument %} · {{ payment.instrument }}{% endif %}</span></div>
+        <div class="rc-row"><span>Status</span><span style="color:#00ff88;">{{ payment.get_status_display }}</span></div>
+        {% if payment.method != 'coins' %}
+        <div class="rc-row"><span>Course price</span><span>₹{{ payment.original_amount }}</span></div>
+        {% if payment.coupon %}<div class="rc-row"><span>Coupon ({{ payment.coupon.code }})</span><span style="color:#00ff88;">-₹{{ payment.discount_amount }}</span></div>{% endif %}
+        {% endif %}
+
+        {% if payment.method == 'coins' %}
+        <div class="rc-total gold"><span>Coins spent</span><strong><i class="fas fa-coins"></i> {{ payment.coins_spent }}</strong></div>
+        {% else %}
+        <div class="rc-total"><span>Total paid</span><strong>₹{{ payment.amount_paid }}</strong></div>
+        {% endif %}
+
+        <div class="rc-actions">
+            {% if course %}<a class="rc-btn primary" href="{% url 'course_watch' course.id %}"><i class="fas fa-play"></i> Start Learning</a>{% endif %}
+            <a class="rc-btn ghost" href="{% url 'payment_history' %}"><i class="fas fa-history"></i> Payment History</a>
+            <button class="rc-btn ghost" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

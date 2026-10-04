@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.urls import reverse
 from django.db.models import Q, Avg, Count, Sum, F
 from django.db.models.functions import TruncDate
 from django.views.decorators.csrf import csrf_exempt
@@ -488,26 +489,55 @@ def profile_view(request):
 @login_required
 def all_courses(request):
     """
-    Course Catalog with Search and Pagination.
+    Course Store: server-side search, filter (paid/free/coin), sort and pagination.
+    Also tells the template which courses the student already owns.
     """
-    query = request.GET.get('search')
-    courses_list = Course.objects.filter(is_published=True).order_by('-created_at')
-    
+    query = request.GET.get('search', '').strip()
+    flt = request.GET.get('filter', 'all')
+    sort = request.GET.get('sort', 'default')
+
+    courses_list = Course.objects.filter(is_published=True)
+
     if query:
         courses_list = courses_list.filter(
-            Q(title__icontains=query) | 
+            Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(difficulty_level__icontains=query)
         )
-        messages.info(request, f"Found {courses_list.count()} results for '{query}'")
 
-    paginator = Paginator(courses_list, 6) 
-    page_number = request.GET.get('page')
-    courses = paginator.get_page(page_number)
+    if flt == 'free':
+        courses_list = courses_list.filter(price__lte=0)
+    elif flt == 'paid':
+        courses_list = courses_list.filter(price__gt=0)
+    elif flt == 'coin':
+        courses_list = courses_list.filter(is_coin_purchasable=True, coin_price__gt=0)
+    else:
+        flt = 'all'
+
+    sort_map = {
+        'low': 'price',
+        'high': '-price',
+        'az': 'title',
+    }
+    courses_list = courses_list.order_by(sort_map.get(sort, '-created_at'))
+    if sort not in sort_map:
+        sort = 'default'
+
+    paginator = Paginator(courses_list, 6)
+    courses = paginator.get_page(request.GET.get('page'))
+
+    enrolled_ids = set(
+        Enrollment.objects.filter(student=request.user).values_list('course_id', flat=True)
+    )
 
     context = {
         'courses': courses,
-        'search_query': query
+        'search_query': query,
+        'active_filter': flt,
+        'active_sort': sort,
+        'enrolled_ids': enrolled_ids,
+        'total_results': paginator.count,
+        'user_coins': request.user.lms_coins,
     }
     return render(request, 'student_courses.html', context)
 
@@ -536,57 +566,292 @@ def enroll_course(request, course_id):
     return redirect('dashboard')
 
 
+# ---------------------------------------------------------------
+# PAYMENT SYSTEM (server-side validation, coupons, ledger, receipts)
+# ---------------------------------------------------------------
+from decimal import Decimal, ROUND_HALF_UP
+from django.db import transaction
+from django.views.decorators.http import require_POST
+from .models import Payment, Coupon
+
+ALLOWED_PROVIDERS = {
+    'card': {'visa', 'mastercard', 'amex', 'rupay', 'card'},
+    'upi': {'gpay', 'phonepe', 'paytm', 'bhim', 'upi'},
+    'wallet': {'paytm', 'amazon', 'phonepe', 'mobikwik'},
+    'qr': {'qr'},
+    'net': set(),
+}
+ALLOWED_BANKS = {
+    'State Bank of India', 'HDFC Bank', 'ICICI Bank', 'Axis Bank', 'Kotak Mahindra Bank',
+    'Punjab National Bank', 'Bank of Baroda', 'Canara Bank', 'Union Bank of India',
+    'Yes Bank', 'IndusInd Bank', 'IDFC FIRST Bank', 'Bank of India',
+}
+UPI_REGEX = re.compile(r'^[\w.\-]{2,}@[A-Za-z]{2,}$')
+
+
+def _money(value):
+    return Decimal(value).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+def _luhn_ok(number):
+    total, alt = 0, False
+    for ch in reversed(number):
+        d = int(ch)
+        if alt:
+            d *= 2
+            if d > 9:
+                d -= 9
+        total += d
+        alt = not alt
+    return len(number) >= 13 and total % 10 == 0
+
+
+def _detect_card_brand(number):
+    if number.startswith('4'):
+        return 'visa'
+    if re.match(r'^(5[1-5]|2[2-7])', number):
+        return 'mastercard'
+    if re.match(r'^3[47]', number):
+        return 'amex'
+    if re.match(r'^(60|65|81|82|508)', number):
+        return 'rupay'
+    return 'card'
+
+
+def _price_breakdown(course, coupon=None):
+    """Single source of truth for amounts - the frontend only displays what this returns."""
+    original = _money(course.price)
+    discount = _money(0)
+    if coupon and coupon.is_valid():
+        discount = _money(original * coupon.percent_off / 100)
+    final = max(original - discount, _money(0))
+    return original, discount, final
+
+
+def _get_valid_coupon(code):
+    code = (code or '').strip().upper()
+    if not code:
+        return None
+    coupon = Coupon.objects.filter(code=code).first()
+    return coupon if coupon and coupon.is_valid() else None
+
+
+def _wants_json(request):
+    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+
+def _pay_fail(request, course, message, status=400):
+    if _wants_json(request):
+        return JsonResponse({'ok': False, 'error': message}, status=status)
+    messages.error(request, message)
+    return redirect('payment_page', course_id=course.id)
+
+
 @login_required
 def payment_page(request, course_id):
+    course = get_object_or_404(Course, id=course_id, is_published=True)
+
+    if Enrollment.objects.filter(student=request.user, course=course).exists():
+        messages.info(request, "You already own this course.")
+        return redirect('course_watch', course_id=course.id)
+
+    if course.price <= 0:
+        return redirect('enroll_course', course_id=course.id)
+
+    context = {
+        'course': course,
+        'user_coins': request.user.lms_coins,
+        'can_afford_coins': course.is_coin_purchasable and request.user.lms_coins >= course.coin_price,
+        'banks': sorted(ALLOWED_BANKS),
+    }
+    return render(request, 'payment.html', context)
+
+
+@login_required
+@require_POST
+def validate_coupon(request, course_id):
+    """AJAX: returns the server-computed price after applying a coupon."""
     course = get_object_or_404(Course, id=course_id)
-    return render(request, 'payment.html', {'course': course})
+    code = request.POST.get('code', '')
+    coupon = _get_valid_coupon(code)
+    original, discount, final = _price_breakdown(course, coupon)
+    if not coupon:
+        return JsonResponse({
+            'ok': False, 'error': 'Invalid or expired coupon code.',
+            'original': str(original), 'discount': '0.00', 'final': str(original),
+        })
+    return JsonResponse({
+        'ok': True, 'code': coupon.code, 'percent': coupon.percent_off,
+        'original': str(original), 'discount': str(discount), 'final': str(final),
+    })
 
 
 @login_required
+@require_POST
 def process_payment(request, course_id):
-    if request.method == "POST":
-        course = get_object_or_404(Course, id=course_id)
-        
-        # Create Enrollment after successful payment
-        Enrollment.objects.get_or_create(student=request.user, course=course)
-        log_student_activity(request.user, 'course_enroll', f'Paid and enrolled in {course.title}', course=course)
-        
-        messages.success(request, f"Payment Successful! Welcome to {course.title}.")
-        return redirect('dashboard')
-        
-    return redirect('all_courses')
+    course = get_object_or_404(Course, id=course_id, is_published=True)
+    user = request.user
+
+    if Enrollment.objects.filter(student=user, course=course).exists():
+        return _pay_fail(request, course, "You already own this course.")
+    if course.price <= 0:
+        return _pay_fail(request, course, "This course is free - use Enroll instead.")
+
+    method = request.POST.get('method', '')
+    provider = request.POST.get('provider', method).lower()
+    if method not in ALLOWED_PROVIDERS:
+        return _pay_fail(request, course, "Invalid payment method.")
+
+    instrument = ''
+
+    # ---- per-method server-side validation ----
+    if method == 'card':
+        number = re.sub(r'\D', '', request.POST.get('card_number', ''))
+        expiry = request.POST.get('card_expiry', '').strip()
+        cvv = request.POST.get('card_cvv', '').strip()
+        holder = request.POST.get('card_name', '').strip()
+
+        if not _luhn_ok(number):
+            return _pay_fail(request, course, "Invalid card number.")
+        m = re.match(r'^(\d{2})/(\d{2})$', expiry)
+        if not m or not (1 <= int(m.group(1)) <= 12):
+            return _pay_fail(request, course, "Invalid expiry date.")
+        now = timezone.now()
+        yy, mm = now.year % 100, now.month
+        if int(m.group(2)) < yy or (int(m.group(2)) == yy and int(m.group(1)) < mm):
+            return _pay_fail(request, course, "This card has expired.")
+        brand = _detect_card_brand(number)
+        if not re.match(r'^\d{4}$' if brand == 'amex' else r'^\d{3}$', cvv):
+            return _pay_fail(request, course, "Invalid CVV.")
+        if len(holder) < 2:
+            return _pay_fail(request, course, "Enter the card holder name.")
+        provider = brand
+        instrument = f"{brand.title()} \u2022\u2022\u2022\u2022 {number[-4:]}"   # only last 4 digits are ever stored
+
+    elif method == 'upi':
+        upi_id = request.POST.get('upi_id', '').strip()
+        if upi_id:
+            if not UPI_REGEX.match(upi_id):
+                return _pay_fail(request, course, "Invalid UPI ID.")
+            instrument = upi_id
+        elif provider not in ALLOWED_PROVIDERS['upi']:
+            return _pay_fail(request, course, "Select a UPI app or enter a UPI ID.")
+        if provider not in ALLOWED_PROVIDERS['upi']:
+            provider = 'upi'
+
+    elif method == 'net':
+        bank = request.POST.get('bank', '').strip()
+        if bank not in ALLOWED_BANKS:
+            return _pay_fail(request, course, "Please select a valid bank.")
+        provider = bank.split()[0].lower()
+        instrument = bank
+
+    elif method == 'wallet':
+        if provider not in ALLOWED_PROVIDERS['wallet']:
+            return _pay_fail(request, course, "Select a valid wallet.")
+        instrument = provider.title() + " Wallet"
+
+    elif method == 'qr':
+        provider = 'qr'
+        instrument = 'UPI QR'
+
+    # ---- pricing (always recomputed on the server) ----
+    coupon = _get_valid_coupon(request.POST.get('coupon_code', ''))
+    original, discount, final = _price_breakdown(course, coupon)
+
+    with transaction.atomic():
+        # race-safe duplicate guard
+        if Enrollment.objects.select_for_update().filter(student=user, course=course).exists():
+            return _pay_fail(request, course, "You already own this course.")
+
+        if coupon:
+            locked = Coupon.objects.select_for_update().get(pk=coupon.pk)
+            if not locked.is_valid():
+                return _pay_fail(request, course, "This coupon is no longer valid.")
+            locked.used_count += 1
+            locked.save(update_fields=['used_count'])
+
+        payment = Payment.objects.create(
+            student=user, course=course, method=method, provider=provider,
+            instrument=instrument, original_amount=original,
+            discount_amount=discount, amount_paid=final,
+            coupon=coupon, status='success',
+        )
+        Enrollment.objects.create(student=user, course=course)
+
+    log_student_activity(
+        user, 'course_enroll', f'Paid and enrolled in {course.title}', course=course,
+        metadata={'txn_id': payment.txn_id, 'method': method, 'amount': str(final)},
+    )
+
+    receipt_url = reverse('payment_receipt', args=[payment.txn_id])
+    if _wants_json(request):
+        return JsonResponse({
+            'ok': True, 'txn_id': payment.txn_id, 'amount': str(final),
+            'redirect': receipt_url,
+        })
+    messages.success(request, f"Payment Successful! Welcome to {course.title}.")
+    return redirect(receipt_url)
 
 
-# --- BUY COURSE WITH COINS LOGIC ---
 @login_required
+@require_POST
 def purchase_with_coins(request, course_id):
-    if request.method == "POST":
-        course = get_object_or_404(Course, id=course_id)
-        
-        if not course.is_coin_purchasable:
-            messages.error(request, "This course cannot be purchased with coins.")
-            return redirect('payment_page', course_id=course.id)
-            
-        required_coins = course.coin_price
-        
-        # Check if the user has enough coins
-        if request.user.lms_coins >= required_coins:
-            # Deduct coins securely
-            request.user.lms_coins -= required_coins
-            request.user.save(update_fields=['lms_coins'])
-            
-            # Enroll the student in the course
-            Enrollment.objects.get_or_create(student=request.user, course=course)
-            log_student_activity(request.user, 'course_enroll', f'Purchased {course.title} with {required_coins} coins', course=course)
-            
-            # Success Message with 'Coin' keyword to trigger the Golden Popup
-            messages.success(request, f"Course Unlocked! You purchased '{course.title}' using {required_coins} LMS Coins.")
-            return redirect('dashboard')
-        else:
-            messages.error(request, "Insufficient coins! Keep learning to earn more.")
-            return redirect('payment_page', course_id=course.id)
-            
-    return redirect('all_courses')
+    course = get_object_or_404(Course, id=course_id, is_published=True)
+    user = request.user
+
+    if Enrollment.objects.filter(student=user, course=course).exists():
+        return _pay_fail(request, course, "You already own this course.")
+    if not course.is_coin_purchasable or course.coin_price <= 0:
+        return _pay_fail(request, course, "This course cannot be purchased with coins.")
+
+    required = course.coin_price
+
+    with transaction.atomic():
+        locked_user = User.objects.select_for_update().get(pk=user.pk)
+        if locked_user.lms_coins < required:
+            return _pay_fail(
+                request, course,
+                f"Insufficient coins! You need {required - locked_user.lms_coins} more."
+            )
+        locked_user.lms_coins -= required
+        locked_user.save(update_fields=['lms_coins'])
+
+        payment = Payment.objects.create(
+            student=user, course=course, method='coins', provider='lms_coins',
+            instrument=f"{required} LMS Coins", original_amount=_money(course.price),
+            discount_amount=_money(0), amount_paid=_money(0),
+            coins_spent=required, status='success',
+        )
+        Enrollment.objects.create(student=user, course=course)
+
+    log_student_activity(
+        user, 'course_enroll', f'Purchased {course.title} with {required} coins', course=course,
+        metadata={'txn_id': payment.txn_id, 'method': 'coins', 'coins': required},
+    )
+
+    receipt_url = reverse('payment_receipt', args=[payment.txn_id])
+    if _wants_json(request):
+        return JsonResponse({'ok': True, 'txn_id': payment.txn_id, 'coins': required, 'redirect': receipt_url})
+    messages.success(request, f"Course Unlocked! You purchased '{course.title}' using {required} LMS Coins.")
+    return redirect(receipt_url)
+
+
+@login_required
+def payment_receipt(request, txn_id):
+    payment = get_object_or_404(Payment, txn_id=txn_id, student=request.user)
+    return render(request, 'payment_receipt.html', {'payment': payment, 'course': payment.course})
+
+
+@login_required
+def payment_history(request):
+    payments = Payment.objects.filter(student=request.user).select_related('course')
+    total_spent = payments.filter(status='success').aggregate(s=Sum('amount_paid'))['s'] or 0
+    total_coins = payments.filter(status='success').aggregate(s=Sum('coins_spent'))['s'] or 0
+    return render(request, 'payment_history.html', {
+        'payments': payments, 'total_spent': total_spent, 'total_coins': total_coins,
+    })
+
 
 
 # --- COURSE WATCH ---

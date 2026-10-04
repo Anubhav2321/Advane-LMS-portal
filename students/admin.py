@@ -7,7 +7,8 @@ from .models import (
     CourseGroupMessage,
     LessonComment, DynamicBountyProblem, 
     ProblemTestCase, BountySubmission, MessageReaction,
-    AICodeSubmission, StudyRoadmap, ProctoringLog, AIVideoNote
+    AICodeSubmission, StudyRoadmap, ProctoringLog, AIVideoNote,
+    Payment, Coupon
 )
 
 # 1. Custom User Admin (Student/Teacher Info)
@@ -116,3 +117,18 @@ admin.site.register(AICodeSubmission)
 admin.site.register(StudyRoadmap)
 admin.site.register(ProctoringLog)
 admin.site.register(AIVideoNote)
+
+# 7. PAYMENT SYSTEM ADMIN
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('txn_id', 'student', 'course', 'method', 'provider', 'amount_paid', 'coins_spent', 'status', 'created_at')
+    list_filter = ('method', 'status', 'created_at')
+    search_fields = ('txn_id', 'student__username', 'course__title')
+    readonly_fields = ('txn_id', 'created_at')
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'percent_off', 'used_count', 'max_uses', 'valid_until', 'is_active')
+    list_filter = ('is_active',)
+    search_fields = ('code',)

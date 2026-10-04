@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .ph-page { font-family:'Outfit',sans-serif; max-width:1000px; margin:30px auto; padding:0 20px; color:#e6e6ee; }
+    .ph-glass { background:linear-gradient(145deg,rgba(24,24,36,.74),rgba(12,12,20,.9)); border:1px solid rgba(255,255,255,.08); backdrop-filter:blur(24px); border-radius:22px; box-shadow:0 20px 50px rgba(0,0,0,.35); }
+    .ph-head { padding:26px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px; margin-bottom:20px; }
+    .ph-head h1 { font-family:'Space Grotesk',sans-serif; margin:0; color:#fff; font-size:1.8rem; }
+    .ph-head h1 i { color:#00f3ff; margin-right:10px; }
+    .ph-stats { display:flex; gap:14px; }
+    .ph-stat { padding:10px 18px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); }
+    .ph-stat small { display:block; color:#7c7c92; font-size:.68rem; text-transform:uppercase; letter-spacing:1.2px; }
+    .ph-stat strong { font-family:'Space Grotesk'; color:#00ff88; font-size:1.2rem; }
+    .ph-stat.gold strong { color:#ffd700; }
+    .ph-table { width:100%; border-collapse:collapse; }
+    .ph-table th { text-align:left; color:#7c7c92; font-size:.72rem; text-transform:uppercase; letter-spacing:1.2px; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.07); }
+    .ph-table td { padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.05); font-size:.92rem; }
+    .ph-table tr:hover td { background:rgba(255,255,255,.025); }
+    .ph-txn { font-family:'Space Grotesk',monospace; color:#00f3ff; text-decoration:none; }
+    .ph-pill { padding:3px 11px; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; }
+    .ph-pill.success { background:rgba(0,255,136,.12); color:#00ff88; border:1px solid rgba(0,255,136,.35); }
+    .ph-pill.failed { background:rgba(255,51,102,.12); color:#ff3366; border:1px solid rgba(255,51,102,.35); }
+    .ph-pill.refunded { background:rgba(255,179,71,.12); color:#ffb347; border:1px solid rgba(255,179,71,.35); }
+    .ph-empty { text-align:center; padding:60px 20px; color:#6d6d82; }
+    .ph-empty a { color:#00f3ff; text-decoration:none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ph-page">
+    <div class="ph-glass ph-head">
+        <h1><i class="fas fa-history"></i>Payment History</h1>
+        <div class="ph-stats">
+            <div class="ph-stat"><small>Total Spent</small><strong>₹{{ total_spent }}</strong></div>
+            <div class="ph-stat gold"><small>Coins Spent</small><strong><i class="fas fa-coins"></i> {{ total_coins }}</strong></div>
+        </div>
+    </div>
+
+    <div class="ph-glass" style="overflow-x:auto;">
+        {% if payments %}
+        <table class="ph-table">
+            <thead><tr><th>Transaction</th><th>Course</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+            {% for p in payments %}
+                <tr>
+                    <td><a class="ph-txn" href="{% url 'payment_receipt' p.txn_id %}">{{ p.txn_id }}</a></td>
+                    <td>{{ p.course.title|default:"—" }}</td>
+                    <td>{{ p.get_method_display }}{% if p.instrument %}<br><small style="color:#7c7c92;">{{ p.instrument }}</small>{% endif %}</td>
+                    <td>{% if p.method == 'coins' %}<span style="color:#ffd700;"><i class="fas fa-coins"></i> {{ p.coins_spent }}</span>{% else %}₹{{ p.amount_paid }}{% endif %}</td>
+                    <td><span class="ph-pill {{ p.status }}">{{ p.get_status_display }}</span></td>
+                    <td>{{ p.created_at|date:"d M Y, h:i A" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="ph-empty"><i class="fas fa-receipt" style="font-size:2.6rem;color:#2c2c3a;display:block;margin-bottom:14px;"></i>
+            No payments yet. <a href="{% url 'all_courses' %}">Browse courses</a></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

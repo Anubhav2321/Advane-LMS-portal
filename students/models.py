@@ -734,3 +734,73 @@ def log_student_activity(user, activity_type, description='', course=None, metad
             course=course,
             metadata=metadata or {}
         )
+
+
+# 11. PAYMENT SYSTEM (Coupons + Transaction Ledger)
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=30, unique=True)
+    percent_off = models.PositiveIntegerField(default=10, help_text="Discount percentage (1-100)")
+    max_uses = models.PositiveIntegerField(default=0, help_text="0 = unlimited")
+    used_count = models.PositiveIntegerField(default=0)
+    valid_until = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        self.code = self.code.strip().upper()
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.valid_until and self.valid_until < timezone.now():
+            return False
+        if self.max_uses and self.used_count >= self.max_uses:
+            return False
+        return True
+
+    def __str__(self):
+        return f"{self.code} ({self.percent_off}% off)"
+
+
+class Payment(models.Model):
+    METHOD_CHOICES = [
+        ('card', 'Credit / Debit Card'),
+        ('upi', 'UPI'),
+        ('net', 'Net Banking'),
+        ('wallet', 'Wallet'),
+        ('qr', 'QR Code'),
+        ('coins', 'LMS Coins'),
+    ]
+    STATUS_CHOICES = [
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, related_name='payments')
+    txn_id = models.CharField(max_length=30, unique=True, editable=False)
+    method = models.CharField(max_length=10, choices=METHOD_CHOICES)
+    provider = models.CharField(max_length=30, blank=True, help_text="visa / gpay / sbi / paytm ...")
+    instrument = models.CharField(max_length=60, blank=True, help_text="Masked card / UPI id / bank name")
+    original_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    coins_spent = models.PositiveIntegerField(default=0)
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='success')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.txn_id:
+            import uuid
+            self.txn_id = 'TXN' + timezone.now().strftime('%y%m%d') + uuid.uuid4().hex[:8].upper()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.txn_id} - {self.student.username} - {self.status}"

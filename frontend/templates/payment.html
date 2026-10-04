@@ -207,13 +207,13 @@
                             <span class="tile-logo" style="width:36px;height:24px;border-radius:6px;color:#0b6b3a;font-size:.55rem;font-weight:800;">RuPay</span>
                         </span>
                     </label>
-                    <input type="text" id="card-number" class="pf-input" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number" required>
+                    <input type="text" id="card-number" name="card_number" class="pf-input" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number" required>
                 </div>
                 <div class="pf-split">
-                    <div class="pf-group"><label>Expiry Date</label><input type="text" id="card-exp" class="pf-input" inputmode="numeric" placeholder="MM / YY" maxlength="5" autocomplete="cc-exp" required></div>
-                    <div class="pf-group"><label>CVV</label><input type="password" id="card-cvv" class="pf-input" inputmode="numeric" placeholder="•••" maxlength="4" autocomplete="cc-csc" required></div>
+                    <div class="pf-group"><label>Expiry Date</label><input type="text" id="card-exp" name="card_expiry" class="pf-input" inputmode="numeric" placeholder="MM / YY" maxlength="5" autocomplete="cc-exp" required></div>
+                    <div class="pf-group"><label>CVV</label><input type="password" id="card-cvv" name="card_cvv" class="pf-input" inputmode="numeric" placeholder="•••" maxlength="4" autocomplete="cc-csc" required></div>
                 </div>
-                <div class="pf-group"><label>Card Holder Name</label><input type="text" id="card-name" class="pf-input" placeholder="Name on card" autocomplete="cc-name" required></div>
+                <div class="pf-group"><label>Card Holder Name</label><input type="text" id="card-name" name="card_name" class="pf-input" placeholder="Name on card" autocomplete="cc-name" required></div>
                 <label class="pf-save"><input type="checkbox" checked> Save this card securely for future payments</label>
                 <div class="danger" id="card-error" style="margin:0 0 12px;"></div>
                 <button type="submit" class="pay-btn">PAY ₹<span class="js-final">{{ course.price }}</span></button>
@@ -235,7 +235,7 @@
                 <div class="pf-group">
                     <label>UPI ID</label>
                     <div class="pf-row">
-                        <input type="text" class="pf-input" placeholder="mobilenumber@upi" pattern="[\w.\-]{2,}@[A-Za-z]{2,}" title="Example: name@okaxis" required>
+                        <input type="text" name="upi_id" class="pf-input" placeholder="mobilenumber@upi" pattern="[\w.\-]{2,}@[A-Za-z]{2,}" title="Example: name@okaxis" required>
                         <button type="submit" class="pay-btn small">VERIFY & PAY</button>
                     </div>
                 </div>
@@ -248,6 +248,7 @@
             <h3 class="pay-h">Select Your Bank</h3>
             <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'net')">
                 {% csrf_token %}
+                <input type="hidden" name="bank" id="bank-input" value="State Bank of India">
                 <div class="tile-grid three" id="bank-grid">
                     <div class="tile selected" data-bank="State Bank of India"><div class="tile-logo bank" style="background:#1a4f9c;">SBI</div>SBI</div>
                     <div class="tile" data-bank="HDFC Bank"><div class="tile-logo bank" style="background:#004c8f;">HDFC</div>HDFC Bank</div>
@@ -260,8 +261,7 @@
                     <label>Other Banks</label>
                     <select class="pf-input" id="bank-select" style="cursor:pointer;">
                         <option value="">— Select another bank —</option>
-                        <option>Bank of Baroda</option><option>Canara Bank</option><option>Union Bank of India</option>
-                        <option>Yes Bank</option><option>IndusInd Bank</option><option>IDFC FIRST Bank</option><option>Bank of India</option>
+                        {% for b in banks %}<option>{{ b }}</option>{% endfor %}
                     </select>
                 </div>
                 <div class="muted" style="font-size:.82rem;margin-bottom:16px;"><i class="fas fa-info-circle"></i> You'll be redirected to <b id="bank-chosen" style="color:#fff;">State Bank of India</b> to authorise this payment.</div>
@@ -273,10 +273,10 @@
         <div id="tab-wallet" class="pay-tab">
             <h3 class="pay-h">Pay with Wallet</h3>
             <div class="tile-grid">
-                <div class="tile" onclick="triggerDirectPay('paytm')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></div><div>Paytm Wallet<small>Balance & Postpaid</small></div></div>
-                <div class="tile" onclick="triggerDirectPay('amazon')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/amazonpay/FF9900" alt="Amazon Pay"></div><div>Amazon Pay<small>Wallet balance</small></div></div>
-                <div class="tile" onclick="triggerDirectPay('phonepe')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></div><div>PhonePe Wallet<small>Instant debit</small></div></div>
-                <div class="tile" onclick="triggerDirectPay('mobikwik')"><div class="tile-logo bank" style="background:#2f80ed;">MK</div><div>Mobikwik<small>Wallet balance</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('paytm','wallet')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></div><div>Paytm Wallet<small>Balance & Postpaid</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('amazon','wallet')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/amazonpay/FF9900" alt="Amazon Pay"></div><div>Amazon Pay<small>Wallet balance</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('phonepe','wallet')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></div><div>PhonePe Wallet<small>Instant debit</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('mobikwik','wallet')"><div class="tile-logo bank" style="background:#2f80ed;">MK</div><div>Mobikwik<small>Wallet balance</small></div></div>
             </div>
             <div class="muted" style="font-size:.82rem;"><i class="fas fa-lock" style="color:#00ff88;"></i> Wallet payments are processed over a secure, encrypted channel.</div>
         </div>
@@ -427,35 +427,44 @@
         document.querySelectorAll('#bank-grid .tile').forEach(x => x.classList.remove('selected'));
         t.classList.add('selected');
         document.getElementById('bank-select').value = '';
+        document.getElementById('bank-input').value = t.dataset.bank;
         bankChosen.innerText = t.dataset.bank;
     }));
     document.getElementById('bank-select').addEventListener('change', e => {
         if (!e.target.value) return;
         document.querySelectorAll('#bank-grid .tile').forEach(x => x.classList.remove('selected'));
+        document.getElementById('bank-input').value = e.target.value;
         bankChosen.innerText = e.target.value;
     });
 
-    // --- Coupon (demo codes, UI-side) ---
-    let discount = 0;
-    function setFinal() {
-        const final = Math.max(coursePrice - discount, 0);
+    // --- Coupon (validated by the SERVER; the server re-checks it again on payment) ---
+    const CSRF = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let appliedCoupon = '';
+    function setFinal(final) {
         document.querySelectorAll('.js-final').forEach(e => e.innerText = final);
     }
     function applyCoupon() {
-        const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+        const code = document.getElementById('coupon-input').value.trim();
         const msg = document.getElementById('coupon-msg');
-        const codes = { 'LEARN10': 0.10, 'WELCOME20': 0.20 };
-        if (codes[code]) {
-            discount = Math.round(coursePrice * codes[code]);
-            document.getElementById('disc-row').classList.remove('d-none');
-            document.getElementById('disc-amt').innerText = '-₹' + discount;
-            msg.style.color = '#00ff88'; msg.innerText = 'Coupon applied!';
-        } else {
-            discount = 0;
-            document.getElementById('disc-row').classList.add('d-none');
-            msg.style.color = '#ff3366'; msg.innerText = 'Invalid coupon code.';
-        }
-        setFinal();
+        if (!code) { msg.style.color = '#ff3366'; msg.innerText = 'Enter a coupon code.'; return; }
+        const body = new FormData();
+        body.append('code', code);
+        fetch("{% url 'validate_coupon' course.id %}", {
+            method: 'POST', body, headers: { 'X-CSRFToken': CSRF, 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(r => r.json()).then(d => {
+            const row = document.getElementById('disc-row');
+            if (d.ok) {
+                appliedCoupon = d.code;
+                row.classList.remove('d-none');
+                document.getElementById('disc-amt').innerText = '-₹' + d.discount;
+                msg.style.color = '#00ff88'; msg.innerText = d.code + ' applied (' + d.percent + '% off)';
+            } else {
+                appliedCoupon = '';
+                row.classList.add('d-none');
+                msg.style.color = '#ff3366'; msg.innerText = d.error;
+            }
+            setFinal(d.final);
+        }).catch(() => { msg.style.color = '#ff3366'; msg.innerText = 'Could not verify coupon. Try again.'; });
     }
 
     // --- QR countdown ---
@@ -490,16 +499,25 @@
         else tone('sine', [[1200,0],[2400,.1]], .6, .6);
     }
 
-    // --- Payment flow ---
-    function handlePayment(e, form, type, provider) {
+    // --- Payment flow (frontend animation + real backend call) ---
+    let paying = false;
+    function handlePayment(e, form, type, provider, method) {
         e.preventDefault();
+        if (paying) return false;
         if (!provider) provider = type;
+        if (!method) method = type === 'coin' ? 'coins' : (['card', 'net', 'qr', 'upi'].includes(provider) ? provider : 'upi');
 
-        if (provider === 'card') {
+        if (method === 'card') {
             const err = validateCard();
             errEl.innerText = err;
             if (err) return false;
         }
+
+        // Build the request from the real form fields (+ method/provider/coupon for the server)
+        const data = new FormData(form);
+        data.set('method', method);
+        data.set('provider', provider);
+        if (appliedCoupon && method !== 'coins') data.set('coupon_code', appliedCoupon);
 
         const overlay = document.getElementById('overlay-screen');
         const processing = document.getElementById('state-processing');
@@ -511,49 +529,73 @@
         const successSub = document.getElementById('success-sub');
         const processSound = document.getElementById('sound-processing');
 
+        paying = true;
         if (type === 'coin') {
             mainLoader.classList.add('loader-gold'); text.classList.add('processing-text-gold');
             text.innerText = 'Verifying Coin Balance...';
         } else {
             mainLoader.classList.remove('loader-gold'); text.classList.remove('processing-text-gold');
-            text.innerText = provider === 'net' ? 'Redirecting to ' + bankChosen.innerText + '...' : 'Securely connecting to bank...';
+            text.innerText = method === 'net' ? 'Redirecting to ' + bankChosen.innerText + '...' : 'Securely connecting to bank...';
         }
 
         overlay.style.display = 'flex';
         processSound.volume = 0.5;
         processSound.play().catch(() => {});
 
+        const timers = [];
         if (type === 'rupee') {
-            setTimeout(() => { text.innerText = 'Verifying Credentials...'; }, 1500);
-            setTimeout(() => { text.innerText = 'Requesting Bank Authorization...'; }, 3000);
+            timers.push(setTimeout(() => { text.innerText = 'Verifying Credentials...'; }, 1500));
+            timers.push(setTimeout(() => { text.innerText = 'Requesting Bank Authorization...'; }, 3000));
         } else {
-            setTimeout(() => { text.innerText = 'Deducting ' + requiredCoins + ' Coins...'; }, 1500);
-            setTimeout(() => { text.innerText = 'Unlocking Course Content...'; }, 3000);
+            timers.push(setTimeout(() => { text.innerText = 'Deducting ' + requiredCoins + ' Coins...'; }, 1500));
+            timers.push(setTimeout(() => { text.innerText = 'Unlocking Course Content...'; }, 3000));
         }
 
-        setTimeout(() => {
+        // The real call to Django runs while the animation plays
+        const request = fetch(form.action, {
+            method: 'POST', body: data,
+            headers: { 'X-CSRFToken': CSRF, 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(r => r.json().catch(() => ({ ok: false, error: 'Unexpected server response.' })))
+          .catch(() => ({ ok: false, error: 'Network error. You have not been charged.' }));
+        const minDelay = new Promise(res => setTimeout(res, 4500));
+
+        Promise.all([request, minDelay]).then(([res]) => {
+            timers.forEach(clearTimeout);
+            processSound.pause(); processSound.currentTime = 0;
+
+            if (!res.ok) {                       // server rejected it - go back to the form
+                overlay.style.display = 'none';
+                paying = false;
+                alert('Payment failed: ' + (res.error || 'Please try again.'));
+                if (method === 'card') errEl.innerText = res.error || '';
+                if (res.error && /already own/i.test(res.error)) window.location.href = "{% url 'dashboard' %}";
+                return;
+            }
+
             processing.style.display = 'none';
             success.style.display = 'block';
+            successSub.innerText = 'Transaction ID: ' + res.txn_id;
             if (type === 'coin') {
                 successCheck.classList.add('check-icon-gold');
                 successTitle.innerText = 'COURSE UNLOCKED!';
                 successTitle.style.color = '#ffd700';
-                successSub.innerText = '-' + requiredCoins + ' Coins Deducted';
+                successSub.innerText = '-' + res.coins + ' Coins Deducted · ' + res.txn_id;
+            } else {
+                successSub.innerText = 'Paid ₹' + res.amount + ' · ' + res.txn_id;
             }
             setTimeout(() => success.classList.add('show'), 50);
-            processSound.pause(); processSound.currentTime = 0;
             playCustomSound(provider);
             if (navigator.vibrate) navigator.vibrate([200]);
             createMoneyRain(type);
-            setTimeout(() => form.submit(), 3500);
-        }, 4500);
+            setTimeout(() => { window.location.href = res.redirect; }, 3500);
+        });
 
         return false;
     }
 
-    function triggerDirectPay(provider) {
+    function triggerDirectPay(provider, method) {
         if (confirm('Open ' + provider.toUpperCase() + ' to complete payment?')) {
-            handlePayment({ preventDefault: () => {} }, document.getElementById('hidden-form'), 'rupee', provider);
+            handlePayment({ preventDefault: () => {} }, document.getElementById('hidden-form'), 'rupee', provider, method || 'upi');
         }
     }
 
