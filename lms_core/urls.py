@@ -23,6 +23,7 @@ from students.views import (
     library_view, 
     profile_view,       #  Profile View
     track_progress,     # 🚀 NEW: Progress Tracking API
+    lesson_ai_notes,    # 🚀 NEW: AI Smart Lesson Notes API
 
     # 4. Payment System
     payment_page,
@@ -46,8 +47,9 @@ from students.views import (
     ai_chat,
     execute_code_api,   # 👉 🚀 Cloud Code Execution API (Piston)
 
-    # 6. Admin Panel (Dashboard)
+    # 6. Admin Panel (Dashboard & Profile)
     admin_dashboard, 
+    admin_profile,
     
     # 7. Admin Management (Lists & Edits)
     admin_student_list, 
@@ -128,9 +130,11 @@ urlpatterns = [
     path('payments/receipt/<str:txn_id>/', payment_receipt, name='payment_receipt'),
     path('payments/history/', payment_history, name='payment_history'),
 
-    # Watch Course
+    # Watch Course & Learning Engine
     path('courses/watch/<int:course_id>/', course_watch, name='course_watch'),
     path('courses/watch/<int:course_id>/<int:lesson_id>/', course_watch, name='course_watch'),
+    path('api/track-progress/', track_progress, name='track_progress'),
+    path('api/lesson/ai-notes/<int:lesson_id>/', lesson_ai_notes, name='lesson_ai_notes'),
 
     # Core Features
     path('live-classes/', live_classes, name='live_classes'),
@@ -151,8 +155,9 @@ urlpatterns = [
     #  NEW: Bounty System API ---
     path('api/chat/accept-bounty/<int:reply_id>/', accept_bounty, name='accept_bounty'), 
     
-    #  Cloud Code Execution API (Piston)
+    #  Cloud Code Execution API
     path('api/chat/execute-code/', execute_code_api, name='execute_code_api'),
+    path('api/chat/execute-local-code/', execute_code_api, name='run_code_in_docker'),
     
     # 👉 NEW: SYNTAX SINGULARITY (LeetCode Style AI Arena URLs)
     path('syntax-singularity/', syntax_singularity_view, name='syntax_singularity'),
@@ -177,6 +182,7 @@ urlpatterns = [
 
     # 6. Admin Panel System
     path('admin-panel/', admin_dashboard, name='admin_dashboard'),
+    path('admin-panel/profile/', admin_profile, name='admin_profile'),
     
     #  A. Student Management 
     path('admin-panel/students/', admin_student_list, name='admin_student_list'),

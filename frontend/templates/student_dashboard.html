@@ -3,33 +3,33 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Fonts & Chart.js -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
-    // CRITICAL FIX: Securely check for profile picture to prevent ValueError and VS Code Redeclaration Error
     const userHasProfileImg = JSON.parse("{% if request.user.profile.profile_pic %}true{% else %}false{% endif %}");
     const userProfileImgUrl = "{% if request.user.profile.profile_pic %}{{ request.user.profile.profile_pic.url }}{% else %}{% endif %}";
 </script>
 
 <style>
-    /* --- GLOBAL THEME --- */
+    /* ======================================================== */
+    /* 🌌 ULTRA-PREMIUM CYBERPUNK GLASSMORPHISM DESIGN SYSTEM 🌌 */
+    /* ======================================================== */
     :root {
-        --bg-dark: #0a0a0f;
-        --card-bg: #13131a;
-        --border-color: #2a2a35;
-        --neon-blue: #00f3ff;
+        --bg-dark: #070913;
+        --card-bg: rgba(16, 20, 32, 0.75);
+        --card-bg-hover: rgba(22, 28, 45, 0.9);
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --neon-cyan: #00f3ff;
         --neon-purple: #bc13fe;
-        --text-main: #e0e0e0;
-        --glass: rgba(19, 19, 26, 0.95);
-        --glass-border: rgba(255, 255, 255, 0.08);
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --chat-bg-glass: rgba(10, 10, 15, 0.95);
-        --chat-border: 1px solid rgba(0, 243, 255, 0.4);
-        --accent-green: #00E676;
-        --accent-amber: #FFB74D;
-        --accent-red: #FF3366;
-        --accent-purple: #A855F7;
+        --neon-blue: #3b82f6;
+        --accent-green: #00e676;
+        --accent-amber: #ffb74d;
+        --accent-red: #ff3366;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
     }
 
     body {
@@ -40,99 +40,172 @@
     }
 
     .dashboard-container {
-        padding: 40px;
-        max-width: 1400px;
+        padding: 35px 40px 80px;
+        max-width: 1440px;
         margin: 0 auto;
     }
 
-    /* --- UTILITY CLASSES --- */
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.4s; }
-    .icon-neon { color: var(--neon-blue); }
-    .cursor-pointer-white { cursor: pointer; color: #fff; }
-    .empty-notice { color: #666; text-align: center; padding: 20px; }
-    #chat-loader { display: none; }
-
-    /* --- ANIMATIONS --- */
-    .fade-in-up {
-        animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        opacity: 0;
-        transform: translateY(30px);
+    /* Ambient Background Mesh */
+    .dashboard-ambient {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
     }
-    
+
+    /* Fade-in Animations */
+    .fade-in-up {
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
     @keyframes fadeInUp {
         to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-    }
-
-    @keyframes progressRing {
-        0% { stroke-dashoffset: 251.2; }
-    }
-
-    @keyframes pulseGlow {
-        0%, 100% { box-shadow: 0 0 20px rgba(0, 243, 255, 0.1); }
-        50% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.25); }
-    }
-
-    /* --- WELCOME BANNER --- */
+    /* ============================================= */
+    /* 1. HERO WELCOME BANNER                        */
+    /* ============================================= */
     .welcome-banner {
-        background: linear-gradient(135deg, rgba(19, 19, 26, 0.9), rgba(26, 26, 36, 0.9));
-        border: 1px solid var(--border-color);
-        border-left: 5px solid var(--neon-blue);
-        border-radius: 20px;
-        padding: 30px 40px;
+        background: linear-gradient(135deg, rgba(20, 25, 42, 0.85), rgba(12, 15, 26, 0.95));
+        border: 1px solid var(--border-glass);
+        border-left: 5px solid var(--neon-cyan);
+        border-radius: 22px;
+        padding: 30px 38px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        margin-bottom: 15px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        margin-bottom: 30px;
         position: relative;
         overflow: hidden;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
     }
 
-    .welcome-banner::before {
+    .welcome-banner::after {
         content: '';
         position: absolute;
         top: 0; right: 0;
-        width: 300px; height: 100%;
-        background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.05), transparent 70%);
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
         pointer-events: none;
+    }
+
+    .user-profile-block {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .banner-avatar-wrap {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        position: relative;
+        flex-shrink: 0;
+        padding: 3px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.35);
+    }
+
+    .banner-avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+        image-rendering: -webkit-optimize-contrast;
+        background: #090c15;
+        display: block;
+    }
+
+    .banner-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #0d1222;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--neon-cyan);
+    }
+
+    .avatar-status-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 4px;
+        width: 14px;
+        height: 14px;
+        background: var(--accent-green);
+        border: 2.5px solid #0d1222;
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--accent-green);
     }
 
     .user-info h1 {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.4rem;
-        margin: 0;
+        font-size: 2.2rem;
+        margin: 0 0 8px;
         color: #fff;
-        text-transform: capitalize;
-        letter-spacing: 0px;
         font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
-    .user-info h1 span { 
-        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); 
-        -webkit-background-clip: text; 
-        -webkit-text-fill-color: transparent; 
-        font-weight: 800;
+
+    .user-info h1 span {
+        background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-    
+
+    .badge-pill-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
     .level-badge {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(188, 19, 254, 0.15));
-        color: var(--neon-blue);
-        padding: 6px 16px;
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        color: var(--neon-cyan);
+        padding: 5px 14px;
         border-radius: 20px;
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.82rem;
         border: 1px solid rgba(0, 243, 255, 0.3);
-        margin-top: 12px;
-        display: inline-block;
-        font-family: 'Outfit', sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         letter-spacing: 0.5px;
+    }
+
+    .streak-badge {
+        background: rgba(255, 107, 107, 0.12);
+        color: #ffa502;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        border: 1px solid rgba(255, 165, 2, 0.35);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 0 12px rgba(255, 165, 2, 0.2);
     }
 
     .banner-right {
@@ -141,164 +214,299 @@
         gap: 20px;
     }
 
-    /* Stats Mini Cards in Banner */
     .mini-stats {
         display: flex;
-        gap: 15px;
+        gap: 12px;
     }
 
     .mini-stat {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--glass-border);
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
         padding: 12px 18px;
         text-align: center;
-        min-width: 80px;
+        min-width: 82px;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .mini-stat:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.15);
     }
 
     .mini-stat-number {
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.5rem;
         font-weight: 700;
-        color: #fff;
         line-height: 1;
     }
 
     .mini-stat-label {
-        font-size: 0.75rem;
-        color: #888;
+        font-size: 0.72rem;
+        color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 1px;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
+    .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
+
+    .banner-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-quick-ide {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 136, 255, 0.2));
+        border: 1px solid var(--border-glass-glow);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.25s;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15);
+    }
+    .btn-quick-ide:hover {
+        background: var(--neon-cyan);
+        color: #060814;
+        box-shadow: 0 6px 25px rgba(0, 243, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .notif-bell {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border: 1px solid var(--border-glass);
+        color: #e2e8f0;
+        transition: all 0.25s;
+        position: relative;
+    }
+    .notif-bell:hover {
+        background: rgba(0, 243, 255, 0.12);
+        color: var(--neon-cyan);
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.3);
+    }
+    .badge-dot {
+        position: absolute;
+        top: 11px;
+        right: 12px;
+        width: 9px;
+        height: 9px;
+        background: var(--accent-red);
+        border-radius: 50%;
+        border: 2px solid #0d1222;
+        box-shadow: 0 0 8px var(--accent-red);
+    }
+
+    /* ============================================= */
+    /* 2. STATS OVERVIEW CARDS (4-GRID)              */
+    /* ============================================= */
+    .stats-overview-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 35px;
+    }
+
+    .stat-card-glass {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 18px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card-glass::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        opacity: 0.8;
+    }
+    .stat-card-glass.cyan::before { background: linear-gradient(90deg, var(--neon-cyan), #0077ff); }
+    .stat-card-glass.orange::before { background: linear-gradient(90deg, #ff6b6b, #ffa502); }
+    .stat-card-glass.green::before { background: linear-gradient(90deg, var(--accent-green), #00b0ff); }
+    .stat-card-glass.gold::before { background: linear-gradient(90deg, #ffc01e, #ff8800); }
+
+    .stat-card-glass:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .stat-icon-wrap {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    .stat-card-glass.cyan .stat-icon-wrap { background: rgba(0, 243, 255, 0.1); color: var(--neon-cyan); border: 1px solid rgba(0, 243, 255, 0.25); }
+    .stat-card-glass.orange .stat-icon-wrap { background: rgba(255, 165, 2, 0.1); color: #ffa502; border: 1px solid rgba(255, 165, 2, 0.25); }
+    .stat-card-glass.green .stat-icon-wrap { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.25); }
+    .stat-card-glass.gold .stat-icon-wrap { background: rgba(255, 192, 30, 0.1); color: #ffc01e; border: 1px solid rgba(255, 192, 30, 0.25); }
+
+    .stat-card-content {
+        flex: 1;
+    }
+
+    .stat-val {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.1;
+    }
+
+    .stat-lbl {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
         margin-top: 4px;
     }
 
-    .mini-stat.cyan .mini-stat-number { color: var(--neon-blue); }
-    .mini-stat.green .mini-stat-number { color: var(--accent-green); }
-    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
-    .mini-stat.purple .mini-stat-number { color: var(--accent-purple); }
-
-    /* Notification Bell */
-    .notif-bell {
-        width: 50px; height: 50px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
-        display: flex; justify-content: center; align-items: center;
-        cursor: pointer;
-        border: 1px solid var(--border-color);
-        transition: 0.3s;
-    }
-    .notif-bell:hover {
-        background: var(--neon-blue);
-        color: #000;
-        box-shadow: 0 0 15px var(--neon-blue);
-    }
-    .notif-bell i { font-size: 1.2rem; }
-    
-    .badge-dot {
-        position: absolute; top: 10px; right: 12px;
-        width: 8px; height: 8px;
-        background: #ff4757; border-radius: 50%;
-        border: 1px solid #fff;
-    }
-
-    /* --- SECTION TITLES --- */
+    /* Section Headers */
     .section-title {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.6rem; color: #fff; margin-bottom: 25px;
-        display: flex; align-items: center; gap: 12px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 15px;
+        font-size: 1.5rem;
+        color: #fff;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid var(--border-glass);
+        padding-bottom: 14px;
         font-weight: 700;
     }
 
+    .section-title i { color: var(--neon-cyan); }
+
     .section-subtitle {
-        color: var(--neon-blue);
-        font-size: 0.95rem;
+        color: var(--neon-cyan);
+        font-size: 0.82rem;
         letter-spacing: 0.5px;
         font-family: 'Outfit', sans-serif;
         font-weight: 600;
         margin-left: auto;
         text-transform: uppercase;
-        background: rgba(0, 243, 255, 0.1);
+        background: rgba(0, 243, 255, 0.08);
+        border: 1px solid rgba(0, 243, 255, 0.2);
         padding: 4px 12px;
         border-radius: 20px;
     }
 
     /* ============================================= */
-    /* GLASSMORPHIC COURSE CARDS                     */
+    /* 3. CONTINUE LEARNING - COURSE CARDS           */
     /* ============================================= */
-
     .courses-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 28px;
-        margin-bottom: 50px;
+        gap: 25px;
+        margin-bottom: 45px;
     }
 
     .course-card-glass {
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
         border-radius: 20px;
         overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        display: flex;
+        flex-direction: column;
     }
 
     .course-card-glass:hover {
-        border-color: rgba(0, 243, 255, 0.3);
-        box-shadow: 0 15px 40px rgba(0, 243, 255, 0.08), 0 0 0 1px rgba(0, 243, 255, 0.1);
-        transform: translateY(-6px);
+        border-color: var(--border-glass-glow);
+        box-shadow: 0 16px 40px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
+        transform: translateY(-5px);
     }
 
-    /* Thumbnail Area */
     .card-thumb-wrapper {
         position: relative;
         width: 100%;
         height: 180px;
         overflow: hidden;
+        background: #090c14;
     }
 
-    .card-thumb-wrapper img,
-    .card-thumb-wrapper .thumb-placeholder {
-        width: 100%; height: 100%;
+    .card-thumb-wrapper img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .course-card-glass:hover .card-thumb-wrapper img {
+        transform: scale(1.05);
     }
 
     .thumb-placeholder {
+        width: 100%; height: 100%;
         display: flex; align-items: center; justify-content: center;
-        background: linear-gradient(135deg, #0a0a15, #1a1a2e);
+        background: linear-gradient(135deg, #0e1220, #171d33);
+        color: #2a3350;
+        font-size: 2.8rem;
     }
-    .thumb-placeholder i { color: #222; font-size: 3rem; }
 
     .card-thumb-overlay {
         position: absolute;
         bottom: 0; left: 0; right: 0;
-        height: 80px;
-        background: linear-gradient(to top, rgba(10, 10, 15, 1), transparent);
+        height: 70px;
+        background: linear-gradient(to top, rgba(16, 20, 32, 1), transparent);
     }
 
-    /* Difficulty Badge */
     .difficulty-badge {
         position: absolute;
         top: 14px; right: 14px;
-        padding: 4px 14px;
+        padding: 4px 12px;
         border-radius: 20px;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        letter-spacing: 0.8px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
-    .difficulty-badge.easy { background: rgba(0, 230, 118, 0.2); color: #00E676; border: 1px solid rgba(0, 230, 118, 0.3); }
-    .difficulty-badge.medium { background: rgba(255, 183, 77, 0.2); color: #FFB74D; border: 1px solid rgba(255, 183, 77, 0.3); }
-    .difficulty-badge.hard { background: rgba(255, 51, 102, 0.2); color: #FF3366; border: 1px solid rgba(255, 51, 102, 0.3); }
+    .difficulty-badge.beginner, .difficulty-badge.easy { background: rgba(0, 230, 118, 0.18); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.35); }
+    .difficulty-badge.intermediate, .difficulty-badge.medium { background: rgba(255, 183, 77, 0.18); color: var(--accent-amber); border: 1px solid rgba(255, 183, 77, 0.35); }
+    .difficulty-badge.advanced, .difficulty-badge.hard { background: rgba(255, 51, 102, 0.18); color: var(--accent-red); border: 1px solid rgba(255, 51, 102, 0.35); }
 
-    /* Card Content */
     .card-content {
-        padding: 22px 24px;
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
     }
 
     .card-title-row {
@@ -309,45 +517,43 @@
     }
 
     .course-title-text {
-        font-size: 1.25rem;
+        font-size: 1.18rem;
         font-weight: 700;
         color: #fff;
-        line-height: 1.3;
+        line-height: 1.35;
         flex: 1;
-        margin-right: 15px;
+        margin-right: 12px;
     }
 
-    /* Circular Progress Ring */
     .progress-ring-wrapper {
-        width: 65px; height: 65px;
+        width: 58px; height: 58px;
         position: relative;
         flex-shrink: 0;
     }
 
     .progress-ring-svg {
-        width: 65px; height: 65px;
+        width: 58px; height: 58px;
         transform: rotate(-90deg);
     }
 
     .progress-ring-bg {
         fill: none;
-        stroke: rgba(255, 255, 255, 0.06);
+        stroke: rgba(255, 255, 255, 0.08);
         stroke-width: 5;
     }
 
     .progress-ring-fill {
         fill: none;
-        stroke: var(--neon-blue);
+        stroke: var(--neon-cyan);
         stroke-width: 5;
         stroke-linecap: round;
         stroke-dasharray: 163.36;
-        transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        filter: drop-shadow(0 0 6px rgba(0, 243, 255, 0.4));
+        transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        filter: drop-shadow(0 0 6px rgba(0, 243, 255, 0.5));
     }
-
     .progress-ring-fill.complete {
         stroke: var(--accent-green);
-        filter: drop-shadow(0 0 6px rgba(0, 230, 118, 0.4));
+        filter: drop-shadow(0 0 6px rgba(0, 230, 118, 0.5));
     }
 
     .progress-ring-text {
@@ -355,688 +561,690 @@
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: #fff;
     }
 
-    .progress-ring-text small {
-        font-size: 0.5rem;
-        color: #888;
-    }
-
-    /* Faculty & Meta */
-    .course-faculty {
+    /* Faculty Info */
+    .course-faculty-enhanced {
         display: flex;
         align-items: center;
-        gap: 8px;
-        color: #888;
-        font-size: 0.85rem;
-        margin-bottom: 15px;
+        gap: 10px;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.025);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 14px;
     }
 
-    .course-faculty i { color: var(--accent-purple); }
+    .faculty-avatar-mini {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 1.5px solid rgba(188, 19, 254, 0.45);
+        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(188, 19, 254, 0.15);
+    }
+    .faculty-avatar-mini img {
+        width: 100%; height: 100%; object-fit: cover; image-rendering: -webkit-optimize-contrast;
+    }
+    .faculty-avatar-mini i { color: var(--neon-purple); font-size: 0.8rem; }
 
-    /* Progress Bar */
+    .faculty-info-text { display: flex; flex-direction: column; }
+    .faculty-name { color: #d1d5db; font-weight: 600; font-size: 0.82rem; }
+    .faculty-role { color: var(--neon-purple); font-size: 0.68rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+
+    /* Progress bar */
     .progress-track-slim {
-        height: 4px;
+        height: 5px;
         background: rgba(255, 255, 255, 0.06);
         border-radius: 10px;
         margin-bottom: 10px;
         overflow: hidden;
     }
-
     .progress-fill-slim {
         height: 100%;
         border-radius: 10px;
-        background: linear-gradient(90deg, var(--neon-blue), #0088ff);
-        box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
-        transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(90deg, var(--neon-cyan), #0077ff);
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        transition: width 1.4s ease;
     }
-
     .progress-fill-slim.complete {
-        background: linear-gradient(90deg, var(--accent-green), #34d399);
-        box-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
+        background: linear-gradient(90deg, var(--accent-green), #00d4ff);
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
     }
 
     .progress-meta {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
-        font-size: 0.82rem;
-    }
-
-    .lesson-count {
-        color: #aaa;
-    }
-
-    .lesson-count strong { color: var(--neon-blue); }
-
-    .last-accessed {
-        color: #666;
+        margin-bottom: 15px;
         font-size: 0.78rem;
     }
+    .lesson-count { color: #94a3b8; }
+    .lesson-count strong { color: var(--neon-cyan); }
+    .last-accessed { color: #64748b; }
 
-    /* Quick Stats Row */
+    /* Interactive Stats Chips */
     .quick-stats-row {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         margin-bottom: 18px;
     }
-
     .quick-stat-chip {
         flex: 1;
         background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 10px;
-        padding: 10px 10px;
+        padding: 8px 6px;
         text-align: center;
-        font-size: 0.78rem;
         text-decoration: none;
         color: var(--text-main);
-        cursor: pointer;
-        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-    }
-
-    .quick-stat-chip::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%;
-        width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-        transition: left 0.5s ease;
-    }
-
-    .quick-stat-chip:hover::before { left: 100%; }
-
-    .quick-stat-chip:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .quick-stat-chip .chip-count {
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 0.85rem;
-    }
-
-    .quick-stat-chip .chip-label {
-        font-weight: 500;
-        opacity: 0.8;
-    }
-
-    .quick-stat-chip i { margin-right: 2px; font-size: 0.85rem; }
-
-    .quick-stat-chip.lessons {
-        border-color: rgba(0, 243, 255, 0.15);
-    }
-    .quick-stat-chip.lessons i { color: var(--neon-blue); }
-    .quick-stat-chip.lessons .chip-count { color: var(--neon-blue); }
-    .quick-stat-chip.lessons:hover {
-        background: rgba(0, 243, 255, 0.08);
-        border-color: rgba(0, 243, 255, 0.35);
-        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.12);
-    }
-
-    .quick-stat-chip.quizzes {
-        border-color: rgba(0, 230, 118, 0.15);
-    }
-    .quick-stat-chip.quizzes i { color: var(--accent-green); }
-    .quick-stat-chip.quizzes .chip-count { color: var(--accent-green); }
-    .quick-stat-chip.quizzes:hover {
-        background: rgba(0, 230, 118, 0.08);
-        border-color: rgba(0, 230, 118, 0.35);
-        box-shadow: 0 6px 20px rgba(0, 230, 118, 0.12);
-    }
-
-    .quick-stat-chip.assignments {
-        border-color: rgba(255, 183, 77, 0.15);
-    }
-    .quick-stat-chip.assignments i { color: var(--accent-amber); }
-    .quick-stat-chip.assignments .chip-count { color: var(--accent-amber); }
-    .quick-stat-chip.assignments:hover {
-        background: rgba(255, 183, 77, 0.08);
-        border-color: rgba(255, 183, 77, 0.35);
-        box-shadow: 0 6px 20px rgba(255, 183, 77, 0.12);
-    }
-
-    /* Faculty Card Enhancement */
-    .course-faculty-enhanced {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #888;
-        font-size: 0.85rem;
-        margin-bottom: 15px;
-        padding: 8px 12px;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .faculty-avatar-mini {
-        width: 28px; height: 28px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 1.5px solid rgba(168, 85, 247, 0.4);
-        flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: rgba(168, 85, 247, 0.1);
-    }
-
-    .faculty-avatar-mini img {
-        width: 100%; height: 100%;
-        object-fit: cover;
-    }
-
-    .faculty-avatar-mini i {
-        font-size: 0.7rem;
-        color: var(--accent-purple);
-    }
-
-    .faculty-info-text {
         display: flex;
         flex-direction: column;
-        line-height: 1.2;
+        align-items: center;
+        gap: 3px;
+        transition: all 0.25s;
     }
-
-    .faculty-info-text .faculty-name {
-        color: #ccc;
-        font-weight: 600;
-        font-size: 0.82rem;
+    .quick-stat-chip:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.08);
     }
+    .quick-stat-chip.lessons:hover { border-color: var(--neon-cyan); box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15); }
+    .quick-stat-chip.quizzes:hover { border-color: var(--accent-green); box-shadow: 0 4px 15px rgba(0, 230, 118, 0.15); }
+    .quick-stat-chip.assignments:hover { border-color: var(--accent-amber); box-shadow: 0 4px 15px rgba(255, 183, 77, 0.15); }
 
-    .faculty-info-text .faculty-role {
-        color: var(--accent-purple);
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+    .quick-stat-chip i { font-size: 0.85rem; margin-bottom: 2px; }
+    .quick-stat-chip.lessons i { color: var(--neon-cyan); }
+    .quick-stat-chip.quizzes i { color: var(--accent-green); }
+    .quick-stat-chip.assignments i { color: var(--accent-amber); }
 
-    /* Card Buttons */
+    .chip-count { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.82rem; color: #fff; }
+    .chip-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+    /* Action Buttons */
     .card-actions {
         display: flex;
         gap: 10px;
+        margin-top: auto;
     }
-
     .btn-continue {
         flex: 1;
-        padding: 12px 0;
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 136, 255, 0.1));
-        border: 1px solid rgba(0, 243, 255, 0.3);
-        color: var(--neon-blue);
+        padding: 12px 14px;
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 119, 255, 0.18));
+        border: 1px solid rgba(0, 243, 255, 0.35);
+        color: var(--neon-cyan);
         text-align: center;
         text-decoration: none;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 0.85rem;
+        font-size: 0.84rem;
+        letter-spacing: 0.5px;
         border-radius: 12px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
+        transition: all 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
-
-    .btn-continue::before {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%;
-        width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
-        transition: left 0.5s ease;
-    }
-
-    .btn-continue:hover::before { left: 100%; }
     .btn-continue:hover {
-        background: var(--neon-blue);
-        color: #000;
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        background: var(--neon-cyan);
+        color: #060814;
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.35);
         transform: translateY(-2px);
     }
 
     .btn-community-sm {
-        width: 48px; height: 48px;
-        background: rgba(168, 85, 247, 0.1);
-        border: 1px solid rgba(168, 85, 247, 0.3);
+        width: 46px; height: 46px;
+        background: rgba(188, 19, 254, 0.12);
+        border: 1px solid rgba(188, 19, 254, 0.35);
         border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        color: var(--accent-purple);
+        color: var(--neon-purple);
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.25s;
         font-size: 1.1rem;
     }
-
     .btn-community-sm:hover {
-        background: var(--accent-purple);
+        background: var(--neon-purple);
         color: #fff;
-        box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        box-shadow: 0 6px 20px rgba(188, 19, 254, 0.35);
+        transform: translateY(-2px);
     }
 
-    /* Completed Overlay */
-    .course-card-glass.completed { border-color: rgba(0, 230, 118, 0.2); }
+    /* Completed state */
+    .course-card-glass.completed { border-color: rgba(0, 230, 118, 0.25); }
     .course-card-glass.completed .btn-continue {
         background: rgba(0, 230, 118, 0.15);
-        border-color: rgba(0, 230, 118, 0.3);
+        border-color: rgba(0, 230, 118, 0.35);
         color: var(--accent-green);
     }
-
-    /* Empty State */
-    .empty-state-box { grid-column: 1/-1; text-align: center; padding: 80px; border: 1px dashed #333; border-radius: 20px; background: var(--glass-bg); }
-    .empty-state-icon { font-size: 3rem; color: #333; margin-bottom: 20px; }
-    .empty-state-text { color: #666; }
-    .empty-state-link { color: var(--neon-blue); text-decoration: none; font-weight: bold; }
-
-    /* ============================================= */
-    /* LEARNING ANALYTICS SECTION                   */
-    /* ============================================= */
-
-    .analytics-section {
-        margin-bottom: 50px;
+    .course-card-glass.completed .btn-continue:hover {
+        background: var(--accent-green);
+        color: #060814;
     }
 
-    .analytics-grid {
+    /* Empty state */
+    .empty-state-box {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 30px;
+        background: var(--card-bg);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+    }
+    .empty-state-icon { font-size: 3rem; color: #475569; margin-bottom: 16px; }
+    .empty-state-text { color: #94a3b8; font-size: 1.1rem; margin-bottom: 15px; }
+    .empty-state-link {
+        color: var(--neon-cyan);
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* ============================================= */
+    /* 4. 3-PANEL ACADEMIC SYNC COMMAND CENTER      */
+    /* ============================================= */
+    .sync-panels-grid {
         display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-        margin-bottom: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+        margin-bottom: 45px;
     }
 
-    .analytics-card {
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        border: 1px solid rgba(255, 255, 255, 0.06);
+    .sync-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
         border-radius: 20px;
         padding: 24px;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
     }
 
-    .analytics-card:hover {
+    .sync-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 12px;
+    }
+
+    .sync-card-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        color: #fff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sync-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+    .sync-badge.live { background: rgba(0, 243, 255, 0.12); color: var(--neon-cyan); border: 1px solid rgba(0, 243, 255, 0.25); }
+    .sync-badge.task { background: rgba(255, 183, 77, 0.12); color: var(--accent-amber); border: 1px solid rgba(255, 183, 77, 0.25); }
+    .sync-badge.exam { background: rgba(0, 230, 118, 0.12); color: var(--accent-green); border: 1px solid rgba(0, 230, 118, 0.25); }
+    .sync-badge.doc { background: rgba(188, 19, 254, 0.12); color: var(--neon-purple); border: 1px solid rgba(188, 19, 254, 0.25); }
+
+    .sync-item-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .sync-item {
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.25s;
+    }
+    .sync-item:hover {
+        background: rgba(255, 255, 255, 0.06);
         border-color: rgba(255, 255, 255, 0.12);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        transform: translateX(3px);
+    }
+
+    .sync-item-left {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+        margin-right: 15px;
+    }
+    .sync-item-title {
+        color: #f1f5f9;
+        font-weight: 600;
+        font-size: 0.92rem;
+    }
+    .sync-item-meta {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-sync-action {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .btn-sync-action.cyan {
+        background: rgba(0, 243, 255, 0.15);
+        color: var(--neon-cyan);
+        border: 1px solid rgba(0, 243, 255, 0.35);
+    }
+    .btn-sync-action.cyan:hover { background: var(--neon-cyan); color: #060814; }
+
+    .btn-sync-action.amber {
+        background: rgba(255, 183, 77, 0.15);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.35);
+    }
+    .btn-sync-action.amber:hover { background: var(--accent-amber); color: #060814; }
+
+    .btn-sync-action.green {
+        background: rgba(0, 230, 118, 0.15);
+        color: var(--accent-green);
+        border: 1px solid rgba(0, 230, 118, 0.35);
+    }
+    .btn-sync-action.green:hover { background: var(--accent-green); color: #060814; }
+
+    .btn-sync-action.purple {
+        background: rgba(188, 19, 254, 0.15);
+        color: var(--neon-purple);
+        border: 1px solid rgba(188, 19, 254, 0.35);
+    }
+    .btn-sync-action.purple:hover { background: var(--neon-purple); color: #fff; }
+
+    .sync-empty-text {
+        color: #64748b;
+        font-size: 0.85rem;
+        padding: 20px 0;
+        text-align: center;
+        font-style: italic;
+    }
+
+    /* ============================================= */
+    /* 5. LEARNING ANALYTICS VISUALIZER             */
+    /* ============================================= */
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 22px;
+        margin-bottom: 45px;
+    }
+
+    .analytics-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 20px;
+        padding: 24px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
     }
 
     .analytics-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
     .analytics-title {
-        font-size: 1rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
         font-weight: 700;
         color: #fff;
         display: flex;
         align-items: center;
         gap: 10px;
     }
+    .analytics-title i { color: var(--neon-cyan); }
 
-    .analytics-title i { color: var(--neon-blue); }
-
-    .analytics-badge {
-        font-size: 0.72rem;
-        padding: 4px 12px;
-        border-radius: 20px;
-        background: rgba(0, 243, 255, 0.1);
-        color: var(--neon-blue);
-        border: 1px solid rgba(0, 243, 255, 0.2);
-        font-weight: 600;
+    .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
     }
 
-    .chart-wrap canvas {
-        max-height: 280px;
-    }
-
-    /* Streak & Stats Cards */
-    .stats-row {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    .stat-mini-card {
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 16px;
-        padding: 20px;
-        text-align: center;
+    /* ============================================= */
+    /* 6. LEADERBOARD // HALL OF FAME                */
+    /* ============================================= */
+    .leaderboard-section {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 22px;
+        padding: 32px 36px;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .stat-mini-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 3px;
-        border-radius: 16px 16px 0 0;
-    }
-
-    .stat-mini-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255, 255, 255, 0.12);
-    }
-
-    .stat-mini-card.streak::before { background: linear-gradient(90deg, #ff6b6b, #ffa502); }
-    .stat-mini-card.courses::before { background: linear-gradient(90deg, var(--neon-blue), #0088ff); }
-    .stat-mini-card.quizzes::before { background: linear-gradient(90deg, var(--accent-green), #34d399); }
-    .stat-mini-card.overall::before { background: linear-gradient(90deg, var(--accent-purple), #c084fc); }
-
-    .stat-mini-icon {
-        font-size: 1.8rem;
-        margin-bottom: 10px;
-    }
-    .stat-mini-card.streak .stat-mini-icon { color: #ffa502; }
-    .stat-mini-card.courses .stat-mini-icon { color: var(--neon-blue); }
-    .stat-mini-card.quizzes .stat-mini-icon { color: var(--accent-green); }
-    .stat-mini-card.overall .stat-mini-icon { color: var(--accent-purple); }
-
-    .stat-mini-value {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #fff;
-        line-height: 1;
-        margin-bottom: 6px;
-    }
-
-    .stat-mini-label {
-        color: #888;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    /* ============================================= */
-    /* LEADERBOARD                                   */
-    /* ============================================= */
-
-    .leaderboard-section {
-        background: linear-gradient(145deg, rgba(15, 15, 20, 0.7), rgba(10, 10, 15, 0.9));
-        border: 1px solid rgba(0, 243, 255, 0.1);
-        border-radius: 20px;
-        padding: 35px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        margin-bottom: 50px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        margin-bottom: 45px;
     }
 
     .leaderboard-header {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 30px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 20px;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        border-bottom: 1px solid var(--border-glass);
+        padding-bottom: 18px;
     }
 
     .leaderboard-header h2 {
         font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
         color: #fff;
         margin: 0;
-        font-size: 1.8rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 12px;
         font-weight: 700;
     }
-    
-    .leaderboard-header i { color: #ffd700; font-size: 1.8rem; text-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+    .leaderboard-header h2 i {
+        color: #ffc01e;
+        filter: drop-shadow(0 0 10px rgba(255, 192, 30, 0.6));
+    }
 
-    .subtitle-neon { color: var(--neon-blue); font-size: 0.9rem; letter-spacing: 1px; font-weight: 600; }
-
-    .rank-list { display: flex; flex-direction: column; gap: 12px; }
+    .rank-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
 
     .rank-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        padding: 16px 24px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--border-glass);
+        padding: 14px 22px;
         border-radius: 16px;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     .rank-item:hover {
+        background: rgba(255, 255, 255, 0.06);
         border-color: rgba(0, 243, 255, 0.3);
-        box-shadow: 0 10px 30px rgba(0, 243, 255, 0.08), 0 0 0 1px rgba(0, 243, 255, 0.1);
-        transform: translateY(-4px);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     }
 
-    .rank-left { display: flex; align-items: center; gap: 18px; }
+    .rank-item.rank-1 {
+        border-color: rgba(255, 215, 0, 0.4);
+        background: linear-gradient(90deg, rgba(255, 215, 0, 0.08), rgba(255, 255, 255, 0.02));
+    }
+    .rank-item.rank-2 {
+        border-color: rgba(192, 192, 192, 0.35);
+        background: linear-gradient(90deg, rgba(192, 192, 192, 0.06), rgba(255, 255, 255, 0.02));
+    }
+    .rank-item.rank-3 {
+        border-color: rgba(205, 127, 50, 0.35);
+        background: linear-gradient(90deg, rgba(205, 127, 50, 0.06), rgba(255, 255, 255, 0.02));
+    }
 
-    .rank-number { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; color: #666; width: 35px; text-align: center; }
+    .rank-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .rank-number {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        width: 32px;
+        text-align: center;
+    }
+    .rank-item.rank-1 .rank-number { color: #ffd700; }
+    .rank-item.rank-2 .rank-number { color: #e2e8f0; }
+    .rank-item.rank-3 .rank-number { color: #cd7f32; }
 
     .rank-avatar {
-        width: 60px; height: 60px; border-radius: 50%;
-        background: #111; display: flex; align-items: center; justify-content: center;
-        border: 2px solid rgba(255, 255, 255, 0.1); overflow: hidden;
-        cursor: pointer; flex-shrink: 0;
-        transition: transform 0.3s ease, border-color 0.3s ease;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0d1222;
+        transition: transform 0.2s, border-color 0.2s;
     }
     .rank-avatar:hover {
         transform: scale(1.1);
-        border-color: var(--neon-blue);
+        border-color: var(--neon-cyan);
     }
-    .rank-avatar img { 
-        width: 100%; height: 100%; 
-        object-fit: cover; object-position: center; 
-        image-rendering: -webkit-optimize-contrast; 
+    .rank-avatar img {
+        width: 100%; height: 100%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast;
     }
     .rank-avatar i { font-size: 1.2rem; color: #888; }
 
-    .rank-name { font-size: 1.1rem; font-weight: 700; color: #e0e0e0; }
+    .rank-info { display: flex; flex-direction: column; }
+    .rank-name { font-weight: 700; font-size: 1.05rem; color: #fff; cursor: pointer; }
+    .rank-name:hover { color: var(--neon-cyan); }
+    .rank-level-tag { font-size: 0.72rem; color: var(--text-muted); }
 
     .rank-coins {
-        display: flex; align-items: center; gap: 8px;
-        font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #ffc01e;
-        font-size: 1.1rem; background: rgba(255, 192, 30, 0.1);
-        padding: 6px 14px; border-radius: 10px; border: 1px solid rgba(255, 192, 30, 0.2);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ffc01e;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-shadow: 0 0 10px rgba(255, 192, 30, 0.4);
     }
-    .rank-coins i { text-shadow: 0 0 10px rgba(255, 192, 30, 0.6); }
-
-    .rank-1 { border-left: 4px solid #ffd700; box-shadow: inset 50px 0 100px -50px rgba(255, 215, 0, 0.15); }
-    .rank-1 .rank-number { color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
-    .rank-1 .rank-avatar { border-color: #ffd700; box-shadow: 0 0 12px rgba(255, 215, 0, 0.4); }
-    .rank-2 { border-left: 4px solid #e3e4e5; box-shadow: inset 50px 0 100px -50px rgba(227, 228, 229, 0.1); }
-    .rank-2 .rank-number { color: #e3e4e5; }
-    .rank-3 { border-left: 4px solid #cd7f32; box-shadow: inset 50px 0 100px -50px rgba(205, 127, 50, 0.1); }
-    .rank-3 .rank-number { color: #cd7f32; }
-
-    .empty-state-text-centered { text-align: center; padding: 20px; width: 100%; color: #666; }
 
     /* ============================================= */
-    /* NOTIFICATION MODAL                           */
+    /* MODALS & OVERLAYS                             */
     /* ============================================= */
-
     .modal-overlay {
-        display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,0.8); z-index: 9999;
-        justify-content: center; align-items: center;
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+        position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82);
+        display: none; justify-content: center; align-items: center;
+        z-index: 10000; backdrop-filter: blur(10px);
+        opacity: 0; transition: opacity 0.3s;
     }
-    
+    .modal-overlay.modal-open { display: flex; opacity: 1; }
+
     .modal-box {
-        background: #161616;
-        border: 1px solid var(--neon-blue);
-        width: 500px;
-        border-radius: 25px;
+        background: #111524;
+        border: 1px solid var(--border-glass-glow);
+        border-radius: 20px;
         padding: 30px;
-        box-shadow: 0 0 50px rgba(0, 243, 255, 0.15);
-        position: relative;
-        transform: scale(0.8);
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        max-width: 520px;
+        width: 90%;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.8);
     }
-    
-    .modal-overlay.modal-open .modal-box { transform: scale(1); opacity: 1; }
 
     .modal-header {
-        font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: var(--neon-blue);
-        margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
         display: flex; justify-content: space-between; align-items: center;
+        font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; color: #fff;
+        margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding-bottom: 12px; font-weight: 700;
     }
-
-    .notice-list-modal { max-height: 400px; overflow-y: auto; padding-right: 10px; }
-    .notice-list-modal::-webkit-scrollbar { width: 4px; }
-    .notice-list-modal::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    .modal-header i.fa-times { cursor: pointer; color: #888; transition: color 0.2s; }
+    .modal-header i.fa-times:hover { color: var(--accent-red); }
 
     .notice-item {
-        background: rgba(255,255,255,0.03);
-        padding: 15px; border-radius: 12px; margin-bottom: 15px;
-        border-left: 4px solid var(--neon-purple);
-        transition: 0.2s;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
     }
-    .notice-item:hover { background: rgba(255,255,255,0.06); }
-    .n-title { font-weight: 700; font-size: 1rem; color: #fff; margin-bottom: 5px; }
-    .n-body { font-size: 0.9rem; color: #aaa; line-height: 1.5; }
-    .n-date { font-size: 0.8rem; color: #666; margin-top: 10px; display: block; text-align: right; }
+    .n-title { font-weight: 700; color: var(--neon-cyan); margin-bottom: 4px; font-size: 0.95rem; }
+    .n-body { color: #cbd5e1; font-size: 0.88rem; line-height: 1.5; }
+    .n-date { color: #64748b; font-size: 0.72rem; margin-top: 6px; display: block; }
 
     /* ============================================= */
-    /* CHATBOT STYLES                                */
+    /* AI FLOATING BOT WIDGET                        */
     /* ============================================= */
-    
     #ai-chat-toggle {
-        position: fixed; bottom: 30px; right: 30px;
-        width: 70px; height: 70px;
-        background: linear-gradient(135deg, var(--neon-blue), #0066ff);
+        position: fixed; bottom: 35px; right: 35px; width: 62px; height: 62px;
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
         border-radius: 50%; display: flex; justify-content: center; align-items: center;
-        cursor: pointer; z-index: 10000;
-        box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        animation: floatBot 3s ease-in-out infinite;
+        color: #060814; font-size: 26px; cursor: pointer; z-index: 9999;
+        box-shadow: 0 10px 30px rgba(0, 243, 255, 0.4);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    #ai-chat-toggle:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 40px rgba(0, 243, 255, 0.8); }
-    #ai-chat-toggle i { font-size: 32px; color: #000; }
-
-    .pulse-ring {
-        position: absolute; width: 100%; height: 100%; border-radius: 50%;
-        border: 2px solid var(--neon-blue); opacity: 0; animation: pulseRing 2s infinite;
-    }
+    #ai-chat-toggle:hover { transform: scale(1.12); }
 
     #ai-chat-container {
-        position: fixed; bottom: 115px; right: 35px;
-        width: 400px; height: 550px; min-width: 320px; min-height: 400px;
-        max-width: 90vw; max-height: 90vh;
-        background: var(--chat-bg-glass);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: var(--chat-border); border-radius: 25px;
-        display: flex; flex-direction: column; z-index: 9999;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        resize: both; overflow: hidden;
-        transform-origin: bottom right;
-        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: fixed; bottom: 110px; right: 35px; width: 440px; height: 580px;
+        background: rgba(12, 15, 26, 0.95);
+        border: 1px solid var(--border-glass-glow);
+        border-radius: 24px; display: flex; flex-direction: column; overflow: hidden;
+        z-index: 9999; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(25px);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    #ai-chat-container.closed { opacity: 0; pointer-events: none; transform: scale(0.8) translateY(30px); box-shadow: none; }
-
+    #ai-chat-container.closed {
+        opacity: 0; pointer-events: none; transform: scale(0.85) translateY(40px);
+    }
     #ai-chat-container.fullscreen-mode {
-        width: 98vw !important; height: 98vh !important;
-        bottom: 1vh !important; right: 1vw !important;
-        border-radius: 30px !important; resize: none !important;
-        z-index: 99999;
-        box-shadow: 0 0 50px rgba(0, 243, 255, 0.3) !important;
+        width: 96vw !important; height: 94vh !important;
+        bottom: 3vh !important; right: 2vw !important;
+        border-radius: 24px !important;
     }
 
     .chat-header {
-        padding: 20px 25px; background: rgba(0, 243, 255, 0.05);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 16px 22px; background: rgba(0, 243, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         display: flex; justify-content: space-between; align-items: center;
     }
-    .header-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #fff; font-size: 1.1rem; display: flex; gap: 12px; align-items: center; }
-    .header-controls { display: flex; gap: 15px; }
-    .header-controls i { color: #aaa; cursor: pointer; transition: 0.3s; font-size: 1.2rem; }
-    .header-controls i:hover { color: var(--neon-blue); transform: scale(1.1); }
+    .header-title {
+        font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #fff; font-size: 1.05rem;
+        display: flex; gap: 10px; align-items: center;
+    }
+    .header-controls { display: flex; gap: 14px; }
+    .header-controls i { color: #888; cursor: pointer; transition: color 0.2s; }
+    .header-controls i:hover { color: var(--neon-cyan); }
 
-    #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
-    #chat-box::-webkit-scrollbar { width: 8px; }
-    #chat-box::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-    #chat-box::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 10px; }
+    #chat-box {
+        flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+    }
+    #chat-box::-webkit-scrollbar { width: 6px; }
+    #chat-box::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.25); border-radius: 10px; }
 
-    .message { display: flex; gap: 15px; max-width: 85%; animation: msgPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .msg-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; flex-shrink: 0; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 2px solid transparent; }
-    .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .msg-text { padding: 16px 20px; border-radius: 18px; font-size: 1rem; line-height: 1.6; word-wrap: break-word; position: relative; }
-
+    .message { display: flex; gap: 12px; max-width: 88%; }
     .bot-msg { align-self: flex-start; }
-    .bot-msg .msg-avatar { background: rgba(0, 243, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 243, 255, 0.3); }
-    .bot-msg .msg-text { background: rgba(255, 255, 255, 0.08); color: #e0e0e0; border: 1px solid rgba(255,255,255,0.05); border-top-left-radius: 4px; }
-
     .user-msg { align-self: flex-end; flex-direction: row-reverse; }
-    .user-msg .msg-avatar { background: rgba(188, 19, 254, 0.2); color: var(--neon-purple); border-color: rgba(188, 19, 254, 0.4); }
-    .user-msg .msg-text { background: linear-gradient(135deg, rgba(0, 243, 255, 0.8), rgba(0, 102, 255, 0.8)); color: #000; font-weight: 600; border-top-right-radius: 4px; box-shadow: 0 8px 20px rgba(0, 243, 255, 0.25); }
 
-    .typing-dots { display: flex; gap: 6px; padding: 12px 24px; align-self: flex-start; background: rgba(255, 255, 255, 0.08); border-radius: 20px; margin-left: 58px; border-top-left-radius: 4px;}
-    .typing-dots span { display: inline-block; width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; }
+    .msg-avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 15px; flex-shrink: 0; overflow: hidden;
+    }
+    .bot-msg .msg-avatar { background: rgba(0, 243, 255, 0.15); color: var(--neon-cyan); }
+    .user-msg .msg-avatar { background: rgba(188, 19, 254, 0.2); color: var(--neon-purple); }
+    .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .msg-text {
+        padding: 12px 18px; border-radius: 16px; font-size: 0.94rem; line-height: 1.55; word-wrap: break-word;
+    }
+    .bot-msg .msg-text { background: rgba(255, 255, 255, 0.06); color: #e2e8f0; border-top-left-radius: 4px; border: 1px solid rgba(255,255,255,0.06); }
+    .user-msg .msg-text { background: linear-gradient(135deg, var(--neon-cyan), #0077ff); color: #060814; font-weight: 600; border-top-right-radius: 4px; }
+
+    .chat-input-area {
+        padding: 16px 20px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex; gap: 10px; align-items: center;
+    }
+    #user-input {
+        flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #fff; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 0.95rem;
+    }
+    #user-input:focus { border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.04); }
+
+    #send-btn {
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        border: none; width: 44px; height: 44px; border-radius: 50%;
+        color: #060814; font-size: 16px; cursor: pointer; display: flex;
+        justify-content: center; align-items: center; transition: transform 0.2s;
+    }
+    #send-btn:hover { transform: scale(1.1); }
+
+    #mic-btn {
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+        width: 44px; height: 44px; border-radius: 50%; color: var(--neon-cyan);
+        cursor: pointer; display: flex; justify-content: center; align-items: center;
+    }
+    #mic-btn.listening { background: var(--neon-purple); color: #fff; animation: pulseMic 1.4s infinite; }
+    @keyframes pulseMic {
+        0% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.6); }
+        70% { box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); }
+    }
+
+    #chat-loader { display: none; padding: 10px 20px; }
+    .typing-dots { display: flex; gap: 6px; }
+    .typing-dots span {
+        width: 8px; height: 8px; background: var(--neon-cyan); border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out both;
+    }
     .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
     .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-    .chat-input-area { padding: 20px; background: rgba(0, 0, 0, 0.3); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; gap: 12px; position: relative; align-items: center; }
-    
-    #mic-btn {
-        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-        width: 54px; height: 54px; border-radius: 50%; cursor: pointer; color: var(--neon-blue); font-size: 20px; transition: 0.3s;
-        display: flex; justify-content: center; align-items: center;
+    @keyframes typing {
+        0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+        40% { transform: scale(1); opacity: 1; }
     }
-    #mic-btn:hover { background: rgba(0, 243, 255, 0.15); box-shadow: 0 0 15px var(--neon-blue); }
-    #mic-btn.listening { background: var(--neon-purple); color: white; border-color: var(--neon-purple); animation: pulseMic 1.5s infinite; }
 
-    #user-input { flex: 1; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 16px 24px; border-radius: 30px; outline: none; transition: 0.3s; font-family: 'Outfit'; font-size: 1.05rem; }
-    #user-input:focus { border-color: var(--neon-blue); background: rgba(0, 243, 255, 0.05); box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
-    
-    #send-btn { background: linear-gradient(135deg, var(--neon-blue), #0066ff); border: none; width: 54px; height: 54px; border-radius: 50%; cursor: pointer; color: #000; font-size: 22px; transition: 0.3s; display: flex; justify-content: center; align-items: center; box-shadow: 0 5px 15px rgba(0, 243, 255, 0.3); }
-    #send-btn:hover { transform: scale(1.1) rotate(-10deg); box-shadow: 0 8px 25px var(--neon-blue); }
-
-    #ai-chat-container::-webkit-resizer { display: none; }
-
-    @keyframes floatBot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-    @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.8); opacity: 0; } }
-    @keyframes msgPop { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes typing { 0%, 80%, 100% { transform: scale(0); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
-    @keyframes pulseMic { 0% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(188, 19, 254, 0); } 100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); } }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
+    @media (max-width: 1100px) {
+        .stats-overview-grid { grid-template-columns: repeat(2, 1fr); }
         .analytics-grid { grid-template-columns: 1fr; }
-        .stats-row { grid-template-columns: repeat(2, 1fr); }
+        .sync-panels-grid { grid-template-columns: 1fr; }
         .mini-stats { display: none; }
     }
 
     @media (max-width: 768px) {
+        .dashboard-container { padding: 20px 16px; }
+        .welcome-banner { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .stats-overview-grid { grid-template-columns: 1fr; }
         .courses-grid { grid-template-columns: 1fr; }
-        .dashboard-container { padding: 20px; }
+        #ai-chat-container { width: 92vw; right: 4vw; bottom: 90px; }
     }
 </style>
 
+<div class="dashboard-ambient"></div>
+
 <div class="dashboard-container">
 
-    <!-- WELCOME BANNER -->
+    <!-- ============================================= -->
+    <!-- 1. HERO WELCOME BANNER                        -->
+    <!-- ============================================= -->
     <div class="welcome-banner fade-in-up">
         <div class="user-info">
             <h1>Welcome, <span>{{ request.user.first_name|default:request.user.username }}</span></h1>
-            <div class="level-badge"><i class="fas fa-shield-alt"></i> LEVEL: {{ request.user.student_level }}</div>
+            <div class="badge-pill-row">
+                <span class="level-badge"><i class="fas fa-shield-alt"></i> LEVEL: {{ request.user.student_level }}</span>
+                {% if study_streak > 0 %}
+                    <span class="streak-badge"><i class="fas fa-fire"></i> {{ study_streak }} Day{{ study_streak|pluralize }} Streak</span>
+                {% endif %}
+            </div>
         </div>
         
         <div class="banner-right">
@@ -1054,18 +1262,23 @@
                     <div class="mini-stat-label">Coins</div>
                 </div>
             </div>
-            <div class="notif-bell" onclick="openNotificationModal()" title="View Notifications" style="position: relative;">
-                <i class="fas fa-bell"></i>
-                {% if notifications %}<div class="badge-dot"></div>{% endif %}
+
+            <div class="banner-actions">
+                <div class="notif-bell" onclick="openNotificationModal()" title="View Notifications">
+                    <i class="fas fa-bell"></i>
+                    {% if notifications %}<div class="badge-dot"></div>{% endif %}
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- CONTINUE LEARNING - COURSE CARDS -->
-    <div class="fade-in-up delay-2">
+    <!-- ============================================= -->
+    <!-- 2. CONTINUE LEARNING - ENROLLED COURSES       -->
+    <!-- ============================================= -->
+    <div class="fade-in-up delay-1">
         <div class="section-title">
-            <i class="fas fa-layer-group icon-neon"></i> Continue Learning
-            <span class="section-subtitle">{{ total_enrolled }} Active Course{{ total_enrolled|pluralize }}</span>
+            <i class="fas fa-layer-group"></i> Continue Learning
+            <span class="section-subtitle">{{ total_enrolled }} Enrolled Course{{ total_enrolled|pluralize }}</span>
         </div>
         
         <div class="courses-grid">
@@ -1078,11 +1291,11 @@
                             <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}">
                         {% else %}
                             <div class="thumb-placeholder">
-                                <i class="fas fa-code fa-3x"></i>
+                                <i class="fas fa-code"></i>
                             </div>
                         {% endif %}
                         <div class="card-thumb-overlay"></div>
-                        <span class="difficulty-badge {{ enrollment.course.difficulty_level|lower }}">{{ enrollment.course.difficulty_level }}</span>
+                        <span class="difficulty-badge {{ enrollment.course.difficulty_level|lower }}">{{ enrollment.course.difficulty_level|default:'General' }}</span>
                     </div>
 
                     <!-- Content -->
@@ -1093,17 +1306,18 @@
                             <div class="progress-ring-wrapper">
                                 <svg class="progress-ring-svg" viewBox="0 0 60 60">
                                     <circle class="progress-ring-bg" cx="30" cy="30" r="26" />
-                                    <circle class="progress-ring-fill js-set-offset {% if enrollment.real_progress >= 100 %}complete{% endif %}" cx="30" cy="30" r="26" 
+                                    <circle class="progress-ring-fill js-set-offset {% if enrollment.real_progress >= 100 %}complete{% endif %}" 
+                                        cx="30" cy="30" r="26" 
                                         data-offset="{{ enrollment.ring_offset|default:'163.36' }}"
                                         data-progress="{{ enrollment.real_progress }}" />
                                 </svg>
                                 <div class="progress-ring-text">
-                                    {{ enrollment.real_progress|floatformat:0 }}<small>%</small>
+                                    {{ enrollment.real_progress|floatformat:0 }}<small style="font-size:0.55rem; color:#888;">%</small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Faculty Info (Enhanced) -->
+                        <!-- Faculty Mini Profile -->
                         <div class="course-faculty-enhanced">
                             <div class="faculty-avatar-mini">
                                 {% if enrollment.faculty_user and enrollment.faculty_user.profile.profile_pic %}
@@ -1113,7 +1327,7 @@
                                 {% endif %}
                             </div>
                             <div class="faculty-info-text">
-                                <span class="faculty-name">{{ enrollment.course.faculty_name }}</span>
+                                <span class="faculty-name">{{ enrollment.course.faculty_name|default:'Department Faculty' }}</span>
                                 <span class="faculty-role">Course Instructor</span>
                             </div>
                         </div>
@@ -1124,36 +1338,36 @@
                         </div>
 
                         <div class="progress-meta">
-                            <span class="lesson-count"><strong>{{ enrollment.lessons_completed }}</strong> of {{ enrollment.total_lessons }} tasks</span>
+                            <span class="lesson-count"><strong>{{ enrollment.lessons_completed }}</strong> of {{ enrollment.total_lessons }} completed</span>
                             <span class="last-accessed">
                                 {% if enrollment.real_progress >= 100 %}
-                                    <i class="fas fa-check-circle" style="color: var(--accent-green);"></i> Completed
+                                    <span style="color: var(--accent-green);"><i class="fas fa-check-circle"></i> Completed</span>
                                 {% else %}
-                                    <i class="fas fa-clock"></i> {{ enrollment.last_accessed|timesince }} ago
+                                    <i class="fas fa-history"></i> {{ enrollment.last_accessed|timesince }} ago
                                 {% endif %}
                             </span>
                         </div>
 
-                        <!-- Quick Stats (Clickable Navigation Chips) -->
+                        <!-- Clickable Granular Navigation Chips -->
                         <div class="quick-stats-row">
-                            <a href="{% url 'course_watch' enrollment.course.id %}" class="quick-stat-chip lessons" title="Open course lessons">
+                            <a href="{% url 'course_watch' enrollment.course.id %}" class="quick-stat-chip lessons" title="Explore Course Lessons">
                                 <i class="fas fa-play-circle"></i>
                                 <span class="chip-count">{{ enrollment.completed_lessons_count }}/{{ enrollment.total_lessons_count }}</span>
                                 <span class="chip-label">Lessons</span>
                             </a>
-                            <a href="{% url 'student_exam_list' %}" class="quick-stat-chip quizzes" title="View course quizzes">
+                            <a href="{% url 'student_exam_list' %}" class="quick-stat-chip quizzes" title="Take Course Quizzes">
                                 <i class="fas fa-question-circle"></i>
                                 <span class="chip-count">{{ enrollment.completed_quizzes_count }}/{{ enrollment.total_quizzes_count }}</span>
                                 <span class="chip-label">Quizzes</span>
                             </a>
-                            <a href="{% url 'course_watch' enrollment.course.id %}" class="quick-stat-chip assignments" title="View course tasks & assignments">
+                            <a href="{% url 'course_watch' enrollment.course.id %}" class="quick-stat-chip assignments" title="Course Tasks & Assignments">
                                 <i class="fas fa-tasks"></i>
                                 <span class="chip-count">{{ enrollment.completed_tasks_count }}/{{ enrollment.total_tasks_count }}</span>
                                 <span class="chip-label">Tasks</span>
                             </a>
                         </div>
 
-                        <!-- Buttons -->
+                        <!-- Card Action Buttons -->
                         <div class="card-actions">
                             <a href="{% url 'course_watch' enrollment.course.id %}" class="btn-continue">
                                 {% if enrollment.real_progress >= 100 %}
@@ -1162,7 +1376,7 @@
                                     <i class="fas fa-play"></i> Continue Learning
                                 {% endif %}
                             </a>
-                            <a href="{% url 'course_community_chat' slug=enrollment.course.slug %}" class="btn-community-sm" title="Community Chat">
+                            <a href="{% url 'course_community_chat' slug=enrollment.course.slug %}" class="btn-community-sm" title="Open Community Discussion Hub">
                                 <i class="fas fa-comments"></i>
                             </a>
                         </div>
@@ -1172,30 +1386,191 @@
             {% else %}
                 <div class="empty-state-box">
                     <i class="fas fa-rocket empty-state-icon"></i>
-                    <h3 class="empty-state-text">No active courses found.</h3>
-                    <a href="{% url 'all_courses' %}" class="empty-state-link">Browse Library &rarr;</a>
+                    <h3 class="empty-state-text">You are not enrolled in any courses yet.</h3>
+                    <a href="{% url 'all_courses' %}" class="empty-state-link">
+                        Explore Full Course Catalog <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
             {% endif %}
         </div>
     </div>
 
-    <!-- LEADERBOARD -->
-    <div class="leaderboard-section fade-in-up delay-3">
+    <!-- ============================================= -->
+    <!-- 4. ACADEMIC COMMAND CENTER (3-PANEL SYNC)     -->
+    <!-- ============================================= -->
+    <div class="fade-in-up delay-3">
+        <div class="section-title">
+            <i class="fas fa-network-wired"></i> Academic Command Hub
+            <span class="section-subtitle">Real-time Faculty Synchronized</span>
+        </div>
+
+        <div class="sync-panels-grid">
+            <!-- 1. Upcoming Live Classes -->
+            <div class="sync-card">
+                <div class="sync-card-header">
+                    <div class="sync-card-title">
+                        <i class="fas fa-video" style="color: var(--neon-cyan);"></i> Live Broadcasts
+                    </div>
+                    <span class="sync-badge live">{{ upcoming_classes.count }} Scheduled</span>
+                </div>
+                <div class="sync-item-list">
+                    {% for live in upcoming_classes %}
+                    <div class="sync-item">
+                        <div class="sync-item-left">
+                            <span class="sync-item-title">{{ live.title }}</span>
+                            <span class="sync-item-meta">
+                                <span><i class="far fa-calendar-alt"></i> {{ live.date_time|date:"d M, Y • h:i A" }}</span>
+                                {% if live.course %}<span>• {{ live.course.title|truncatechars:25 }}</span>{% endif %}
+                            </span>
+                        </div>
+                        <a href="{{ live.meeting_link }}" target="_blank" class="btn-sync-action cyan">
+                            <i class="fas fa-video"></i> Join Live
+                        </a>
+                    </div>
+                    {% empty %}
+                        <div class="sync-empty-text">No upcoming live lectures scheduled at this moment.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 2. Pending Assignments -->
+            <div class="sync-card">
+                <div class="sync-card-header">
+                    <div class="sync-card-title">
+                        <i class="fas fa-clipboard-check" style="color: var(--accent-amber);"></i> Pending Assignments
+                    </div>
+                    <span class="sync-badge task">{{ pending_assignments.count }} Due</span>
+                </div>
+                <div class="sync-item-list">
+                    {% for assign in pending_assignments %}
+                    <div class="sync-item">
+                        <div class="sync-item-left">
+                            <span class="sync-item-title">{{ assign.title }}</span>
+                            <span class="sync-item-meta">
+                                <span><i class="far fa-clock"></i> Due: {{ assign.due_date|date:"d M, Y" }}</span>
+                                <span>• {{ assign.total_marks }} Marks</span>
+                            </span>
+                        </div>
+                        <a href="{% url 'course_watch' assign.course.id %}" class="btn-sync-action amber">
+                            <i class="fas fa-upload"></i> Submit
+                        </a>
+                    </div>
+                    {% empty %}
+                        <div class="sync-empty-text">All assignments submitted! You are completely up to date.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 3. Active Examinations & Quizzes -->
+            <div class="sync-card">
+                <div class="sync-card-header">
+                    <div class="sync-card-title">
+                        <i class="fas fa-graduation-cap" style="color: var(--accent-green);"></i> Active Quizzes & Exams
+                    </div>
+                    <span class="sync-badge exam">{{ active_exams.count }} Ready</span>
+                </div>
+                <div class="sync-item-list">
+                    {% for exam in active_exams %}
+                    <div class="sync-item">
+                        <div class="sync-item-left">
+                            <span class="sync-item-title">{{ exam.title }}</span>
+                            <span class="sync-item-meta">
+                                <span><i class="fas fa-stopwatch"></i> {{ exam.duration_minutes }} Mins</span>
+                                <span>• {{ exam.total_marks }} Marks</span>
+                            </span>
+                        </div>
+                        <a href="{% url 'take_quiz' exam.id %}" class="btn-sync-action green">
+                            <i class="fas fa-play"></i> Start Quiz
+                        </a>
+                    </div>
+                    {% empty %}
+                        <div class="sync-empty-text">No pending examinations or quizzes.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 4. Digital Library & Archive -->
+            <div class="sync-card">
+                <div class="sync-card-header">
+                    <div class="sync-card-title">
+                        <i class="fas fa-folder-open" style="color: var(--neon-purple);"></i> Digital Resources
+                    </div>
+                    <span class="sync-badge doc">{{ recent_documents.count }} Files</span>
+                </div>
+                <div class="sync-item-list">
+                    {% for doc in recent_documents %}
+                    <div class="sync-item">
+                        <div class="sync-item-left">
+                            <span class="sync-item-title">{{ doc.title }}</span>
+                            <span class="sync-item-meta">
+                                <span><i class="fas fa-tag"></i> {{ doc.category }}</span>
+                                <span>• {{ doc.uploaded_at|date:"d M" }}</span>
+                            </span>
+                        </div>
+                        <a href="{{ doc.file.url }}" target="_blank" class="btn-sync-action purple">
+                            <i class="fas fa-download"></i> Get File
+                        </a>
+                    </div>
+                    {% empty %}
+                        <div class="sync-empty-text">No library documents added recently.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 5. LEARNING ANALYTICS VISUALIZER              -->
+    <!-- ============================================= -->
+    <div class="analytics-grid fade-in-up delay-3">
+        <!-- 14-Day Activity Chart -->
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <div class="analytics-title">
+                    <i class="fas fa-wave-square"></i> 14-Day Learning Velocity
+                </div>
+                <span class="sync-badge live">Real-time Telemetry</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Course Progress Comparison -->
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <div class="analytics-title">
+                    <i class="fas fa-tasks"></i> Progress Matrix
+                </div>
+                <span class="sync-badge exam">{{ avg_quiz_score }}% Quiz Avg</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="courseProgressChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 6. GLOBAL LEADERBOARD // HALL OF FAME         -->
+    <!-- ============================================= -->
+    <div class="leaderboard-section fade-in-up delay-4">
         <div class="leaderboard-header">
-            <h2><i class="fas fa-trophy"></i> Global Leaderboard <span class="subtitle-neon">// Hall of Fame</span></h2>
+            <h2><i class="fas fa-trophy"></i> Global Leaderboard <span style="font-size:0.9rem; color:var(--neon-cyan); letter-spacing:1px; font-weight:600;">// Hall of Fame</span></h2>
         </div>
         
         <div class="rank-list">
             {% for student in top_students %}
             <div class="rank-item {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
                 <div class="rank-left">
-                    <div class="rank-number">#{{ forloop.counter }}</div>
+                    <div class="rank-number">
+                        {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}#{{ forloop.counter }}{% endif %}
+                    </div>
                     <div class="rank-avatar js-open-modal"
                         data-firstname="{{ student.first_name|default:student.username|escapejs }}"
                         data-username="{{ student.username|escapejs }}"
                         data-pic="{% if student.profile.profile_pic %}{{ student.profile.profile_pic.url }}{% endif %}"
                         data-coins="{{ student.lms_coins }}"
-                        data-stream="{{ student.stream|default:'Not Specified'|escapejs }}"
+                        data-stream="{{ student.stream|default:'Computer Science'|escapejs }}"
                         data-level="{{ student.student_level|default:'Beginner'|escapejs }}">
                         {% if student.profile.profile_pic %}
                             <img src="{{ student.profile.profile_pic.url }}" alt="{{ student.username }}">
@@ -1203,27 +1578,40 @@
                             <i class="fas fa-user-ninja"></i>
                         {% endif %}
                     </div>
-                    <div class="rank-name">{{ student.first_name|default:student.username }}</div>
+                    <div class="rank-info">
+                        <div class="rank-name js-open-modal"
+                            data-firstname="{{ student.first_name|default:student.username|escapejs }}"
+                            data-username="{{ student.username|escapejs }}"
+                            data-pic="{% if student.profile.profile_pic %}{{ student.profile.profile_pic.url }}{% endif %}"
+                            data-coins="{{ student.lms_coins }}"
+                            data-stream="{{ student.stream|default:'Computer Science'|escapejs }}"
+                            data-level="{{ student.student_level|default:'Beginner'|escapejs }}">
+                            {{ student.first_name|default:student.username }}
+                        </div>
+                        <span class="rank-level-tag"><i class="fas fa-shield-alt" style="color:var(--neon-cyan);"></i> Level: {{ student.student_level }}</span>
+                    </div>
                 </div>
                 <div class="rank-coins">
                     {{ student.lms_coins }} <i class="fas fa-coins"></i>
                 </div>
             </div>
             {% empty %}
-            <div class="empty-state-text-centered">
-                No Hackers on the leaderboard yet. Start solving challenges!
-            </div>
+            <div class="sync-empty-text">No hackers on the leaderboard yet. Start solving challenges!</div>
             {% endfor %}
         </div>
     </div>
 </div>
 
+<!-- ============================================= -->
+<!-- MODALS                                        -->
+<!-- ============================================= -->
+
 <!-- NOTIFICATION MODAL -->
 <div class="modal-overlay" id="notifModal">
     <div class="modal-box">
         <div class="modal-header">
-            <span><i class="fas fa-bell"></i> NOTIFICATIONS</span>
-            <i class="fas fa-times cursor-pointer-white" onclick="closeNotificationModal()"></i>
+            <span><i class="fas fa-bell" style="color:var(--neon-cyan);"></i> NOTIFICATIONS</span>
+            <i class="fas fa-times" onclick="closeNotificationModal()"></i>
         </div>
         <div class="notice-list-modal">
             {% for notice in notifications %}
@@ -1233,7 +1621,7 @@
                 <span class="n-date">{{ notice.created_at|date:"d M, Y • h:i A" }}</span>
             </div>
             {% empty %}
-                <p class="empty-notice">No new notifications.</p>
+                <p class="sync-empty-text">No new notifications.</p>
             {% endfor %}
         </div>
     </div>
@@ -1243,44 +1631,50 @@
 <div class="modal-overlay" id="studentProfileModal">
     <div class="modal-box" style="text-align: center;">
         <div class="modal-header">
-            <span><i class="fas fa-user-circle"></i> STUDENT PROFILE</span>
-            <i class="fas fa-times cursor-pointer-white" onclick="closeStudentModal()"></i>
+            <span><i class="fas fa-user-circle" style="color:var(--neon-cyan);"></i> CADET PROFILE</span>
+            <i class="fas fa-times" onclick="closeStudentModal()"></i>
         </div>
-        <div class="modal-body" style="padding: 20px 0;">
-            <div style="width: 140px; height: 140px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; border: 3px solid var(--neon-blue); box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);">
+        <div class="modal-body" style="padding: 15px 0;">
+            <div style="width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; border: 3px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); background:#0c101d;">
                 <img id="sp-img" src="" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast; display: none;">
-                <i id="sp-icon" class="fas fa-user-ninja" style="font-size: 5rem; color: #888; line-height: 134px; display: none;"></i>
+                <i id="sp-icon" class="fas fa-user-ninja" style="font-size: 4.5rem; color: #888; line-height: 124px; display: none;"></i>
             </div>
-            <h3 id="sp-name" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; color: #fff; margin-bottom: 5px;"></h3>
-            <p id="sp-username" style="color: #aaa; margin-bottom: 15px; font-size: 1.1rem; letter-spacing: 1px;"></p>
+            <h3 id="sp-name" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; color: #fff; margin-bottom: 4px;"></h3>
+            <p id="sp-username" style="color: #94a3b8; margin-bottom: 18px; font-size: 1rem; letter-spacing: 0.5px;"></p>
             
-            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; font-size: 1rem; color: #ddd; background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
-                <span><i class="fas fa-graduation-cap" style="color: var(--neon-purple); margin-right: 5px;"></i> Stream: <span id="sp-stream" style="color: #fff; font-weight: bold;"></span></span>
-                <span><i class="fas fa-medal" style="color: var(--accent-green); margin-right: 5px;"></i> Level: <span id="sp-level" style="color: #fff; font-weight: bold;"></span></span>
+            <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 22px; font-size: 0.92rem; color: #ddd; background: rgba(255, 255, 255, 0.035); padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.06);">
+                <span><i class="fas fa-graduation-cap" style="color: var(--neon-purple); margin-right: 5px;"></i> Stream: <b id="sp-stream" style="color: #fff;"></b></span>
+                <span><i class="fas fa-medal" style="color: var(--accent-green); margin-right: 5px;"></i> Level: <b id="sp-level" style="color: #fff;"></b></span>
             </div>
 
-            <div style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #ffc01e; font-size: 1.4rem; background: rgba(255, 192, 30, 0.1); padding: 10px 25px; border-radius: 12px; border: 1px solid rgba(255, 192, 30, 0.2); box-shadow: 0 0 20px rgba(255, 192, 30, 0.1);">
-                <span id="sp-coins"></span> <i class="fas fa-coins" style="text-shadow: 0 0 15px rgba(255, 192, 30, 0.8);"></i>
+            <div style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #ffc01e; font-size: 1.35rem; background: rgba(255, 192, 30, 0.1); padding: 8px 24px; border-radius: 12px; border: 1px solid rgba(255, 192, 30, 0.25); box-shadow: 0 0 20px rgba(255, 192, 30, 0.15);">
+                <span id="sp-coins"></span> <i class="fas fa-coins"></i>
             </div>
         </div>
     </div>
 </div>
 
-<!-- AI CHATBOT -->
-<div id="ai-chat-toggle" onclick="toggleChat()">
+<!-- ============================================= -->
+<!-- INTEGRATED LIVE CODE EDITOR MODAL             -->
+<!-- ============================================= -->
+{% include 'ide_modal.html' %}
+
+<!-- ============================================= -->
+<!-- AI STUDY COMPANION FLOATING CHATBOT           -->
+<!-- ============================================= -->
+<div id="ai-chat-toggle" onclick="toggleChat()" title="LMS AI Study Companion">
     <i class="fas fa-robot"></i>
-    <span class="pulse-ring"></span>
 </div>
 
 <div id="ai-chat-container" class="closed">
     <div class="chat-header">
         <div class="header-title">
-            <i class="fas fa-brain" style="color: #00f3ff;"></i> 
-            <span>LMS AI Assistant</span>
+            <i class="fas fa-brain" style="color: var(--neon-cyan);"></i> 
+            <span>LMS AI Study Companion</span>
         </div>
         <div class="header-controls">
             <i class="fas fa-expand-alt" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen"></i>
-            <i class="fas fa-times" onclick="toggleChat()"></i>
+            <i class="fas fa-times" onclick="toggleChat()" title="Close Companion"></i>
         </div>
     </div>
 
@@ -1288,9 +1682,8 @@
         <div class="message bot-msg">
             <div class="msg-avatar"><i class="fas fa-robot"></i></div>
             <div class="msg-text">
-                Hello, <span><b>{{ user.first_name }}</b></span> <br>I am your <b>AI Study Companion</b>. 
-                <br>I can help with coding, explain concepts, and solve errors. 😊
-                <br><i>How can I help you today?</i>
+                Greetings, <b>{{ request.user.first_name|default:request.user.username }}</b>! 🚀<br>
+                I am your <b>Autonomous Study & Code Companion</b>. Ask me anything about your lectures, debugging code, algorithm explanations, or assignment guidance!
             </div>
         </div>
     </div>
@@ -1302,55 +1695,42 @@
     </div>
 
     <div class="chat-input-area">
-        <button id="mic-btn" onclick="toggleVoiceSearch()" aria-label="Toggle Voice Search" title="Speak to AI">
+        <button id="mic-btn" onclick="toggleVoiceSearch()" aria-label="Voice Search" title="Speak Question">
             <i class="fas fa-microphone"></i>
         </button>
-
-        <input type="text" id="user-input" placeholder="Type or speak..." autocomplete="off">
-        <button onclick="sendMessage()" id="send-btn" aria-label="Send Message">
+        <input type="text" id="user-input" placeholder="Ask questions or request code help..." autocomplete="off">
+        <button onclick="sendMessage()" id="send-btn" aria-label="Send">
             <i class="fas fa-paper-plane"></i>
         </button>
     </div>
 </div>
 
+<!-- ============================================= -->
+<!-- JAVASCRIPT & CHART.JS INITIALIZATION          -->
+<!-- ============================================= -->
 <script>
-    // --- Animate Progress Rings ---
+    // 1. Animate Progress Rings
     document.querySelectorAll('.progress-ring-fill').forEach(ring => {
         const progress = parseFloat(ring.dataset.progress) || 0;
-        const circumference = 2 * Math.PI * 26; // r=26
+        const circumference = 2 * Math.PI * 26;
         const offset = circumference - (progress / 100) * circumference;
-        // Set initial state for animation
         ring.style.strokeDasharray = circumference;
         ring.style.strokeDashoffset = circumference;
-        // Trigger animation
-        setTimeout(() => {
-            ring.style.strokeDashoffset = offset;
-        }, 300);
+        setTimeout(() => { ring.style.strokeDashoffset = offset; }, 300);
     });
 
-    // --- Notification Modal Logic ---
+    // 2. Modals (Notifications & Cadet Profile)
     function openNotificationModal() {
         const modal = document.getElementById('notifModal');
         modal.style.display = 'flex';
         setTimeout(() => { modal.classList.add('modal-open'); }, 10);
     }
-
     function closeNotificationModal() {
         const modal = document.getElementById('notifModal');
         modal.classList.remove('modal-open');
         setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
 
-    window.onclick = function(e) {
-        if(e.target == document.getElementById('notifModal')) {
-            closeNotificationModal();
-        }
-        if(e.target == document.getElementById('studentProfileModal')) {
-            closeStudentModal();
-        }
-    }
-
-    // --- Student Profile Modal Logic ---
     function openStudentModal(name, username, imgUrl, coins, stream, level) {
         document.getElementById('sp-name').textContent = name;
         document.getElementById('sp-username').textContent = '@' + username;
@@ -1374,16 +1754,32 @@
         modal.style.display = 'flex';
         setTimeout(() => { modal.classList.add('modal-open'); }, 10);
     }
-
     function closeStudentModal() {
         const modal = document.getElementById('studentProfileModal');
         modal.classList.remove('modal-open');
         setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
 
-    // =========================================
-    // CHATBOT LOGIC
-    // =========================================
+    window.onclick = function(e) {
+        if(e.target == document.getElementById('notifModal')) closeNotificationModal();
+        if(e.target == document.getElementById('studentProfileModal')) closeStudentModal();
+    };
+
+    document.querySelectorAll('.js-open-modal').forEach(el => {
+        el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openStudentModal(
+                this.getAttribute('data-firstname'),
+                this.getAttribute('data-username'),
+                this.getAttribute('data-pic'),
+                this.getAttribute('data-coins'),
+                this.getAttribute('data-stream'),
+                this.getAttribute('data-level')
+            );
+        });
+    });
+
+    // 3. AI Chat Companion
     const chatContainer = document.getElementById('ai-chat-container');
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
@@ -1393,7 +1789,7 @@
 
     function toggleChat() {
         chatContainer.classList.toggle('closed');
-        if (!chatContainer.classList.contains('closed')) { userInput.focus(); }
+        if (!chatContainer.classList.contains('closed')) userInput.focus();
     }
 
     function toggleFullscreen() {
@@ -1414,21 +1810,21 @@
         recognition.onresult = function(event) {
             userInput.value = event.results[0][0].transcript;
             micBtn.classList.remove('listening');
-            userInput.setAttribute('placeholder', 'Type or speak...');
+            userInput.setAttribute('placeholder', 'Ask question or request help...');
             sendMessage();
         };
-        recognition.onerror = function() { micBtn.classList.remove('listening'); userInput.setAttribute('placeholder', 'Error. Try typing.'); };
-        recognition.onend = function() { micBtn.classList.remove('listening'); userInput.setAttribute('placeholder', 'Type or speak...'); };
-    } else { micBtn.style.display = 'none'; }
+        recognition.onerror = function() { micBtn.classList.remove('listening'); };
+        recognition.onend = function() { micBtn.classList.remove('listening'); };
+    } else { if(micBtn) micBtn.style.display = 'none'; }
 
     function toggleVoiceSearch() {
         if (recognition) {
-            if (micBtn.classList.contains('listening')) { recognition.stop(); } else { recognition.start(); }
+            if (micBtn.classList.contains('listening')) recognition.stop(); else recognition.start();
         }
     }
 
-    userInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") { event.preventDefault(); sendMessage(); }
+    userInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") { e.preventDefault(); sendMessage(); }
     });
 
     function sendMessage() {
@@ -1444,20 +1840,20 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ question: text })
         })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             loader.style.display = 'none';
-            appendMessage('bot', data.answer || "Sorry, I encountered an error.");
+            appendMessage('bot', data.answer || "Query processed successfully.");
         })
         .catch(() => {
             loader.style.display = 'none';
-            appendMessage('bot', "Network error. Please check your connection.");
+            appendMessage('bot', "Network error connecting to AI server.");
         });
     }
 
     function appendMessage(sender, text) {
         const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message', sender === 'user' ? 'user-msg' : 'bot-msg');
+        msgDiv.className = 'message ' + (sender === 'user' ? 'user-msg' : 'bot-msg');
         let iconHtml;
         if (sender === 'user') {
             iconHtml = userHasProfileImg ? `<img src="${userProfileImgUrl}" alt="User">` : '<i class="fas fa-user"></i>';
@@ -1469,22 +1865,119 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // Handle data attributes for VS Code linter workaround
+    // 4. Learning Analytics Chart.js Initialization
+    document.addEventListener("DOMContentLoaded", function() {
+        try {
+            // Activity Chart
+            const activityCtx = document.getElementById('activityChart');
+            if (activityCtx) {
+                const labels = JSON.parse('{{ activity_labels|escapejs }}');
+                const dataVals = JSON.parse('{{ activity_data|escapejs }}');
+
+                new Chart(activityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Interactions & Tasks',
+                            data: dataVals,
+                            borderColor: '#00f3ff',
+                            backgroundColor: 'rgba(0, 243, 255, 0.08)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#00f3ff',
+                            pointBorderColor: '#070913',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#111524',
+                                borderColor: 'rgba(0, 243, 255, 0.3)',
+                                borderWidth: 1,
+                                titleColor: '#fff',
+                                bodyColor: '#00f3ff',
+                                padding: 10
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                                ticks: { color: '#64748b', font: { size: 10 } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                                ticks: { color: '#64748b', font: { size: 10 }, stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Course Progress Comparison Chart
+            const courseCtx = document.getElementById('courseProgressChart');
+            if (courseCtx) {
+                const courseLabels = JSON.parse('{{ course_progress_labels|escapejs }}');
+                const courseData = JSON.parse('{{ course_progress_data|escapejs }}');
+
+                new Chart(courseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: courseLabels.length ? courseLabels : ['No Courses Enrolled'],
+                        datasets: [{
+                            label: 'Completion %',
+                            data: courseData.length ? courseData : [0],
+                            backgroundColor: 'rgba(0, 230, 118, 0.7)',
+                            borderColor: '#00e676',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#111524',
+                                borderColor: 'rgba(0, 230, 118, 0.3)',
+                                borderWidth: 1,
+                                titleColor: '#fff',
+                                bodyColor: '#00e676',
+                                padding: 10
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 25 }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                                ticks: { color: '#64748b', font: { size: 10 }, callback: v => v + '%' }
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (err) {
+            console.warn("Analytics visualization initialized with fallback: ", err);
+        }
+    });
+
+    // 5. Dynamic attributes
     document.querySelectorAll('.js-set-offset').forEach(el => el.style.strokeDashoffset = el.getAttribute('data-offset'));
     document.querySelectorAll('.js-set-width').forEach(el => el.style.width = el.getAttribute('data-width'));
-    
-    document.querySelectorAll('.js-open-modal').forEach(el => {
-        el.addEventListener('click', function() {
-            openStudentModal(
-                this.getAttribute('data-firstname'),
-                this.getAttribute('data-username'),
-                this.getAttribute('data-pic'),
-                this.getAttribute('data-coins'),
-                this.getAttribute('data-stream'),
-                this.getAttribute('data-level')
-            );
-        });
-    });
 </script>
 
 {% endblock %}

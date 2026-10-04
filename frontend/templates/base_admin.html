@@ -235,9 +235,129 @@
             margin: 16px 8px;
         }
 
+        /* Admin Sidebar Profile Card */
+        .admin-sidebar-profile-card {
+            margin-top: auto;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-sidebar-profile-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: var(--transition-fast);
+        }
+
+        .admin-sidebar-profile-card:hover,
+        .admin-sidebar-profile-card.active-card {
+            background: rgba(108, 99, 255, 0.12);
+            border-color: rgba(108, 99, 255, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .admin-sidebar-profile-card:hover::before,
+        .admin-sidebar-profile-card.active-card::before {
+            opacity: 1;
+        }
+
+        .admin-profile-avatar-wrapper {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border-radius: 50%;
+        }
+
+        .admin-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 12px rgba(108, 99, 255, 0.35);
+            display: block;
+        }
+
+        .admin-avatar-initial {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 12px rgba(108, 99, 255, 0.35);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-status-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 11px;
+            height: 11px;
+            background: var(--accent-green);
+            border: 2px solid #0a0a1a;
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
+        }
+
+        .admin-sidebar-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-sidebar-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .admin-sidebar-role {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-profile-chevron {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            transition: var(--transition-fast);
+        }
+
+        .admin-sidebar-profile-card:hover .admin-profile-chevron {
+            color: var(--text-primary);
+            transform: translateX(3px);
+        }
+
         /* Logout Button */
         .logout-btn {
-            margin-top: auto;
             text-decoration: none;
             color: var(--accent-red);
             padding: 14px 18px;
@@ -358,12 +478,12 @@
         /* ============================================= */
 
         .page-enter {
-            animation: pageFadeIn 0.6s ease forwards;
+            animation: pageFadeIn 0.5s ease;
         }
 
         @keyframes pageFadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: none; }
         }
 
         /* ============================================= */
@@ -407,7 +527,10 @@
             }
             .brand span, 
             .nav-links a span, 
-            .logout-btn span { display: none; }
+            .logout-btn span,
+            .admin-sidebar-info,
+            .admin-profile-chevron { display: none; }
+            .admin-sidebar-profile-card { justify-content: center; padding: 10px 0; }
             .main-content { margin-left: var(--sidebar-collapsed); }
             .brand { justify-content: center; padding: 12px 0; }
             .nav-links a { justify-content: center; padding: 13px 0; }
@@ -460,6 +583,13 @@
                     <span>Documents</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{% url 'admin_profile' %}" class="{% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Profile</span>
+                </a>
+            </li>
             
             <div class="nav-divider"></div>
             
@@ -488,6 +618,29 @@
             </li>
             {% endif %}
         </ul>
+
+        <!-- Admin Profile Mini-Card -->
+        <a href="{% url 'admin_profile' %}" class="admin-sidebar-profile-card {% if request.resolver_match.url_name == 'admin_profile' %}active-card{% endif %}" title="Manage Admin Profile">
+            <div class="admin-profile-avatar-wrapper">
+                {% if request.user.profile_pic_url %}
+                    <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" class="admin-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="admin-avatar-initial" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                {% elif request.user.profile.profile_pic and request.user.profile.profile_pic.name != 'profile_pics/default.png' %}
+                    <img src="{{ request.user.profile.profile_pic.url }}" alt="{{ request.user.username }}" class="admin-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="admin-avatar-initial" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                {% else %}
+                    <div class="admin-avatar-initial">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                {% endif %}
+                <span class="admin-status-indicator" title="Active Admin"></span>
+            </div>
+            <div class="admin-sidebar-info">
+                <span class="admin-sidebar-name">{{ request.user.first_name|default:request.user.username }}</span>
+                <span class="admin-sidebar-role">
+                    {% if request.user.is_superuser %}Super Admin{% else %}Administrator{% endif %}
+                </span>
+            </div>
+            <i class="fas fa-chevron-right admin-profile-chevron"></i>
+        </a>
 
         <a href="{% url 'logout' %}" class="logout-btn">
             <i class="fas fa-power-off"></i> <span>Sign Out</span>
@@ -518,6 +671,10 @@
         {% block content %}
         {% endblock %}
     </div>
+
+    <!-- Viewport-anchored modals block -->
+    {% block modals %}
+    {% endblock %}
 
     <script>
         // Auto-dismiss toasts after 5 seconds

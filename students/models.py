@@ -36,6 +36,11 @@ class User(AbstractUser):
     class Meta:
         ordering = ['-date_joined']
 
+    def save(self, *args, **kwargs):
+        if self.is_staff or self.is_superuser:
+            self.is_student = False
+        super().save(*args, **kwargs)
+
     def __str__(self):
         role = "Teacher" if self.is_teacher else ("Faculty" if self.is_faculty else "Student")
         return f"{self.username} | {role}"
@@ -74,6 +79,71 @@ class User(AbstractUser):
 
         return None
 
+import io
+from PIL import Image, ImageOps, ImageEnhance, ImageFilter
+
+def process_and_clarify_avatar(image_file, target_size=(512, 512)):
+    """
+    Takes any image (low quality, blurry, high quality, phone orientation)
+    and turns it into a crystal-clear, centered, unblurred 512x512 portrait.
+    - Corrects EXIF phone orientation
+    - Converts cleanly to RGB
+    - Center-crops to 1:1 square
+    - Resamples with Lanczos high-fidelity filter
+    - Enhances contrast to remove haze/washout
+    - Enhances sharpness and applies unsharp mask for facial clarity
+    - Saves as 95% quality optimized JPEG
+    """
+    try:
+        if hasattr(image_file, 'seek'):
+            image_file.seek(0)
+        img = Image.open(image_file)
+
+        # 1. Correct mobile camera EXIF orientation
+        img = ImageOps.exif_transpose(img)
+
+        # 2. Convert to RGB cleanly without color corruption
+        if img.mode in ('RGBA', 'LA', 'P'):
+            bg = Image.new('RGB', img.size, (255, 255, 255))
+            if img.mode == 'P':
+                img = img.convert('RGBA')
+            if 'A' in img.getbands():
+                bg.paste(img, mask=img.split()[-1])
+            else:
+                bg.paste(img)
+            img = bg
+        elif img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        # 3. Center crop to 1:1 square so face is centered and not stretched
+        w, h = img.size
+        min_dim = min(w, h)
+        left = (w - min_dim) // 2
+        top = (h - min_dim) // 2
+        img = img.crop((left, top, left + min_dim, top + min_dim))
+
+        # 4. High-resolution Lanczos resampling
+        img = img.resize(target_size, Image.Resampling.LANCZOS)
+
+        # 5. Smart facial clarity enhancement
+        enhancer_c = ImageEnhance.Contrast(img)
+        img = enhancer_c.enhance(1.10)
+
+        enhancer_s = ImageEnhance.Sharpness(img)
+        img = enhancer_s.enhance(1.35)
+
+        # Subtle unsharp mask to clarify facial features without noise
+        img = img.filter(ImageFilter.UnsharpMask(radius=1.2, percent=125, threshold=3))
+
+        # 6. Save as crisp JPEG
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', quality=95, optimize=True)
+        buffer.seek(0)
+        return ContentFile(buffer.getvalue())
+    except Exception as e:
+        print(f"[AVATAR PROCESSING ERROR]: {e}")
+        return None
+
 # 2. PROFILE MODEL
 
 class Profile(models.Model):
@@ -89,6 +159,20 @@ class Profile(models.Model):
     github_url = models.URLField(blank=True, null=True)
     
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Auto-enhance profile picture if freshly uploaded
+        if self.profile_pic:
+            try:
+                from django.core.files.uploadedfile import UploadedFile
+                if hasattr(self.profile_pic, 'file') and isinstance(self.profile_pic.file, UploadedFile):
+                    processed = process_and_clarify_avatar(self.profile_pic)
+                    if processed:
+                        filename = f"user_{self.user_id}_avatar.jpg"
+                        self.profile_pic.save(filename, processed, save=False)
+            except Exception:
+                pass
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Profile: {self.user.username}"
@@ -763,7 +847,7 @@ def log_student_activity(user, activity_type, description='', course=None, metad
     Helper function to log student activity from anywhere in the codebase.
     Usage: log_student_activity(request.user, 'login', 'User logged in')
     """
-    if user and user.is_authenticated and user.is_student:
+    if user and user.is_authenticated and user.is_student and not user.is_staff and not user.is_superuser:
         StudentActivity.objects.create(
             student=user,
             activity_type=activity_type,

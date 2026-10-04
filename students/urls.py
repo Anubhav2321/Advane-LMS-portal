@@ -15,6 +15,9 @@ urlpatterns = [
     path('dashboard/', views.student_dashboard, name='dashboard'),
     path('courses/', views.all_courses, name='all_courses'),
     path('courses/watch/<int:course_id>/', views.course_watch, name='course_watch'),
+    path('courses/watch/<int:course_id>/<int:lesson_id>/', views.course_watch, name='course_watch'),
+    path('api/track-progress/', views.track_progress, name='track_progress'),
+    path('api/lesson/ai-notes/<int:lesson_id>/', views.lesson_ai_notes, name='lesson_ai_notes'),
     path('courses/enroll/<int:course_id>/', views.enroll_course, name='enroll_course'),
     
     path('live-classes/', views.live_classes, name='live_classes'),
@@ -75,6 +78,8 @@ urlpatterns = [
     path('api/chat/delete/<int:message_id>/', community_views.delete_message, name='delete_message'),
     path('api/chat/edit/<int:message_id>/', community_views.edit_message, name='edit_message'),
     path('api/chat/execute-local-code/', compiler_service.run_code_in_docker, name='run_code_in_docker'),
+    path('api/chat/execute-code/', compiler_service.run_code_in_docker, name='run_code_piston'),
+    path('api/chat/accept-bounty/<int:reply_id>/', community_views.accept_bounty, name='accept_bounty'),
     
     # 🚀 SYNTAX SINGULARITY URLS
     path('syntax-singularity/', views.syntax_singularity_view, name='syntax_singularity'),

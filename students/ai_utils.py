@@ -135,3 +135,63 @@ Structure:
     except Exception as e:
         print(f"Error generating quiz: {e}")
         return []
+
+
+# 4. SMART LESSON NOTES GENERATOR (Powered by Groq)
+
+def generate_ai_lesson_notes(lesson_title, lesson_content="", course_title=""):
+    """
+    Generates smart, structured study notes and key takeaways for a lesson using Groq AI.
+    Returns a dict with 'summary' and 'key_points'.
+    """
+    system_prompt = """/no_think
+You are an expert AI Academic Tutor and technical summarizer.
+Summarize the educational lesson into concise, ultra-clear key takeaways.
+
+OUTPUT FORMAT (Strict JSON):
+Return ONLY a raw JSON object with no markdown formatting around it:
+{
+    "summary": "Clear, informative 2-3 sentence executive summary of the lesson core concepts.",
+    "key_points": [
+        "Core takeaway 1 with specific technical detail",
+        "Core takeaway 2 highlighting practical application",
+        "Core takeaway 3 pointing out best practices or common pitfalls",
+        "Pro tip or interview question note"
+    ]
+}
+"""
+    prompt_text = f"Course: {course_title}\nLesson: {lesson_title}\n"
+    if lesson_content and len(lesson_content.strip()) > 10:
+        prompt_text += f"Lesson Details/Notes:\n{lesson_content[:3000]}\n"
+    else:
+        prompt_text += f"Generate deep technical educational notes and key concepts covering '{lesson_title}' in the context of '{course_title}'."
+        
+    try:
+        response = get_groq_response(system_prompt, prompt_text, max_tokens=750)
+        clean_response = response.replace('```json', '').replace('```', '').strip()
+        match = re.search(r'\{.*\}', clean_response, re.DOTALL)
+        if match:
+            clean_response = match.group(0)
+        data = json.loads(clean_response)
+        summary = data.get('summary', '').strip()
+        key_points = data.get('key_points', [])
+        if isinstance(key_points, list):
+            formatted_points = "\n".join([f"• {str(p).strip().lstrip('•*- ')}" for p in key_points if str(p).strip()])
+        else:
+            formatted_points = str(key_points)
+            
+        if not summary:
+            summary = f"Essential concepts and architectural deep dive into {lesson_title} in {course_title}."
+        if not formatted_points:
+            formatted_points = f"• Mastered foundational patterns of {lesson_title}.\n• Hands-on exercises and practical implementations.\n• Industry standards and optimal architectures."
+            
+        return {
+            'summary': summary,
+            'key_points': formatted_points
+        }
+    except Exception as e:
+        print(f"Error generating AI lesson notes: {e}")
+        return {
+            'summary': f"This lesson covers key theoretical and practical frameworks for {lesson_title} within {course_title}. Follow along with the code and practical demonstrations.",
+            'key_points': f"• Key mechanics of {lesson_title}\n• Industry-standard patterns and implementation strategies\n• Error handling, edge cases, and optimization benchmarks\n• Integration with the broader architecture"
+        }

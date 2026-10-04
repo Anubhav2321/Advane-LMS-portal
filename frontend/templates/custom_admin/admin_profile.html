@@ -1,0 +1,3750 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ============================================= */
+    /* ADMIN PROFILE — ULTRA-PREMIUM GLASS DESIGN    */
+    /* ============================================= */
+
+    .admin-profile-page {
+        padding: 32px;
+        max-width: 1560px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    /* Ambient background glow */
+    .admin-profile-page::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 10%;
+        width: 600px; height: 350px;
+        background: radial-gradient(ellipse, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Breadcrumbs & Header */
+    .admin-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+        position: relative;
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .admin-breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .admin-breadcrumbs a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition-fast);
+    }
+
+    .admin-breadcrumbs a:hover {
+        color: var(--secondary);
+    }
+
+    .admin-page-title h1 {
+        font-size: 2.1rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ffffff 20%, #c0c0e0 60%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .admin-page-title p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-top: 4px;
+    }
+
+    .admin-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-create-admin-trigger {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #ffffff;
+        border: none;
+        padding: 12px 22px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transition-smooth);
+        box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+        text-decoration: none;
+    }
+
+    .btn-create-admin-trigger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 212, 255, 0.5);
+        color: #fff;
+    }
+
+    /* ============================================= */
+    /* HERO PROFILE CARD                             */
+    /* ============================================= */
+
+    .admin-hero-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 34px 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        flex-wrap: wrap;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        z-index: 1;
+    }
+
+    .admin-hero-card::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 350px; height: 100%;
+        background: radial-gradient(circle at 100% 50%, rgba(0, 212, 255, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    /* Crystal-Clear Avatar Container (Zero-Blur, Razor-Sharp Portrait) */
+    .admin-avatar-container {
+        position: relative;
+        width: 130px;
+        height: 130px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        padding: 4px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        box-shadow: 0 0 25px rgba(0, 212, 255, 0.45), 0 12px 35px rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .admin-avatar-large {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        background: #0d0d25;
+        border: 2px solid #0a0a1a;
+    }
+
+    .admin-avatar-large-initial {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 800 3.2rem var(--font-body);
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: 2px solid #0a0a1a;
+    }
+
+    .admin-camera-badge {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: 3px solid var(--bg-surface);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition-bounce);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        z-index: 5;
+    }
+
+    .admin-camera-badge:hover {
+        transform: scale(1.15) rotate(10deg);
+        box-shadow: 0 6px 20px rgba(0, 212, 255, 0.6);
+    }
+
+    /* Admin Hero Info */
+    .admin-hero-info {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .admin-role-badge-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .badge-admin-role {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 14px;
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+    }
+
+    .role-super {
+        background: rgba(168, 85, 247, 0.15);
+        border: 1px solid rgba(168, 85, 247, 0.4);
+        color: #c084fc;
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+    }
+
+    .role-staff {
+        background: rgba(0, 212, 255, 0.15);
+        border: 1px solid rgba(0, 212, 255, 0.4);
+        color: var(--secondary);
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+    }
+
+    .badge-status-active {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        background: rgba(0, 230, 118, 0.12);
+        color: var(--accent-green);
+        border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+
+    .badge-status-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--accent-green);
+        box-shadow: 0 0 8px var(--accent-green);
+        animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .admin-name {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0 0 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .admin-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+        flex-wrap: wrap;
+    }
+
+    .admin-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .admin-meta-item i {
+        color: var(--secondary);
+    }
+
+    /* System Summary Pills in Hero */
+    .admin-system-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        min-width: 280px;
+    }
+
+    .admin-metric-pill {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition-smooth);
+    }
+
+    .admin-metric-pill:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--glass-border-hover);
+        transform: translateY(-2px);
+    }
+
+    .admin-metric-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .admin-metric-val {
+        font-family: var(--font-mono);
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1;
+    }
+
+    .admin-metric-lbl {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+        margin-top: 3px;
+    }
+
+    .m-blue { background: rgba(0, 212, 255, 0.12); color: var(--secondary); }
+    .m-purple { background: rgba(168, 85, 247, 0.12); color: var(--accent-purple); }
+    .m-green { background: rgba(0, 230, 118, 0.12); color: var(--accent-green); }
+    .m-amber { background: rgba(255, 183, 77, 0.12); color: var(--accent-amber); }
+
+    /* ============================================= */
+    /* TAB NAVIGATION                                */
+    /* ============================================= */
+
+    .admin-tabs-nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(10, 10, 30, 0.7);
+        border: 1px solid var(--glass-border);
+        padding: 6px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 28px;
+        overflow-x: auto;
+        backdrop-filter: blur(15px);
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        padding: 12px 22px;
+        border-radius: var(--radius-md);
+        font-size: 0.92rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transition-fast);
+        white-space: nowrap;
+        font-family: var(--font-body);
+    }
+
+    .admin-tab-btn i {
+        font-size: 1rem;
+        transition: var(--transition-fast);
+    }
+
+    .admin-tab-btn:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .admin-tab-btn.active {
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.25), rgba(0, 212, 255, 0.15));
+        border: 1px solid rgba(108, 99, 255, 0.4);
+        color: #ffffff;
+        box-shadow: 0 4px 20px rgba(108, 99, 255, 0.25);
+    }
+
+    .admin-tab-btn.active i {
+        color: var(--secondary);
+    }
+
+    .tab-badge-pill {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        padding: 2px 8px;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .admin-tab-btn.active .tab-badge-pill {
+        background: var(--primary);
+    }
+
+    /* Tab Content Panes */
+    .admin-tab-pane {
+        display: none;
+        animation: fadeInTab 0.35s ease forwards;
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-tab-pane.active {
+        display: block;
+    }
+
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================= */
+    /* GLASS PANEL CONTAINERS                        */
+    /* ============================================= */
+
+    .admin-card-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 32px;
+        margin-bottom: 28px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+        margin-bottom: 26px;
+        border-bottom: 1px solid var(--glass-border);
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .admin-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .admin-card-title-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .icon-primary { background: rgba(108, 99, 255, 0.15); color: var(--primary); }
+    .icon-secondary { background: rgba(0, 212, 255, 0.15); color: var(--secondary); }
+    .icon-amber { background: rgba(255, 183, 77, 0.15); color: var(--accent-amber); }
+    .icon-green { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+    .icon-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+
+    .admin-card-title h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    .admin-card-title p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 2px 0 0;
+    }
+
+    /* Form Styles */
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    .form-label i {
+        color: var(--secondary);
+    }
+
+    .form-label .required-star {
+        color: var(--accent-red);
+    }
+
+    .form-control-glass {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(10, 10, 30, 0.6);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-family: var(--font-body);
+        outline: none;
+        transition: var(--transition-fast);
+        box-sizing: border-box;
+    }
+
+    .form-control-glass:focus {
+        border-color: var(--secondary);
+        background: rgba(15, 15, 45, 0.8);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+    }
+
+    .form-control-glass::placeholder {
+        color: #4b4b6b;
+    }
+
+    textarea.form-control-glass {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .input-with-icon-wrapper {
+        position: relative;
+    }
+
+    .input-with-icon-wrapper input {
+        padding-right: 48px;
+    }
+
+    .input-icon-btn {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 1rem;
+        transition: var(--transition-fast);
+    }
+
+    .input-icon-btn:hover {
+        color: var(--text-primary);
+    }
+
+    .form-help-text {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Custom File Input Dropzone with Clarity Preview */
+    .avatar-upload-dropzone {
+        border: 2px dashed rgba(0, 212, 255, 0.35);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        text-align: center;
+        background: rgba(0, 212, 255, 0.03);
+        transition: var(--transition-smooth);
+        cursor: pointer;
+        position: relative;
+        margin-bottom: 22px;
+    }
+
+    .avatar-upload-dropzone:hover {
+        border-color: var(--secondary);
+        background: rgba(0, 212, 255, 0.07);
+    }
+
+    .avatar-dropzone-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar-dropzone-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: rgba(0, 212, 255, 0.12);
+        color: var(--secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+    }
+
+    .avatar-dropzone-title {
+        font-weight: 700;
+        font-size: 0.98rem;
+        color: #ffffff;
+    }
+
+    .avatar-dropzone-desc {
+        font-size: 0.82rem;
+        color: #a0a0c0;
+        max-width: 600px;
+        line-height: 1.45;
+    }
+
+    .avatar-preview-thumbnail {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--secondary);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        margin-bottom: 8px;
+        display: none;
+    }
+
+    /* Submit Actions */
+    .form-actions-row {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 16px;
+        margin-top: 14px;
+        padding-top: 22px;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .btn-submit-premium {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #ffffff;
+        border: none;
+        padding: 14px 32px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: var(--transition-smooth);
+        box-shadow: 0 4px 20px rgba(108, 99, 255, 0.35);
+        font-family: var(--font-body);
+    }
+
+    .btn-submit-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 212, 255, 0.45);
+        filter: brightness(1.08);
+    }
+
+    .btn-secondary-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        padding: 13px 24px;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-secondary-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+
+    /* Checkbox & Switch */
+    .custom-switch-label {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        user-select: none;
+        padding: 14px 18px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        transition: var(--transition-fast);
+    }
+
+    .custom-switch-label:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .custom-switch-input {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--secondary);
+        cursor: pointer;
+    }
+
+    .switch-info h4 {
+        margin: 0 0 3px;
+        font-size: 0.95rem;
+        color: #ffffff;
+    }
+
+    .switch-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    /* ============================================= */
+    /* ADMIN TEAM CARDS                              */
+    /* ============================================= */
+
+    .admin-team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 22px;
+    }
+
+    .team-admin-card {
+        background: rgba(10, 10, 30, 0.65);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: var(--transition-smooth);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .team-admin-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        opacity: 0.7;
+    }
+
+    .team-admin-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(108, 99, 255, 0.4);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .team-admin-top {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .team-avatar-wrapper {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        padding: 2px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+    }
+
+    .team-avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        background: #0d0d25;
+        border: 1px solid #0a0a1a;
+    }
+
+    .team-avatar-initial {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 700 1.5rem var(--font-body);
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: 1px solid #0a0a1a;
+    }
+
+    .team-meta h4 {
+        margin: 0 0 4px;
+        font-size: 1.1rem;
+        color: #ffffff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: color var(--transition-fast);
+    }
+
+    .team-meta h4:hover {
+        color: var(--secondary);
+    }
+
+    .team-username {
+        font-size: 0.82rem;
+        color: var(--secondary);
+        font-family: var(--font-mono);
+        word-break: break-all;
+    }
+
+    .team-details-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+    }
+
+    .team-detail-item {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-secondary);
+        gap: 10px;
+    }
+
+    .team-detail-item span:last-child {
+        color: #ffffff;
+        font-weight: 500;
+        text-align: right;
+    }
+
+    .team-card-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* Social Profile Button */
+    .btn-view-social-profile {
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 212, 255, 0.15));
+        border: 1px solid rgba(0, 212, 255, 0.35);
+        color: var(--secondary);
+        padding: 7px 15px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .btn-view-social-profile:hover {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+    }
+
+    .badge-you {
+        background: rgba(0, 212, 255, 0.15);
+        border: 1px solid rgba(0, 212, 255, 0.35);
+        color: var(--secondary);
+        padding: 5px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .btn-toggle-status {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        padding: 6px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-toggle-status:hover {
+        background: rgba(255, 51, 102, 0.2);
+        color: var(--accent-red);
+        border-color: rgba(255, 51, 102, 0.4);
+    }
+
+    .btn-reset-pass-trigger {
+        background: rgba(255, 183, 77, 0.12);
+        border: 1px solid rgba(255, 183, 77, 0.35);
+        color: var(--accent-amber);
+        padding: 6px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-reset-pass-trigger:hover {
+        background: var(--accent-amber);
+        color: #030014;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(255, 183, 77, 0.4);
+        transform: translateY(-2px);
+    }
+
+    /* Privileges Grid */
+    .privileges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+    }
+
+    .privilege-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        transition: var(--transition-fast);
+    }
+
+    .privilege-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--glass-border-hover);
+    }
+
+    .privilege-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .privilege-info h4 {
+        margin: 0 0 4px;
+        font-size: 0.95rem;
+        color: #ffffff;
+    }
+
+    .privilege-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .pass-gen-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-gen-pass {
+        background: rgba(0, 212, 255, 0.12);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: var(--secondary);
+        padding: 0 16px;
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        transition: var(--transition-fast);
+    }
+
+    .btn-gen-pass:hover {
+        background: var(--secondary);
+        color: #030014;
+    }
+
+    .pass-strength-bar {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.1);
+        margin-top: 8px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .pass-strength-fill {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    /* ============================================= */
+    /* DIRECTORY TOOLBAR & SEARCH                    */
+    /* ============================================= */
+
+    .directory-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 14px 18px;
+    }
+
+    .directory-search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .directory-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        pointer-events: none;
+    }
+
+    .directory-search-input {
+        width: 100%;
+        background: rgba(10, 10, 25, 0.7);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 10px 38px 10px 40px;
+        color: #ffffff;
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+        outline: none;
+    }
+
+    .directory-search-input:focus {
+        border-color: var(--secondary);
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.25);
+    }
+
+    .directory-search-clear {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: none;
+        transition: color var(--transition-fast);
+    }
+
+    .directory-search-clear:hover {
+        color: var(--accent-red);
+    }
+
+    .directory-filter-pills {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .filter-pill {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        padding: 7px 14px;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-pill:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+
+    .filter-pill.active {
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.35), rgba(0, 212, 255, 0.25));
+        border-color: var(--secondary);
+        color: #ffffff;
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.25);
+    }
+
+    .avatar-online-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 13px;
+        height: 13px;
+        background: var(--accent-green);
+        border: 2px solid #0a0a1a;
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .card-verified-badge {
+        color: var(--secondary);
+        font-size: 0.88rem;
+        margin-left: 5px;
+        display: inline-flex;
+        vertical-align: middle;
+    }
+
+    .card-quick-socials {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .card-quick-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.82rem;
+        transition: var(--transition-fast);
+        text-decoration: none;
+    }
+
+    .card-quick-btn:hover {
+        background: var(--secondary);
+        color: #030014;
+        border-color: transparent;
+        transform: translateY(-2px);
+    }
+
+    /* ============================================= */
+    /* SOCIAL SIDE PROFILE MODAL                     */
+    /* ============================================= */
+
+    .admin-social-modal-backdrop {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(3, 0, 20, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        z-index: 999999 !important;
+        display: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 30px 16px 50px;
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+    }
+
+    .admin-social-modal-backdrop.active,
+    .admin-social-modal-backdrop[style*="display: flex"] {
+        display: flex !important;
+        justify-content: center;
+        align-items: flex-start;
+        animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .admin-social-modal-card {
+        background: rgba(12, 12, 32, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 680px;
+        margin: 12px auto 30px;
+        position: relative;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(108, 99, 255, 0.3);
+        animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        overflow: hidden;
+    }
+
+    @keyframes modalScaleUp {
+        from { transform: scale(0.95) translateY(16px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .modal-cover-banner {
+        height: 130px;
+        background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 50%, #9333ea 100%);
+        position: relative;
+        border-radius: 24px 24px 0 0;
+        overflow: hidden;
+    }
+
+    .modal-cover-banner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.35), transparent 60%);
+        pointer-events: none;
+    }
+
+    .modal-cover-banner::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.04) 0px, rgba(0, 0, 0, 0.04) 10px, transparent 10px, transparent 20px);
+        pointer-events: none;
+    }
+
+    .modal-banner-actions {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 10;
+    }
+
+    .btn-banner-action {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+        text-decoration: none;
+    }
+
+    .btn-banner-action:hover {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    .btn-banner-close:hover {
+        background: var(--accent-red);
+        color: #ffffff;
+        transform: rotate(90deg);
+    }
+
+    .modal-content-body {
+        padding: 0 28px 28px;
+        position: relative;
+    }
+
+    .modal-avatar-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: -50px;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 5;
+    }
+
+    .modal-avatar-frame {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        padding: 3px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        cursor: pointer;
+    }
+
+    .modal-avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+        background: #0d0d25;
+        border: 2px solid #0a0a1a;
+        display: block;
+        transition: transform 0.2s ease;
+    }
+
+    .modal-avatar-initial {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 800 2.8rem var(--font-body);
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: 2px solid #0a0a1a;
+    }
+
+    .modal-avatar-zoom-overlay {
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.45);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+        pointer-events: none;
+    }
+
+    .modal-avatar-frame:hover .modal-avatar-zoom-overlay {
+        opacity: 1;
+    }
+
+    .modal-online-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 230, 118, 0.12);
+        border: 1px solid rgba(0, 230, 118, 0.35);
+        color: var(--accent-green);
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .active-pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-green);
+        box-shadow: 0 0 8px var(--accent-green);
+        animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+        70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+    }
+
+    .modal-header-info h2 {
+        margin: 0 0 4px;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-handle-badge {
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        color: var(--secondary);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        padding: 3px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .modal-handle-badge:hover {
+        background: rgba(0, 212, 255, 0.16);
+        color: #ffffff;
+    }
+
+    /* Action bar of social chips */
+    .modal-social-chips {
+        display: flex;
+        gap: 10px;
+        margin: 18px 0 20px;
+        flex-wrap: wrap;
+    }
+
+    .social-chip {
+        padding: 9px 18px;
+        border-radius: 99px;
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+        cursor: pointer;
+        border: none;
+    }
+
+    .social-chip-email {
+        background: rgba(0, 212, 255, 0.12);
+        color: var(--secondary);
+        border: 1px solid rgba(0, 212, 255, 0.35);
+    }
+
+    .social-chip-email:hover {
+        background: var(--secondary);
+        color: #030014;
+        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+    }
+
+    .social-chip-phone {
+        background: rgba(0, 230, 118, 0.12);
+        color: var(--accent-green);
+        border: 1px solid rgba(0, 230, 118, 0.35);
+    }
+
+    .social-chip-phone:hover {
+        background: var(--accent-green);
+        color: #030014;
+        box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+    }
+
+    .social-chip-whatsapp {
+        background: rgba(37, 211, 102, 0.15);
+        color: #25d366;
+        border: 1px solid rgba(37, 211, 102, 0.4);
+    }
+
+    .social-chip-whatsapp:hover {
+        background: #25d366;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    }
+
+    .social-chip-linkedin {
+        background: rgba(10, 102, 194, 0.18);
+        color: #0a66c2;
+        border: 1px solid rgba(10, 102, 194, 0.4);
+    }
+
+    .social-chip-linkedin:hover {
+        background: #0a66c2;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(10, 102, 194, 0.4);
+    }
+
+    .social-chip-github {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .social-chip-github:hover {
+        background: #ffffff;
+        color: #030014;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4);
+    }
+
+    .social-chip-copy {
+        background: rgba(168, 85, 247, 0.15);
+        color: #c084fc;
+        border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+
+    .social-chip-copy:hover {
+        background: #9333ea;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+    }
+
+    .social-chip-reset-pass {
+        background: rgba(255, 183, 77, 0.15);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.35);
+    }
+
+    .social-chip-reset-pass:hover {
+        background: var(--accent-amber);
+        color: #030014;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(255, 183, 77, 0.4);
+    }
+
+    /* Modal Inner Navigation Tabs */
+    .modal-nav-tabs {
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 22px;
+        gap: 6px;
+    }
+
+    .modal-tab-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        padding: 10px 18px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-tab-btn:hover {
+        color: #ffffff;
+    }
+
+    .modal-tab-btn.active {
+        color: var(--secondary);
+    }
+
+    .modal-tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        box-shadow: 0 0 10px var(--secondary);
+    }
+
+    .modal-tab-pane {
+        display: none;
+        animation: fadeInTab 0.25s ease forwards;
+    }
+
+    .modal-tab-pane.active {
+        display: block;
+    }
+
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bio Quote Box */
+    .modal-quote-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-left: 4px solid var(--secondary);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        margin-bottom: 22px;
+        position: relative;
+    }
+
+    .modal-quote-box h4 {
+        margin: 0 0 8px;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .modal-quote-box p {
+        margin: 0;
+        font-size: 0.94rem;
+        color: #e2e8f0;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    /* Quick stats grid */
+    .modal-quick-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .modal-stat-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition-fast);
+    }
+
+    .modal-stat-card:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(0, 212, 255, 0.3);
+    }
+
+    .modal-stat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .modal-stat-icon.s-cyan { background: rgba(0, 212, 255, 0.15); color: var(--secondary); }
+    .modal-stat-icon.s-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .modal-stat-icon.s-green { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+    .modal-stat-icon.s-amber { background: rgba(255, 170, 0, 0.15); color: var(--accent-amber); }
+
+    .modal-stat-label {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.6px;
+        margin-bottom: 3px;
+    }
+
+    .modal-stat-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    /* Responsibilities Tags */
+    .modal-tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .modal-tag {
+        background: rgba(108, 99, 255, 0.12);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        color: #c0c0ff;
+        padding: 5px 12px;
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    /* Contact Details Tab Rows */
+    .modal-contact-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .modal-contact-row {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 12px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition-fast);
+    }
+
+    .modal-contact-row:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(0, 212, 255, 0.3);
+    }
+
+    .modal-contact-info {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .modal-contact-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--secondary);
+    }
+
+    .modal-contact-text {
+        min-width: 0;
+    }
+
+    .modal-contact-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+
+    .modal-contact-value {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #ffffff;
+        word-break: break-all;
+    }
+
+    .btn-copy-item {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        transition: var(--transition-fast);
+        flex-shrink: 0;
+    }
+
+    .btn-copy-item:hover {
+        background: var(--secondary);
+        color: #030014;
+        border-color: transparent;
+    }
+
+    /* Lightbox Modal */
+    .avatar-lightbox-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        z-index: 100000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        cursor: zoom-out;
+        animation: modalFadeIn 0.25s ease forwards;
+    }
+
+    .avatar-lightbox-content {
+        position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .avatar-lightbox-img {
+        max-width: 480px;
+        max-height: 480px;
+        width: 100%;
+        height: auto;
+        border-radius: 20px;
+        border: 3px solid rgba(0, 212, 255, 0.5);
+        box-shadow: 0 0 50px rgba(0, 212, 255, 0.4), 0 20px 60px rgba(0, 0, 0, 0.9);
+        object-fit: cover;
+    }
+
+    .avatar-lightbox-caption {
+        color: #ffffff;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    /* Floating Toast */
+    .admin-toast-notification {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: rgba(13, 13, 35, 0.95);
+        border: 1px solid var(--secondary);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 212, 255, 0.35);
+        border-radius: var(--radius-md);
+        padding: 12px 20px;
+        color: #ffffff;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        z-index: 100001;
+        animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes toastSlideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .admin-hero-card { flex-direction: column; align-items: flex-start; gap: 24px; padding: 26px; }
+        .admin-system-metrics { width: 100%; }
+        .form-grid-2 { grid-template-columns: 1fr; }
+        .modal-details-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+        .admin-profile-page { padding: 18px 12px; }
+        .admin-hero-card { padding: 20px; }
+        .admin-system-metrics { grid-template-columns: 1fr; }
+        .admin-tabs-nav { flex-wrap: wrap; }
+        .modal-content-body { padding: 0 18px 24px; }
+    }
+</style>
+
+<div class="admin-profile-page">
+
+    <!-- Top Breadcrumb & Title -->
+    <div class="admin-header-row">
+        <div class="admin-page-title">
+            <div class="admin-breadcrumbs">
+                <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home"></i> Admin Console</a>
+                <i class="fas fa-chevron-right" style="font-size: 0.65rem;"></i>
+                <span>Profile & Identity</span>
+            </div>
+            <h1><i class="fas fa-user-shield" style="color: var(--secondary); font-size: 1.8rem;"></i> Administrator Profile</h1>
+            <p>Uniquely identified by Email ID, Password, and Phone Number with social administrator profiles.</p>
+        </div>
+
+        <div class="admin-top-actions">
+            <button type="button" class="btn-create-admin-trigger" onclick="switchAdminTab('tab-add-admin')">
+                <i class="fas fa-user-plus"></i> Add New Admin
+            </button>
+            <a href="{% url 'admin_dashboard' %}" class="btn-secondary-glass">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- HERO PROFILE OVERVIEW                         -->
+    <!-- ============================================= -->
+    <div class="admin-hero-card">
+        <!-- Crystal-Clear Avatar with Camera Upload Trigger -->
+        <div class="admin-avatar-container">
+            {% if admin_user.profile_pic_url %}
+                <img src="{{ admin_user.profile_pic_url }}" alt="{{ admin_user.first_name|default:admin_user.username }}" class="admin-avatar-large" id="heroAvatarImg" onerror="this.style.display='none'; document.getElementById('heroAvatarInitial').style.display='flex';">
+                <div class="admin-avatar-large-initial" id="heroAvatarInitial" style="display:none;">{{ admin_user.first_name.0|default:admin_user.username.0|upper }}</div>
+            {% elif admin_user.profile.profile_pic and admin_user.profile.profile_pic.name != 'profile_pics/default.png' %}
+                <img src="{{ admin_user.profile.profile_pic.url }}" alt="{{ admin_user.first_name|default:admin_user.username }}" class="admin-avatar-large" id="heroAvatarImg" onerror="this.style.display='none'; document.getElementById('heroAvatarInitial').style.display='flex';">
+                <div class="admin-avatar-large-initial" id="heroAvatarInitial" style="display:none;">{{ admin_user.first_name.0|default:admin_user.username.0|upper }}</div>
+            {% else %}
+                <div class="admin-avatar-large-initial" id="heroAvatarInitial">{{ admin_user.first_name.0|default:admin_user.username.0|upper }}</div>
+            {% endif %}
+
+            <!-- Instant Camera upload trigger label -->
+            <label for="directHeroAvatarInput" class="admin-camera-badge" title="Upload Photo (Auto-Clarified & Enhanced)">
+                <i class="fas fa-camera"></i>
+            </label>
+        </div>
+
+        <!-- Hidden direct-upload form triggered by camera click -->
+        <form method="POST" enctype="multipart/form-data" id="directAvatarForm" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_profile">
+            <input type="hidden" name="first_name" value="{{ admin_user.first_name }}">
+            <input type="hidden" name="last_name" value="{{ admin_user.last_name }}">
+            <input type="hidden" name="email" value="{{ admin_user.email }}">
+            <input type="hidden" name="phone" value="{{ admin_user.profile.phone|default:'' }}">
+            <input type="hidden" name="bio" value="{{ admin_user.profile.bio|default:'' }}">
+            <input type="file" name="profile_pic" id="directHeroAvatarInput" accept="image/*">
+        </form>
+
+        <!-- Admin Identity Info -->
+        <div class="admin-hero-info">
+            <div class="admin-role-badge-group">
+                {% if admin_user.is_superuser %}
+                    <span class="badge-admin-role role-super"><i class="fas fa-crown"></i> Super Administrator</span>
+                {% else %}
+                    <span class="badge-admin-role role-staff"><i class="fas fa-shield-alt"></i> Staff Administrator</span>
+                {% endif %}
+                <span class="badge-status-active"><span class="badge-status-dot"></span> Active Console Session</span>
+            </div>
+
+            <h2 class="admin-name">{{ admin_user.first_name }} {{ admin_user.last_name|default:"" }}</h2>
+
+            <div class="admin-meta-row">
+                <span class="admin-meta-item"><i class="far fa-envelope"></i> <strong>Email:</strong> {{ admin_user.email|default:"No email configured" }}</span>
+                {% if admin_user.profile.phone %}
+                    <span class="admin-meta-item"><i class="fas fa-phone"></i> <strong>Phone:</strong> {{ admin_user.profile.phone }}</span>
+                {% endif %}
+                <span class="admin-meta-item"><i class="far fa-calendar-alt"></i> Member since {{ admin_user.date_joined|date:"d M, Y" }}</span>
+            </div>
+        </div>
+
+        <!-- System Platform Quick Metrics -->
+        <div class="admin-system-metrics">
+            <div class="admin-metric-pill">
+                <div class="admin-metric-icon m-blue"><i class="fas fa-user-graduate"></i></div>
+                <div>
+                    <div class="admin-metric-val">{{ total_students_count }}</div>
+                    <div class="admin-metric-lbl">Students</div>
+                </div>
+            </div>
+
+            <div class="admin-metric-pill">
+                <div class="admin-metric-icon m-purple"><i class="fas fa-book-open"></i></div>
+                <div>
+                    <div class="admin-metric-val">{{ total_courses_count }}</div>
+                    <div class="admin-metric-lbl">Courses</div>
+                </div>
+            </div>
+
+            <div class="admin-metric-pill">
+                <div class="admin-metric-icon m-green"><i class="fas fa-file-code"></i></div>
+                <div>
+                    <div class="admin-metric-val">{{ total_docs_count }}</div>
+                    <div class="admin-metric-lbl">Documents</div>
+                </div>
+            </div>
+
+            <div class="admin-metric-pill">
+                <div class="admin-metric-icon m-amber"><i class="fas fa-brain"></i></div>
+                <div>
+                    <div class="admin-metric-val">{{ total_exams_count }}</div>
+                    <div class="admin-metric-lbl">AI Exams</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- INTERACTIVE TAB NAVIGATION                    -->
+    <!-- ============================================= -->
+    <div class="admin-tabs-nav">
+        <button type="button" class="admin-tab-btn active" onclick="switchAdminTab('tab-profile-settings')">
+            <i class="fas fa-id-card"></i> Profile Settings
+        </button>
+
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('tab-security')">
+            <i class="fas fa-key"></i> Security & Password
+        </button>
+
+        {% if admin_user.is_superuser %}
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('tab-add-admin')">
+            <i class="fas fa-user-plus"></i> Add New Admin
+        </button>
+        {% endif %}
+
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('tab-team-directory')">
+            <i class="fas fa-users-gear"></i> Admin Team <span class="tab-badge-pill">{{ admin_team.count }}</span>
+        </button>
+
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('tab-privileges')">
+            <i class="fas fa-fingerprint"></i> System Privileges
+        </button>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- TAB 1: PROFILE SETTINGS                       -->
+    <!-- ============================================= -->
+    <div class="admin-tab-pane active" id="tab-profile-settings">
+        <div class="admin-card-panel">
+            <div class="admin-card-header">
+                <div class="admin-card-title">
+                    <div class="admin-card-title-icon icon-secondary"><i class="fas fa-user-edit"></i></div>
+                    <div>
+                        <h3>Personal Profile Details</h3>
+                        <p>Customize your administrative name, contact data, profile avatar, and bio notes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+
+                <!-- Crystal-Clear Avatar Upload Dropzone -->
+                <div class="avatar-upload-dropzone" onclick="document.getElementById('profilePicInput').click();">
+                    <div class="avatar-dropzone-content">
+                        <img id="avatarPreviewThumbnail" class="avatar-preview-thumbnail" alt="Preview">
+                        <div class="avatar-dropzone-icon">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                        </div>
+                        <div class="avatar-dropzone-title">Upload High-Definition Admin Profile Picture</div>
+                        <div class="avatar-dropzone-desc">Whether you upload a high-resolution or low-resolution image, our AI enhancement engine automatically auto-orients, square-centers, upsamples, and sharpens facial features to eliminate blurriness completely.</div>
+                    </div>
+                    <input type="file" name="profile_pic" id="profilePicInput" style="display:none;" accept="image/*" onchange="previewSelectedAvatar(this);">
+                </div>
+
+                {% if admin_user.profile.profile_pic %}
+                <div style="display: flex; justify-content: flex-end; margin-top: -12px; margin-bottom: 20px;">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--accent-red); cursor: pointer;">
+                        <input type="checkbox" name="remove_avatar" value="1">
+                        <i class="fas fa-trash-alt"></i> Remove uploaded photo and revert to initial
+                    </label>
+                </div>
+                {% endif %}
+
+                <!-- Name Grid (NO UNIQUENESS CONSTRAINTS ON NAME!) -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="id_first_name"><i class="fas fa-signature"></i> First Name (Display Name)</label>
+                        <input type="text" name="first_name" id="id_first_name" class="form-control-glass" value="{{ admin_user.first_name }}" placeholder="e.g. Avik">
+                        <div class="form-help-text">Multiple users across students, teachers, or admins can share this name freely.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_last_name"><i class="fas fa-signature"></i> Last Name</label>
+                        <input type="text" name="last_name" id="id_last_name" class="form-control-glass" value="{{ admin_user.last_name }}" placeholder="e.g. Roy">
+                    </div>
+                </div>
+
+                <!-- Unique Contact Identification Grid -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="id_email"><i class="far fa-envelope"></i> Official Admin Email (Unique Identifier) <span class="required-star">*</span></label>
+                        <input type="email" name="email" id="id_email" class="form-control-glass" value="{{ admin_user.email }}" placeholder="admin@domain.com" required>
+                        <div class="form-help-text">Your primary unique login identifier across the LMS platform.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_phone"><i class="fas fa-phone"></i> Contact Phone Number (Identity) <span class="required-star">*</span></label>
+                        <input type="text" name="phone" id="id_phone" class="form-control-glass" value="{{ admin_user.profile.phone|default:'' }}" placeholder="+91 98765 43210" required>
+                        <div class="form-help-text">Direct administrator contact and verification number.</div>
+                    </div>
+                </div>
+
+                <!-- Address / Location -->
+                <div class="form-group">
+                    <label class="form-label" for="id_address"><i class="fas fa-location-dot"></i> Office / Campus Location</label>
+                    <input type="text" name="address" id="id_address" class="form-control-glass" value="{{ admin_user.profile.address|default:'' }}" placeholder="e.g. Admin Block, Suite 301, Main Campus">
+                </div>
+
+                <!-- Social / Developer Links -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="id_linkedin"><i class="fab fa-linkedin"></i> LinkedIn Profile URL</label>
+                        <input type="url" name="linkedin_url" id="id_linkedin" class="form-control-glass" value="{{ admin_user.profile.linkedin_url|default:'' }}" placeholder="https://linkedin.com/in/username">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_github"><i class="fab fa-github"></i> GitHub Profile URL</label>
+                        <input type="url" name="github_url" id="id_github" class="form-control-glass" value="{{ admin_user.profile.github_url|default:'' }}" placeholder="https://github.com/username">
+                    </div>
+                </div>
+
+                <!-- Bio -->
+                <div class="form-group">
+                    <label class="form-label" for="id_bio"><i class="fas fa-paragraph"></i> Administrator Bio & Responsibilities</label>
+                    <textarea name="bio" id="id_bio" class="form-control-glass" placeholder="Briefly describe your administrative focus, departments managed, or office hours...">{{ admin_user.profile.bio|default:'' }}</textarea>
+                </div>
+
+                <div class="form-actions-row">
+                    <button type="submit" class="btn-submit-premium">
+                        <i class="fas fa-floppy-disk"></i> Save Profile Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- TAB 2: SECURITY & PASSWORD                    -->
+    <!-- ============================================= -->
+    <div class="admin-tab-pane" id="tab-security">
+        <div class="admin-card-panel" style="max-width: 800px; margin: 0 auto 28px;">
+            <div class="admin-card-header">
+                <div class="admin-card-title">
+                    <div class="admin-card-title-icon icon-amber"><i class="fas fa-shield-keyhole"></i></div>
+                    <div>
+                        <h3>Administrator Credential Security</h3>
+                        <p>Institutional security and administrator password governance.</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if admin_user.is_superuser %}
+            <div style="background: rgba(255, 183, 77, 0.08); border: 1px solid rgba(255, 183, 77, 0.25); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px; display: flex; gap: 14px; align-items: center;">
+                <i class="fas fa-circle-info" style="color: var(--accent-amber); font-size: 1.25rem;"></i>
+                <div style="font-size: 0.85rem; color: #e0e0e0; line-height: 1.5;">
+                    Your account is uniquely identified by your Email ID. Changing your password will preserve your active session via secure cryptographic hash rotation.
+                </div>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+
+                <div class="form-group">
+                    <label class="form-label" for="id_current_password"><i class="fas fa-lock"></i> Current Password <span class="required-star">*</span></label>
+                    <div class="input-with-icon-wrapper">
+                        <input type="password" name="current_password" id="id_current_password" class="form-control-glass" placeholder="Enter current administrator password" required>
+                        <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('id_current_password', this)">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_new_password"><i class="fas fa-key"></i> New Password <span class="required-star">*</span></label>
+                    <div class="input-with-icon-wrapper">
+                        <input type="password" name="new_password" id="id_new_password" class="form-control-glass" placeholder="Enter new password (min. 6 characters)" oninput="checkPasswordStrength(this.value);" required>
+                        <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('id_new_password', this)">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="pass-strength-bar">
+                        <div class="pass-strength-fill" id="passStrengthFill"></div>
+                    </div>
+                    <div class="form-help-text" id="passStrengthText">Minimum 6 characters required.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_confirm_password"><i class="fas fa-check-double"></i> Confirm New Password <span class="required-star">*</span></label>
+                    <div class="input-with-icon-wrapper">
+                        <input type="password" name="confirm_password" id="id_confirm_password" class="form-control-glass" placeholder="Re-enter new password to verify" oninput="verifyPasswordMatch();" required>
+                        <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('id_confirm_password', this)">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="form-help-text" id="passMatchText"></div>
+                </div>
+
+                <div class="form-actions-row">
+                    <button type="submit" class="btn-submit-premium">
+                        <i class="fas fa-lock-open"></i> Update Super Administrator Password
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <!-- Locked Security Card for Staff Administrator -->
+            <div style="background: rgba(255, 51, 102, 0.06); border: 1px solid rgba(255, 51, 102, 0.25); border-radius: var(--radius-lg); padding: 36px 24px; text-align: center;">
+                <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(255, 51, 102, 0.15); color: var(--accent-red); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; box-shadow: 0 0 25px rgba(255, 51, 102, 0.2);">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 10px; font-weight: 700;">Super Administrator Clearance Required</h3>
+                <p style="color: #cbd5e1; font-size: 0.95rem; max-width: 600px; margin: 0 auto 20px; line-height: 1.65;">
+                    Staff Administrators do not hold clearance to self-change, create, or initiate password recovery procedures. For platform safety and security integrity, only <strong>Super Administrators</strong> have the authority to manage credentials and provision accounts.
+                </p>
+                <div style="display: inline-flex; align-items: center; gap: 10px; font-size: 0.88rem; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); padding: 10px 22px; border-radius: 99px;">
+                    <i class="fas fa-shield-halved" style="color: var(--secondary);"></i>
+                    <span>If you forgot your password or need a security reset, contact a Super Administrator.</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- TAB 3: ADD NEW ADMIN                          -->
+    <!-- ============================================= -->
+    <div class="admin-tab-pane" id="tab-add-admin">
+        {% if admin_user.is_superuser %}
+        <div class="admin-card-panel" style="max-width: 900px; margin: 0 auto 28px;">
+            <div class="admin-card-header">
+                <div class="admin-card-title">
+                    <div class="admin-card-title-icon icon-primary"><i class="fas fa-user-plus"></i></div>
+                    <div>
+                        <h3>Provision New Administrator</h3>
+                        <p>Identified uniquely by Email ID, Password, and Phone Number. Names carry no uniqueness restrictions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informational identity notice -->
+            <div style="background: rgba(0, 212, 255, 0.08); border: 1px solid rgba(0, 212, 255, 0.28); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 26px; display: flex; gap: 14px; align-items: flex-start;">
+                <i class="fas fa-id-badge" style="color: var(--secondary); font-size: 1.5rem; margin-top: 3px;"></i>
+                <div style="font-size: 0.88rem; color: #d0d0e8; line-height: 1.55;">
+                    <strong style="color: #ffffff;">Universal Name Freedom:</strong> Multiple people can have the same name (e.g. <em>Avik</em> can exist as a student, faculty, or admin simultaneously). Uniqueness is strictly validated by <strong>Email ID</strong> and verified with <strong>Phone Number</strong> and <strong>Password</strong>.
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_admin">
+
+                <!-- 1. Primary Unique Identifier: Email ID -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="new_email"><i class="far fa-envelope"></i> Official Admin Email (Unique Identifier) <span class="required-star">*</span></label>
+                        <input type="email" name="new_email" id="new_email" class="form-control-glass" placeholder="e.g. avik.admin@college.edu" required autocomplete="off">
+                        <div class="form-help-text">Used for login authentication and account verification.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="new_phone"><i class="fas fa-phone"></i> Contact Phone Number (Identity) <span class="required-star">*</span></label>
+                        <input type="text" name="new_phone" id="new_phone" class="form-control-glass" placeholder="+91 98765 43210" required>
+                        <div class="form-help-text">Administrator contact & security verification.</div>
+                    </div>
+                </div>
+
+                <!-- 2. Display Name (NO UNIQUENESS RESTRICTION) -->
+                <div class="form-group">
+                    <label class="form-label" for="new_admin_name"><i class="fas fa-user"></i> Administrator Full Name (Display Only)</label>
+                    <input type="text" name="admin_name" id="new_admin_name" class="form-control-glass" placeholder="e.g. Avik Roy or Avik">
+                    <div class="form-help-text">Any name can be chosen freely without "already exists" conflicts.</div>
+                </div>
+
+                <!-- 3. Password Authentication -->
+                <div class="form-group">
+                    <label class="form-label" for="new_password"><i class="fas fa-key"></i> Initial Administrator Password <span class="required-star">*</span></label>
+                    <div class="pass-gen-group">
+                        <div class="input-with-icon-wrapper" style="flex: 1;">
+                            <input type="text" name="new_password" id="new_password" class="form-control-glass" placeholder="Enter initial password (min. 6 chars)" required>
+                        </div>
+                        <button type="button" class="btn-gen-pass" onclick="generateRandomPassword('new_password');">
+                            <i class="fas fa-wand-magic-sparkles"></i> Generate Password
+                        </button>
+                    </div>
+                    <div class="form-help-text">The new admin logs in with this password and their Email ID.</div>
+                </div>
+
+                <!-- Optional Details (Avatar with auto-clarify & Bio) -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="new_admin_avatar"><i class="fas fa-image"></i> Initial Profile Picture (Optional)</label>
+                        <input type="file" name="new_admin_avatar" id="new_admin_avatar" class="form-control-glass" accept="image/*">
+                        <div class="form-help-text">Low-res or high-res photos are automatically clarified and sharp.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="new_bio"><i class="fas fa-paragraph"></i> Department / Role Notes (Optional)</label>
+                        <input type="text" name="new_bio" id="new_bio" class="form-control-glass" placeholder="e.g. Head of Technology & LMS Operations">
+                    </div>
+                </div>
+
+                <!-- Campus Office & Social Links -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="new_address"><i class="fas fa-location-dot"></i> Campus Office / Location (Optional)</label>
+                        <input type="text" name="new_address" id="new_address" class="form-control-glass" placeholder="e.g. Tech Block A, Room 402, North Campus">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="new_linkedin"><i class="fab fa-linkedin"></i> LinkedIn Profile URL (Optional)</label>
+                        <input type="url" name="new_linkedin" id="new_linkedin" class="form-control-glass" placeholder="https://linkedin.com/in/username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="new_github"><i class="fab fa-github"></i> GitHub Profile URL (Optional)</label>
+                    <input type="url" name="new_github" id="new_github" class="form-control-glass" placeholder="https://github.com/username">
+                </div>
+
+                <!-- Role Selection Switch -->
+                <div class="form-group">
+                    <label class="custom-switch-label">
+                        <input type="checkbox" name="is_superuser" class="custom-switch-input">
+                        <div class="switch-info">
+                            <h4><i class="fas fa-crown" style="color: #c084fc;"></i> Grant Super Administrator Privileges</h4>
+                            <p>Super Admins can create additional administrators, manage server endpoints, and override all security scopes.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="form-actions-row">
+                    <button type="submit" class="btn-submit-premium">
+                        <i class="fas fa-user-plus"></i> Create & Provision Administrator
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div class="admin-card-panel" style="max-width: 800px; margin: 0 auto 28px;">
+            <div style="background: rgba(255, 51, 102, 0.06); border: 1px solid rgba(255, 51, 102, 0.25); border-radius: var(--radius-lg); padding: 36px 24px; text-align: center;">
+                <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(255, 51, 102, 0.15); color: var(--accent-red); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; box-shadow: 0 0 25px rgba(255, 51, 102, 0.2);">
+                    <i class="fas fa-user-lock"></i>
+                </div>
+                <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 10px; font-weight: 700;">Administrator Provisioning Restricted</h3>
+                <p style="color: #cbd5e1; font-size: 0.95rem; max-width: 600px; margin: 0 auto 20px; line-height: 1.65;">
+                    Staff Administrators cannot provision or register new administrators into the LMS platform. Administrative account provisioning is strictly reserved for <strong>Super Administrators</strong>.
+                </p>
+                <div style="display: inline-flex; align-items: center; gap: 10px; font-size: 0.88rem; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); padding: 10px 22px; border-radius: 99px;">
+                    <i class="fas fa-crown" style="color: #c084fc;"></i>
+                    <span>Contact a Super Administrator to request additional administrator account creation.</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ============================================= -->
+    <!-- TAB 4: ADMIN TEAM DIRECTORY                   -->
+    <!-- ============================================= -->
+    <div class="admin-tab-pane" id="tab-team-directory">
+        <div class="admin-card-panel">
+            <div class="admin-card-header">
+                <div class="admin-card-title">
+                    <div class="admin-card-title-icon icon-purple"><i class="fas fa-users-gear"></i></div>
+                    <div>
+                        <h3>Platform Administrators Directory</h3>
+                        <p>Total {{ admin_team.count }} active administrator account{{ admin_team.count|pluralize }}. Click any administrator to inspect their social profile.</p>
+                    </div>
+                </div>
+
+                {% if admin_user.is_superuser %}
+                <button type="button" class="btn-create-admin-trigger" onclick="switchAdminTab('tab-add-admin');" style="padding: 9px 18px; font-size: 0.85rem;">
+                    <i class="fas fa-plus"></i> Add Admin
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Directory Toolbar: Real-Time Search & Role Filters -->
+            <div class="directory-toolbar">
+                <div class="directory-search-wrapper">
+                    <i class="fas fa-magnifying-glass directory-search-icon"></i>
+                    <input type="text" id="adminDirectorySearch" class="directory-search-input" placeholder="Search administrators by name, email, department or phone..." oninput="filterAdminDirectory();">
+                    <button type="button" id="directorySearchClear" class="directory-search-clear" onclick="clearDirectorySearch();" title="Clear Search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="directory-filter-pills">
+                    <button type="button" class="filter-pill active" data-filter="all" onclick="setDirectoryRoleFilter('all', this);">
+                        <i class="fas fa-users"></i> All (<span id="countFilterAll">{{ admin_team.count }}</span>)
+                    </button>
+                    <button type="button" class="filter-pill" data-filter="super" onclick="setDirectoryRoleFilter('super', this);">
+                        <i class="fas fa-crown" style="color: #c084fc;"></i> Super Admins (<span id="countFilterSuper">0</span>)
+                    </button>
+                    <button type="button" class="filter-pill" data-filter="staff" onclick="setDirectoryRoleFilter('staff', this);">
+                        <i class="fas fa-shield-alt" style="color: var(--secondary);"></i> Staff Admins (<span id="countFilterStaff">0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Zero Search Results State -->
+            <div id="noDirectoryResults" style="display:none; text-align:center; padding: 48px 20px; background: rgba(255, 255, 255, 0.015); border: 1px dashed var(--glass-border); border-radius: var(--radius-lg); margin-bottom: 24px;">
+                <i class="fas fa-user-slash" style="font-size: 2.8rem; margin-bottom: 14px; color: var(--secondary); opacity: 0.8;"></i>
+                <h4 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 6px;">No administrators match your search</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 420px; margin: 0 auto 16px;">Try adjusting your keywords or clearing the search filter.</p>
+                <button type="button" class="filter-pill active" onclick="clearDirectorySearch();" style="padding: 8px 18px;">
+                    <i class="fas fa-rotate-left"></i> Reset Filter
+                </button>
+            </div>
+
+            <div class="admin-team-grid" id="adminTeamGrid">
+                {% for member in admin_team %}
+                <div class="team-admin-card" id="admin-card-{{ member.id }}"
+                    data-admin-name="{{ member.first_name|default:'' }} {{ member.last_name|default:'' }}"
+                    data-admin-email="{{ member.email }}"
+                    data-admin-bio="{{ member.profile.bio|default:'' }}"
+                    data-admin-phone="{{ member.profile.phone|default:'' }}"
+                    data-admin-role-type="{% if member.is_superuser %}super{% else %}staff{% endif %}">
+                    <div>
+                        <div class="team-admin-top">
+                            <div class="team-avatar-wrapper" onclick="openAdminSocialModal('{{ member.id }}')" title="Click to view social profile">
+                                {% if member.profile_pic_url %}
+                                    <img src="{{ member.profile_pic_url }}" alt="{{ member.first_name|default:member.username }}" class="team-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="team-avatar-initial" style="display:none;">{{ member.first_name.0|default:member.username.0|upper }}</div>
+                                {% elif member.profile.profile_pic and member.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                    <img src="{{ member.profile.profile_pic.url }}" alt="{{ member.first_name|default:member.username }}" class="team-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="team-avatar-initial" style="display:none;">{{ member.first_name.0|default:member.username.0|upper }}</div>
+                                {% else %}
+                                    <div class="team-avatar-initial">{{ member.first_name.0|default:member.username.0|upper }}</div>
+                                {% endif %}
+                                <span class="avatar-online-dot" title="Active Platform Account"></span>
+                            </div>
+
+                            <div class="team-meta" style="flex: 1; min-width: 0;">
+                                <h4 onclick="openAdminSocialModal('{{ member.id }}')" title="Click to view social profile">
+                                    {{ member.first_name }} {{ member.last_name|default:"" }}
+                                    <span class="card-verified-badge" title="Verified Administrator"><i class="fas fa-circle-check"></i></span>
+                                </h4>
+                                <div class="team-username" title="{{ member.email }}">{{ member.email }}</div>
+                                <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    {% if member.is_superuser %}
+                                        <span class="badge-admin-role role-super" style="padding: 3px 10px; font-size: 0.7rem;"><i class="fas fa-crown"></i> Super Admin</span>
+                                    {% else %}
+                                        <span class="badge-admin-role role-staff" style="padding: 3px 10px; font-size: 0.7rem;"><i class="fas fa-shield-alt"></i> Administrator</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Social Connect Shortcuts on Card -->
+                        <div class="card-quick-socials">
+                            <a href="mailto:{{ member.email }}" class="card-quick-btn" title="Send Official Email ({{ member.email }})"><i class="far fa-envelope"></i></a>
+                            {% if member.profile.phone %}
+                            <a href="tel:{{ member.profile.phone }}" class="card-quick-btn" title="Call ({{ member.profile.phone }})"><i class="fas fa-phone"></i></a>
+                            <a href="https://wa.me/{{ member.profile.phone|cut:' '|cut:'+'|cut:'-' }}" target="_blank" class="card-quick-btn" title="Chat on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            {% endif %}
+                            {% if member.profile.linkedin_url %}
+                            <a href="{{ member.profile.linkedin_url }}" target="_blank" class="card-quick-btn" title="LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
+                            {% endif %}
+                            {% if member.profile.github_url %}
+                            <a href="{{ member.profile.github_url }}" target="_blank" class="card-quick-btn" title="GitHub Profile"><i class="fab fa-github"></i></a>
+                            {% endif %}
+                        </div>
+
+                        <!-- Details List -->
+                        <div class="team-details-list">
+                            <div class="team-detail-item">
+                                <span><i class="far fa-envelope"></i> Email (ID)</span>
+                                <span>{{ member.email|default:"N/A" }}</span>
+                            </div>
+                            {% if member.profile.phone %}
+                            <div class="team-detail-item">
+                                <span><i class="fas fa-phone"></i> Phone</span>
+                                <span>{{ member.profile.phone }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="team-detail-item">
+                                <span><i class="far fa-calendar"></i> Joined</span>
+                                <span>{{ member.date_joined|date:"d M, Y" }}</span>
+                            </div>
+                            <div class="team-detail-item">
+                                <span><i class="fas fa-clock"></i> Last Login</span>
+                                <span>{{ member.last_login|date:"d M, Y H:i"|default:"Never" }}</span>
+                            </div>
+                            {% if member.profile.bio %}
+                            <div class="team-detail-item" style="flex-direction: column; gap: 4px;">
+                                <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Department / Bio</span>
+                                <span style="font-size: 0.82rem; color: #b8b8d0; line-height: 1.4;">{{ member.profile.bio|truncatechars:110 }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Bottom Action / Status with Social Profile Button -->
+                    <div class="team-card-actions">
+                        <button type="button" class="btn-view-social-profile" 
+                            data-admin-id="{{ member.id }}"
+                            data-admin-name="{{ member.first_name|default:'' }} {{ member.last_name|default:'' }}"
+                            data-admin-email="{{ member.email }}"
+                            data-admin-phone="{{ member.profile.phone|default:'' }}"
+                            data-admin-pic="{{ member.profile_pic_url|default:'' }}"
+                            data-admin-initial="{{ member.first_name.0|default:member.email.0|upper }}"
+                            data-admin-role="{% if member.is_superuser %}Super Administrator{% else %}Staff Administrator{% endif %}"
+                            data-admin-is-super="{% if member.is_superuser %}1{% else %}0{% endif %}"
+                            data-admin-joined="{{ member.date_joined|date:'d M, Y' }}"
+                            data-admin-lastlogin="{{ member.last_login|date:'d M, Y H:i'|default:'Never' }}"
+                            data-admin-bio="{{ member.profile.bio|default:'' }}"
+                            data-admin-address="{{ member.profile.address|default:'' }}"
+                            data-admin-linkedin="{{ member.profile.linkedin_url|default:'' }}"
+                            data-admin-github="{{ member.profile.github_url|default:'' }}"
+                            onclick="triggerSocialModalFromBtn(this)">
+                            <i class="fas fa-id-card-clip"></i> View Profile
+                        </button>
+
+                        {% if admin_user.is_superuser %}
+                        <button type="button" class="btn-reset-pass-trigger" 
+                            onclick="openAdminPasswordResetModal('{{ member.id }}', '{{ member.first_name|default:member.email|escapejs }} {{ member.last_name|default:''|escapejs }}', '{{ member.email|escapejs }}', '{% if member.is_superuser %}Super Administrator{% else %}Staff Administrator{% endif %}')" 
+                            title="Super Admin: Reset or Forgot Password Override for this Administrator">
+                            <i class="fas fa-key"></i> Reset Pass
+                        </button>
+                        {% endif %}
+
+                        {% if member == admin_user %}
+                            <span class="badge-you"><i class="fas fa-user-check"></i> Current Account</span>
+                        {% else %}
+                            {% if admin_user.is_superuser %}
+                            <form method="POST" style="margin: 0;" onsubmit="return confirm('Are you sure you want to toggle active status for {{ member.first_name|default:member.email }}?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="toggle_admin_status">
+                                <input type="hidden" name="target_user_id" value="{{ member.id }}">
+                                <button type="submit" class="btn-toggle-status">
+                                    <i class="fas fa-power-off"></i> {% if member.is_active %}Deactivate{% else %}Activate{% endif %}
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="badge-status-active" style="padding: 3px 10px; font-size: 0.72rem;">
+                                {% if member.is_active %}<span class="badge-status-dot"></span> Active{% else %}<span style="color: var(--accent-red);">● Inactive</span>{% endif %}
+                            </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- TAB 5: SYSTEM PRIVILEGES MATRIX               -->
+    <!-- ============================================= -->
+    <div class="admin-tab-pane" id="tab-privileges">
+        <div class="admin-card-panel">
+            <div class="admin-card-header">
+                <div class="admin-card-title">
+                    <div class="admin-card-title-icon icon-green"><i class="fas fa-shield-halved"></i></div>
+                    <div>
+                        <h3>Security & Access Scope Matrix</h3>
+                        <p>Authorized permission scopes associated with your authenticated administrative session.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="privileges-grid">
+                <div class="privilege-item">
+                    <div class="privilege-icon m-blue"><i class="fas fa-user-graduate"></i></div>
+                    <div class="privilege-info">
+                        <h4>Student Operations</h4>
+                        <p>Full privileges to inspect student accounts, update profiles, toggle account locks, and issue password resets.</p>
+                    </div>
+                </div>
+
+                <div class="privilege-item">
+                    <div class="privilege-icon m-purple"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="privilege-info">
+                        <h4>Curriculum & Courses</h4>
+                        <p>Author and publish learning pathways, video lectures, lesson outlines, and live interactive classes.</p>
+                    </div>
+                </div>
+
+                <div class="privilege-item">
+                    <div class="privilege-icon m-green"><i class="fas fa-book-bookmark"></i></div>
+                    <div class="privilege-info">
+                        <h4>Knowledge Repository</h4>
+                        <p>Upload, catalog, categorize, and archive digital documents, cheat sheets, and technical papers.</p>
+                    </div>
+                </div>
+
+                <div class="privilege-item">
+                    <div class="privilege-icon m-amber"><i class="fas fa-robot"></i></div>
+                    <div class="privilege-info">
+                        <h4>AI Quizzes & Coding Arenas</h4>
+                        <p>Configure automated AI quiz generators, oversee test submissions, and monitor Syntax Singularity bounties.</p>
+                    </div>
+                </div>
+
+                <div class="privilege-item">
+                    <div class="privilege-icon m-blue"><i class="fas fa-users-cog"></i></div>
+                    <div class="privilege-info">
+                        <h4>Administrator Provisioning & Password Authority</h4>
+                        <p>
+                            {% if admin_user.is_superuser %}
+                                <strong style="color: var(--accent-green);">GRANTED:</strong> Authorized to provision new administrators and perform emergency password resets/overrides for all Staff and Super Administrators.
+                            {% else %}
+                                <strong style="color: var(--accent-red);">RESTRICTED:</strong> Staff Administrators cannot provision administrators or reset passwords. Clearance reserved exclusively for Super Administrators.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="privilege-item">
+                    <div class="privilege-icon m-purple"><i class="fas fa-key"></i></div>
+                    <div class="privilege-info">
+                        <h4>Superuser Root Authority</h4>
+                        <p>
+                            {% if admin_user.is_superuser %}
+                                <strong style="color: var(--accent-green);">GRANTED:</strong> Unrestricted superuser access to Django infrastructure, team state, and databases.
+                            {% else %}
+                                <span style="color: var(--text-muted);">Standard staff scope: Superuser actions restricted to Root Admins.</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- ============================================= -->
+<!-- SOCIAL SIDE PROFILE MODAL DIALOG              -->
+<!-- ============================================= -->
+<div class="admin-social-modal-backdrop" id="adminSocialModal" onclick="handleSocialModalBackdropClick(event)">
+    <div class="admin-social-modal-card" id="adminSocialCard">
+        <!-- Top Cover Banner -->
+        <div class="modal-cover-banner">
+            <div class="modal-banner-actions">
+                <button type="button" class="btn-banner-action" onclick="copyAdminProfileLink()" title="Copy Direct Share Link to Profile">
+                    <i class="fas fa-share-nodes"></i>
+                </button>
+                <button type="button" class="btn-banner-action" onclick="downloadAdminVCard()" title="Download Contact Card (.vcf)">
+                    <i class="fas fa-address-card"></i>
+                </button>
+                <button type="button" class="btn-banner-action btn-banner-close" onclick="closeAdminSocialModal()" title="Close Profile (Esc)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-content-body">
+            <!-- Avatar overlapping cover banner -->
+            <div class="modal-avatar-row">
+                <div class="modal-avatar-frame" onclick="openAdminAvatarLightbox()" title="Click to enlarge photo">
+                    <img id="modalAvatarImg" class="modal-avatar-img" alt="Avatar" style="display:none;" onerror="this.style.display='none'; document.getElementById('modalAvatarInitial').style.display='flex';">
+                    <div id="modalAvatarInitial" class="modal-avatar-initial" style="display:flex;">A</div>
+                    <div class="modal-avatar-zoom-overlay">
+                        <i class="fas fa-magnifying-glass-plus"></i>
+                    </div>
+                </div>
+
+                <div id="modalRoleBadgeContainer" style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                    <span class="badge-admin-role role-super" id="modalRoleBadge"><i class="fas fa-crown"></i> Super Administrator</span>
+                    <span class="modal-online-badge"><span class="active-pulse-dot"></span> Active Console</span>
+                </div>
+            </div>
+
+            <!-- Profile Name & Email Heading -->
+            <div class="modal-header-info">
+                <h2>
+                    <span id="modalAdminName">Administrator Name</span>
+                    <span class="card-verified-badge" title="Verified LMS Administrator"><i class="fas fa-circle-check"></i></span>
+                </h2>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap;">
+                    <span class="modal-handle-badge" onclick="copyAdminEmailToClipboard()" title="Click to copy Email ID">
+                        <i class="far fa-envelope"></i> <span id="modalAdminEmail">admin@domain.com</span>
+                        <i class="far fa-copy" style="font-size: 0.72rem; opacity: 0.7;"></i>
+                    </span>
+                    <span id="modalDepartmentChip" style="font-size: 0.8rem; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); padding: 3px 10px; border-radius: 99px;">Platform Operations</span>
+                </div>
+            </div>
+
+            <!-- Social & Direct Contact Action Bar -->
+            <div class="modal-social-chips">
+                <a id="modalEmailBtn" href="#" class="social-chip social-chip-email" title="Send Official Email">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
+
+                <a id="modalPhoneBtn" href="#" class="social-chip social-chip-phone" style="display:none;" title="Call Phone">
+                    <i class="fas fa-phone"></i> Call
+                </a>
+
+                <a id="modalWhatsAppBtn" href="#" target="_blank" class="social-chip social-chip-whatsapp" style="display:none;" title="Chat on WhatsApp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+
+                <a id="modalLinkedInBtn" href="#" target="_blank" class="social-chip social-chip-linkedin" style="display:none;" title="LinkedIn Profile">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+
+                <a id="modalGitHubBtn" href="#" target="_blank" class="social-chip social-chip-github" style="display:none;" title="GitHub Profile">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+
+                <button type="button" class="social-chip social-chip-copy" onclick="copyAllAdminContactDetails()" title="Copy Complete Administrator Contact Dossier">
+                    <i class="fas fa-copy"></i> Copy Dossier
+                </button>
+
+                {% if admin_user.is_superuser %}
+                <button type="button" class="social-chip social-chip-reset-pass" onclick="openResetModalForCurrentSocialAdmin()" title="Super Admin: Emergency Password Override">
+                    <i class="fas fa-key"></i> Reset Password
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Modal Inner Navigation Tabs -->
+            <div class="modal-nav-tabs">
+                <button type="button" class="modal-tab-btn active" data-modal-tab="modal-tab-about" onclick="switchModalTab('modal-tab-about', this)">
+                    <i class="fas fa-circle-info"></i> About & Bio
+                </button>
+                <button type="button" class="modal-tab-btn" data-modal-tab="modal-tab-contact" onclick="switchModalTab('modal-tab-contact', this)">
+                    <i class="fas fa-address-card"></i> Contact Card
+                </button>
+                <button type="button" class="modal-tab-btn" data-modal-tab="modal-tab-scope" onclick="switchModalTab('modal-tab-scope', this)">
+                    <i class="fas fa-shield-halved"></i> Access Scope
+                </button>
+            </div>
+
+            <!-- MODAL TAB 1: ABOUT & BIO -->
+            <div class="modal-tab-pane active" id="modal-tab-about">
+                <!-- Bio Quote Box -->
+                <div class="modal-quote-box" id="modalBioContainer">
+                    <h4><i class="fas fa-quote-left"></i> Administrator Statement & Department Notes</h4>
+                    <p id="modalAdminBio">Administrator has not added public department notes yet.</p>
+                </div>
+
+                <!-- Quick Stats Grid -->
+                <div class="modal-quick-stats-grid">
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-icon s-purple"><i class="fas fa-calendar-check"></i></div>
+                        <div>
+                            <div class="modal-stat-label">Member Since</div>
+                            <div class="modal-stat-value" id="modalDetailJoined">N/A</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-icon s-cyan"><i class="fas fa-id-badge"></i></div>
+                        <div>
+                            <div class="modal-stat-label">Security Tier</div>
+                            <div class="modal-stat-value" id="modalDetailTier">Super Admin</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-icon s-green"><i class="fas fa-clock-rotate-left"></i></div>
+                        <div>
+                            <div class="modal-stat-label">Last Active Session</div>
+                            <div class="modal-stat-value" id="modalDetailLastLogin">N/A</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-icon s-amber"><i class="fas fa-location-dot"></i></div>
+                        <div>
+                            <div class="modal-stat-label">Campus Base</div>
+                            <div class="modal-stat-value" id="modalDetailAddress">Main Campus</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Focus Areas & Badges -->
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 22px;">
+                    <div style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.8px; margin-bottom: 8px;">
+                        <i class="fas fa-tags" style="color: var(--secondary);"></i> Key Administrative Competencies
+                    </div>
+                    <div class="modal-tags-container" id="modalCompetencies">
+                        <span class="modal-tag"><i class="fas fa-users"></i> User Access Control</span>
+                        <span class="modal-tag"><i class="fas fa-graduation-cap"></i> Academic Operations</span>
+                        <span class="modal-tag"><i class="fas fa-shield"></i> Security Policy</span>
+                        <span class="modal-tag"><i class="fas fa-server"></i> Platform Infrastructure</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL TAB 2: DIGITAL CONTACT CARD -->
+            <div class="modal-tab-pane" id="modal-tab-contact">
+                <div class="modal-contact-list">
+                    <div class="modal-contact-row">
+                        <div class="modal-contact-info">
+                            <div class="modal-contact-icon"><i class="far fa-envelope"></i></div>
+                            <div class="modal-contact-text">
+                                <div class="modal-contact-label">Official Email ID (Primary Login)</div>
+                                <div class="modal-contact-value" id="modalContactEmail">admin@domain.com</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-copy-item" onclick="copyContactField('modalContactEmail', 'Email ID')" title="Copy Email ID">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-contact-row">
+                        <div class="modal-contact-info">
+                            <div class="modal-contact-icon"><i class="fas fa-phone"></i></div>
+                            <div class="modal-contact-text">
+                                <div class="modal-contact-label">Contact Phone Number</div>
+                                <div class="modal-contact-value" id="modalContactPhone">Not provided</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-copy-item" id="btnCopyPhone" onclick="copyContactField('modalContactPhone', 'Phone Number')" title="Copy Phone Number">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-contact-row">
+                        <div class="modal-contact-info">
+                            <div class="modal-contact-icon"><i class="fas fa-location-dot"></i></div>
+                            <div class="modal-contact-text">
+                                <div class="modal-contact-label">Campus Office / Station</div>
+                                <div class="modal-contact-value" id="modalContactAddress">Main Campus Administration</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-copy-item" onclick="copyContactField('modalContactAddress', 'Office Location')" title="Copy Location">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-contact-row">
+                        <div class="modal-contact-info">
+                            <div class="modal-contact-icon"><i class="fas fa-fingerprint"></i></div>
+                            <div class="modal-contact-text">
+                                <div class="modal-contact-label">Platform Account Identifier</div>
+                                <div class="modal-contact-value" id="modalDetailId">ADM-0001</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-copy-item" onclick="copyContactField('modalDetailId', 'Account ID')" title="Copy Account ID">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 20px;">
+                    <button type="button" class="btn-create-admin-trigger" onclick="downloadAdminVCard()" style="padding: 10px 20px; font-size: 0.88rem;">
+                        <i class="fas fa-download"></i> Save to Phone / Outlook (.vcf)
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODAL TAB 3: ACCESS SCOPE -->
+            <div class="modal-tab-pane" id="modal-tab-scope">
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 22px;">
+                    <h4 style="margin: 0 0 12px; font-size: 0.88rem; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-lock" style="color: var(--secondary);"></i> Active Authorization Scopes
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem; color: #cbd5e1;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                            <span>Course & Curriculum Publishing Access</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                            <span>Student Directory & Academic Progress Oversight</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                            <span>Digital Library & Repository Distribution</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                            <span>Live Class Scheduling & Notice Publishing</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;" id="modalSuperScopeRow">
+                            <i class="fas fa-crown" style="color: #c084fc;"></i>
+                            <span id="modalSuperScopeText">Full Superuser Database & Server Infrastructure Scope</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer Actions -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 18px; margin-top: 10px; gap: 10px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary-glass" onclick="copyAdminProfileLink()" style="padding: 9px 18px; font-size: 0.85rem;">
+                        <i class="fas fa-link"></i> Copy Profile Link
+                    </button>
+                    {% if admin_user.is_superuser %}
+                    <button type="button" class="btn-reset-pass-trigger" onclick="openResetModalForCurrentSocialAdmin()" style="padding: 9px 18px; font-size: 0.85rem;">
+                        <i class="fas fa-key"></i> Reset Password
+                    </button>
+                    {% endif %}
+                </div>
+                <button type="button" class="btn-secondary-glass" onclick="closeAdminSocialModal()" style="padding: 9px 20px; font-size: 0.85rem;">
+                    <i class="fas fa-check"></i> Done
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- FULL-SCREEN AVATAR LIGHTBOX ZOOM              -->
+<!-- ============================================= -->
+<div class="avatar-lightbox-backdrop" id="adminAvatarLightbox" onclick="closeAdminAvatarLightbox()">
+    <div class="avatar-lightbox-content" onclick="event.stopPropagation()">
+        <img id="lightboxImg" class="avatar-lightbox-img" src="" alt="High-Definition Profile Picture">
+        <div class="avatar-lightbox-caption" id="lightboxCaption">Administrator Avatar</div>
+        <button type="button" class="btn-banner-action" onclick="closeAdminAvatarLightbox()" style="position: absolute; top: -14px; right: -14px; background: rgba(0,0,0,0.85);">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- FLOATING TOAST NOTIFICATION CONTAINER         -->
+<!-- ============================================= -->
+<div id="adminProfileToast" class="admin-toast-notification">
+    <i class="fas fa-circle-check" style="color: var(--secondary); font-size: 1.1rem;"></i>
+    <span id="adminToastMsg">Notification message</span>
+</div>
+
+{% if admin_user.is_superuser %}
+<!-- ============================================= -->
+<!-- SUPER ADMIN PASSWORD OVERRIDE MODAL DIALOG    -->
+<!-- ============================================= -->
+<div class="admin-social-modal-backdrop" id="adminResetPassModal" onclick="handleResetPassBackdropClick(event)">
+    <div class="admin-social-modal-card" style="max-width: 540px; margin: 24px auto 30px;" id="adminResetPassCard">
+        <!-- Top Cover Header -->
+        <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); padding: 22px 26px; border-bottom: 1px solid rgba(255,255,255,0.1); position: relative;">
+            <button type="button" class="btn-banner-action btn-banner-close" onclick="closeAdminResetPassModal()" style="position: absolute; top: 16px; right: 16px;" title="Close (Esc)">
+                <i class="fas fa-times"></i>
+            </button>
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; background: rgba(0, 212, 255, 0.15); border: 1px solid rgba(0, 212, 255, 0.4); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 3px; font-size: 1.25rem; color: #ffffff; font-weight: 700;">Password Security Override</h3>
+                    <p style="margin: 0; font-size: 0.82rem; color: #cbd5e1;">Emergency credential reset & forgotten password recovery</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 24px 28px;">
+            <!-- Target Admin Info Banner -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.8px;">Target Administrator</div>
+                    <div id="resetTargetName" style="font-weight: 700; font-size: 1rem; color: #ffffff; margin-top: 2px;">Administrator Name</div>
+                    <div id="resetTargetEmail" style="font-size: 0.82rem; color: var(--secondary); font-family: var(--font-mono);">admin@domain.com</div>
+                </div>
+                <span id="resetTargetRoleBadge" class="badge-admin-role role-staff" style="padding: 4px 12px; font-size: 0.75rem;"><i class="fas fa-shield-alt"></i> Staff Administrator</span>
+            </div>
+
+            <form method="POST" id="adminPasswordResetForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="super_admin_reset_password">
+                <input type="hidden" name="target_admin_id" id="resetTargetAdminId" value="">
+
+                <div class="form-group">
+                    <label class="form-label" for="reset_new_password"><i class="fas fa-key"></i> New Password <span class="required-star">*</span></label>
+                    <div class="pass-gen-group">
+                        <div class="input-with-icon-wrapper" style="flex: 1;">
+                            <input type="password" name="new_password" id="reset_new_password" class="form-control-glass" placeholder="Enter new password (min. 6 chars)" required>
+                            <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('reset_new_password', this)">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn-gen-pass" onclick="generateRandomPassword('reset_new_password', 'reset_confirm_password');">
+                            <i class="fas fa-wand-magic-sparkles"></i> Generate
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reset_confirm_password"><i class="fas fa-check-double"></i> Confirm New Password <span class="required-star">*</span></label>
+                    <div class="input-with-icon-wrapper">
+                        <input type="password" name="confirm_password" id="reset_confirm_password" class="form-control-glass" placeholder="Re-enter new password to verify" required>
+                        <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('reset_confirm_password', this)">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Safety Notice -->
+                <div style="background: rgba(0, 230, 118, 0.06); border: 1px solid rgba(0, 230, 118, 0.25); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.8rem; color: #a7f3d0; line-height: 1.5; margin-bottom: 22px; display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-shield-check" style="color: var(--accent-green); margin-top: 2px;"></i>
+                    <span><strong>Institutional Safety Protocol:</strong> As a Super Administrator, this operation updates this administrator's credentials directly in the database. Their old password will be superseded immediately.</span>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" class="btn-secondary-glass" onclick="closeAdminResetPassModal()">Cancel</button>
+                    <button type="submit" class="btn-submit-premium" style="padding: 12px 24px;">
+                        <i class="fas fa-shield-halved"></i> Confirm Password Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- ============================================= -->
+<!-- INTERACTIVE JAVASCRIPT LOGIC                  -->
+<!-- ============================================= -->
+<script>
+    // Tab Switching Functionality
+    function switchAdminTab(targetTabId) {
+        document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        document.querySelectorAll('.admin-tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+
+        const targetPane = document.getElementById(targetTabId);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+
+        const buttons = document.querySelectorAll('.admin-tab-btn');
+        buttons.forEach(btn => {
+            const clickAttr = btn.getAttribute('onclick');
+            if (clickAttr && clickAttr.includes(targetTabId)) {
+                btn.classList.add('active');
+            }
+        });
+
+        const tabsNav = document.querySelector('.admin-tabs-nav');
+        if (tabsNav && window.scrollY > 400) {
+            tabsNav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Direct Hero Avatar Upload auto-trigger
+    const heroInput = document.getElementById('directHeroAvatarInput');
+    if (heroInput) {
+        heroInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                document.getElementById('directAvatarForm').submit();
+            }
+        });
+    }
+
+    // Avatar preview inside edit form
+    function previewSelectedAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('avatarPreviewThumbnail');
+                if (preview) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                const heroImg = document.getElementById('heroAvatarImg');
+                if (heroImg) {
+                    heroImg.src = e.target.result;
+                    heroImg.style.display = 'block';
+                }
+                const heroInitial = document.getElementById('heroAvatarInitial');
+                if (heroInitial) {
+                    heroInitial.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Password Visibility Toggle
+    function togglePasswordVisibility(fieldId, triggerBtn) {
+        const input = document.getElementById(fieldId);
+        if (!input) return;
+
+        const icon = triggerBtn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (icon) {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        } else {
+            input.type = 'password';
+            if (icon) {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    }
+
+    // Password Strength Meter
+    function checkPasswordStrength(password) {
+        const fill = document.getElementById('passStrengthFill');
+        const text = document.getElementById('passStrengthText');
+        if (!fill || !text) return;
+
+        if (!password || password.length === 0) {
+            fill.style.width = '0%';
+            fill.style.background = 'transparent';
+            text.textContent = 'Minimum 6 characters required.';
+            text.style.color = 'var(--text-muted)';
+            return;
+        }
+
+        let strength = 0;
+        if (password.length >= 6) strength += 25;
+        if (password.length >= 10) strength += 25;
+        if (/[A-Z]/.test(password) && /[a-z]/.test(password)) strength += 25;
+        if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) strength += 25;
+
+        fill.style.width = strength + '%';
+
+        if (strength <= 25) {
+            fill.style.background = 'var(--accent-red)';
+            text.textContent = 'Weak: Short password.';
+            text.style.color = 'var(--accent-red)';
+        } else if (strength <= 50) {
+            fill.style.background = 'var(--accent-amber)';
+            text.textContent = 'Medium: Add uppercase letters, digits, or symbols.';
+            text.style.color = 'var(--accent-amber)';
+        } else if (strength <= 75) {
+            fill.style.background = 'var(--secondary)';
+            text.textContent = 'Good password strength.';
+            text.style.color = 'var(--secondary)';
+        } else {
+            fill.style.background = 'var(--accent-green)';
+            text.textContent = 'Strong & Secure password!';
+            text.style.color = 'var(--accent-green)';
+        }
+    }
+
+    // Password Match Real-Time Verifier
+    function verifyPasswordMatch() {
+        const newPass = document.getElementById('id_new_password')?.value || '';
+        const confirmPass = document.getElementById('id_confirm_password')?.value || '';
+        const matchText = document.getElementById('passMatchText');
+        if (!matchText) return;
+
+        if (confirmPass.length === 0) {
+            matchText.textContent = '';
+            return;
+        }
+
+        if (newPass === confirmPass) {
+            matchText.innerHTML = '<i class="fas fa-check" style="color: var(--accent-green);"></i> Passwords match.';
+            matchText.style.color = 'var(--accent-green)';
+        } else {
+            matchText.innerHTML = '<i class="fas fa-xmark" style="color: var(--accent-red);"></i> Passwords do not match.';
+            matchText.style.color = 'var(--accent-red)';
+        }
+    }
+
+    // Random Secure Password Generator for New Admin Provisioning
+    // Random Secure Password Generator
+    function generateRandomPassword(targetFieldId, confirmFieldId) {
+        const target = document.getElementById(targetFieldId);
+        if (!target) return;
+
+        const charsUpper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const charsLower = "abcdefghjkmnpqrstuvwxyz";
+        const charsNum = "23456789";
+        const charsSym = "@#$%&*!";
+        const all = charsUpper + charsLower + charsNum + charsSym;
+
+        let pass = "";
+        pass += charsUpper[Math.floor(Math.random() * charsUpper.length)];
+        pass += charsLower[Math.floor(Math.random() * charsLower.length)];
+        pass += charsNum[Math.floor(Math.random() * charsNum.length)];
+        pass += charsSym[Math.floor(Math.random() * charsSym.length)];
+
+        for (let i = 0; i < 8; i++) {
+            pass += all[Math.floor(Math.random() * all.length)];
+        }
+
+        pass = pass.split('').sort(() => 0.5 - Math.random()).join('');
+        target.value = pass;
+
+        if (confirmFieldId) {
+            const confirm = document.getElementById(confirmFieldId);
+            if (confirm) confirm.value = pass;
+        }
+
+        navigator.clipboard.writeText(pass).then(() => {
+            showAdminToast(`Generated secure password "${pass}" copied to clipboard!`);
+        }).catch(() => {
+            showAdminToast(`Generated password: ${pass}`);
+        });
+    }
+
+    // =============================================
+    // SOCIAL PROFILE MODAL & INTERACTIVE LOGIC
+    // =============================================
+
+    let currentSocialAdminData = null;
+    let currentRoleFilter = 'all';
+
+    function triggerSocialModalFromBtn(btn) {
+        const data = {
+            id: btn.dataset.adminId,
+            name: btn.dataset.adminName.trim() || btn.dataset.adminEmail,
+            email: btn.dataset.adminEmail,
+            phone: btn.dataset.adminPhone,
+            pic: btn.dataset.adminPic,
+            initial: btn.dataset.adminInitial || 'A',
+            role: btn.dataset.adminRole,
+            isSuper: btn.dataset.adminIsSuper === '1',
+            joined: btn.dataset.adminJoined,
+            lastLogin: btn.dataset.adminLastlogin,
+            bio: btn.dataset.adminBio,
+            address: btn.dataset.adminAddress,
+            linkedin: btn.dataset.adminLinkedin,
+            github: btn.dataset.adminGithub
+        };
+        showAdminSocialModal(data);
+    }
+
+    function ensureModalsInBody() {
+        const modal = document.getElementById('adminSocialModal');
+        if (modal && modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+        const resetModal = document.getElementById('adminResetPassModal');
+        if (resetModal && resetModal.parentElement !== document.body) {
+            document.body.appendChild(resetModal);
+        }
+        const lb = document.getElementById('adminAvatarLightbox');
+        if (lb && lb.parentElement !== document.body) {
+            document.body.appendChild(lb);
+        }
+        const toast = document.getElementById('adminProfileToast');
+        if (toast && toast.parentElement !== document.body) {
+            document.body.appendChild(toast);
+        }
+    }
+
+    // Super Admin Password Reset & Override Modal
+    function openAdminPasswordResetModal(adminId, adminName, adminEmail, adminRole) {
+        ensureModalsInBody();
+        const modal = document.getElementById('adminResetPassModal');
+        if (!modal) return;
+
+        const idInput = document.getElementById('resetTargetAdminId');
+        if (idInput) idInput.value = adminId;
+
+        const nameEl = document.getElementById('resetTargetName');
+        if (nameEl) nameEl.textContent = adminName || adminEmail;
+
+        const emailEl = document.getElementById('resetTargetEmail');
+        if (emailEl) emailEl.textContent = adminEmail;
+
+        const badge = document.getElementById('resetTargetRoleBadge');
+        if (badge) {
+            badge.textContent = adminRole;
+            badge.className = adminRole.includes('Super') ? 'badge-admin-role role-super' : 'badge-admin-role role-staff';
+        }
+
+        const newPass = document.getElementById('reset_new_password');
+        if (newPass) newPass.value = '';
+        const confirmPass = document.getElementById('reset_confirm_password');
+        if (confirmPass) confirmPass.value = '';
+
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAdminResetPassModal() {
+        const modal = document.getElementById('adminResetPassModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+
+    function handleResetPassBackdropClick(event) {
+        if (event.target === document.getElementById('adminResetPassModal')) {
+            closeAdminResetPassModal();
+        }
+    }
+
+    function openResetModalForCurrentSocialAdmin() {
+        if (!currentSocialAdminData) return;
+        const data = currentSocialAdminData;
+        closeAdminSocialModal();
+        setTimeout(() => {
+            openAdminPasswordResetModal(
+                data.id,
+                data.name,
+                data.email,
+                data.isSuper ? 'Super Administrator' : 'Staff Administrator'
+            );
+        }, 150);
+    }
+
+    function openAdminSocialModal(adminId) {
+        const card = document.getElementById('admin-card-' + adminId);
+        if (!card) return;
+        const btn = card.querySelector('.btn-view-social-profile');
+        if (btn) {
+            triggerSocialModalFromBtn(btn);
+        }
+    }
+
+    function showAdminSocialModal(data) {
+        ensureModalsInBody();
+        currentSocialAdminData = data;
+        const modal = document.getElementById('adminSocialModal');
+        if (!modal) return;
+
+        // Reset to first tab
+        switchModalTab('modal-tab-about');
+
+        // Name & Identity
+        document.getElementById('modalAdminName').textContent = data.name;
+        document.getElementById('modalAdminEmail').textContent = data.email;
+        document.getElementById('modalContactEmail').textContent = data.email;
+        document.getElementById('modalDetailId').textContent = 'ADM-' + String(data.id).padStart(4, '0');
+        document.getElementById('modalDetailJoined').textContent = data.joined || 'N/A';
+        document.getElementById('modalDetailLastLogin').textContent = data.lastLogin || 'Never';
+
+        // Security Tier text
+        const tierEl = document.getElementById('modalDetailTier');
+        if (tierEl) {
+            tierEl.textContent = data.isSuper ? 'Super Admin (Root)' : 'Staff Admin';
+        }
+
+        // Campus Base Address
+        const addressText = data.address || 'Main Campus Administration';
+        const addressEl = document.getElementById('modalDetailAddress');
+        if (addressEl) addressEl.textContent = addressText;
+        const contactAddressEl = document.getElementById('modalContactAddress');
+        if (contactAddressEl) contactAddressEl.textContent = addressText;
+
+        // Bio
+        const bioEl = document.getElementById('modalAdminBio');
+        if (bioEl) {
+            bioEl.textContent = data.bio || 'Administrator has not added public department notes yet.';
+        }
+
+        // Department Chip
+        const deptChip = document.getElementById('modalDepartmentChip');
+        if (deptChip) {
+            if (data.bio && data.bio.length > 5) {
+                deptChip.textContent = data.bio.slice(0, 32) + (data.bio.length > 32 ? '...' : '');
+            } else {
+                deptChip.textContent = data.isSuper ? 'Root Administration' : 'Staff Operations';
+            }
+        }
+
+        // Avatar
+        const avatarImg = document.getElementById('modalAvatarImg');
+        const avatarInitial = document.getElementById('modalAvatarInitial');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        if (data.pic) {
+            avatarImg.src = data.pic;
+            avatarImg.style.display = 'block';
+            avatarInitial.style.display = 'none';
+            if (lightboxImg) lightboxImg.src = data.pic;
+            if (lightboxCaption) lightboxCaption.textContent = data.name + ' — High Definition Avatar';
+        } else {
+            avatarImg.style.display = 'none';
+            avatarInitial.textContent = data.initial;
+            avatarInitial.style.display = 'flex';
+            if (lightboxImg) lightboxImg.src = '';
+            if (lightboxCaption) lightboxCaption.textContent = data.name;
+        }
+
+        // Role Badge
+        const roleBadge = document.getElementById('modalRoleBadge');
+        if (data.isSuper) {
+            roleBadge.className = 'badge-admin-role role-super';
+            roleBadge.innerHTML = '<i class="fas fa-crown"></i> Super Administrator';
+        } else {
+            roleBadge.className = 'badge-admin-role role-staff';
+            roleBadge.innerHTML = '<i class="fas fa-shield-alt"></i> Staff Administrator';
+        }
+
+        // Super Scope Text in Tab 3
+        const superScopeText = document.getElementById('modalSuperScopeText');
+        const superScopeRow = document.getElementById('modalSuperScopeRow');
+        if (superScopeRow && superScopeText) {
+            if (data.isSuper) {
+                superScopeRow.style.display = 'flex';
+                superScopeText.innerHTML = '<strong>Superuser Root Scope:</strong> Full database overrides, team state modification, and server root access';
+            } else {
+                superScopeRow.style.display = 'flex';
+                superScopeText.innerHTML = '<span style="color: var(--text-muted);">Standard Staff Scope: Delegated administrative console authority</span>';
+            }
+        }
+
+        // Phone & WhatsApp
+        const phoneBtn = document.getElementById('modalPhoneBtn');
+        const waBtn = document.getElementById('modalWhatsAppBtn');
+        const contactPhone = document.getElementById('modalContactPhone');
+        const btnCopyPhone = document.getElementById('btnCopyPhone');
+
+        if (data.phone) {
+            phoneBtn.href = 'tel:' + data.phone;
+            phoneBtn.style.display = 'inline-flex';
+
+            const cleanDigits = data.phone.replace(/[^0-9]/g, '');
+            if (cleanDigits.length >= 7) {
+                const encodedMsg = encodeURIComponent(`Hello ${data.name}, connecting with you from the LMS Administrator Console.`);
+                waBtn.href = `https://wa.me/${cleanDigits}?text=${encodedMsg}`;
+                waBtn.style.display = 'inline-flex';
+            } else {
+                waBtn.style.display = 'none';
+            }
+            if (contactPhone) contactPhone.textContent = data.phone;
+            if (btnCopyPhone) btnCopyPhone.style.display = 'inline-flex';
+        } else {
+            phoneBtn.style.display = 'none';
+            waBtn.style.display = 'none';
+            if (contactPhone) contactPhone.textContent = 'Not provided';
+            if (btnCopyPhone) btnCopyPhone.style.display = 'none';
+        }
+
+        // Email Button
+        const emailBtn = document.getElementById('modalEmailBtn');
+        emailBtn.href = 'mailto:' + data.email;
+
+        // Social Links (LinkedIn & GitHub)
+        const linkedinBtn = document.getElementById('modalLinkedInBtn');
+        if (data.linkedin) {
+            linkedinBtn.href = data.linkedin;
+            linkedinBtn.style.display = 'inline-flex';
+        } else {
+            linkedinBtn.style.display = 'none';
+        }
+
+        const githubBtn = document.getElementById('modalGitHubBtn');
+        if (data.github) {
+            githubBtn.href = data.github;
+            githubBtn.style.display = 'inline-flex';
+        } else {
+            githubBtn.style.display = 'none';
+        }
+
+        // Display Modal
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        modal.scrollTop = 0;
+        const cardEl = document.getElementById('adminSocialCard');
+        if (cardEl) cardEl.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+
+        // Update URL query parameter
+        try {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('view_admin', data.id);
+            window.history.replaceState({ adminId: data.id }, '', currentUrl);
+        } catch (e) {}
+    }
+
+    function closeAdminSocialModal() {
+        const modal = document.getElementById('adminSocialModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        currentSocialAdminData = null;
+
+        // Clean URL query parameter
+        try {
+            const currentUrl = new URL(window.location);
+            if (currentUrl.searchParams.has('view_admin') || currentUrl.searchParams.has('admin_id')) {
+                currentUrl.searchParams.delete('view_admin');
+                currentUrl.searchParams.delete('admin_id');
+                window.history.replaceState({}, '', currentUrl);
+            }
+        } catch (e) {}
+    }
+
+    function handleSocialModalBackdropClick(event) {
+        if (event.target === document.getElementById('adminSocialModal')) {
+            closeAdminSocialModal();
+        }
+    }
+
+    // Modal Inner Tab Switching
+    function switchModalTab(tabId, triggerBtn) {
+        document.querySelectorAll('.modal-tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+        document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        const targetPane = document.getElementById(tabId);
+        if (targetPane) targetPane.classList.add('active');
+
+        if (triggerBtn) {
+            triggerBtn.classList.add('active');
+        } else {
+            const matchBtn = document.querySelector(`.modal-tab-btn[data-modal-tab="${tabId}"]`);
+            if (matchBtn) matchBtn.classList.add('active');
+        }
+    }
+
+    // Lightbox for full-size Avatar Zoom
+    function openAdminAvatarLightbox() {
+        if (!currentSocialAdminData || !currentSocialAdminData.pic) {
+            showAdminToast("This administrator uses an initials avatar.");
+            return;
+        }
+        ensureModalsInBody();
+        const lb = document.getElementById('adminAvatarLightbox');
+        if (lb) {
+            lb.classList.add('active');
+            lb.style.display = 'flex';
+        }
+    }
+
+    function closeAdminAvatarLightbox() {
+        const lb = document.getElementById('adminAvatarLightbox');
+        if (lb) {
+            lb.classList.remove('active');
+            lb.style.display = 'none';
+        }
+    }
+
+    // Clipboard Helpers & Floating Toast
+    function showAdminToast(msg) {
+        ensureModalsInBody();
+        const toast = document.getElementById('adminProfileToast');
+        const toastMsg = document.getElementById('adminToastMsg');
+        if (!toast || !toastMsg) return;
+
+        toastMsg.textContent = msg;
+        toast.style.display = 'flex';
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3200);
+    }
+
+    function copyToClipboard(text, successMessage) {
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            showAdminToast(successMessage || 'Copied to clipboard!');
+        }).catch(() => {
+            // Fallback
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            showAdminToast(successMessage || 'Copied to clipboard!');
+        });
+    }
+
+    function copyContactField(elementId, fieldName) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        copyToClipboard(el.textContent.trim(), `${fieldName} copied to clipboard!`);
+    }
+
+    function copyAdminEmailToClipboard() {
+        if (currentSocialAdminData && currentSocialAdminData.email) {
+            copyToClipboard(currentSocialAdminData.email, `Email ID (${currentSocialAdminData.email}) copied!`);
+        }
+    }
+
+    function copyAdminProfileLink() {
+        if (!currentSocialAdminData) return;
+        const link = window.location.origin + window.location.pathname + '?view_admin=' + currentSocialAdminData.id + '#tab-team-directory';
+        copyToClipboard(link, `Direct link to ${currentSocialAdminData.name}'s profile copied!`);
+    }
+
+    // Dynamic vCard (.vcf) Generator
+    function downloadAdminVCard() {
+        if (!currentSocialAdminData) return;
+        const d = currentSocialAdminData;
+        const nameParts = d.name.trim().split(' ');
+        const firstName = nameParts[0] || 'Administrator';
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+        const roleTitle = d.isSuper ? 'Super Administrator' : 'Staff Administrator';
+
+        let vcard = "BEGIN:VCARD\r\n";
+        vcard += "VERSION:3.0\r\n";
+        vcard += `FN:${d.name}\r\n`;
+        vcard += `N:${lastName};${firstName};;;\r\n`;
+        vcard += `EMAIL;TYPE=INTERNET,PREF:${d.email}\r\n`;
+        if (d.phone) {
+            vcard += `TEL;TYPE=CELL,VOICE:${d.phone}\r\n`;
+        }
+        vcard += `ORG:Learning-365 LMS Portal\r\n`;
+        vcard += `TITLE:${roleTitle}\r\n`;
+        if (d.address) {
+            vcard += `ADR;TYPE=WORK:;;${d.address};;;;\r\n`;
+        }
+        if (d.bio) {
+            vcard += `NOTE:${d.bio.replace(/\r?\n/g, ' ')}\r\n`;
+        }
+        if (d.linkedin) {
+            vcard += `URL;TYPE=LinkedIn:${d.linkedin}\r\n`;
+        }
+        if (d.github) {
+            vcard += `URL;TYPE=GitHub:${d.github}\r\n`;
+        }
+        vcard += "END:VCARD\r\n";
+
+        const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const safeName = d.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        a.download = `${safeName}_contact.vcf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showAdminToast(`Contact card (.vcf) downloaded for ${d.name}!`);
+    }
+
+    // Copy full administrator dossier
+    function copyAllAdminContactDetails() {
+        if (!currentSocialAdminData) return;
+        const d = currentSocialAdminData;
+        const role = d.isSuper ? 'Super Administrator' : 'Staff Administrator';
+        let dossier = `--- LMS ADMINISTRATOR PROFILE ---\n`;
+        dossier += `Name: ${d.name}\n`;
+        dossier += `Role: ${role}\n`;
+        dossier += `Email ID: ${d.email}\n`;
+        if (d.phone) dossier += `Phone: ${d.phone}\n`;
+        if (d.address) dossier += `Campus Base: ${d.address}\n`;
+        if (d.joined) dossier += `Member Since: ${d.joined}\n`;
+        if (d.bio) dossier += `Department Focus: ${d.bio}\n`;
+        if (d.linkedin) dossier += `LinkedIn: ${d.linkedin}\n`;
+        if (d.github) dossier += `GitHub: ${d.github}\n`;
+        dossier += `--------------------------------`;
+
+        copyToClipboard(dossier, `Full dossier for ${d.name} copied to clipboard!`);
+    }
+
+    // Directory Search & Filter Logic
+    function filterAdminDirectory() {
+        const query = (document.getElementById('adminDirectorySearch')?.value || '').toLowerCase().trim();
+        const clearBtn = document.getElementById('directorySearchClear');
+        if (clearBtn) {
+            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+        }
+
+        const cards = document.querySelectorAll('.team-admin-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const name = (card.dataset.adminName || '').toLowerCase();
+            const email = (card.dataset.adminEmail || '').toLowerCase();
+            const bio = (card.dataset.adminBio || '').toLowerCase();
+            const phone = (card.dataset.adminPhone || '').toLowerCase();
+            const roleType = card.dataset.adminRoleType || '';
+
+            const matchesQuery = query === '' || 
+                                 name.includes(query) || 
+                                 email.includes(query) || 
+                                 bio.includes(query) || 
+                                 phone.includes(query);
+
+            const matchesRole = currentRoleFilter === 'all' || roleType === currentRoleFilter;
+
+            if (matchesQuery && matchesRole) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const noRes = document.getElementById('noDirectoryResults');
+        if (noRes) {
+            noRes.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+
+    function setDirectoryRoleFilter(roleFilter, triggerBtn) {
+        currentRoleFilter = roleFilter;
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.classList.remove('active');
+        });
+        if (triggerBtn) {
+            triggerBtn.classList.add('active');
+        }
+        filterAdminDirectory();
+    }
+
+    function clearDirectorySearch() {
+        const input = document.getElementById('adminDirectorySearch');
+        if (input) input.value = '';
+        currentRoleFilter = 'all';
+        document.querySelectorAll('.filter-pill').forEach((pill, idx) => {
+            if (idx === 0) pill.classList.add('active');
+            else pill.classList.remove('active');
+        });
+        filterAdminDirectory();
+    }
+
+    // Close modal on Escape key press
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const resetModal = document.getElementById('adminResetPassModal');
+            if (resetModal && (resetModal.classList.contains('active') || resetModal.style.display === 'flex')) {
+                closeAdminResetPassModal();
+                return;
+            }
+            const lb = document.getElementById('adminAvatarLightbox');
+            if (lb && lb.style.display === 'flex') {
+                closeAdminAvatarLightbox();
+            } else {
+                closeAdminSocialModal();
+            }
+        }
+    });
+
+    // Deep Linking: Auto-open modal on page load if ?view_admin=<id> or ?admin_id=<id>
+    document.addEventListener('DOMContentLoaded', function() {
+        ensureModalsInBody();
+        // Calculate counts for directory filter pills
+        const cards = document.querySelectorAll('.team-admin-card');
+        let superCount = 0;
+        let staffCount = 0;
+        cards.forEach(c => {
+            if (c.dataset.adminRoleType === 'super') superCount++;
+            else staffCount++;
+        });
+
+        const superCountEl = document.getElementById('countFilterSuper');
+        if (superCountEl) superCountEl.textContent = superCount;
+        const staffCountEl = document.getElementById('countFilterStaff');
+        if (staffCountEl) staffCountEl.textContent = staffCount;
+
+        // Check URL parameters for deep-linking
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetAdminId = urlParams.get('view_admin') || urlParams.get('admin_id');
+            if (targetAdminId) {
+                switchAdminTab('tab-team-directory');
+                setTimeout(() => {
+                    openAdminSocialModal(targetAdminId);
+                }, 150);
+            } else if (window.location.hash === '#tab-team-directory') {
+                switchAdminTab('tab-team-directory');
+            }
+        } catch (e) {}
+    });
+</script>
+{% endblock %}

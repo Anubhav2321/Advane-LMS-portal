@@ -8,7 +8,7 @@ import re
 import requests 
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, login, logout, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
@@ -62,6 +62,8 @@ from .models import (
     LessonProgress,        #  NEW: Per-Student Lesson Tracking
     DocumentView,          #  NEW: Document Tracking
     LiveClassAttendance,   #  NEW: Live Class Tracking
+    process_and_clarify_avatar, #  NEW: Super-clear photo optimization
+    AIVideoNote,           #  NEW: Smart AI Lesson Notes
 )
 
 User = get_user_model()
@@ -73,7 +75,7 @@ def home_view(request):
     Renders the Landing Page with stats.
     """
     featured_courses = Course.objects.filter(is_published=True).order_by('-created_at')[:6]
-    total_students = User.objects.filter(is_student=True).count()
+    total_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).count()
     total_courses_count = Course.objects.count()
     total_exams = Exam.objects.count()
     total_documents = LibraryDocument.objects.count()
@@ -192,6 +194,10 @@ def student_dashboard(request):
     Main Student Dashboard with 3-Panel Sync Logic + Real Progress Tracking.
     """
     user = request.user
+    if user.is_staff or user.is_superuser:
+        return redirect('admin_dashboard')
+    elif getattr(user, 'is_faculty', False):
+        return redirect('faculty_dashboard')
     
     # Fetch Enrollments
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-last_accessed')
@@ -211,6 +217,7 @@ def student_dashboard(request):
         enrollment.lessons_completed = progress_data['completed']
         enrollment.total_lessons = progress_data['total']
         enrollment.lessons_remaining = progress_data['total'] - progress_data['completed']
+        enrollment.ring_offset = round(163.36 - (enrollment.real_progress / 100.0) * 163.36, 2)
         
         # Sync the progress field with real data
         if abs(enrollment.progress - progress_data['percent']) > 0.5:
@@ -275,7 +282,7 @@ def student_dashboard(request):
     certificate_eligible = completed_courses
     
     #  GLOBAL LEADERBOARD LOGIC
-    top_students = User.objects.filter(is_student=True).select_related('profile').order_by('-lms_coins')[:10]
+    top_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).select_related('profile').order_by('-lms_coins')[:10]
     
     #  3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
     
@@ -322,6 +329,12 @@ def student_dashboard(request):
     for entry in weekly_activity:
         activity_labels.append(entry['date'].strftime('%d %b'))
         activity_data.append(entry['count'])
+    
+    if not activity_labels:
+        for i in range(6, -1, -1):
+            d = today - datetime.timedelta(days=i)
+            activity_labels.append(d.strftime('%d %b'))
+            activity_data.append(0)
     
     # Course progress comparison data for bar chart
     course_progress_labels = []
@@ -858,19 +871,23 @@ def payment_history(request):
 @login_required
 def course_watch(request, course_id, lesson_id=None):
     """
-    Course Player logic with YouTube ID Extraction, Comment System,
-    and Real-Time Progress Tracking (NO auto-sync on page load).
+    Course Player logic with YouTube/Video File playback, Comment System,
+    Real-Time Progress Tracking, AI Notes, and Curriculum Playlist.
     """
     course = get_object_or_404(Course, id=course_id)
     
-    # Security Check: Must be enrolled
+    # Security Check: Must be enrolled or staff/faculty/superuser
+    is_admin_or_faculty = request.user.is_staff or request.user.is_superuser or request.user.is_faculty
     try:
         enrollment = Enrollment.objects.get(student=request.user, course=course)
     except Enrollment.DoesNotExist:
-        messages.warning(request, "You must enroll in this course to access the content.")
-        return redirect('all_courses')
+        if is_admin_or_faculty:
+            enrollment, _ = Enrollment.objects.get_or_create(student=request.user, course=course)
+        else:
+            messages.warning(request, "You must enroll in this course to access the content.")
+            return redirect('all_courses')
 
-    # Update Last Accessed Time (only this field, not progress)
+    # Update Last Accessed Time
     enrollment.last_accessed = timezone.now()
     enrollment.save(update_fields=['last_accessed'])
 
@@ -883,9 +900,16 @@ def course_watch(request, course_id, lesson_id=None):
 
     if lessons.exists():
         if lesson_id:
-            current_lesson = get_object_or_404(Lesson, id=lesson_id)
+            current_lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
         else:
-            current_lesson = lessons.first()
+            # Smart resume: pick the first uncompleted lesson, or the first lesson
+            completed_ids = set(
+                LessonProgress.objects.filter(
+                    student=request.user, lesson__course=course, is_completed=True
+                ).values_list('lesson_id', flat=True)
+            )
+            uncompleted = [l for l in lessons if l.id not in completed_ids]
+            current_lesson = uncompleted[0] if uncompleted else lessons.first()
             
         # Logic for Next/Prev buttons
         lesson_list = list(lessons)
@@ -896,48 +920,45 @@ def course_watch(request, course_id, lesson_id=None):
             if idx < len(lesson_list) - 1:
                 next_lesson = lesson_list[idx + 1]
             
-            # --- PER-LESSON PROGRESS TRACKING (via LessonProgress model) ---
-            # Only creates a record if one doesn't exist; does NOT mark as completed
-            lesson_progress, lp_created = LessonProgress.objects.get_or_create(
+            # --- PER-LESSON PROGRESS RECORD ---
+            lesson_progress, _ = LessonProgress.objects.get_or_create(
                 student=request.user,
                 lesson=current_lesson
             )
-            
-            # REMOVED: enrollment.sync_progress() — progress should only update
-            # when the student actually watches video (via track_progress API)
 
             # --- YOUTUBE ID EXTRACTION ---
             if current_lesson.video_url:
                 url = current_lesson.video_url.strip()
-                regex = r'(?:v=|\/embed\/|\/v\/|youtu\.be\/)([0-9A-Za-z_-]{11})'
+                regex = r'(?:v=|\/embed\/|\/v\/|youtu\.be\/|shorts\/)([0-9A-Za-z_-]{11})'
                 match = re.search(regex, url)
                 if match:
                     youtube_id = match.group(1)
                 elif len(url) == 11:
-                    youtube_id = url # Fallback
+                    youtube_id = url # Direct 11-char ID
 
         except ValueError:
             pass
 
     # --- COMMENT SYSTEM LOGIC ---
-    comments = current_lesson.comments.all().order_by('-created_at') if current_lesson else []
+    comments = current_lesson.comments.all().select_related('student', 'student__profile').order_by('-created_at') if current_lesson else []
     comment_form = LessonCommentForm()
 
     if request.method == 'POST' and 'text' in request.POST:
         comment_form = LessonCommentForm(request.POST)
-        if comment_form.is_valid():
+        if comment_form.is_valid() and current_lesson:
             comment = comment_form.save(commit=False)
             comment.lesson = current_lesson
             comment.student = request.user
             comment.save()
+            log_student_activity(request.user, 'chat_message', f'Commented on "{current_lesson.title}"', course=course)
             messages.success(request, "Comment posted successfully!")
             return redirect('course_watch', course_id=course.id, lesson_id=current_lesson.id)
 
-    # Calculate progress from real data (read-only, no sync)
+    # Calculate real progress from enrollment
     progress_data = enrollment.get_real_progress()
     progress_int = int(progress_data['percent'])
     
-    # Get lesson completion status for sidebar
+    # Completed lesson IDs
     completed_lesson_ids = set(
         LessonProgress.objects.filter(
             student=request.user,
@@ -946,7 +967,7 @@ def course_watch(request, course_id, lesson_id=None):
         ).values_list('lesson_id', flat=True)
     )
     
-    # --- PER-LESSON PROGRESS MAP (for real-time sidebar indicators) ---
+    # --- PER-LESSON PROGRESS MAP ---
     lesson_progress_map = {}
     all_lesson_progress = LessonProgress.objects.filter(
         student=request.user,
@@ -966,39 +987,52 @@ def course_watch(request, course_id, lesson_id=None):
             'watch_time': lp.watch_time_seconds,
             'is_completed': lp.is_completed,
         }
-    
-    # --- FACULTY DATA ---
-    faculty_data = None
-    if course.assigned_faculty:
-        try:
-            faculty_data = {
-                'name': course.assigned_faculty.full_name or course.faculty_name,
-                'department': '',
-                'specialization': '',
-                'experience': 0,
-                'has_pic': bool(course.assigned_faculty.profile.profile_pic) if hasattr(course.assigned_faculty, 'profile') else False,
-                'pic_url': course.assigned_faculty.profile.profile_pic.url if hasattr(course.assigned_faculty, 'profile') and course.assigned_faculty.profile.profile_pic else '',
-            }
-        except Exception:
-            faculty_data = {
-                'name': course.faculty_name,
-                'department': '',
-                'specialization': '',
-                'experience': 0,
-                'has_pic': False,
-                'pic_url': '',
-            }
+
+    # Total duration formatted
+    total_seconds = sum(l.duration_in_seconds for l in lessons)
+    if total_seconds >= 3600:
+        total_duration_str = f"{total_seconds // 3600}h {(total_seconds % 3600) // 60}m"
+    elif total_seconds >= 60:
+        total_duration_str = f"{total_seconds // 60}m"
     else:
-        faculty_data = {
-            'name': course.faculty_name,
-            'department': '',
-            'specialization': '',
-            'experience': 0,
-            'has_pic': False,
-            'pic_url': '',
-        }
+        total_duration_str = f"{len(lessons)} Lessons"
+    
+    # --- FACULTY DATA ENRICHMENT ---
+    faculty_user = course.assigned_faculty
+    faculty_data = {
+        'name': faculty_user.full_name if faculty_user else course.faculty_name,
+        'department': getattr(getattr(faculty_user, 'faculty_profile', None), 'department', '') if faculty_user else '',
+        'specialization': getattr(getattr(faculty_user, 'faculty_profile', None), 'specialization', '') if faculty_user else '',
+        'experience': getattr(getattr(faculty_user, 'faculty_profile', None), 'experience_years', 0) if faculty_user else 0,
+        'has_pic': bool(faculty_user and faculty_user.profile_pic_url),
+        'pic_url': faculty_user.profile_pic_url if (faculty_user and faculty_user.profile_pic_url) else '',
+    }
         
-    documents = course.documents.all()
+    documents = course.documents.all().order_by('-uploaded_at')
+    course_exams = Exam.objects.filter(course=course, is_active=True).order_by('-created_at')
+    course_assignments = Assignment.objects.filter(course=course).order_by('-due_date')
+    
+    # Check completed exams and assignments by current student
+    passed_exam_ids = set(
+        QuizResult.objects.filter(student=request.user, exam__course=course).values_list('exam_id', flat=True)
+    )
+    submitted_assignment_ids = set(
+        AssignmentSubmission.objects.filter(student=request.user, assignment__course=course).values_list('assignment_id', flat=True)
+    )
+
+    # Current lesson AI notes if already generated
+    current_ai_note = None
+    if current_lesson:
+        current_ai_note = AIVideoNote.objects.filter(student=request.user, lesson=current_lesson).first()
+
+    # Current lesson progress
+    current_lesson_progress = None
+    if current_lesson:
+        current_lesson_progress = lesson_progress_map.get(current_lesson.id, {
+            'percent': 100 if current_lesson.id in completed_lesson_ids else 0,
+            'is_completed': current_lesson.id in completed_lesson_ids,
+            'watch_time': 0,
+        })
 
     context = {
         'course': course,
@@ -1009,14 +1043,103 @@ def course_watch(request, course_id, lesson_id=None):
         'progress': progress_int,
         'progress_data': progress_data,
         'completed_lesson_ids': completed_lesson_ids,
+        'completed_lessons_count': len(completed_lesson_ids),
+        'total_lessons_count': lessons.count(),
+        'total_duration_str': total_duration_str,
         'lesson_progress_map': json.dumps(lesson_progress_map),
+        'current_lesson_progress': current_lesson_progress,
         'youtube_id': youtube_id,
         'comments': comments,          
         'comment_form': comment_form,
         'documents': documents,
         'faculty_data': faculty_data,
+        'course_exams': course_exams,
+        'course_assignments': course_assignments,
+        'passed_exam_ids': passed_exam_ids,
+        'submitted_assignment_ids': submitted_assignment_ids,
+        'current_ai_note': current_ai_note,
     }
     return render(request, 'course_watch.html', context)
+
+
+# --- AI LESSON NOTES API ---
+@login_required
+@csrf_exempt
+def lesson_ai_notes(request, lesson_id):
+    """
+    Real-time AI Smart Notes & Key Takeaways Generator.
+    Powered by Groq AI & backed by AIVideoNote model.
+    """
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    is_enrolled = Enrollment.objects.filter(student=request.user, course=lesson.course).exists()
+    if not is_enrolled and not (request.user.is_staff or request.user.is_superuser or request.user.is_faculty):
+        return JsonResponse({'status': 'error', 'message': 'Enrollment required'}, status=403)
+        
+    if request.method == 'GET':
+        ai_note = AIVideoNote.objects.filter(student=request.user, lesson=lesson).first()
+        if ai_note:
+            return JsonResponse({
+                'status': 'success',
+                'has_notes': True,
+                'summary': ai_note.summary,
+                'key_points': ai_note.key_points,
+                'generated_at': ai_note.generated_at.strftime('%b %d, %Y %I:%M %p')
+            })
+        return JsonResponse({'status': 'success', 'has_notes': False})
+        
+    elif request.method == 'POST':
+        try:
+            body = json.loads(request.body) if request.body else {}
+        except Exception:
+            body = {}
+        action = body.get('action', 'generate')
+        
+        if action == 'generate':
+            from .ai_utils import generate_ai_lesson_notes
+            data = generate_ai_lesson_notes(
+                lesson_title=lesson.title,
+                lesson_content=lesson.content or '',
+                course_title=lesson.course.title
+            )
+            ai_note, _ = AIVideoNote.objects.update_or_create(
+                student=request.user,
+                lesson=lesson,
+                defaults={
+                    'summary': data['summary'],
+                    'key_points': data['key_points'],
+                }
+            )
+            log_student_activity(request.user, 'code_review', f'Generated AI Notes for "{lesson.title}"', course=lesson.course)
+            return JsonResponse({
+                'status': 'success',
+                'has_notes': True,
+                'summary': ai_note.summary,
+                'key_points': ai_note.key_points,
+                'generated_at': ai_note.generated_at.strftime('%b %d, %Y %I:%M %p')
+            })
+        elif action == 'save_custom':
+            summary = body.get('summary', '').strip()
+            key_points = body.get('key_points', '').strip()
+            if not summary and not key_points:
+                return JsonResponse({'status': 'error', 'message': 'Notes content cannot be empty'}, status=400)
+            ai_note, _ = AIVideoNote.objects.update_or_create(
+                student=request.user,
+                lesson=lesson,
+                defaults={
+                    'summary': summary or "Personal Study Notes",
+                    'key_points': key_points,
+                }
+            )
+            return JsonResponse({
+                'status': 'success',
+                'has_notes': True,
+                'summary': ai_note.summary,
+                'key_points': ai_note.key_points,
+                'generated_at': ai_note.generated_at.strftime('%b %d, %Y %I:%M %p')
+            })
+            
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
 
 
 @login_required
@@ -1335,101 +1458,50 @@ PISTON_LANGUAGES = {
 @csrf_exempt
 def execute_code_api(request):
     """
-    Cloud Code Execution Engine using Piston API.
-    Works on any hosting platform (Render, Heroku, etc.) without Docker.
-    Piston API: https://emkc.org/api/v2/piston/execute
+    Cloud & Local Code Execution Engine.
+    Executes in isolated sandbox with native support for Python, JavaScript, C++, and Java.
     """
     if request.method != 'POST':
-        return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid Request. POST required.'}, status=405)
         
     try:
-        data = json.loads(request.body)
-        language = data.get('language', 'python')
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            data = request.POST
+
+        language = (data.get('language') or 'python').strip().lower()
         code = data.get('code', '')
         user_input = data.get('user_input', '')
         
         if not code.strip():
             return JsonResponse({'status': 'error', 'message': 'Code cannot be empty.'})
 
-        # Validate the language
-        lang_config = PISTON_LANGUAGES.get(language)
-        if not lang_config:
-            return JsonResponse({'status': 'error', 'message': f'Unsupported language: {language}'})
-
-        # Build the Piston API request payload
-        piston_payload = {
-            'language': lang_config['language'],
-            'version': lang_config['version'],
-            'files': [
-                {
-                    'name': f'main.{"py" if language == "python" else "js" if language == "javascript" else "cpp" if language == "cpp" else "java"}',
-                    'content': code
-                }
-            ],
-            'stdin': user_input,
-            'run_timeout': 15000,       # 15 second timeout
-            'compile_timeout': 15000,   # 15 second compile timeout
-            'run_memory_limit': 256000000  # 256MB memory limit
+        # Normalize language aliases
+        lang_alias = {
+            'py': 'python',
+            'js': 'javascript',
+            'node': 'javascript',
+            'c++': 'cpp',
+            'cplusplus': 'cpp'
         }
+        language = lang_alias.get(language, language)
 
-        # Call the Piston API
-        piston_response = requests.post(
-            'https://emkc.org/api/v2/piston/execute',
-            json=piston_payload,
-            headers={'Content-Type': 'application/json'},
-            timeout=30  # HTTP request timeout
-        )
+        from .compiler_service import execute_locally
+        result = execute_locally(language, code, user_input)
+        return JsonResponse({
+            'status': result['status'],
+            'output': result['output'],
+            'execution_time': result.get('execution_time', '0.00s'),
+            'language': language
+        })
 
-        if piston_response.status_code != 200:
-            return JsonResponse({
-                'status': 'error', 
-                'output': f'Code execution service returned status {piston_response.status_code}. Please try again.'
-            })
-
-        result = piston_response.json()
-        
-        # Extract the run output (Piston returns compile + run separately)
-        run_data = result.get('run', {})
-        compile_data = result.get('compile', {})
-        
-        # Check for compilation errors first (C++, Java)
-        if compile_data and compile_data.get('code') is not None and compile_data.get('code') != 0:
-            return JsonResponse({
-                'status': 'error',
-                'output': compile_data.get('stderr', '') or compile_data.get('output', 'Compilation failed.')
-            })
-        
-        # Check run results
-        stdout = run_data.get('stdout', '')
-        stderr = run_data.get('stderr', '')
-        exit_code = run_data.get('code', 0)
-        signal = run_data.get('signal')
-        
-        if signal == 'SIGKILL':
-            return JsonResponse({
-                'status': 'error',
-                'output': 'Timeout Error: Your code took too long to execute (Possible Infinite Loop).'
-            })
-        
-        if exit_code == 0:
-            final_output = stdout if stdout else "Execution completed (No output)"
-            return JsonResponse({'status': 'success', 'output': final_output})
-        else:
-            error_output = stderr if stderr else stdout
-            if not error_output:
-                error_output = f"Program exited with code {exit_code}"
-            
-            if "EOFError" in error_output or "NoSuchElementException" in error_output:
-                error_output += "\n\n[HINT] Your code expects user input! Please provide it in the 'Custom Input' tab before running."
-            
-            return JsonResponse({'status': 'error', 'output': error_output})
-
-    except requests.exceptions.Timeout:
-        return JsonResponse({'status': 'error', 'output': 'Timeout: The code execution service did not respond in time.'})
-    except requests.exceptions.ConnectionError:
-        return JsonResponse({'status': 'error', 'output': 'Connection Error: Unable to reach the code execution service. Please try again later.'})
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        return JsonResponse({
+            'status': 'error', 
+            'output': f"Execution server error: {str(e)}", 
+            'message': str(e)
+        }, status=500)
 
 
 # 7. ADMIN PANEL SYSTEM (FULL CREATE/DELETE LOGIC)
@@ -1439,7 +1511,7 @@ def admin_dashboard(request):
     """
     Admin Dashboard Logic with Analytics Data for Charts + Course Activity Tracker.
     """
-    total_students = User.objects.filter(is_student=True).count()
+    total_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).count()
     total_courses = Course.objects.count()
     total_enrollments = Enrollment.objects.count()
     total_docs = LibraryDocument.objects.count()
@@ -1458,7 +1530,7 @@ def admin_dashboard(request):
     
     # Daily new student registrations (last 30 days)
     daily_registrations = (
-        User.objects.filter(is_student=True, date_joined__date__gte=thirty_days_ago)
+        User.objects.filter(is_student=True, is_staff=False, is_superuser=False, date_joined__date__gte=thirty_days_ago)
         .annotate(date=TruncDate('date_joined'))
         .values('date')
         .annotate(count=Count('id'))
@@ -1472,7 +1544,7 @@ def admin_dashboard(request):
     
     # Daily activity counts (last 30 days)
     daily_activities = (
-        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago)
+        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago, student__is_student=True, student__is_staff=False, student__is_superuser=False)
         .annotate(date=TruncDate('created_at'))
         .values('date')
         .annotate(count=Count('id'))
@@ -1486,7 +1558,7 @@ def admin_dashboard(request):
     
     # Activity type breakdown (pie chart)
     activity_breakdown = (
-        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago)
+        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago, student__is_student=True, student__is_staff=False, student__is_superuser=False)
         .values('activity_type')
         .annotate(count=Count('id'))
         .order_by('-count')
@@ -1499,22 +1571,22 @@ def admin_dashboard(request):
         breakdown_data.append(entry['count'])
     
     # Recent activities feed (latest 25)
-    recent_activities = StudentActivity.objects.select_related('student', 'course').all()[:25]
+    recent_activities = StudentActivity.objects.filter(student__is_student=True, student__is_staff=False, student__is_superuser=False).select_related('student', 'course').all()[:25]
     
     # Top active students (by activity count in last 30 days)
     top_students = (
-        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago)
+        StudentActivity.objects.filter(created_at__date__gte=thirty_days_ago, student__is_student=True, student__is_staff=False, student__is_superuser=False)
         .values('student__id', 'student__username', 'student__first_name', 'student__last_name')
         .annotate(activity_count=Count('id'))
         .order_by('-activity_count')[:10]
     )
     
     # Total activities count
-    total_activities = StudentActivity.objects.count()
+    total_activities = StudentActivity.objects.filter(student__is_student=True, student__is_staff=False, student__is_superuser=False).count()
     
     # --- COURSE ACTIVITY TRACKER DATA ---
     # Student list for dropdown (all students with enrollments)
-    all_students = User.objects.filter(is_student=True).order_by('first_name', 'username')
+    all_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).order_by('first_name', 'username')
     
     # Course-wise enrollment analytics
     course_enrollment_data = []
@@ -1809,19 +1881,23 @@ def admin_add_lesson(request, course_id):
 
 @staff_member_required
 def admin_student_list(request):
-    query = request.GET.get('search', '')
+    query = request.GET.get('search', '').strip()
+    base_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False)
     if query:
-        students = User.objects.filter(is_student=True).filter(
-            Q(first_name__icontains=query) | Q(email__icontains=query) | Q(username__icontains=query)
+        students = base_students.filter(
+            Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query) | Q(username__icontains=query)
         )
     else:
-        students = User.objects.filter(is_student=True).order_by('-date_joined')
+        students = base_students.order_by('-date_joined')
 
     return render(request, 'custom_admin/student_list.html', {'students': students, 'search_query': query})
 
 @staff_member_required
 def admin_student_detail(request, user_id):
     student = get_object_or_404(User, id=user_id)
+    if student.is_staff or student.is_superuser:
+        messages.info(request, f"{student.full_name} is an administrator, not a student.")
+        return redirect('admin_profile')
     enrollments = Enrollment.objects.filter(student=student).order_by('-enrolled_at')
     completed_courses = enrollments.filter(progress=100).count()
     quiz_results = QuizResult.objects.filter(student=student).order_by('-taken_at')
@@ -2088,6 +2164,259 @@ def admin_activity_api(request):
         'breakdown_data': breakdown_data,
         'total': queryset.count()
     })
+
+
+@staff_member_required
+def admin_profile(request):
+    """
+    Admin Profile Management:
+    - View and update current admin's profile details, avatar, and password.
+    - Add/Create new admin accounts with configurable permissions (staff or superuser).
+    - Overview of the administration team and platform metrics.
+    """
+    admin_user = request.user
+
+    # Ensure profile model instance exists
+    if not hasattr(admin_user, 'profile'):
+        Profile.objects.create(user=admin_user)
+
+    if request.method == "POST":
+        action = request.POST.get('action')
+
+        # 1. Update personal admin profile
+        if action == "update_profile":
+            first_name = request.POST.get('first_name', '').strip()
+            last_name = request.POST.get('last_name', '').strip()
+            email = request.POST.get('email', '').strip()
+            phone = request.POST.get('phone', '').strip()
+            bio = request.POST.get('bio', '').strip()
+
+            # Check email uniqueness if email is changed
+            if email:
+                email_lower = email.lower()
+                if email_lower != admin_user.email.lower():
+                    if User.objects.filter(email__iexact=email).exclude(id=admin_user.id).exists():
+                        messages.error(request, f"Email ID '{email}' is already registered to another account. Please use a unique Email ID.")
+                        return redirect('admin_profile')
+                    admin_user.email = email_lower
+
+            # Names have NO uniqueness restriction (e.g. multiple people can be named Avik)
+            admin_user.first_name = first_name
+            admin_user.last_name = last_name
+            admin_user.save()
+
+            profile = admin_user.profile
+            profile.phone = phone
+            profile.bio = bio
+            profile.address = request.POST.get('address', '').strip()
+            linkedin = request.POST.get('linkedin_url', '').strip()
+            github = request.POST.get('github_url', '').strip()
+            profile.linkedin_url = linkedin if linkedin else None
+            profile.github_url = github if github else None
+
+            # Handle direct avatar upload with crystal-clear processing
+            if request.POST.get('remove_avatar') == '1':
+                if profile.profile_pic:
+                    profile.profile_pic.delete(save=False)
+                    profile.profile_pic = None
+            elif 'profile_pic' in request.FILES:
+                uploaded_avatar = request.FILES['profile_pic']
+                clarified_avatar = process_and_clarify_avatar(uploaded_avatar)
+                if clarified_avatar:
+                    avatar_filename = f"admin_{admin_user.id}_{int(timezone.now().timestamp())}.jpg"
+                    profile.profile_pic.save(avatar_filename, clarified_avatar, save=False)
+                else:
+                    profile.profile_pic = uploaded_avatar
+            profile.save()
+
+            messages.success(request, "Your admin profile details and photo have been updated with crystal-clear quality!")
+            return redirect('admin_profile')
+
+        # 2. Change password (Super Administrator clearance only)
+        elif action == "change_password":
+            if not admin_user.is_superuser:
+                messages.error(request, "Access Denied: Staff Administrators do not have permission to change passwords. Only Super Administrators can manage administrator passwords for safety reasons.")
+                return redirect('admin_profile')
+
+            current_password = request.POST.get('current_password', '')
+            new_password = request.POST.get('new_password', '')
+            confirm_password = request.POST.get('confirm_password', '')
+
+            if not admin_user.check_password(current_password):
+                messages.error(request, "Current password is incorrect.")
+            elif len(new_password) < 6:
+                messages.error(request, "New password must be at least 6 characters long.")
+            elif new_password != confirm_password:
+                messages.error(request, "New password and confirmation do not match.")
+            else:
+                admin_user.set_password(new_password)
+                admin_user.save()
+                update_session_auth_hash(request, admin_user)
+                messages.success(request, "Your Super Administrator password has been changed successfully!")
+            return redirect('admin_profile')
+
+        # 3. Create a new Admin account (Super Administrator clearance only, Identified by Email ID, Password, and Phone Number)
+        elif action == "create_admin":
+            if not admin_user.is_superuser:
+                messages.error(request, "Access Denied: Staff Administrators cannot provision new administrators. Clearance is strictly reserved for Super Administrators.")
+                return redirect('admin_profile')
+
+            new_email = request.POST.get('new_email', '').strip()
+            new_password = request.POST.get('new_password', '').strip()
+            new_phone = request.POST.get('new_phone', '').strip()
+            
+            # Display name (Can be Avik or any name, NO uniqueness check!)
+            admin_name = request.POST.get('admin_name', '').strip()
+            new_first_name = request.POST.get('new_first_name', '').strip()
+            new_last_name = request.POST.get('new_last_name', '').strip()
+
+            if admin_name and not new_first_name:
+                if ' ' in admin_name:
+                    new_first_name, new_last_name = admin_name.split(' ', 1)
+                else:
+                    new_first_name = admin_name
+
+            new_bio = request.POST.get('new_bio', '').strip()
+            new_address = request.POST.get('new_address', '').strip()
+            new_linkedin = request.POST.get('new_linkedin', '').strip()
+            new_github = request.POST.get('new_github', '').strip()
+            is_super = request.POST.get('is_superuser') == 'on' and admin_user.is_superuser
+
+            # 1. Unique Email Identification
+            if not new_email:
+                messages.error(request, "Email ID is required to uniquely identify the administrator.")
+                return redirect('admin_profile')
+            elif User.objects.filter(email__iexact=new_email).exists():
+                messages.error(request, f"An account with Email ID '{new_email}' already exists. Email ID must be unique.")
+                return redirect('admin_profile')
+
+            # 2. Password Verification
+            if not new_password or len(new_password) < 6:
+                messages.error(request, "Initial password must be at least 6 characters.")
+                return redirect('admin_profile')
+
+            # 3. Phone Number Verification (Required or Recommended for Identity)
+            if not new_phone:
+                messages.error(request, "Phone number is required to uniquely identify and contact the administrator.")
+                return redirect('admin_profile')
+
+            # Generate collision-free database username based on Email ID
+            base_user = new_email.lower().replace('@', '_at_')
+            unique_username = base_user
+            idx = 1
+            while User.objects.filter(username__iexact=unique_username).exists():
+                unique_username = f"{base_user}_{idx}"
+                idx += 1
+
+            new_admin = User.objects.create_user(
+                username=unique_username,
+                email=new_email.lower(),
+                password=new_password,
+                first_name=new_first_name,
+                last_name=new_last_name,
+                is_staff=True,
+                is_student=False,
+                is_superuser=is_super
+            )
+
+            if not hasattr(new_admin, 'profile'):
+                Profile.objects.create(user=new_admin)
+            new_profile = new_admin.profile
+            new_profile.phone = new_phone
+            if new_bio:
+                new_profile.bio = new_bio
+            if new_address:
+                new_profile.address = new_address
+            if new_linkedin:
+                new_profile.linkedin_url = new_linkedin
+            if new_github:
+                new_profile.github_url = new_github
+
+            # Process avatar with crystal-clear enhancement
+            if 'new_admin_avatar' in request.FILES:
+                raw_avatar = request.FILES['new_admin_avatar']
+                enhanced_avatar = process_and_clarify_avatar(raw_avatar)
+                if enhanced_avatar:
+                    avatar_fn = f"admin_{new_admin.id}_{int(timezone.now().timestamp())}.jpg"
+                    new_profile.profile_pic.save(avatar_fn, enhanced_avatar, save=False)
+                else:
+                    new_profile.profile_pic = raw_avatar
+            new_profile.save()
+
+            role_label = "Super Administrator" if is_super else "Administrator"
+            display_str = new_admin.first_name or new_admin.email
+            messages.success(request, f"New {role_label} '{display_str}' created successfully! Identified by Email: '{new_admin.email}' and Phone: '{new_phone}'. They can log in immediately.")
+            return redirect('admin_profile')
+
+        # 4. Super Admin Emergency Password Override & Forgot Password Reset for ANY Staff or Super Admin
+        elif action == "super_admin_reset_password":
+            if not admin_user.is_superuser:
+                messages.error(request, "Access Denied: Only Super Administrators have authorization to reset or override administrator passwords.")
+                return redirect('admin_profile')
+
+            target_id = request.POST.get('target_admin_id')
+            new_password = request.POST.get('new_password', '').strip()
+            confirm_password = request.POST.get('confirm_password', '').strip()
+
+            target_admin = User.objects.filter(id=target_id).filter(Q(is_staff=True) | Q(is_superuser=True)).first()
+            if not target_admin:
+                messages.error(request, "Target administrator account was not found.")
+                return redirect('admin_profile')
+
+            if not new_password or len(new_password) < 6:
+                messages.error(request, "New password must be at least 6 characters long.")
+                return redirect('admin_profile')
+
+            if new_password != confirm_password:
+                messages.error(request, "New password and confirmation password do not match.")
+                return redirect('admin_profile')
+
+            target_admin.set_password(new_password)
+            target_admin.save()
+
+            if target_admin.id == admin_user.id:
+                update_session_auth_hash(request, admin_user)
+
+            display_name = target_admin.first_name or target_admin.email
+            role_label = "Super Administrator" if target_admin.is_superuser else "Staff Administrator"
+            messages.success(request, f"Security Override Successful: Password for {role_label} '{display_name}' ({target_admin.email}) has been updated. They can now log in immediately with the new password.")
+            return redirect('admin_profile')
+
+        # 5. Toggle admin active status (superuser only)
+        elif action == "toggle_admin_status":
+            if not admin_user.is_superuser:
+                messages.error(request, "Only Super Administrators can modify administrator status.")
+            else:
+                target_id = request.POST.get('target_user_id')
+                target_user = User.objects.filter(id=target_id, is_staff=True).first()
+                if not target_user:
+                    messages.error(request, "Admin user not found.")
+                elif target_user == admin_user:
+                    messages.error(request, "You cannot deactivate your own administrator account.")
+                else:
+                    target_user.is_active = not target_user.is_active
+                    target_user.save()
+                    status_text = "activated" if target_user.is_active else "deactivated"
+                    display_target = target_user.first_name or target_user.email
+                    messages.success(request, f"Administrator '{display_target}' ({target_user.email}) has been {status_text}.")
+            return redirect('admin_profile')
+
+    # Team administrators & system stats
+    admin_team = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True)).select_related('profile').order_by('-date_joined')
+    total_students_count = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).count()
+    total_courses_count = Course.objects.count()
+    total_docs_count = LibraryDocument.objects.count()
+    total_exams_count = Exam.objects.count()
+
+    context = {
+        'admin_user': admin_user,
+        'admin_team': admin_team,
+        'total_students_count': total_students_count,
+        'total_courses_count': total_courses_count,
+        'total_docs_count': total_docs_count,
+        'total_exams_count': total_exams_count,
+    }
+    return render(request, 'custom_admin/admin_profile.html', context)
 
 
 # 8. PREVIOUS: SYNTAX SINGULARITY (AI LOGIC CHECKER)
@@ -2415,6 +2744,35 @@ def track_progress(request):
                     enrollment.sync_progress()
                     return JsonResponse({'status': 'success', 'progress': enrollment.progress})
                 return JsonResponse({'status': 'success'})
+
+            elif track_type == 'complete_lesson':
+                lesson = get_object_or_404(Lesson, id=item_id)
+                lesson_progress, _ = LessonProgress.objects.get_or_create(
+                    student=request.user, lesson=lesson
+                )
+                coins_earned = 0
+                if not lesson_progress.is_completed:
+                    lesson_progress.is_completed = True
+                    lesson_progress.completed_at = timezone.now()
+                    if lesson.duration_in_seconds > 0 and lesson_progress.watch_time_seconds < lesson.duration_in_seconds:
+                        lesson_progress.watch_time_seconds = lesson.duration_in_seconds
+                    lesson_progress.save()
+                    request.user.lms_coins += 20
+                    request.user.save(update_fields=['lms_coins'])
+                    coins_earned = 20
+                    log_student_activity(request.user, 'lesson_watch', f'Marked Completed "{lesson.title}"', course=lesson.course)
+                
+                enrollment = get_object_or_404(Enrollment, student=request.user, course=lesson.course)
+                enrollment.sync_progress()
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'progress': enrollment.progress,
+                    'is_completed': True,
+                    'lesson_percent': 100,
+                    'watch_time': lesson_progress.watch_time_seconds,
+                    'coins_earned': coins_earned,
+                })
                 
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

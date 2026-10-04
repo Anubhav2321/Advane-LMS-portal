@@ -3,319 +3,1280 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Google Fonts & Font Awesome -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    /* --- THEME VARIABLES --- */
+    /* ======================================================== */
+    /* 🌌 ULTRA-PREMIUM CYBERPUNK CONTINUOUS LEARNING THEME 🌌   */
+    /* ======================================================== */
     :root {
-        --bg-dark: #0a0a0f;
-        --sidebar-bg: #111116;
-        --border-color: #2a2a35;
-        --neon-blue: #00f3ff;
+        --bg-void: #070913;
+        --bg-surface: #0c101d;
+        --bg-surface-elevated: #111728;
+        --card-bg: rgba(16, 22, 38, 0.72);
+        --card-bg-hover: rgba(23, 31, 54, 0.88);
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --neon-cyan: #00f3ff;
         --neon-purple: #bc13fe;
-        --text-main: #e0e0e0;
-        --active-item: rgba(0, 243, 255, 0.1);
+        --neon-blue: #3b82f6;
+        --neon-pink: #ff2a85;
+        --accent-emerald: #00e676;
+        --accent-amber: #ffb74d;
+        --accent-red: #ff3366;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --glow-cyan: 0 0 25px rgba(0, 243, 255, 0.25);
+        --glow-purple: 0 0 25px rgba(188, 19, 254, 0.25);
+        --glow-emerald: 0 0 25px rgba(0, 230, 118, 0.3);
     }
 
     body {
-        background-color: var(--bg-dark);
-        color: var(--text-main);
+        background-color: var(--bg-void);
+        color: var(--text-primary);
         font-family: 'Outfit', sans-serif;
-        overflow: hidden; /* Prevent body scroll */
+        overflow-x: hidden;
     }
 
-    /* --- LAYOUT GRID --- */
-    .course-watch-container {
+    /* Ambient Background Mesh */
+    .watch-ambient {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 10% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 90% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
+            radial-gradient(circle at 50% 90%, rgba(59, 130, 246, 0.04), transparent 55%);
+    }
+
+    /* --- TOP BREADCRUMB COMMAND STRIP --- */
+    .watch-command-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 28px;
+        background: rgba(12, 16, 29, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border-glass);
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .strip-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn-strip-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+    .btn-strip-back:hover {
+        background: rgba(0, 243, 255, 0.1);
+        color: var(--neon-cyan);
+        border-color: rgba(0, 243, 255, 0.35);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+    }
+
+    .course-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.08), rgba(188, 19, 254, 0.08));
+        border: 1px solid rgba(0, 243, 255, 0.25);
+        border-radius: 20px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .live-sync-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 12px;
+        background: rgba(0, 230, 118, 0.08);
+        border: 1px solid rgba(0, 230, 118, 0.25);
+        border-radius: 20px;
+        font-size: 0.76rem;
+        color: var(--accent-emerald);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-emerald);
+        box-shadow: 0 0 10px var(--accent-emerald);
+        animation: pulseBeacon 2s infinite ease-in-out;
+    }
+    @keyframes pulseBeacon {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .strip-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-strip-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    .btn-strip-ide {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+        border-color: rgba(168, 85, 247, 0.35);
+        color: #e2e8f0;
+    }
+    .btn-strip-ide:hover {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35));
+        border-color: var(--neon-purple);
+        color: #fff;
+        box-shadow: 0 0 18px rgba(188, 19, 254, 0.25);
+        transform: translateY(-1px);
+    }
+    .btn-strip-chat {
+        background: rgba(0, 243, 255, 0.08);
+        border-color: rgba(0, 243, 255, 0.25);
+        color: var(--neon-cyan);
+    }
+    .btn-strip-chat:hover {
+        background: rgba(0, 243, 255, 0.16);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .coins-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(255, 183, 77, 0.1);
+        border: 1px solid rgba(255, 183, 77, 0.3);
+        color: var(--accent-amber);
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.84rem;
+    }
+
+    /* --- MAIN CONTINUOUS LEARNING WORKSPACE --- */
+    .watch-workspace {
         display: grid;
-        grid-template-columns: 1fr 350px; /* Video Area | Sidebar */
-        height: calc(100vh - 70px); /* Full height minus navbar */
-        margin-top: 0;
+        grid-template-columns: minmax(0, 1fr) 390px;
+        height: calc(100vh - 128px);
+        background: var(--bg-void);
     }
 
-    /* --- LEFT AREA (VIDEO + COMMENTS) --- */
-    .content-area {
-        padding: 30px;
-        overflow-y: auto; /* Allow scrolling for comments */
+    /* --- LEFT CINEMA STAGE --- */
+    .cinema-stage {
+        padding: 24px 32px 60px;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
         scroll-behavior: smooth;
     }
-    
-    /* Scrollbar Styling */
-    .content-area::-webkit-scrollbar { width: 8px; }
-    .content-area::-webkit-scrollbar-track { background: #0a0a0f; }
-    .content-area::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    .content-area::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+    .cinema-stage::-webkit-scrollbar { width: 8px; }
+    .cinema-stage::-webkit-scrollbar-track { background: #070913; }
+    .cinema-stage::-webkit-scrollbar-thumb { background: #1e263d; border-radius: 4px; }
+    .cinema-stage::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
 
-    .video-wrapper {
+    /* Video Player Frame with Holographic Ambient Glow */
+    .player-theater {
         position: relative;
-        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 */
         height: 0;
         background: #000;
-        border-radius: 15px;
+        border-radius: 18px;
         overflow: hidden;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        margin-bottom: 25px;
+        border: 1px solid rgba(0, 243, 255, 0.22);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 243, 255, 0.08);
+        transition: all 0.3s ease;
         flex-shrink: 0;
+        margin-bottom: 18px;
+    }
+    .player-theater:hover {
+        border-color: rgba(0, 243, 255, 0.4);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 50px rgba(0, 243, 255, 0.15);
+    }
+    .player-theater.theater-expanded {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 80px rgba(0, 243, 255, 0.25);
     }
 
-    .video-wrapper iframe {
+    .player-theater iframe,
+    .player-theater video {
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
         border: none;
     }
 
-    .lesson-header h1 {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.8rem;
-        color: #fff;
-        margin-bottom: 10px;
+    .video-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at center, rgba(17, 24, 39, 0.8), #030712);
+        color: var(--text-secondary);
+        gap: 12px;
+        text-align: center;
+        padding: 20px;
+    }
+    .video-placeholder i {
+        font-size: 3rem;
+        color: var(--accent-red);
+        filter: drop-shadow(0 0 15px rgba(255, 51, 102, 0.5));
     }
 
-    .lesson-meta {
+    /* Video Player Control Deck */
+    .player-control-deck {
         display: flex;
-        gap: 15px;
-        color: #888;
-        font-size: 0.95rem;
-        margin-bottom: 25px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 20px;
-    }
-    .lesson-meta span { display: flex; align-items: center; gap: 5px; }
-    .lesson-meta i { color: var(--neon-blue); }
-
-    /* Navigation Buttons */
-    .nav-buttons {
-        display: flex;
+        align-items: center;
         justify-content: space-between;
-        margin-top: 10px;
-        margin-bottom: 40px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
+        padding: 12px 18px;
+        margin-bottom: 24px;
+        gap: 16px;
+        flex-wrap: wrap;
+        backdrop-filter: blur(12px);
     }
 
-    .btn-nav {
-        padding: 12px 25px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border-color);
-        color: #fff;
-        text-decoration: none;
+    .deck-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-deck-complete {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border-radius: 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border: none;
+    }
+    .btn-deck-complete.completed {
+        background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(16, 185, 129, 0.25));
+        border: 1px solid rgba(0, 230, 118, 0.4);
+        color: var(--accent-emerald);
+        box-shadow: 0 0 20px rgba(0, 230, 118, 0.15);
+    }
+    .btn-deck-complete.not-completed {
+        background: linear-gradient(135deg, #00f3ff, #0099ff);
+        color: #030712;
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    }
+    .btn-deck-complete.not-completed:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 28px rgba(0, 243, 255, 0.5);
+    }
+
+    /* Speed Selector Pills */
+    .speed-pills {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-glass);
         border-radius: 8px;
+        padding: 3px;
+        gap: 2px;
+    }
+    .speed-btn {
+        padding: 4px 9px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .speed-btn:hover { color: #fff; }
+    .speed-btn.active {
+        background: rgba(0, 243, 255, 0.2);
+        color: var(--neon-cyan);
+    }
+
+    /* Auto Play Toggle */
+    .autoplay-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
         font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+    }
+    .switch-pill {
+        width: 36px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        position: relative;
         transition: 0.3s;
-        display: flex; align-items: center; gap: 10px;
     }
-    .btn-nav:hover {
-        background: var(--neon-blue);
-        color: #000;
-        box-shadow: 0 0 15px var(--neon-blue);
+    .switch-pill::after {
+        content: '';
+        position: absolute;
+        top: 2px; left: 2px;
+        width: 16px; height: 16px;
+        background: #fff;
+        border-radius: 50%;
+        transition: 0.3s;
     }
-    .btn-nav.disabled {
-        opacity: 0.5;
+    .autoplay-toggle.active .switch-pill {
+        background: var(--neon-cyan);
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    }
+    .autoplay-toggle.active .switch-pill::after {
+        transform: translateX(16px);
+        background: #030712;
+    }
+
+    /* Lesson Navigation Bar */
+    .nav-bar-deck {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-deck-nav {
+        padding: 8px 14px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-glass);
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.25s ease;
+    }
+    .btn-deck-nav:hover {
+        background: rgba(0, 243, 255, 0.15);
+        border-color: rgba(0, 243, 255, 0.4);
+        color: var(--neon-cyan);
+    }
+    .btn-deck-nav.disabled {
+        opacity: 0.35;
         pointer-events: none;
     }
 
-    /* --- TABS SYSTEM --- */
-    .course-tabs {
-        display: flex; gap: 40px; margin-bottom: 30px; 
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+    /* Lesson Header Block */
+    .lesson-meta-header {
+        margin-bottom: 24px;
     }
-    
-    .tab-btn {
-        background: transparent; border: none; color: #888; 
-        font-size: 1.1rem; font-family: 'Space Grotesk', sans-serif;
-        padding: 12px 0; cursor: pointer; position: relative; 
-        transition: 0.3s; font-weight: 600; text-transform: uppercase;
-        letter-spacing: 1px;
+    .lesson-title-main {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.25;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
     }
-    
-    .tab-btn:hover { color: #fff; }
-    .tab-btn.active { color: var(--neon-blue); }
-    .tab-btn.active::after {
-        content: ''; position: absolute; bottom: -1px; left: 0; 
-        width: 100%; height: 3px; background: var(--neon-blue); 
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.5); 
+    .lesson-pills-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .pill-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .pill-info i { color: var(--neon-cyan); }
+    .pill-status-done {
+        background: rgba(0, 230, 118, 0.08);
+        border-color: rgba(0, 230, 118, 0.3);
+        color: var(--accent-emerald);
+    }
+    .pill-status-done i { color: var(--accent-emerald); }
+
+    /* --- MULTI-TAB WORKSTATION SYSTEM --- */
+    .workstation-tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-glass);
+        margin-bottom: 24px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+    .workstation-tabs::-webkit-scrollbar { height: 3px; }
+    .workstation-tabs::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+
+    .tab-trigger {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.92rem;
+        font-weight: 600;
+        padding: 12px 18px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 8px 8px 0 0;
+        white-space: nowrap;
+    }
+    .tab-trigger:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .tab-trigger.active {
+        color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.06);
+    }
+    .tab-trigger.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
         border-radius: 3px 3px 0 0;
     }
-    
-    .tab-content { display: none; animation: fadeIn 0.4s ease; }
-    .tab-content.active { display: block; }
 
-    /* Overview Tab Content */
-    .overview-box {
+    .tab-badge {
+        padding: 2px 7px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+    }
+    .tab-trigger.active .tab-badge {
+        background: rgba(0, 243, 255, 0.2);
+        color: var(--neon-cyan);
+    }
+
+    .tab-pane {
+        display: none;
+        animation: tabFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tab-pane.active {
+        display: block;
+    }
+    @keyframes tabFadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Content Cards */
+    .glass-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 24px 28px;
+        backdrop-filter: blur(16px);
+        margin-bottom: 20px;
+        transition: border-color 0.25s ease;
+    }
+    .glass-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Instructor Showcase */
+    .instructor-showcase {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 20px 24px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(188, 19, 254, 0.06), rgba(0, 243, 255, 0.04));
+        border: 1px solid rgba(188, 19, 254, 0.2);
+        margin-top: 24px;
+        flex-wrap: wrap;
+    }
+    .inst-avatar-wrap {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--neon-purple);
+        box-shadow: 0 0 18px rgba(188, 19, 254, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #161829;
+        flex-shrink: 0;
+    }
+    .inst-avatar-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .inst-details h4 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        color: #fff;
+    }
+    .inst-role-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--neon-cyan);
+    }
+    .inst-submeta {
+        display: flex;
+        gap: 14px;
+        margin-top: 6px;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+    }
+    .inst-submeta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .inst-submeta i { color: var(--neon-purple); }
+
+    /* --- TAB 2: AI SMART NOTES --- */
+    .ai-notes-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    .ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(188, 19, 254, 0.2), rgba(0, 243, 255, 0.2));
+        border: 1px solid var(--neon-purple);
+        color: #fff;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .btn-ai-generate {
+        background: linear-gradient(135deg, var(--neon-purple), #7928ca);
+        border: none;
+        color: #fff;
+        padding: 9px 20px;
+        border-radius: 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 0 20px rgba(188, 19, 254, 0.35);
+        transition: all 0.25s ease;
+    }
+    .btn-ai-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 30px rgba(188, 19, 254, 0.6);
+    }
+
+    .ai-summary-box {
+        background: rgba(0, 243, 255, 0.03);
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 20px;
+    }
+    .ai-summary-box h5 {
+        color: var(--neon-cyan);
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ai-summary-box p {
+        color: #cbd5e1;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .key-points-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+    .point-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
         background: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--border-color);
-        border-radius: 15px; padding: 30px; margin-bottom: 20px;
+        border: 1px solid var(--border-glass);
+        padding: 12px 16px;
+        border-radius: 10px;
+        transition: all 0.2s;
     }
-    .overview-box h3 { color: #fff; font-family: 'Space Grotesk', sans-serif; margin-bottom: 15px; }
-    .overview-box p { color: #aaa; line-height: 1.6; font-size: 1.05rem; }
-
-    /* --- ENHANCED INSTRUCTOR CARD --- */
-    .instructor-card {
-        display: flex; align-items: center; gap: 18px; margin-top: 30px;
-        padding: 22px 24px; border-radius: 16px;
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        border: 1px solid rgba(168, 85, 247, 0.15);
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        transition: all 0.3s ease;
+    .point-card:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(0, 243, 255, 0.25);
     }
-    .instructor-card:hover {
-        border-color: rgba(168, 85, 247, 0.35);
-        box-shadow: 0 8px 30px rgba(168, 85, 247, 0.08);
+    .point-card i {
+        color: var(--neon-cyan);
+        margin-top: 4px;
+        font-size: 0.85rem;
     }
-
-    .inst-avatar {
-        width: 56px; height: 56px; border-radius: 50%; overflow: hidden;
-        border: 2px solid rgba(168, 85, 247, 0.4);
-        display: flex; align-items: center; justify-content: center;
-        background: rgba(168, 85, 247, 0.1); flex-shrink: 0;
-    }
-    .inst-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .inst-avatar i { font-size: 1.5rem; color: #bc13fe; }
-
-    .inst-info { flex: 1; }
-    .inst-info h4 { margin: 0; color: #fff; font-size: 1.15rem; font-weight: 700; margin-bottom: 2px; }
-    .inst-info .inst-role { color: var(--neon-blue); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-    .inst-info .inst-details {
-        display: flex; gap: 16px; margin-top: 6px; font-size: 0.8rem; color: #888;
-    }
-    .inst-info .inst-details span { display: flex; align-items: center; gap: 5px; }
-    .inst-info .inst-details i { color: var(--neon-purple); font-size: 0.75rem; }
-
-    .inst-badge {
-        padding: 5px 14px; border-radius: 20px; font-size: 0.72rem;
-        background: rgba(0, 243, 255, 0.08); color: var(--neon-blue);
-        border: 1px solid rgba(0, 243, 255, 0.2); font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.5px;
+    .point-card span {
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        line-height: 1.5;
     }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Personal Notes Section */
+    .personal-notes-container {
+        border-top: 1px solid var(--border-glass);
+        padding-top: 20px;
+        margin-top: 20px;
+    }
+    .notes-textarea {
+        width: 100%;
+        height: 120px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-glass);
+        border-radius: 10px;
+        color: #fff;
+        padding: 14px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.94rem;
+        resize: vertical;
+        box-sizing: border-box;
+        transition: border-color 0.25s;
+    }
+    .notes-textarea:focus {
+        outline: none;
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 15px rgba(188, 19, 254, 0.25);
+    }
 
+    /* --- TAB 3: IN-LESSON CODE SANDBOX --- */
+    .sandbox-container {
+        background: #090d16;
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+    .sandbox-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #0f1422;
+        padding: 10px 18px;
+        border-bottom: 1px solid var(--border-glass);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .sandbox-lang-select {
+        background: #161c2e;
+        border: 1px solid var(--border-glass);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+    }
+    .sandbox-lang-select:focus {
+        border-color: var(--neon-cyan);
+    }
+    .btn-run-code {
+        background: linear-gradient(135deg, #00f3ff, #0099ff);
+        border: none;
+        color: #030712;
+        padding: 7px 18px;
+        border-radius: 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.35);
+        transition: all 0.2s;
+    }
+    .btn-run-code:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 25px rgba(0, 243, 255, 0.55);
+    }
+    .sandbox-editor {
+        width: 100%;
+        min-height: 220px;
+        background: #060911;
+        color: #f8fafc;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        padding: 16px 20px;
+        border: none;
+        outline: none;
+        resize: vertical;
+        box-sizing: border-box;
+    }
+    .sandbox-terminal {
+        background: #04060a;
+        border-top: 1px solid var(--border-glass);
+        padding: 14px 18px;
+        font-family: 'Fira Code', monospace;
+        font-size: 0.85rem;
+    }
+    .term-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: var(--text-muted);
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .term-body {
+        color: #a5f3fc;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 180px;
+        overflow-y: auto;
+    }
 
-    /* --- SIDEBAR (RIGHT) --- */
-    .playlist-sidebar {
-        background: var(--sidebar-bg);
-        border-left: 1px solid var(--border-color);
+    /* --- TAB 4: Q&A & DISCUSSION --- */
+    .qa-input-box {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border-glass);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+        transition: border-color 0.25s;
+    }
+    .qa-input-box:focus-within {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    }
+    .qa-textarea {
+        width: 100%;
+        min-height: 80px;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.98rem;
+        resize: vertical;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .qa-submit-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .btn-qa-post {
+        background: linear-gradient(135deg, var(--neon-purple), #8b5cf6);
+        border: none;
+        color: #fff;
+        padding: 8px 22px;
+        border-radius: 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.25s;
+    }
+    .btn-qa-post:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 16px;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .comment-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #161b2e;
+        border: 1px solid var(--border-glass);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .comment-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+    .comment-author {
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.95rem;
+    }
+    .badge-instructor {
+        background: rgba(0, 243, 255, 0.15);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        margin-left: 8px;
+    }
+    .comment-body {
+        color: #cbd5e1;
+        font-size: 0.94rem;
+        line-height: 1.55;
+        margin: 0;
+    }
+
+    /* --- TAB 5: RESOURCES & EXAMS --- */
+    .resource-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-glass);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        transition: all 0.25s ease;
+    }
+    .resource-card:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(0, 243, 255, 0.3);
+    }
+    .btn-pdf-view {
+        padding: 7px 18px;
+        border-radius: 20px;
+        background: rgba(0, 243, 255, 0.08);
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        color: var(--neon-cyan);
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .btn-pdf-view:hover {
+        background: var(--neon-cyan);
+        color: #030712;
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    }
+
+    /* --- RIGHT CURRICULUM PLAYLIST SIDEBAR --- */
+    .playlist-dock {
+        background: #0b0f1d;
+        border-left: 1px solid var(--border-glass);
         display: flex;
         flex-direction: column;
         height: 100%;
+        overflow: hidden;
     }
 
-    .sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid var(--border-color);
-        background: rgba(0,0,0,0.2);
+    .playlist-header-card {
+        padding: 20px 22px;
+        background: rgba(0, 0, 0, 0.25);
+        border-bottom: 1px solid var(--border-glass);
     }
-    .sidebar-header h3 {
+    .dock-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .dock-title-row h3 {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
+        font-weight: 700;
         color: #fff;
-        margin-bottom: 10px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dock-title-row h3 i { color: var(--neon-cyan); }
+
+    /* Circular/Glow Progress Stats */
+    .course-progress-stats {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .progress-track-outer {
+        width: 100%;
+        height: 8px;
+        background: #161c2e;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    .progress-track-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+        border-radius: 10px;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Progress Bar */
-    .progress-container {
-        display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #888; margin-bottom: 5px;
+    /* Filter & Search Bar in Playlist */
+    .playlist-search-wrap {
+        padding: 12px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.01);
     }
-    .progress-track {
-        width: 100%; height: 6px; background: #222; border-radius: 10px; overflow: hidden;
+    .search-input-dock {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-glass);
+        border-radius: 8px;
+        padding: 7px 12px;
+        font-size: 0.82rem;
+        color: #fff;
+        outline: none;
+        box-sizing: border-box;
     }
-    
-    .progress-fill {
-        height: 100%; 
-        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        width: 0%;
-        box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+    .search-input-dock:focus {
+        border-color: var(--neon-cyan);
+    }
+    .playlist-chips {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .chip-btn {
+        background: transparent;
+        border: 1px solid var(--border-glass);
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        padding: 3px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .chip-btn:hover, .chip-btn.active {
+        color: #fff;
+        border-color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.1);
     }
 
-    /* Lesson List */
-    .lesson-list {
+    /* Lessons Scroll Area */
+    .dock-lessons-stream {
         flex: 1;
         overflow-y: auto;
     }
-    .lesson-list::-webkit-scrollbar { width: 5px; }
-    .lesson-list::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+    .dock-lessons-stream::-webkit-scrollbar { width: 5px; }
+    .dock-lessons-stream::-webkit-scrollbar-thumb { background: #1e263d; border-radius: 5px; }
+    .dock-lessons-stream::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
 
-    .lesson-item {
+    .lesson-nav-card {
         display: flex;
         align-items: flex-start;
         padding: 14px 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        color: #aaa;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         text-decoration: none;
-        transition: all 0.25s ease;
         gap: 12px;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+    .lesson-nav-card:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .lesson-nav-card.active {
+        background: linear-gradient(90deg, rgba(0, 243, 255, 0.12), rgba(0, 243, 255, 0.02));
+        border-left: 4px solid var(--neon-cyan);
     }
 
-    .lesson-item:hover {
-        background: rgba(255,255,255,0.03);
+    .lesson-order-index {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .lesson-nav-card.active .lesson-order-index {
+        background: var(--neon-cyan);
+        color: #030712;
+    }
+
+    .lesson-details-col {
+        flex: 1;
+        min-width: 0;
+    }
+    .lesson-title-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        line-height: 1.35;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color 0.2s;
+    }
+    .lesson-nav-card.active .lesson-title-text {
         color: #fff;
     }
-
-    .lesson-item.active {
-        background: var(--active-item);
-        color: var(--neon-blue);
-        border-left: 4px solid var(--neon-blue);
+    .lesson-nav-card:hover .lesson-title-text {
+        color: var(--neon-cyan);
     }
 
-    .status-icon {
-        font-size: 14px;
-        width: 20px;
-        text-align: center;
-        padding-top: 3px;
-        flex-shrink: 0;
+    .lesson-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.76rem;
+        color: var(--text-muted);
     }
-    .status-icon.completed { color: var(--neon-blue); }
-    .status-icon.locked { color: #444; }
+    .lesson-time-span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
 
-    .lesson-info { flex: 1; min-width: 0; }
-    .l-title { font-weight: 600; font-size: 0.92rem; display: block; margin-bottom: 4px; line-height: 1.3; }
-    .l-duration { font-size: 0.78rem; color: #666; display: flex; align-items: center; gap: 6px; }
-
-    /* Per-Lesson Progress Micro Bar */
-    .lesson-progress-bar {
+    /* Micro Progress Bar */
+    .micro-progress-track {
+        width: 100%;
         height: 3px;
         background: rgba(255, 255, 255, 0.06);
         border-radius: 3px;
         margin-top: 6px;
         overflow: hidden;
     }
-
-    .lesson-progress-fill {
+    .micro-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, var(--neon-blue), #0088ff);
+        background: linear-gradient(90deg, var(--neon-cyan), #0088ff);
         border-radius: 3px;
-        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 0 4px rgba(0, 243, 255, 0.3);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    .lesson-progress-fill.complete {
+    .micro-progress-bar.complete {
         background: linear-gradient(90deg, #00E676, #34d399);
-        box-shadow: 0 0 4px rgba(0, 230, 118, 0.3);
+        box-shadow: 0 0 6px rgba(0, 230, 118, 0.5);
     }
 
-    .lesson-percent-badge {
+    /* Status Icon Indicator */
+    .status-icon-badge {
+        font-size: 15px;
+        width: 22px;
+        text-align: right;
+        flex-shrink: 0;
+        margin-top: 3px;
+    }
+
+    /* Sidebar Footer Deck */
+    .dock-footer {
+        padding: 16px 20px;
+        background: rgba(0, 0, 0, 0.35);
+        border-top: 1px solid var(--border-glass);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .btn-dock-action {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 0.62rem;
-        color: #666;
-        font-weight: 600;
+        font-size: 0.84rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.25s;
+    }
+    .btn-dock-community {
+        background: rgba(0, 243, 255, 0.08);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+        color: var(--neon-cyan);
+    }
+    .btn-dock-community:hover {
+        background: rgba(0, 243, 255, 0.16);
+        color: #fff;
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
+    }
+
+    /* Floating Toast Celebration */
+    .learning-toast {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background: #0f172a;
+        border: 1px solid var(--neon-cyan);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 243, 255, 0.3);
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 999999;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .learning-toast.show {
+        transform: translateY(0);
+        opacity: 1;
     }
 
     /* Responsive */
-    @media (max-width: 900px) {
-        .course-watch-container { grid-template-columns: 1fr; height: auto; }
-        .playlist-sidebar { height: 400px; border-left: none; border-top: 1px solid var(--border-color); }
-        .content-area { overflow-y: visible; height: auto; }
+    @media (max-width: 1024px) {
+        .watch-workspace {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+        .playlist-dock {
+            height: 520px;
+            border-left: none;
+            border-top: 1px solid var(--border-glass);
+        }
+        .cinema-stage {
+            height: auto;
+            overflow-y: visible;
+            padding: 20px;
+        }
     }
 </style>
 
-<div class="course-watch-container">
+<div class="watch-ambient"></div>
 
-    <div class="content-area">
+<!-- TOP BREADCRUMB COMMAND STRIP -->
+<div class="watch-command-strip">
+    <div class="strip-left">
+        <a href="{% url 'dashboard' %}" class="btn-strip-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+        <a href="{% url 'all_courses' %}" class="btn-strip-back">
+            <i class="fas fa-layer-group"></i> All Courses
+        </a>
+        <div class="course-badge-pill">
+            <i class="fas fa-graduation-cap" style="color: var(--neon-cyan);"></i>
+            <span>{{ course.title }}</span>
+        </div>
+        <div class="live-sync-indicator">
+            <span class="pulse-dot"></span>
+            <span>Real-time Sync Active</span>
+        </div>
+    </div>
+
+    <div class="strip-actions">
+        <div class="coins-pill">
+            <i class="fas fa-coins"></i>
+            <span id="header-user-coins">{{ request.user.lms_coins }}</span> Coins
+        </div>
+        <button class="btn-strip-action btn-strip-ide" onclick="openLiveIDE()">
+            <i class="fas fa-code"></i> Cloud IDE
+        </button>
+        {% if course.slug %}
+        <a href="{% url 'course_community_chat' course.slug %}" class="btn-strip-action btn-strip-chat">
+            <i class="fas fa-comments"></i> Community
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- MAIN CONTINUOUS LEARNING WORKSPACE -->
+<div class="watch-workspace">
+
+    <!-- LEFT CINEMA STAGE -->
+    <div class="cinema-stage">
         {% if current_lesson %}
-            <div class="video-wrapper">
+
+            <!-- VIDEO PLAYER THEATER -->
+            <div class="player-theater" id="theaterWrapper">
                 {% if youtube_id %}
                     <iframe 
                         id="lesson-video"
@@ -326,69 +1287,164 @@
                         referrerpolicy="strict-origin-when-cross-origin" 
                         allowfullscreen>
                     </iframe>
+                {% elif current_lesson.video_file %}
+                    <video id="native-video-player" controls preload="metadata" style="width:100%; height:100%;">
+                        <source src="{{ current_lesson.video_file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 {% else %}
-                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#ff4757;">
-                        <i class="fas fa-video-slash fa-2x" style="margin-bottom: 10px;"></i>
-                        <p>Video Not Available</p>
+                    <div class="video-placeholder">
+                        <i class="fas fa-film"></i>
+                        <h3 style="color:#fff; margin:0; font-family:'Space Grotesk',sans-serif;">Lecture Notes & Walkthrough Available</h3>
+                        <p style="margin:0; font-size:0.9rem;">Instructor has provided interactive material and code for this lesson below.</p>
                     </div>
                 {% endif %}
             </div>
 
-            <div class="lesson-header">
-                <h1>{{ current_lesson.title }}</h1>
-                <div class="lesson-meta">
-                    <span><i class="fas fa-book-reader"></i> {{ course.title }}</span>
-                    <span><i class="fas fa-clock"></i> {{ current_lesson.duration }}</span>
+            <!-- PLAYER CONTROLS & LEARNING TOOLBAR -->
+            <div class="player-control-deck">
+                <div class="deck-group">
+                    <!-- Complete Toggle Button -->
+                    {% if current_lesson.id in completed_lesson_ids %}
+                        <button class="btn-deck-complete completed" id="btnMarkComplete" onclick="markLessonComplete('{{ current_lesson.id }}')">
+                            <i class="fas fa-check-circle"></i> Completed (+20 Coins)
+                        </button>
+                    {% else %}
+                        <button class="btn-deck-complete not-completed" id="btnMarkComplete" onclick="markLessonComplete('{{ current_lesson.id }}')">
+                            <i class="fas fa-check"></i> Mark Complete (+20 Coins)
+                        </button>
+                    {% endif %}
+
+                    <!-- Playback Speed -->
+                    <div class="speed-pills">
+                        <button class="speed-btn" onclick="setSpeed(0.75)">0.75x</button>
+                        <button class="speed-btn active" onclick="setSpeed(1.0)">1x</button>
+                        <button class="speed-btn" onclick="setSpeed(1.25)">1.25x</button>
+                        <button class="speed-btn" onclick="setSpeed(1.5)">1.5x</button>
+                        <button class="speed-btn" onclick="setSpeed(2.0)">2x</button>
+                    </div>
+
+                    <!-- Autoplay Next Toggle -->
+                    <div class="autoplay-toggle active" id="toggleAutoplay" onclick="toggleAutoPlay()">
+                        <div class="switch-pill"></div>
+                        <span>Auto-next</span>
+                    </div>
+                </div>
+
+                <div class="deck-group">
+                    <!-- Theater Fullscreen Toggle -->
+                    <button class="btn-deck-nav" onclick="toggleTheaterMode()" title="Toggle Theater Mode">
+                        <i class="fas fa-expand"></i> Theater
+                    </button>
+
+                    <!-- Navigation Next / Prev -->
+                    <div class="nav-bar-deck">
+                        {% if prev_lesson %}
+                            <a href="{% url 'course_watch' course.id prev_lesson.id %}" class="btn-deck-nav" title="Shift + P">
+                                <i class="fas fa-backward-step"></i> Prev
+                            </a>
+                        {% else %}
+                            <a href="#" class="btn-deck-nav disabled"><i class="fas fa-backward-step"></i> Prev</a>
+                        {% endif %}
+
+                        {% if next_lesson %}
+                            <a href="{% url 'course_watch' course.id next_lesson.id %}" class="btn-deck-nav" id="nextLessonBtn" title="Shift + N">
+                                Next <i class="fas fa-forward-step"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'dashboard' %}" class="btn-deck-nav" style="border-color:var(--accent-emerald); color:var(--accent-emerald);">
+                                Finish Course <i class="fas fa-trophy"></i>
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <div class="nav-buttons">
-                {% if prev_lesson %}
-                    <a href="{% url 'course_watch' course.id prev_lesson.id %}" class="btn-nav">
-                        <i class="fas fa-arrow-left"></i> Previous
-                    </a>
-                {% else %}
-                    <a href="#" class="btn-nav disabled"><i class="fas fa-arrow-left"></i> Previous</a>
-                {% endif %}
-
-                {% if next_lesson %}
-                    <a href="{% url 'course_watch' course.id next_lesson.id %}" class="btn-nav">
-                        Next Lesson <i class="fas fa-arrow-right"></i>
-                    </a>
-                {% else %}
-                    <a href="{% url 'dashboard' %}" class="btn-nav">
-                        Finish Course <i class="fas fa-check"></i>
-                    </a>
-                {% endif %}
+            <!-- LESSON HEADER & METADATA -->
+            <div class="lesson-meta-header">
+                <h1 class="lesson-title-main">{{ current_lesson.title }}</h1>
+                <div class="lesson-pills-row">
+                    <span class="pill-info">
+                        <i class="fas fa-list-ol"></i> Lesson #{{ current_lesson.order }}
+                    </span>
+                    <span class="pill-info">
+                        <i class="far fa-clock"></i> {{ current_lesson.duration|default:"10:00" }}
+                    </span>
+                    {% if current_lesson.id in completed_lesson_ids %}
+                        <span class="pill-info pill-status-done" id="current-lesson-status-pill">
+                            <i class="fas fa-check-circle"></i> Completed
+                        </span>
+                    {% else %}
+                        <span class="pill-info" id="current-lesson-status-pill">
+                            <i class="fas fa-spinner fa-spin"></i> In Progress
+                        </span>
+                    {% endif %}
+                    <span class="pill-info" id="current-lesson-pct-pill">
+                        <i class="fas fa-chart-line"></i> <span id="current-pct-val">{{ current_lesson_progress.percent|default:0 }}%</span> Watched
+                    </span>
+                </div>
             </div>
 
-            <!-- TABS SYSTEM -->
-            <div class="course-tabs">
-                <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
-                <button class="tab-btn" onclick="switchTab('qa')"><i class="far fa-comments"></i> Q&A Discussion</button>
-                <button class="tab-btn" onclick="switchTab('resources')"><i class="fas fa-download"></i> Resources</button>
+            <!-- MULTI-TAB WORKSTATION SYSTEM -->
+            <div class="workstation-tabs">
+                <button class="tab-trigger active" onclick="switchWorkTab('overview')">
+                    <i class="fas fa-book-open"></i> Overview & Guide
+                </button>
+                <button class="tab-trigger" onclick="switchWorkTab('ainotes')">
+                    <i class="fas fa-wand-magic-sparkles" style="color:var(--neon-purple);"></i> ✨ AI Smart Notes
+                </button>
+                <button class="tab-trigger" onclick="switchWorkTab('sandbox')">
+                    <i class="fas fa-terminal" style="color:var(--neon-cyan);"></i> Live Code Sandbox
+                </button>
+                <button class="tab-trigger" onclick="switchWorkTab('discussion')">
+                    <i class="far fa-comments"></i> Q&A Discussion
+                    <span class="tab-badge">{{ comments|length }}</span>
+                </button>
+                <button class="tab-trigger" onclick="switchWorkTab('resources')">
+                    <i class="fas fa-folder-open"></i> Resources & Exams
+                    <span class="tab-badge">{{ documents|length|add:course_exams|length }}</span>
+                </button>
             </div>
 
-            <!-- OVERVIEW TAB -->
-            <div id="tab-overview" class="tab-content active">
-                <div class="overview-box">
-                    <h3>About this course</h3>
-                    <p>{{ course.description|linebreaksbr }}</p>
-                    
-                    <!-- Enhanced Faculty/Instructor Card -->
-                    <div class="instructor-card">
-                        <div class="inst-avatar">
+            <!-- TAB 1: OVERVIEW & INSTRUCTOR -->
+            <div id="pane-overview" class="tab-pane active">
+                <div class="glass-card">
+                    <h3 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:0; margin-bottom:12px;">
+                        Lesson Objectives & Curriculum Scope
+                    </h3>
+                    {% if current_lesson.content %}
+                        <div style="color:#cbd5e1; line-height:1.7; font-size:1rem; margin-bottom:20px;">
+                            {{ current_lesson.content|linebreaksbr }}
+                        </div>
+                    {% else %}
+                        <p style="color:#94a3b8; line-height:1.6; font-size:0.96rem;">
+                            Welcome to <strong>{{ current_lesson.title }}</strong>. Follow the video lecture, run example code snippets in the interactive sandbox, and utilize the AI Smart Notes tab to review key takeaways and examination points.
+                        </p>
+                    {% endif %}
+
+                    <!-- Course Description Note -->
+                    <div style="margin-top:20px; padding:16px 20px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid var(--border-glass);">
+                        <h5 style="margin:0 0 8px 0; color:var(--neon-cyan); font-family:'Space Grotesk',sans-serif;">
+                            <i class="fas fa-info-circle"></i> Course Context
+                        </h5>
+                        <p style="margin:0; color:#94a3b8; font-size:0.92rem; line-height:1.6;">
+                            {{ course.description|linebreaksbr }}
+                        </p>
+                    </div>
+
+                    <!-- Enhanced Instructor Showcase -->
+                    <div class="instructor-showcase">
+                        <div class="inst-avatar-wrap">
                             {% if faculty_data.has_pic %}
-                                <img src="{{ faculty_data.pic_url }}" alt="Instructor">
+                                <img src="{{ faculty_data.pic_url }}" alt="Instructor" loading="lazy">
                             {% else %}
-                                <i class="fas fa-user-tie"></i>
+                                <i class="fas fa-user-tie" style="font-size:1.8rem; color:var(--neon-purple);"></i>
                             {% endif %}
                         </div>
-                        <div class="inst-info">
+                        <div class="inst-details" style="flex:1;">
                             <h4>{{ faculty_data.name }}</h4>
-                            <span class="inst-role">Course Instructor</span>
-                            {% if faculty_data.department or faculty_data.specialization %}
-                            <div class="inst-details">
+                            <span class="inst-role-badge">Lead Academic Instructor</span>
+                            <div class="inst-submeta">
                                 {% if faculty_data.department %}
                                     <span><i class="fas fa-building"></i> {{ faculty_data.department }}</span>
                                 {% endif %}
@@ -396,192 +1452,876 @@
                                     <span><i class="fas fa-star"></i> {{ faculty_data.specialization }}</span>
                                 {% endif %}
                                 {% if faculty_data.experience %}
-                                    <span><i class="fas fa-award"></i> {{ faculty_data.experience }} yrs exp</span>
+                                    <span><i class="fas fa-award"></i> {{ faculty_data.experience }} yrs experience</span>
                                 {% endif %}
                             </div>
-                            {% endif %}
                         </div>
-                        <span class="inst-badge">Published</span>
+                        {% if course.slug %}
+                        <a href="{% url 'course_community_chat' course.slug %}" class="btn-strip-action btn-strip-chat">
+                            <i class="fas fa-paper-plane"></i> Ask in Community
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Q&A TAB -->
-            <div id="tab-qa" class="tab-content">
-                <div class="overview-box">
-                    <form method="POST" class="comment-form" style="margin-bottom: 60px;">
+            <!-- TAB 2: AI SMART NOTES (Groq-Powered) -->
+            <div id="pane-ainotes" class="tab-pane">
+                <div class="glass-card">
+                    <div class="ai-notes-header">
+                        <div>
+                            <div class="ai-badge">
+                                <i class="fas fa-brain"></i> Groq AI Intelligence Engine
+                            </div>
+                            <h3 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin:8px 0 0 0;">
+                                AI Smart Lesson Summary & Key Takeaways
+                            </h3>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-ai-generate" id="btnGenerateAINotes" onclick="fetchOrGenerateAINotes('generate')">
+                                <i class="fas fa-sparkles"></i> <span id="aiBtnText">✨ Generate AI Notes</span>
+                            </button>
+                            <button class="btn-strip-action" onclick="copyAINotesToClipboard()" title="Copy Notes">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn-strip-action" onclick="downloadAINotesMarkdown()" title="Download as .md">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- AI Summary Box -->
+                    <div class="ai-summary-box" id="aiSummaryBox">
+                        <h5><i class="fas fa-compass"></i> Core Concept & Executive Summary</h5>
+                        <p id="aiSummaryText">
+                            {% if current_ai_note %}
+                                {{ current_ai_note.summary }}
+                            {% else %}
+                                Click "Generate AI Notes" above to synthesize instant key points, formulas, architectural concepts, and interview insights for this lesson.
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Key Points Breakdown -->
+                    <h5 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin:0 0 12px 0;">
+                        <i class="fas fa-check-double" style="color:var(--accent-emerald);"></i> Key Takeaways & Exam Points
+                    </h5>
+                    <div class="key-points-grid" id="aiKeyPointsContainer">
+                        {% if current_ai_note and current_ai_note.key_points %}
+                            {% for line in current_ai_note.key_points.splitlines %}
+                                {% if line %}
+                                    <div class="point-card">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span>{{ line|cut:"•"|cut:"-" }}</span>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="point-card">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Generate structured bullet points and crucial frameworks for revision and practice.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Student Personal Study Notes Area -->
+                    <div class="personal-notes-container">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                            <h5 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin:0;">
+                                <i class="fas fa-pen-to-square" style="color:var(--neon-purple);"></i> My Personal Study Notes
+                            </h5>
+                            <button class="btn-strip-action" style="background:rgba(188,19,254,0.15); border-color:var(--neon-purple); color:#fff;" onclick="savePersonalNotes()">
+                                <i class="fas fa-floppy-disk"></i> Save Notes
+                            </button>
+                        </div>
+                        <textarea class="notes-textarea" id="personalNotesInput" placeholder="Jot down personal timestamps, questions to ask in community chat, or your code thoughts here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: IN-LESSON LIVE CODE SANDBOX -->
+            <div id="pane-sandbox" class="tab-pane">
+                <div class="sandbox-container">
+                    <div class="sandbox-header">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff; font-size:0.9rem;">
+                                <i class="fas fa-laptop-code" style="color:var(--neon-cyan);"></i> In-Lesson Sandbox
+                            </span>
+                            <select class="sandbox-lang-select" id="sandboxLangSelect" onchange="onSandboxLangChange()">
+                                <option value="python">Python 3.14 (Native)</option>
+                                <option value="javascript">Node.js (JavaScript)</option>
+                                <option value="cpp">C++ (MinGW GCC)</option>
+                                <option value="java">Java 26 (OpenJDK)</option>
+                            </select>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button class="btn-run-code" id="btnRunSandbox" onclick="runSandboxCode()">
+                                <i class="fas fa-play"></i> Run Code (Ctrl+Enter)
+                            </button>
+                            <button class="btn-strip-action btn-strip-ide" onclick="openLiveIDE()" title="Open Full Screen IDE">
+                                <i class="fas fa-up-right-from-square"></i> Cloud IDE
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Code Area -->
+                    <textarea class="sandbox-editor" id="sandboxCodeEditor" spellcheck="false"># Code along with the lecture!
+def solution():
+    print("🚀 Running in Native Advanced LMS Sandbox...")
+    lesson = "{{ current_lesson.title|escapejs }}"
+    print(f"Current Lesson: {lesson}")
+
+solution()
+</textarea>
+
+                    <!-- Terminal Output -->
+                    <div class="sandbox-terminal">
+                        <div class="term-header">
+                            <span><i class="fas fa-terminal"></i> Terminal Output</span>
+                            <span id="termStatusBadge" style="color:var(--accent-emerald);">Ready</span>
+                        </div>
+                        <div class="term-body" id="sandboxTermOutput">Console output will appear here after execution...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Q&A & COMMUNITY DISCUSSION -->
+            <div id="pane-discussion" class="tab-pane">
+                <div class="glass-card">
+                    <form method="POST" class="qa-input-box">
                         {% csrf_token %}
-                        <textarea name="text" rows="4" placeholder="Ask a question or share your thoughts on this lesson..." required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 15px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 1rem; resize: vertical;"></textarea>
-                        <button type="submit" name="submit_comment" style="margin-top: 15px; padding: 10px 30px; background: linear-gradient(45deg, var(--neon-purple), #8a2be2); border: none; color: white; border-radius: 50px; cursor: pointer; font-weight: 700; text-transform: uppercase; float: right;">
-                            Post Comment <i class="fas fa-paper-plane"></i>
-                        </button>
+                        <textarea class="qa-textarea" name="text" placeholder="Have a doubt about this lesson? Ask instructor and fellow learners..." required></textarea>
+                        <div class="qa-submit-bar">
+                            <span style="font-size:0.8rem; color:var(--text-muted);">
+                                <i class="fas fa-shield-halved"></i> Markdown supported
+                            </span>
+                            <button type="submit" name="submit_comment" class="btn-qa-post">
+                                Post Question <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </form>
 
-                    <div class="comment-list" style="clear: both; padding-top: 20px;">
+                    <!-- Comments Stream -->
+                    <div class="comment-stream">
                         {% for comment in comments %}
-                        <div style="display: flex; gap: 15px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div style="width: 45px; height: 45px; border-radius: 50%; background: #222; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); flex-shrink: 0;">
-                                {% if comment.student.profile.profile_pic %}
-                                    <img src="{{ comment.student.profile.profile_pic.url }}" alt="User" style="width: 100%; height: 100%; object-fit: cover;">
-                                {% else %}
-                                    <i class="fas fa-user" style="color: #666;"></i>
-                                {% endif %}
-                            </div>
-                            
-                            <div style="flex: 1;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                    <span style="color: #fff; font-weight: 700;">
-                                        {{ comment.student.first_name|default:comment.student.username }}
-                                        {% if comment.student.is_staff or comment.student.is_faculty %}
-                                            <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; border: 1px solid var(--neon-blue); color: var(--neon-blue);">INSTRUCTOR</span>
-                                        {% endif %}
-                                    </span>
-                                    <span style="font-size: 0.8rem; color: #666;">{{ comment.created_at|timesince }} ago</span>
+                            <div class="comment-item">
+                                <div class="comment-avatar">
+                                    {% if comment.student.profile_pic_url %}
+                                        <img src="{{ comment.student.profile_pic_url }}" alt="Avatar" loading="lazy">
+                                    {% else %}
+                                        <i class="fas fa-user" style="color:#64748b;"></i>
+                                    {% endif %}
                                 </div>
-                                <p style="color: #ccc; line-height: 1.5; font-size: 0.95rem;">{{ comment.text }}</p>
+                                <div style="flex:1;">
+                                    <div class="comment-header">
+                                        <div>
+                                            <span class="comment-author">
+                                                {{ comment.student.full_name|default:comment.student.username }}
+                                            </span>
+                                            {% if comment.student.is_staff or comment.student.is_faculty %}
+                                                <span class="badge-instructor">INSTRUCTOR</span>
+                                            {% endif %}
+                                        </div>
+                                        <span style="font-size:0.78rem; color:var(--text-muted);">
+                                            {{ comment.created_at|timesince }} ago
+                                        </span>
+                                    </div>
+                                    <p class="comment-body">{{ comment.text|linebreaksbr }}</p>
+                                </div>
                             </div>
-                        </div>
                         {% empty %}
-                            <p style="color:#666; text-align:center; padding: 20px;">No questions asked yet. Be the first to start the discussion!</p>
+                            <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+                                <i class="far fa-comments fa-3x" style="margin-bottom:12px; opacity:0.4;"></i>
+                                <h4 style="color:#cbd5e1; margin-bottom:6px;">No questions asked yet</h4>
+                                <p style="font-size:0.9rem; margin:0;">Be the first to post a question or reflection on this lesson!</p>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
 
-            <!-- RESOURCES TAB -->
-            <div id="tab-resources" class="tab-content">
-                <div class="overview-box">
+            <!-- TAB 5: RESOURCES, QUIZZES & ASSIGNMENTS -->
+            <div id="pane-resources" class="tab-pane">
+                <div class="glass-card">
+                    <!-- Lecture Documents -->
+                    <h4 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:0; margin-bottom:16px;">
+                        <i class="fas fa-file-lines" style="color:var(--neon-cyan);"></i> Lecture Slides & Downloadable Files
+                    </h4>
                     {% if documents %}
-                        <h3 style="margin-bottom: 20px;">Course Materials</h3>
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            {% for doc in documents %}
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 15px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <i class="fas fa-file-pdf" style="font-size: 1.5rem; color: #ff4757;"></i>
-                                        <div>
-                                            <span style="display: block; color: #fff; font-weight: 600;">{{ doc.title }}</span>
-                                            <span style="font-size: 0.8rem; color: #888;">{{ doc.category }}</span>
-                                        </div>
+                        {% for doc in documents %}
+                            <div class="resource-card">
+                                <div style="display:flex; align-items:center; gap:14px;">
+                                    <i class="fas fa-file-pdf" style="font-size:1.6rem; color:#ef4444;"></i>
+                                    <div>
+                                        <span style="display:block; color:#fff; font-weight:600; font-size:0.95rem;">{{ doc.title }}</span>
+                                        <span style="font-size:0.78rem; color:var(--text-muted);">Category: {{ doc.category }} • {{ doc.uploaded_at|date:"M d, Y" }}</span>
                                     </div>
-                                    <a href="{{ doc.file.url }}" target="_blank" onclick="trackPdfView(parseInt('{{ doc.id }}', 10))" style="padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--neon-blue); border: 1px solid var(--neon-blue); border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: 0.3s;">
-                                        View PDF
-                                    </a>
                                 </div>
-                            {% endfor %}
-                        </div>
+                                <a href="{{ doc.file.url }}" target="_blank" onclick="trackPdfView(parseInt('{{ doc.id }}', 10))" class="btn-pdf-view">
+                                    <i class="fas fa-download"></i> View PDF
+                                </a>
+                            </div>
+                        {% endfor %}
                     {% else %}
-                        <div style="text-align: center; padding: 50px;">
-                            <i class="fas fa-file-archive fa-3x" style="color: var(--border-color); margin-bottom: 15px;"></i>
-                            <h3 style="color: #888;">No resources attached to this course</h3>
-                            <p style="font-size: 0.9rem;">Instructor files, PDFs, or assignments will appear here.</p>
-                        </div>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:24px;">No lecture PDFs or slide decks attached to this course.</p>
+                    {% endif %}
+
+                    <!-- Course Exams & Quizzes -->
+                    <h4 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:30px; margin-bottom:16px;">
+                        <i class="fas fa-award" style="color:var(--accent-amber);"></i> Quizzes & Knowledge Checks
+                    </h4>
+                    {% if course_exams %}
+                        {% for exam in course_exams %}
+                            <div class="resource-card">
+                                <div style="display:flex; align-items:center; gap:14px;">
+                                    <i class="fas fa-clipboard-check" style="font-size:1.6rem; color:var(--accent-amber);"></i>
+                                    <div>
+                                        <span style="display:block; color:#fff; font-weight:600; font-size:0.95rem;">{{ exam.title }}</span>
+                                        <span style="font-size:0.78rem; color:var(--text-muted);">
+                                            Duration: {{ exam.duration_minutes }}m • Total Marks: {{ exam.total_marks }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if exam.id in passed_exam_ids %}
+                                        <span style="display:inline-flex; align-items:center; gap:6px; color:var(--accent-emerald); font-size:0.85rem; font-weight:700;">
+                                            <i class="fas fa-check-circle"></i> Completed
+                                        </span>
+                                    {% else %}
+                                        <a href="{% url 'take_exam' exam.id %}" class="btn-pdf-view" style="border-color:var(--accent-amber); color:var(--accent-amber);">
+                                            Take Quiz <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color:var(--text-muted); font-size:0.9rem;">No active exams for this course right now.</p>
+                    {% endif %}
+
+                    <!-- Course Assignments -->
+                    {% if course_assignments %}
+                        <h4 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:30px; margin-bottom:16px;">
+                            <i class="fas fa-tasks" style="color:var(--neon-purple);"></i> Course Assignments
+                        </h4>
+                        {% for asgn in course_assignments %}
+                            <div class="resource-card">
+                                <div style="display:flex; align-items:center; gap:14px;">
+                                    <i class="fas fa-file-pen" style="font-size:1.6rem; color:var(--neon-purple);"></i>
+                                    <div>
+                                        <span style="display:block; color:#fff; font-weight:600; font-size:0.95rem;">{{ asgn.title }}</span>
+                                        <span style="font-size:0.78rem; color:var(--text-muted);">Due: {{ asgn.due_date|date:"M d, Y" }} • {{ asgn.total_marks }} Marks</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    {% if asgn.id in submitted_assignment_ids %}
+                                        <span style="color:var(--accent-emerald); font-weight:700; font-size:0.85rem;">
+                                            <i class="fas fa-check"></i> Submitted
+                                        </span>
+                                    {% else %}
+                                        <span style="color:var(--accent-amber); font-weight:600; font-size:0.85rem;">
+                                            Pending Submission
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>
 
         {% else %}
-            <div style="text-align:center; padding:50px; color:#666;">
-                <h2>No lessons available in this course.</h2>
+            <!-- NO LESSONS FOUND -->
+            <div style="text-align:center; padding:80px 20px; color:var(--text-muted);">
+                <i class="fas fa-graduation-cap fa-4x" style="color:var(--border-glass); margin-bottom:18px;"></i>
+                <h2 style="color:#fff; font-family:'Space Grotesk',sans-serif;">No lessons published in this course yet.</h2>
+                <p>The academic instructor is actively preparing content. Check back shortly!</p>
+                <a href="{% url 'dashboard' %}" class="btn-strip-back" style="margin-top:20px;">Return to Dashboard</a>
             </div>
         {% endif %}
     </div>
 
-    <div class="playlist-sidebar">
-        <div class="sidebar-header">
-            <h3>COURSE CONTENT</h3>
-            <div class="progress-container">
-                <span id="overall-progress-text">{{ progress }}% Completed</span>
+    <!-- RIGHT CURRICULUM PLAYLIST SIDEBAR -->
+    <div class="playlist-dock">
+        <div class="playlist-header-card">
+            <div class="dock-title-row">
+                <h3><i class="fas fa-list-check"></i> Course Curriculum</h3>
+                <span style="font-size:0.78rem; font-weight:700; color:var(--neon-cyan);" id="dock-duration-badge">
+                    {{ total_duration_str }}
+                </span>
             </div>
-            <div class="progress-track">
-                <div id="overall-progress-bar" class="progress-fill js-set-width" data-width="{{ progress }}%"></div>
+
+            <!-- Progress Tracker -->
+            <div class="course-progress-stats">
+                <span id="overall-progress-text">{{ progress }}% Completed</span>
+                <span id="overall-count-text">{{ completed_lessons_count }}/{{ total_lessons_count }} Lessons</span>
+            </div>
+            <div class="progress-track-outer">
+                <div class="progress-track-fill js-set-width" id="overall-progress-bar" data-width="{{ progress }}%"></div>
             </div>
         </div>
 
-        <div class="lesson-list">
+        <!-- Filter & Search Bar in Playlist -->
+        <div class="playlist-search-wrap">
+            <input type="text" class="search-input-dock" id="playlistSearchInput" placeholder="Search lessons..." onkeyup="filterPlaylistLessons()">
+            <div class="playlist-chips">
+                <button class="chip-btn active" onclick="setPlaylistFilter('all', this)">All ({{ total_lessons_count }})</button>
+                <button class="chip-btn" onclick="setPlaylistFilter('completed', this)">Done ({{ completed_lessons_count }})</button>
+                <button class="chip-btn" onclick="setPlaylistFilter('pending', this)">Pending</button>
+            </div>
+        </div>
+
+        <!-- Scrollable Lessons List -->
+        <div class="dock-lessons-stream" id="dockLessonsStream">
             {% for lesson in lessons %}
             <a href="{% url 'course_watch' course.id lesson.id %}" 
-               class="lesson-item {% if lesson.id == current_lesson.id %}active{% endif %}"
-               data-lesson-id="{{ lesson.id }}">
-                <div class="status-icon">
-                    {% if lesson.id in completed_lesson_ids %}
-                        <i class="fas fa-check-circle" style="color: #00E676;"></i>
-                    {% elif lesson.id == current_lesson.id %}
-                        <i class="fas fa-play-circle" style="color: var(--neon-blue);"></i>
-                    {% else %}
-                        <i class="far fa-circle" style="color: #444;"></i>
-                    {% endif %}
+               class="lesson-nav-card {% if lesson.id == current_lesson.id %}active{% endif %} {% if lesson.id in completed_lesson_ids %}is-completed{% else %}is-pending{% endif %}"
+               data-lesson-id="{{ lesson.id }}"
+               data-title="{{ lesson.title|lower }}">
+                
+                <div class="lesson-order-index">
+                    {{ lesson.order|stringformat:"02d" }}
                 </div>
 
-                <div class="lesson-info">
-                    <span class="l-title">{{ lesson.title }}</span>
-                    <span class="l-duration">
-                        <i class="far fa-clock"></i> {{ lesson.duration }}
-                        <span class="lesson-percent-badge" id="lesson-pct-{{ lesson.id }}"></span>
-                    </span>
-                    <div class="lesson-progress-bar">
-                        <div class="lesson-progress-fill" id="lesson-bar-{{ lesson.id }}" style="width: 0%;"></div>
+                <div class="lesson-details-col">
+                    <span class="lesson-title-text">{{ lesson.title }}</span>
+                    <div class="lesson-meta-row">
+                        <span class="lesson-time-span">
+                            <i class="far fa-clock"></i> {{ lesson.duration|default:"10:00" }}
+                            <span id="lesson-pct-{{ lesson.id }}" style="font-weight:700; margin-left:4px;"></span>
+                        </span>
+                        {% if lesson.id == current_lesson.id %}
+                            <span style="color:var(--neon-cyan); font-weight:700; font-size:0.72rem; text-transform:uppercase;">Playing</span>
+                        {% endif %}
                     </div>
+                    <div class="micro-progress-track">
+                        <div class="micro-progress-bar" id="lesson-bar-{{ lesson.id }}" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="status-icon-badge" id="lesson-icon-{{ lesson.id }}">
+                    {% if lesson.id in completed_lesson_ids %}
+                        <i class="fas fa-check-circle" style="color:var(--accent-emerald);"></i>
+                    {% elif lesson.id == current_lesson.id %}
+                        <i class="fas fa-play-circle" style="color:var(--neon-cyan);"></i>
+                    {% else %}
+                        <i class="far fa-circle" style="color:#475569;"></i>
+                    {% endif %}
                 </div>
             </a>
             {% endfor %}
+        </div>
+
+        <!-- Sidebar Footer Deck -->
+        <div class="dock-footer">
+            {% if course.slug %}
+            <a href="{% url 'course_community_chat' course.slug %}" class="btn-dock-action btn-dock-community">
+                <i class="fas fa-users-viewfinder"></i> Course Chat Room
+            </a>
+            {% endif %}
+            
+            <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.78rem; color:var(--text-muted); padding:4px 4px 0;">
+                <span><i class="fas fa-award"></i> Certificate</span>
+                {% if progress >= 100 %}
+                    <span style="color:var(--accent-emerald); font-weight:700;">Unlocked 🎉</span>
+                {% else %}
+                    <span>Requires 100%</span>
+                {% endif %}
+            </div>
         </div>
     </div>
 
 </div>
 
+<!-- CELEBRATION TOAST -->
+<div class="learning-toast" id="learningToast">
+    <i class="fas fa-circle-check" style="font-size:1.4rem; color:var(--accent-emerald);"></i>
+    <div>
+        <div style="font-weight:700; color:#fff;" id="toastTitle">Lesson Completed!</div>
+        <div style="font-size:0.82rem; color:var(--text-secondary);" id="toastSubtitle">+20 LMS Coins added to your wallet</div>
+    </div>
+</div>
+
+<!-- INCLUDE CLOUD IDE MODAL -->
+{% include 'ide_modal.html' %}
+
 {{ lesson_progress_map|json_script:"progressMapData" }}
+
 <script>
-function switchTab(tabId) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    // Deactivate all buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+/* ======================================================== */
+/* 🚀 REAL-TIME JAVASCRIPT LEARNING & SYNC ENGINE 🚀         */
+/* ======================================================== */
+
+// Initialize CSS Data Widths
+document.querySelectorAll('.js-set-width').forEach(el => {
+    el.style.width = el.getAttribute('data-width');
+});
+
+// Workstation Tab Switcher
+function switchWorkTab(tabKey) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
     
-    // Activate selected
-    document.getElementById('tab-' + tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    const targetPane = document.getElementById('pane-' + tabKey);
+    if (targetPane) targetPane.classList.add('active');
+    if (event && event.currentTarget) event.currentTarget.classList.add('active');
 }
 
-// Set data widths and offsets
-document.querySelectorAll('.js-set-width').forEach(el => el.style.width = el.getAttribute('data-width'));
-
-// --- Initialize Per-Lesson Progress Bars from Server Data ---
-(function() {
-    var progressMap = JSON.parse(document.getElementById('progressMapData').textContent);
-    for (var lessonId in progressMap) {
-        var pct = progressMap[lessonId].percent;
-        var bar = document.getElementById('lesson-bar-' + lessonId);
-        var badge = document.getElementById('lesson-pct-' + lessonId);
-        if (bar) {
-            setTimeout((function(b, p) {
-                return function() {
-                    b.style.width = p + '%';
-                    if (p >= 100) b.classList.add('complete');
-                };
-            })(bar, pct), 500);
+// Per-Lesson Initial Progress Sync from Server
+(function initLessonProgress() {
+    try {
+        const mapEl = document.getElementById('progressMapData');
+        if (!mapEl) return;
+        const progressMap = JSON.parse(mapEl.textContent);
+        for (let lessonId in progressMap) {
+            const data = progressMap[lessonId];
+            const bar = document.getElementById('lesson-bar-' + lessonId);
+            const badge = document.getElementById('lesson-pct-' + lessonId);
+            if (bar && data.percent !== undefined) {
+                bar.style.width = data.percent + '%';
+                if (data.percent >= 100 || data.is_completed) bar.classList.add('complete');
+            }
+            if (badge) {
+                if (data.is_completed || data.percent >= 100) {
+                    badge.textContent = '• Done';
+                    badge.style.color = '#00e676';
+                } else if (data.percent > 0) {
+                    badge.textContent = '• ' + data.percent + '%';
+                    badge.style.color = '#38bdf8';
+                }
+            }
         }
-        if (badge && pct > 0 && pct < 100) {
-            badge.textContent = '• ' + pct + '%';
-        } else if (badge && pct >= 100) {
-            badge.textContent = '• Done';
-            badge.style.color = '#00E676';
-        }
+    } catch(err) {
+        console.error('Error parsing progress map:', err);
     }
 })();
+
+// Filter Curriculum Lessons in Sidebar
+let activeFilterMode = 'all';
+function setPlaylistFilter(mode, btnEl) {
+    activeFilterMode = mode;
+    document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    filterPlaylistLessons();
+}
+
+function filterPlaylistLessons() {
+    const query = (document.getElementById('playlistSearchInput').value || '').toLowerCase().trim();
+    const items = document.querySelectorAll('.lesson-nav-card');
+    
+    items.forEach(card => {
+        const title = (card.getAttribute('data-title') || '').toLowerCase();
+        const matchesQuery = !query || title.includes(query);
+        const isCompleted = card.classList.contains('is-completed');
+        
+        let matchesFilter = true;
+        if (activeFilterMode === 'completed') matchesFilter = isCompleted;
+        if (activeFilterMode === 'pending') matchesFilter = !isCompleted;
+        
+        if (matchesQuery && matchesFilter) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Theater Fullscreen Expand
+function toggleTheaterMode() {
+    const wrap = document.getElementById('theaterWrapper');
+    if (!wrap) return;
+    wrap.classList.toggle('theater-expanded');
+}
+
+// Autoplay Toggle State
+let autoplayNextEnabled = true;
+function toggleAutoPlay() {
+    autoplayNextEnabled = !autoplayNextEnabled;
+    const toggleEl = document.getElementById('toggleAutoplay');
+    if (toggleEl) {
+        if (autoplayNextEnabled) toggleEl.classList.add('active');
+        else toggleEl.classList.remove('active');
+    }
+}
+
+// Show Floating Toast
+function showToast(title, subtitle) {
+    const toast = document.getElementById('learningToast');
+    if (!toast) return;
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastSubtitle').textContent = subtitle;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
+
+// Mark Lesson Complete (Manual Button)
+function markLessonComplete(lessonId) {
+    fetch('/api/track-progress/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            type: 'complete_lesson',
+            id: parseInt(lessonId, 10)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update complete button UI
+            const btn = document.getElementById('btnMarkComplete');
+            if (btn) {
+                btn.className = 'btn-deck-complete completed';
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed (+20 Coins)';
+            }
+            
+            // Update overall progress bar & text
+            updateOverallProgress(data.progress);
+            
+            // Update per-lesson bar & badge
+            updateLessonUI(lessonId, 100, true);
+            
+            // Update user coins
+            if (data.coins_earned > 0) {
+                const coinsEl = document.getElementById('header-user-coins');
+                if (coinsEl) {
+                    const currentCoins = parseInt(coinsEl.textContent || '0', 10);
+                    coinsEl.textContent = currentCoins + data.coins_earned;
+                }
+                showToast('Lesson Completed! 🎉', `Earned +${data.coins_earned} LMS Coins!`);
+            } else {
+                showToast('Progress Saved', 'Lesson verified as completed.');
+            }
+            
+            // Check autoplay next
+            triggerAutoNext();
+        }
+    })
+    .catch(err => console.error('Error marking complete:', err));
+}
+
+// Update Overall Progress UI
+function updateOverallProgress(newProgress) {
+    const textEl = document.getElementById('overall-progress-text');
+    const barEl = document.getElementById('overall-progress-bar');
+    if (textEl) textEl.textContent = Math.round(newProgress) + '% Completed';
+    if (barEl) barEl.style.width = newProgress + '%';
+}
+
+// Update Lesson Item UI in Sidebar
+function updateLessonUI(lessonId, percent, isCompleted) {
+    const bar = document.getElementById('lesson-bar-' + lessonId);
+    const badge = document.getElementById('lesson-pct-' + lessonId);
+    const icon = document.getElementById('lesson-icon-' + lessonId);
+    const card = document.querySelector(`.lesson-nav-card[data-lesson-id="${lessonId}"]`);
+    
+    if (bar) {
+        bar.style.width = percent + '%';
+        if (percent >= 100 || isCompleted) bar.classList.add('complete');
+    }
+    if (badge) {
+        if (isCompleted || percent >= 100) {
+            badge.textContent = '• Done';
+            badge.style.color = '#00e676';
+        } else if (percent > 0) {
+            badge.textContent = '• ' + percent + '%';
+            badge.style.color = '#38bdf8';
+        }
+    }
+    if (icon && (isCompleted || percent >= 100)) {
+        icon.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-emerald);"></i>';
+    }
+    if (card && (isCompleted || percent >= 100)) {
+        card.classList.remove('is-pending');
+        card.classList.add('is-completed');
+    }
+}
+
+// Auto-navigate to next lesson
+function triggerAutoNext() {
+    if (!autoplayNextEnabled) return;
+    const nextBtn = document.getElementById('nextLessonBtn');
+    if (nextBtn && nextBtn.href && !nextBtn.href.endsWith('#')) {
+        showToast('Up Next...', 'Transitioning to next lesson in 3 seconds');
+        setTimeout(() => {
+            window.location.href = nextBtn.href;
+        }, 3000);
+    }
+}
+
+// Track PDF Document Views
+function trackPdfView(docId) {
+    fetch('/api/track-progress/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ type: 'pdf', id: docId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success' && data.progress !== undefined) {
+            updateOverallProgress(data.progress);
+        }
+    })
+    .catch(e => console.error(e));
+}
+
+/* ======================================================== */
+/* 🤖 AI SMART NOTES GENERATOR & PERSISTENCE 🤖              */
+/* ======================================================== */
+function fetchOrGenerateAINotes(action) {
+    const lessonId = "{{ current_lesson.id|default:0 }}";
+    if (!lessonId || lessonId === '0') return;
+
+    const btn = document.getElementById('btnGenerateAINotes');
+    const btnText = document.getElementById('aiBtnText');
+    const summaryBox = document.getElementById('aiSummaryText');
+    const pointsContainer = document.getElementById('aiKeyPointsContainer');
+
+    if (btnText) btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating with AI...';
+    if (btn) btn.disabled = true;
+
+    fetch(`/api/lesson/ai-notes/${lessonId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.innerHTML = '<i class="fas fa-rotate"></i> Regenerate AI Notes';
+
+        if (data.status === 'success' && data.has_notes) {
+            if (summaryBox) summaryBox.textContent = data.summary;
+            if (pointsContainer) {
+                pointsContainer.innerHTML = '';
+                const lines = data.key_points.split('\n');
+                lines.forEach(l => {
+                    if (l.trim()) {
+                        const cleanLine = l.replace(/^[•\-\*]\s*/, '').trim();
+                        const card = document.createElement('div');
+                        card.className = 'point-card';
+                        card.innerHTML = `<i class="fas fa-angle-right"></i><span>${cleanLine}</span>`;
+                        pointsContainer.appendChild(card);
+                    }
+                });
+            }
+            showToast('AI Notes Ready! ✨', 'Summary and key takeaways synthesized.');
+        } else {
+            showToast('Note Generation Error', data.message || 'Please try again.');
+        }
+    })
+    .catch(err => {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.innerHTML = '✨ Generate AI Notes';
+        console.error(err);
+    });
+}
+
+// Copy AI Notes
+function copyAINotesToClipboard() {
+    const summary = document.getElementById('aiSummaryText').textContent;
+    let points = '';
+    document.querySelectorAll('#aiKeyPointsContainer span').forEach(s => {
+        points += `• ${s.textContent}\n`;
+    });
+    const fullText = `Lesson Notes: {{ current_lesson.title|escapejs }}\n\nSummary:\n${summary}\n\nKey Points:\n${points}`;
+    navigator.clipboard.writeText(fullText).then(() => {
+        showToast('Copied to Clipboard! 📋', 'Full lesson notes copied.');
+    });
+}
+
+// Download Markdown (.md)
+function downloadAINotesMarkdown() {
+    const summary = document.getElementById('aiSummaryText').textContent;
+    let points = '';
+    document.querySelectorAll('#aiKeyPointsContainer span').forEach(s => {
+        points += `- ${s.textContent}\n`;
+    });
+    const md = `# {{ current_lesson.title|escapejs }}\n*Course: {{ course.title|escapejs }}*\n\n## Summary\n${summary}\n\n## Key Takeaways\n${points}\n\n*Generated by Advanced LMS AI Intelligence*`;
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Lesson_{{ current_lesson.order }}_Notes.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Downloaded Markdown 📥', 'File saved to downloads.');
+}
+
+// Save Personal Notes
+function savePersonalNotes() {
+    const lessonId = "{{ current_lesson.id|default:0 }}";
+    const text = (document.getElementById('personalNotesInput').value || '').trim();
+    if (!text) {
+        showToast('Empty Note', 'Please write some notes before saving.');
+        return;
+    }
+    fetch(`/api/lesson/ai-notes/${lessonId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            action: 'save_custom',
+            summary: document.getElementById('aiSummaryText').textContent,
+            key_points: text
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showToast('Saved Successfully! 💾', 'Your study notes have been stored.');
+        }
+    })
+    .catch(e => console.error(e));
+}
+
+/* ======================================================== */
+/* 💻 IN-LESSON CODE SANDBOX COMPILER ENGINE 💻             */
+/* ======================================================== */
+const codeTemplates = {
+    python: `# Python 3.14 Sandbox
+def calculate_metrics():
+    scores = [88, 92, 95, 79, 100]
+    avg = sum(scores) / len(scores)
+    print(f"Dataset Average: {avg:.2f}")
+
+calculate_metrics()
+`,
+    javascript: `// Node.js Sandbox
+const lesson = "{{ current_lesson.title|escapejs }}";
+console.log("Analyzing lesson:", lesson);
+const topics = ["Syntax", "Architecture", "Execution"];
+topics.forEach((t, i) => console.log(\`\${i + 1}. \${t}\`));
+`,
+    cpp: `// C++ MinGW Sandbox
+#include <iostream>
+#include <vector>
+#include <numeric>
+
+int main() {
+    std::cout << "🚀 Advanced LMS C++ Execution Engine" << std::endl;
+    std::vector<int> vals = {10, 20, 30, 40};
+    int total = std::accumulate(vals.begin(), vals.end(), 0);
+    std::cout << "Sum: " << total << std::endl;
+    return 0;
+}
+`,
+    java: `// Java 26 OpenJDK Sandbox
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Java Sandbox running on Advanced LMS");
+        System.out.println("Lesson: {{ current_lesson.title|escapejs }}");
+    }
+}
+`
+};
+
+function onSandboxLangChange() {
+    const sel = document.getElementById('sandboxLangSelect').value;
+    if (codeTemplates[sel]) {
+        document.getElementById('sandboxCodeEditor').value = codeTemplates[sel];
+    }
+}
+
+function runSandboxCode() {
+    const lang = document.getElementById('sandboxLangSelect').value;
+    const code = document.getElementById('sandboxCodeEditor').value;
+    const term = document.getElementById('sandboxTermOutput');
+    const badge = document.getElementById('termStatusBadge');
+    const btn = document.getElementById('btnRunSandbox');
+
+    badge.textContent = 'Executing...';
+    badge.style.color = '#38bdf8';
+    term.textContent = '🚀 Sending code to native runtime execution engine...';
+    btn.disabled = true;
+
+    fetch('/api/chat/execute-local-code/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            language: lang,
+            code: code,
+            stdin: ''
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        btn.disabled = false;
+        if (res.run) {
+            const out = (res.run.stdout || '') + (res.run.stderr || '');
+            term.textContent = out || '(Execution finished with no output)';
+            if (res.run.code === 0) {
+                badge.textContent = 'Success (0)';
+                badge.style.color = '#00e676';
+            } else {
+                badge.textContent = `Exit (${res.run.code})`;
+                badge.style.color = '#ff3366';
+            }
+        } else if (res.output) {
+            term.textContent = res.output;
+            badge.textContent = 'Completed';
+            badge.style.color = '#00e676';
+        } else if (res.message) {
+            term.textContent = res.message;
+            badge.textContent = 'Error';
+            badge.style.color = '#ff3366';
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        badge.textContent = 'Failed';
+        badge.style.color = '#ff3366';
+        term.textContent = 'Execution failed: ' + err.message;
+    });
+}
+
+// Hotkey: Ctrl+Enter / Cmd+Enter runs sandbox
+document.getElementById('sandboxCodeEditor')?.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runSandboxCode();
+    }
+});
+
+// Global Keyboard Navigation: Shift+N (Next), Shift+P (Prev)
+document.addEventListener('keydown', function(e) {
+    if (['input', 'textarea', 'select'].includes(document.activeElement?.tagName?.toLowerCase())) {
+        return;
+    }
+    if (e.shiftKey && (e.key === 'N' || e.key === 'n')) {
+        const nextBtn = document.getElementById('nextLessonBtn');
+        if (nextBtn) nextBtn.click();
+    } else if (e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+        const prevBtn = document.querySelector('.btn-deck-nav[title*="Shift + P"]');
+        if (prevBtn) prevBtn.click();
+    }
+});
 </script>
 
 <!-- YOUTUBE IFRAME API SCRIPT FOR PROGRESS TRACKING -->
 {% if current_lesson and youtube_id %}
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    var player;
-    var watchTimer;
-    var watchTimeSeconds = 0;
-    var lessonId = parseInt('{{ current_lesson.id }}', 10);
+    let player;
+    let watchTimer;
+    let watchTimeSeconds = 0;
+    const lessonId = parseInt('{{ current_lesson.id }}', 10);
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('lesson-video', {
@@ -592,26 +2332,31 @@ document.querySelectorAll('.js-set-width').forEach(el => el.style.width = el.get
     }
 
     function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING) {
-            // Start counting watch time
+        if (event.data === YT.PlayerState.PLAYING) {
+            clearInterval(watchTimer);
             watchTimer = setInterval(function() {
                 watchTimeSeconds++;
-                // Ping backend every 10 seconds
                 if (watchTimeSeconds % 10 === 0) {
                     pingProgressAPI('video', lessonId, watchTimeSeconds);
                 }
             }, 1000);
         } else {
-            // Pause counting
             clearInterval(watchTimer);
             if (watchTimeSeconds > 0) {
                 pingProgressAPI('video', lessonId, watchTimeSeconds);
             }
+            if (event.data === YT.PlayerState.ENDED) {
+                markLessonComplete(lessonId);
+            }
         }
     }
 
-    function trackPdfView(docId) {
-        pingProgressAPI('pdf', docId, 0);
+    function setSpeed(rate) {
+        if (player && player.setPlaybackRate) {
+            player.setPlaybackRate(rate);
+        }
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
     }
 
     function pingProgressAPI(type, id, watch_time) {
@@ -630,45 +2375,73 @@ document.querySelectorAll('.js-set-width').forEach(el => el.style.width = el.get
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // --- SMOOTH OVERALL PROGRESS UPDATE ---
-                var progressText = document.getElementById('overall-progress-text');
-                var progressBar = document.getElementById('overall-progress-bar');
-                if (progressText) progressText.innerText = Math.round(data.progress) + '% Completed';
-                if (progressBar) progressBar.style.width = data.progress + '%';
-                
-                // --- PER-LESSON PROGRESS UPDATE (Real-time) ---
+                updateOverallProgress(data.progress);
                 if (data.lesson_percent !== undefined) {
-                    var lessonBar = document.getElementById('lesson-bar-' + id);
-                    var lessonBadge = document.getElementById('lesson-pct-' + id);
-                    
-                    if (lessonBar) {
-                        lessonBar.style.width = data.lesson_percent + '%';
-                        if (data.lesson_percent >= 100) {
-                            lessonBar.classList.add('complete');
-                        }
-                    }
-                    
-                    if (lessonBadge) {
-                        if (data.lesson_percent >= 100) {
-                            lessonBadge.textContent = '• Done';
-                            lessonBadge.style.color = '#00E676';
-                        } else if (data.lesson_percent > 0) {
-                            lessonBadge.textContent = '• ' + data.lesson_percent + '%';
-                            lessonBadge.style.color = '';
-                        }
-                    }
+                    updateLessonUI(id, data.lesson_percent, data.is_completed);
+                    const currPctVal = document.getElementById('current-pct-val');
+                    if (currPctVal) currPctVal.textContent = data.lesson_percent + '%';
                 }
-                
-                // --- LESSON COMPLETION ICON UPDATE ---
                 if (data.is_completed) {
-                    var activeIcon = document.querySelector('.lesson-item.active .status-icon');
-                    if (activeIcon && !activeIcon.innerHTML.includes('fa-check-circle')) {
-                        activeIcon.innerHTML = '<i class="fas fa-check-circle" style="color: #00E676;"></i>';
+                    const btn = document.getElementById('btnMarkComplete');
+                    if (btn && !btn.classList.contains('completed')) {
+                        btn.className = 'btn-deck-complete completed';
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed (+20 Coins)';
+                    }
+                    const statusPill = document.getElementById('current-lesson-status-pill');
+                    if (statusPill) {
+                        statusPill.className = 'pill-info pill-status-done';
+                        statusPill.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
                     }
                 }
             }
         })
-        .catch(error => console.error('Error tracking progress:', error));
+        .catch(err => console.error('Error tracking progress:', err));
+    }
+</script>
+{% elif current_lesson and current_lesson.video_file %}
+<script>
+    // HTML5 Video Listener
+    const videoEl = document.getElementById('native-video-player');
+    const lessonId = parseInt('{{ current_lesson.id }}', 10);
+    let html5WatchSeconds = 0;
+
+    if (videoEl) {
+        videoEl.addEventListener('timeupdate', () => {
+            html5WatchSeconds = Math.floor(videoEl.currentTime);
+            if (html5WatchSeconds > 0 && html5WatchSeconds % 10 === 0) {
+                pingProgressAPI('video', lessonId, html5WatchSeconds);
+            }
+        });
+        videoEl.addEventListener('ended', () => {
+            markLessonComplete(lessonId);
+        });
+    }
+
+    function setSpeed(rate) {
+        if (videoEl) videoEl.playbackRate = rate;
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
+    }
+
+    function pingProgressAPI(type, id, watch_time) {
+        fetch('/api/track-progress/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ type: type, id: id, watch_time: watch_time })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateOverallProgress(data.progress);
+                if (data.lesson_percent !== undefined) {
+                    updateLessonUI(id, data.lesson_percent, data.is_completed);
+                }
+            }
+        })
+        .catch(e => console.error(e));
     }
 </script>
 {% endif %}

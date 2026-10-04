@@ -1,158 +1,527 @@
+<!-- ======================================================= -->
+<!-- 🚀 ULTRA-PREMIUM LIVE CLOUD CODE EDITOR / COMPILER IDE 🚀 -->
+<!-- ======================================================= -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js"></script>
 
 <style>
-    /* =========================================
-       /*💻 VS CODE STYLE IDE MODAL 💻*/
-       
+    /* IDE Modal Overlay */
     .ide-modal-overlay {
-        display: none; 
-        position: fixed; inset: 0; 
-        background: rgba(0, 0, 0, 0.85); 
-        z-index: 999999; /* Stay on top of everything */
-        justify-content: center; align-items: center; 
-        backdrop-filter: blur(8px); 
-        opacity: 0; transition: opacity 0.3s ease;
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 7, 15, 0.88);
+        z-index: 999999;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        opacity: 0;
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .ide-modal-overlay.show { display: flex; opacity: 1; }
+    .ide-modal-overlay.show {
+        display: flex;
+        opacity: 1;
+    }
 
-    /* VS Code Main Window container */
+    /* IDE Main Window */
     .vscode-container {
-        background: #1e1e1e; /* Standard VS Code Dark Background */
-        width: 95vw; height: 90vh; /* Make it large like a real IDE */
-        border-radius: 12px; 
-        display: flex; flex-direction: column; overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-        border: 1px solid #3c3c3c;
-        transform: scale(0.95); transition: transform 0.3s ease;
+        background: #0d1117;
+        width: 94vw;
+        max-width: 1400px;
+        height: 88vh;
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        transform: scale(0.96) translateY(10px);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .ide-modal-overlay.show .vscode-container { transform: scale(1); }
+    .ide-modal-overlay.show .vscode-container {
+        transform: scale(1) translateY(0);
+    }
 
-    /* IDE Header (Title bar) */
-    .vscode-header { 
-        background: #323233; 
-        padding: 8px 20px; 
-        display: flex; justify-content: space-between; align-items: center; 
-        border-bottom: 1px solid #1e1e1e;
+    /* Title Bar */
+    .vscode-header {
+        background: #161b22;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         user-select: none;
     }
-    .vscode-title { 
-        color: #cccccc; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        font-size: 0.95rem; 
-        display: flex; align-items: center; gap: 8px; 
-    }
-    .vscode-controls i { 
-        color: #cccccc; cursor: pointer; font-size: 1.1rem; margin-left: 15px; transition: 0.2s;
-    }
-    .vscode-controls i:hover { color: #ffffff; }
-    .vscode-controls .fa-times:hover { color: #f44336; } /* Close button red on hover */
 
-    /* Toolbar (Action buttons & Language Selector) */
-    .vscode-toolbar { 
-        background: #252526; 
-        padding: 10px 20px; 
-        display: flex; gap: 15px; align-items: center; 
-        border-bottom: 1px solid #3c3c3c;
-    }
-    
-    .vscode-select { 
-        background: #3c3c3c; color: #cccccc; 
-        border: 1px solid #3c3c3c; padding: 6px 12px; 
-        border-radius: 4px; outline: none; 
-        font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 0.9rem; cursor: pointer; 
-    }
-    .vscode-select:focus { border-color: #007acc; }
-
-    .vscode-btn { 
-        border: none; padding: 7px 16px; border-radius: 4px; 
-        cursor: pointer; font-family: 'Segoe UI', Tahoma, sans-serif; 
-        font-weight: 600; font-size: 0.85rem; transition: 0.2s; 
-        display: flex; align-items: center; gap: 6px;
-    }
-    .vscode-btn-run { 
-        background: #4CAF50; color: #ffffff; 
-    }
-    .vscode-btn-run:hover { background: #45a049; box-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
-    
-    .vscode-btn-attach { 
-        background: #007acc; color: #ffffff; margin-left: auto;
-    }
-    .vscode-btn-attach:hover { background: #005f9e; box-shadow: 0 0 10px rgba(0, 122, 204, 0.4);}
-
-    /* Main Body Area (Split Editor & Terminal) */
-    .vscode-body { 
-        flex: 1; display: flex; flex-direction: column; overflow: hidden; 
-    }
-    
-    /* Code Editor Div */
-    #vsAceEditor { 
-        flex: 6.5; width: 100%; 
-        font-size: 16px; font-family: 'Consolas', 'Courier New', monospace;
-        border-bottom: 1px solid #3c3c3c; 
+    .vscode-title-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
     }
 
-    /* Terminal Output Area */
-    .vscode-terminal { 
-        flex: 3.5; background: #1e1e1e; display: flex; flex-direction: column; 
+    .traffic-lights {
+        display: flex;
+        gap: 8px;
+        align-items: center;
     }
-    .vscode-term-tabs { 
-        display: flex; background: #252526; border-bottom: 1px solid #3c3c3c;
+
+    .traffic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s, filter 0.2s;
     }
+    .traffic-dot:hover { transform: scale(1.15); filter: brightness(1.2); }
+    .dot-close { background: #ff5f56; }
+    .dot-min { background: #ffbd2e; }
+    .dot-max { background: #27c93f; }
+
+    .vscode-title {
+        color: #e6edf3;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.3px;
+    }
+
+    .ide-engine-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: rgba(39, 201, 63, 0.12);
+        border: 1px solid rgba(39, 201, 63, 0.3);
+        color: #27c93f;
+        letter-spacing: 0.5px;
+    }
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #27c93f;
+        box-shadow: 0 0 8px #27c93f;
+        animation: pulseDot 2s infinite ease-in-out;
+    }
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .vscode-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .vscode-controls i {
+        color: #8b949e;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: color 0.2s, transform 0.2s;
+    }
+    .vscode-controls i:hover {
+        color: #fff;
+        transform: scale(1.1);
+    }
+    .vscode-controls .fa-times:hover {
+        color: #ff5f56;
+    }
+
+    /* Toolbar */
+    .vscode-toolbar {
+        background: #12161f;
+        padding: 10px 20px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
+    }
+
+    .vscode-select-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .vscode-select-wrapper i {
+        position: absolute;
+        left: 12px;
+        color: #00d4ff;
+        font-size: 0.9rem;
+        pointer-events: none;
+    }
+
+    .vscode-select {
+        background: rgba(255, 255, 255, 0.05);
+        color: #e6edf3;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 8px 14px 8px 34px;
+        border-radius: 8px;
+        outline: none;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .vscode-select:focus, .vscode-select:hover {
+        border-color: #00d4ff;
+        background: rgba(0, 212, 255, 0.08);
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+    }
+
+    .vscode-btn {
+        border: none;
+        padding: 8px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.3px;
+    }
+
+    .vscode-btn-run {
+        background: linear-gradient(135deg, #00e676, #00b0ff);
+        color: #060814;
+        box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+    }
+    .vscode-btn-run:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 22px rgba(0, 230, 118, 0.5);
+    }
+    .vscode-btn-run:active {
+        transform: translateY(0);
+    }
+
+    .vscode-btn-secondary {
+        background: rgba(255, 255, 255, 0.06);
+        color: #c9d1d9;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .vscode-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .vscode-btn-attach {
+        background: linear-gradient(135deg, #6c63ff, #8a2be2);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+    }
+    .vscode-btn-attach:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(108, 99, 255, 0.5);
+    }
+
+    .hotkey-hint {
+        margin-left: auto;
+        color: #8b949e;
+        font-size: 0.78rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .hotkey-kbd {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-family: monospace;
+        font-size: 0.72rem;
+        color: #00d4ff;
+    }
+
+    /* Main Body Area: Split Editor & Terminal */
+    .vscode-body {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Editor Column */
+    .editor-column {
+        flex: 6;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        position: relative;
+    }
+
+    #vsAceEditor {
+        width: 100%;
+        height: 100%;
+        font-size: 15px;
+        font-family: 'Fira Code', 'Consolas', monospace;
+    }
+
+    /* Terminal Column */
+    .terminal-column {
+        flex: 4;
+        background: #0a0d14;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .vscode-term-tabs {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #12161f;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0 10px;
+    }
+
+    .tab-buttons {
+        display: flex;
+        gap: 2px;
+    }
+
     .vscode-term-tab {
-        padding: 8px 20px; color: #e7e7e7; font-family: 'Segoe UI', Tahoma, sans-serif;
-        font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; 
-        border-bottom: 1px solid #007acc; /* Active tab indicator */
-        cursor: default;
+        padding: 10px 18px;
+        color: #8b949e;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
-    #vscodeOutput { 
-        flex: 1; padding: 15px 20px; color: #cccccc; 
-        font-family: 'Consolas', 'Courier New', monospace; font-size: 0.95rem; 
-        overflow-y: auto; margin: 0; white-space: pre-wrap; line-height: 1.5;
+    .vscode-term-tab:hover {
+        color: #e6edf3;
     }
-    
-    /* Custom Scrollbar for Terminal */
-    #vscodeOutput::-webkit-scrollbar { width: 10px; }
-    #vscodeOutput::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; }
-    #vscodeOutput::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+    .vscode-term-tab.active {
+        color: #00d4ff;
+        border-bottom-color: #00d4ff;
+        background: rgba(0, 212, 255, 0.04);
+    }
+
+    .vscode-term-status {
+        font-size: 0.78rem;
+        color: #8b949e;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .status-badge {
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.72rem;
+    }
+    .status-badge.ready { background: rgba(255, 255, 255, 0.08); color: #8b949e; }
+    .status-badge.running { background: rgba(0, 212, 255, 0.15); color: #00d4ff; }
+    .status-badge.success { background: rgba(0, 230, 118, 0.15); color: #00e676; }
+    .status-badge.error { background: rgba(255, 51, 102, 0.15); color: #ff3366; }
+
+    .term-content-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #vscodeOutput {
+        flex: 1;
+        padding: 18px 20px;
+        color: #e6edf3;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.92rem;
+        overflow-y: auto;
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.6;
+        background: #090c12;
+    }
+    #vscodeOutput::-webkit-scrollbar { width: 8px; }
+    #vscodeOutput::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+
+    #vsInputArea {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        padding: 18px 20px;
+        background: #090c12;
+    }
+    .input-hint {
+        color: #8b949e;
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+    }
+    #vsCustomInput {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 14px;
+        color: #fff;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.9rem;
+        resize: none;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    #vsCustomInput:focus {
+        border-color: #00d4ff;
+    }
+
+    .term-footer-actions {
+        padding: 8px 16px;
+        background: #12161f;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .term-mini-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #8b949e;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .term-mini-btn:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 900px) {
+        .vscode-body { flex-direction: column; }
+        .editor-column { flex: 1.2; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .terminal-column { flex: 0.8; }
+        .hotkey-hint { display: none; }
+    }
 </style>
 
 <div class="ide-modal-overlay" id="vsCodeModal">
     <div class="vscode-container">
+        <!-- Title Bar -->
         <div class="vscode-header">
-            <div class="vscode-title">
-                <i class="fas fa-code" style="color: #007acc;"></i> 
-                <span id="vsTitleText">app.py - Cloud Execution Engine</span>
+            <div class="vscode-title-group">
+                <div class="traffic-lights">
+                    <div class="traffic-dot dot-close" id="vsDotClose" title="Close Window"></div>
+                    <div class="traffic-dot dot-min" id="vsDotMin" title="Clear Buffer"></div>
+                    <div class="traffic-dot dot-max" id="vsDotMax" title="Toggle Fullscreen"></div>
+                </div>
+                <div class="vscode-title">
+                    <i class="fas fa-terminal" style="color: #00d4ff;"></i> 
+                    <span id="vsTitleText">main.py - LMS Cloud Engine</span>
+                </div>
+                <div class="ide-engine-badge">
+                    <span class="pulse-dot"></span>
+                    <span>Sandbox Engine (Active)</span>
+                </div>
             </div>
+            
             <div class="vscode-controls">
                 <i class="fas fa-expand" id="vsMaximizeBtn" title="Toggle Fullscreen"></i>
-                <i class="fas fa-times" id="vsCloseBtn" title="Close"></i>
+                <i class="fas fa-times" id="vsCloseBtn" title="Close Window"></i>
             </div>
         </div>
         
+        <!-- Toolbar -->
         <div class="vscode-toolbar">
-            <select id="vsLanguage" class="vscode-select">
-                <option value="python">Python</option>
-                <option value="javascript">JavaScript</option>
-                <option value="java">Java</option>
-                <option value="cpp">C++</option>
-            </select>
+            <div class="vscode-select-wrapper">
+                <i class="fab fa-python" id="vsLangIcon"></i>
+                <select id="vsLanguage" class="vscode-select" aria-label="Programming Language">
+                    <option value="python" selected>Python 3.14</option>
+                    <option value="javascript">JavaScript (Node.js)</option>
+                    <option value="cpp">C++ (MinGW GCC)</option>
+                    <option value="java">Java 26 (JVM)</option>
+                </select>
+            </div>
             
-            <button class="vscode-btn vscode-btn-run" id="vsRunBtn">
+            <button class="vscode-btn vscode-btn-run" id="vsRunBtn" type="button">
                 <i class="fas fa-play"></i> Run Code
             </button>
-            <button class="vscode-btn vscode-btn-attach" id="vsAttachBtn">
+
+            <button class="vscode-btn vscode-btn-secondary" id="vsResetBtn" type="button" title="Reset Boilerplate">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+            
+            <button class="vscode-btn vscode-btn-attach" id="vsAttachBtn" type="button" style="display:none;" title="Send Code to Chat">
                 <i class="fas fa-paperclip"></i> Attach to Chat
             </button>
+
+            <div class="hotkey-hint">
+                <span>Run Shortcut:</span>
+                <span class="hotkey-kbd">Ctrl</span> + <span class="hotkey-kbd">Enter</span>
+            </div>
         </div>
         
+        <!-- Split Body -->
         <div class="vscode-body">
-            <div id="vsAceEditor"></div>
-            <div class="vscode-terminal">
+            <!-- Code Editor -->
+            <div class="editor-column">
+                <div id="vsAceEditor"></div>
+            </div>
+
+            <!-- Terminal Output -->
+            <div class="terminal-column">
                 <div class="vscode-term-tabs">
-                    <div class="vscode-term-tab">Terminal</div>
+                    <div class="tab-buttons">
+                        <div class="vscode-term-tab active" id="tabOutput" onclick="switchTermTab('output')">
+                            <i class="fas fa-terminal"></i> Terminal Output
+                        </div>
+                        <div class="vscode-term-tab" id="tabInput" onclick="switchTermTab('input')">
+                            <i class="fas fa-keyboard"></i> Custom Input (stdin)
+                        </div>
+                    </div>
+                    <div class="vscode-term-status">
+                        <span>Status:</span>
+                        <span class="status-badge ready" id="vsTermStatus">Ready</span>
+                        <span id="vsTermTime" style="margin-left: 6px; display: none;">
+                            <i class="far fa-clock"></i> <b id="vsTimeValue">0.0s</b>
+                        </span>
+                    </div>
                 </div>
-                <pre id="vscodeOutput">Welcome to the integrated Cloud terminal.&#10;Write your code above and click 'Run Code' to execute.&#10;Output will be displayed here...</pre>
+
+                <div class="term-content-area">
+                    <div id="vsInputArea">
+                        <div class="input-hint">Provide standard input (stdin) for programs that read inputs (e.g. <code>input()</code> or <code>cin</code>):</div>
+                        <textarea id="vsCustomInput" placeholder="Enter custom input values line by line..."></textarea>
+                    </div>
+                    <pre id="vscodeOutput">⚡ Welcome to the LMS Live Cloud Execution Environment.
+Select a language above, type your code, and click 'Run Code' (or press Ctrl + Enter).
+Output and compilation diagnostics will appear here in real-time...</pre>
+                </div>
+
+                <div class="term-footer-actions">
+                    <button class="term-mini-btn" id="vsCopyOutputBtn" type="button">
+                        <i class="fas fa-copy"></i> Copy Output
+                    </button>
+                    <button class="term-mini-btn" id="vsClearTermBtn" type="button">
+                        <i class="fas fa-trash-alt"></i> Clear Terminal
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -161,160 +530,294 @@
 <script>
     let vsEditor;
     const vsModal = document.getElementById('vsCodeModal');
-    const vsOpenBtn = document.getElementById('openCodeEditorBtn'); // Trigger from community_chat.html
     const vsCloseBtn = document.getElementById('vsCloseBtn');
+    const vsDotClose = document.getElementById('vsDotClose');
+    const vsDotMax = document.getElementById('vsDotMax');
+    const vsDotMin = document.getElementById('vsDotMin');
     const vsRunBtn = document.getElementById('vsRunBtn');
+    const vsResetBtn = document.getElementById('vsResetBtn');
     const vsAttachBtn = document.getElementById('vsAttachBtn');
     const vsLanguage = document.getElementById('vsLanguage');
+    const vsLangIcon = document.getElementById('vsLangIcon');
     const vsOutput = document.getElementById('vscodeOutput');
     const vsMaximizeBtn = document.getElementById('vsMaximizeBtn');
     const vsContainer = document.querySelector('.vscode-container');
+    const vsCopyOutputBtn = document.getElementById('vsCopyOutputBtn');
+    const vsClearTermBtn = document.getElementById('vsClearTermBtn');
 
-    // Boilerplate codes
+    // Language boilerplate templates
     const boilerplates = {
-        'python': `def main():\n    print("Hello, World!")\n\nif __name__ == "__main__":\n    main()`,
-        'javascript': `function main() {\n    console.log("Hello, World!");\n}\n\nmain();`,
-        'java': `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`,
-        'cpp': `#include <iostream>\n\nint main() {\n    std::cout << "Hello, World!\\n";\n    return 0;\n}`
+        'python': `# Python 3.14 - LMS Cloud Environment\ndef main():\n    name = input("Enter your name: ") if sys_has_stdin() else "Hacker"\n    print(f"🚀 Hello, {name}! Welcome to the LMS Cloud IDE.")\n\ndef sys_has_stdin():\n    import select, sys\n    return not sys.stdin.isatty() if hasattr(sys.stdin, 'isatty') else False\n\nif __name__ == "__main__":\n    main()`,
+        'javascript': `// JavaScript (Node.js) - LMS Cloud Environment\nfunction solve() {\n    const message = "🚀 Hello from Modern JavaScript Runtime!";\n    console.log(message);\n    \n    // Quick array processing demonstration\n    const numbers = [1, 2, 3, 4, 5];\n    const squared = numbers.map(n => n * n);\n    console.log("Calculated Squares:", squared);\n}\n\nsolve();`,
+        'cpp': `// C++ (MinGW GCC) - LMS Cloud Environment\n#include <iostream>\n#include <vector>\n#include <string>\n\nint main() {\n    std::cout << "🚀 Hello from High-Performance C++!" << std::endl;\n    \n    std::vector<std::string> stack = {"Django", "Python", "C++", "JavaScript"};\n    std::cout << "System Technologies: ";\n    for (const auto& item : stack) {\n        std::cout << item << " | ";\n    }\n    std::cout << std::endl;\n    return 0;\n}`,
+        'java': `// Java 26 (JVM) - LMS Cloud Environment\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("🚀 Hello from Java 26 Virtual Machine!");\n        System.out.println("JVM Execution Successful. Ready for algorithmic processing.");\n    }\n}`
     };
 
+    // Update Language Icon & Title dynamically
+    function updateLanguageMeta(lang) {
+        const titleSpan = document.getElementById('vsTitleText');
+        const iconMap = {
+            'python': 'fab fa-python',
+            'javascript': 'fab fa-js-square',
+            'cpp': 'fas fa-code',
+            'java': 'fab fa-java'
+        };
+        const titleMap = {
+            'python': 'main.py - Python 3 Cloud Engine',
+            'javascript': 'main.js - Node.js Cloud Engine',
+            'cpp': 'main.cpp - GCC C++ Cloud Engine',
+            'java': 'Main.java - JVM Cloud Engine'
+        };
+
+        if (vsLangIcon) vsLangIcon.className = iconMap[lang] || 'fas fa-code';
+        if (titleSpan) titleSpan.innerText = titleMap[lang] || 'code - Cloud Engine';
+    }
+
     // Initialize Ace Editor
-    document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(() => {
-            if (typeof ace !== 'undefined') {
-                ace.require("ace/ext/language_tools");
-                
-                vsEditor = ace.edit("vsAceEditor");
-                vsEditor.setTheme("ace/theme/tomorrow_night_eighties"); 
-                vsEditor.session.setMode("ace/mode/python");
-                
-                vsEditor.setOptions({
-                    fontSize: "16px",
-                    showPrintMargin: false,
-                    showGutter: true,
-                    highlightActiveLine: true,
-                    enableBasicAutocompletion: true,
-                    enableLiveAutocompletion: true, 
-                    enableSnippets: true,
-                    tabSize: 4,
-                    useSoftTabs: true,
-                    wrap: true
-                });
+    function initAceEditor() {
+        if (typeof ace === 'undefined') {
+            setTimeout(initAceEditor, 300);
+            return;
+        }
 
-                vsEditor.setValue(boilerplates['python'], 1); 
+        ace.require("ace/ext/language_tools");
+        vsEditor = ace.edit("vsAceEditor");
+        vsEditor.setTheme("ace/theme/tomorrow_night_eighties");
+        vsEditor.session.setMode("ace/mode/python");
 
-                // Change Language Logic
-                vsLanguage.addEventListener('change', function(e) {
-                    let lang = e.target.value;
-                    let mode = lang === 'cpp' ? 'c_cpp' : lang;
-                    vsEditor.session.setMode("ace/mode/" + mode);
-                    vsEditor.setValue(boilerplates[lang], 1);
-                    
-                    // Update Title Bar dynamically
-                    let titleSpan = document.getElementById('vsTitleText');
-                    if(lang === 'python') titleSpan.innerText = 'app.py - Cloud Engine';
-                    if(lang === 'javascript') titleSpan.innerText = 'app.js - Cloud Engine';
-                    if(lang === 'java') titleSpan.innerText = 'Main.java - Cloud Engine';
-                    if(lang === 'cpp') titleSpan.innerText = 'main.cpp - Cloud Engine';
-                });
+        vsEditor.setOptions({
+            fontSize: "15px",
+            showPrintMargin: false,
+            showGutter: true,
+            highlightActiveLine: true,
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            tabSize: 4,
+            useSoftTabs: true,
+            wrap: true
+        });
+
+        vsEditor.setValue(boilerplates['python'], 1);
+
+        vsLanguage.addEventListener('change', function(e) {
+            const lang = e.target.value;
+            const mode = lang === 'cpp' ? 'c_cpp' : lang;
+            vsEditor.session.setMode("ace/mode/" + mode);
+            vsEditor.setValue(boilerplates[lang] || '', 1);
+            updateLanguageMeta(lang);
+        });
+
+        // Keyboard Shortcut: Ctrl + Enter / Cmd + Enter to Run
+        vsEditor.commands.addCommand({
+            name: 'runCode',
+            bindKey: {win: 'Ctrl-Enter', mac: 'Command-Enter'},
+            exec: function() {
+                vsRunBtn.click();
             }
-        }, 800); // 800ms delay ensures Ace is fully downloaded before init
-    });
-
-    // Toggle Modal
-    if (vsOpenBtn) {
-        vsOpenBtn.addEventListener('click', () => {
-            vsModal.classList.add('show');
-            if (vsEditor) setTimeout(() => vsEditor.resize(), 100); 
         });
     }
-    vsCloseBtn.addEventListener('click', () => vsModal.classList.remove('show'));
+
+    document.addEventListener("DOMContentLoaded", initAceEditor);
+
+    // Global Launcher function
+    window.openLiveIDE = function(initialLang, initialCode) {
+        if (!vsEditor) initAceEditor();
+        vsModal.classList.add('show');
+        if (initialLang && boilerplates[initialLang]) {
+            vsLanguage.value = initialLang;
+            const mode = initialLang === 'cpp' ? 'c_cpp' : initialLang;
+            vsEditor.session.setMode("ace/mode/" + mode);
+            updateLanguageMeta(initialLang);
+        }
+        if (initialCode) {
+            vsEditor.setValue(initialCode, 1);
+        }
+        setTimeout(() => { if (vsEditor) vsEditor.resize(); }, 150);
+    };
+
+    // Close actions
+    function closeLiveIDE() {
+        vsModal.classList.remove('show');
+    }
+    if (vsCloseBtn) vsCloseBtn.addEventListener('click', closeLiveIDE);
+    if (vsDotClose) vsDotClose.addEventListener('click', closeLiveIDE);
+    if (vsDotMin) vsDotMin.addEventListener('click', function() {
+        if (vsEditor) vsEditor.setValue('', 1);
+    });
+
+    // Reset code
+    if (vsResetBtn) {
+        vsResetBtn.addEventListener('click', function() {
+            const lang = vsLanguage.value;
+            if (confirm("Reset current code buffer to boilerplate template?")) {
+                if (vsEditor) vsEditor.setValue(boilerplates[lang] || '', 1);
+            }
+        });
+    }
 
     // Toggle Fullscreen (Maximize)
     let isMaximized = false;
-    vsMaximizeBtn.addEventListener('click', () => {
+    function toggleMaximize() {
         if (!isMaximized) {
             vsContainer.style.width = '100vw';
             vsContainer.style.height = '100vh';
             vsContainer.style.borderRadius = '0';
-            vsMaximizeBtn.classList.replace('fa-expand', 'fa-compress');
+            if (vsMaximizeBtn) vsMaximizeBtn.classList.replace('fa-expand', 'fa-compress');
         } else {
-            vsContainer.style.width = '95vw';
-            vsContainer.style.height = '90vh';
-            vsContainer.style.borderRadius = '12px';
-            vsMaximizeBtn.classList.replace('fa-compress', 'fa-expand');
+            vsContainer.style.width = '94vw';
+            vsContainer.style.height = '88vh';
+            vsContainer.style.borderRadius = '18px';
+            if (vsMaximizeBtn) vsMaximizeBtn.classList.replace('fa-compress', 'fa-expand');
         }
         isMaximized = !isMaximized;
         if (vsEditor) setTimeout(() => vsEditor.resize(), 100);
-    });
+    }
+    if (vsMaximizeBtn) vsMaximizeBtn.addEventListener('click', toggleMaximize);
+    if (vsDotMax) vsDotMax.addEventListener('click', toggleMaximize);
 
-    // Run Code against Django Docker Backend
-    vsRunBtn.addEventListener('click', async function() {
-        if (!vsEditor) return;
-        const code = vsEditor.getValue();
-        const lang = vsLanguage.value;
+    // Switch Terminal Tabs (Output vs Stdin)
+    window.switchTermTab = function(tab) {
+        const tabOutput = document.getElementById('tabOutput');
+        const tabInput = document.getElementById('tabInput');
+        const inputArea = document.getElementById('vsInputArea');
+        const outputArea = document.getElementById('vscodeOutput');
 
-        vsOutput.innerHTML = `<span style="color:#007acc;"><i class="fas fa-circle-notch fa-spin"></i> Running inside isolated Docker container...</span>`;
+        if (tab === 'input') {
+            tabInput.classList.add('active');
+            tabOutput.classList.remove('active');
+            inputArea.style.display = 'flex';
+            outputArea.style.display = 'none';
+            document.getElementById('vsCustomInput').focus();
+        } else {
+            tabOutput.classList.add('active');
+            tabInput.classList.remove('active');
+            outputArea.style.display = 'block';
+            inputArea.style.display = 'none';
+        }
+    };
 
-        try {
-            // Fetch CSRF Token from parent page meta tag
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    // Clear Terminal Output
+    if (vsClearTermBtn) {
+        vsClearTermBtn.addEventListener('click', function() {
+            vsOutput.innerText = "Terminal buffer cleared. Ready for next execution.";
+            const statusEl = document.getElementById('vsTermStatus');
+            statusEl.className = 'status-badge ready';
+            statusEl.innerText = 'Ready';
+            document.getElementById('vsTermTime').style.display = 'none';
+        });
+    }
 
-            // 🔴 100% FIXED URL: Direct Absolute Path
-            const response = await fetch("/api/chat/execute-local-code/", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
-                },
-                body: JSON.stringify({
-                    language: lang,
-                    code: code
-                })
+    // Copy Terminal Output
+    if (vsCopyOutputBtn) {
+        vsCopyOutputBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(vsOutput.innerText).then(() => {
+                const orig = vsCopyOutputBtn.innerHTML;
+                vsCopyOutputBtn.innerHTML = '<i class="fas fa-check" style="color:#00e676;"></i> Copied!';
+                setTimeout(() => { vsCopyOutputBtn.innerHTML = orig; }, 1800);
             });
+        });
+    }
 
-            if (!response.ok) {
-                throw new Error("HTTP Status " + response.status);
+    // Run Code Handler
+    if (vsRunBtn) {
+        vsRunBtn.addEventListener('click', async function() {
+            if (!vsEditor) return;
+            const code = vsEditor.getValue();
+            const lang = vsLanguage.value;
+            const userInput = document.getElementById('vsCustomInput').value;
+
+            // Automatically focus Output tab
+            window.switchTermTab('output');
+
+            const statusEl = document.getElementById('vsTermStatus');
+            statusEl.className = 'status-badge running';
+            statusEl.innerText = 'Compiling...';
+            document.getElementById('vsTermTime').style.display = 'none';
+
+            vsRunBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Running...';
+            vsRunBtn.disabled = true;
+            vsOutput.innerHTML = `<span style="color:#00d4ff;"><i class="fas fa-microchip fa-spin"></i> Dispatching task to isolated sandbox execution engine...</span>`;
+
+            const startTime = performance.now();
+
+            try {
+                // Read CSRF Token if available
+                let csrfToken = '';
+                const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+                if (metaCsrf) {
+                    csrfToken = metaCsrf.getAttribute('content');
+                } else if (typeof csrftoken !== 'undefined') {
+                    csrfToken = csrftoken;
+                }
+
+                const response = await fetch("/api/chat/execute-code/", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        language: lang,
+                        code: code,
+                        user_input: userInput
+                    })
+                });
+
+                const data = await response.json();
+                const endTime = performance.now();
+                const executionTime = data.execution_time || (((endTime - startTime) / 1000).toFixed(2) + 's');
+
+                document.getElementById('vsTermTime').style.display = 'inline-block';
+                document.getElementById('vsTimeValue').innerText = executionTime;
+
+                if (data.status === 'success') {
+                    statusEl.className = 'status-badge success';
+                    statusEl.innerText = 'Success';
+                    vsOutput.innerText = data.output || "Execution completed (No standard output returned).";
+                    vsOutput.style.color = "#e6edf3";
+                } else {
+                    statusEl.className = 'status-badge error';
+                    statusEl.innerText = 'Error';
+                    vsOutput.innerText = "[EXECUTION / COMPILATION DIAGNOSTICS]\n" + (data.output || data.message || "Unknown execution error");
+                    vsOutput.style.color = "#ff3366";
+                }
+            } catch (err) {
+                statusEl.className = 'status-badge error';
+                statusEl.innerText = 'Net Error';
+                vsOutput.innerText = "[FATAL ERROR]\nFailed to communicate with the execution service.\nDetails: " + err.message;
+                vsOutput.style.color = "#ff3366";
+            } finally {
+                vsRunBtn.innerHTML = '<i class="fas fa-play"></i> Run Code';
+                vsRunBtn.disabled = false;
+            }
+        });
+    }
+
+    // Attach to Chat logic (if chat box is available on the current page)
+    if (vsAttachBtn) {
+        vsAttachBtn.addEventListener('click', function() {
+            if (!vsEditor) return;
+            const code = vsEditor.getValue();
+            const lang = vsLanguage.value;
+            const output = vsOutput.innerText;
+
+            let chatMsg = `**💻 Live Code Snippet (${lang.toUpperCase()})**\n`;
+            chatMsg += "```" + lang + "\n" + code + "\n```\n";
+
+            if (output && !output.includes("Welcome to the LMS") && !output.includes("Dispatching task")) {
+                chatMsg += "**Terminal Output:**\n```text\n" + output + "\n```";
             }
 
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                vsOutput.innerText = data.output || "Program finished successfully with no output.";
-                vsOutput.style.color = "#cccccc"; 
-            } else {
-                vsOutput.innerText = "[ERROR]\n" + (data.output || data.message);
-                vsOutput.style.color = "#f44336"; 
+            const chatInput = document.getElementById('mainChatInput');
+            if (chatInput) {
+                chatInput.value = chatMsg;
+                chatInput.style.height = 'auto';
+                chatInput.style.height = (chatInput.scrollHeight) + 'px';
+                chatInput.focus();
             }
 
-        } catch (err) {
-            vsOutput.innerText = "[NETWORK ERROR]\nFailed to connect to the backend server. Please make sure Django is running and urls.py is saved.\nDetails: " + err.message;
-            vsOutput.style.color = "#f44336";
-        }
-    });
-
-    // Attach Output to the Chat Box
-    vsAttachBtn.addEventListener('click', function() {
-        if (!vsEditor) return;
-        const code = vsEditor.getValue();
-        const lang = vsLanguage.value;
-        const output = vsOutput.innerText;
-        
-        let chatMsg = `**Live Code Snippet (${lang.toUpperCase()})**\n`;
-        chatMsg += "```" + lang + "\n" + code + "\n```\n";
-        
-        if (output && !output.includes("Running inside isolated") && !output.includes("Welcome to the integrated")) {
-            chatMsg += "**Terminal Output:**\n```text\n" + output + "\n```";
-        }
-        
-        const chatInput = document.getElementById('mainChatInput'); 
-        if (chatInput) {
-            chatInput.value = chatMsg;
-            chatInput.style.height = 'auto';
-            chatInput.style.height = (chatInput.scrollHeight) + 'px';
-            chatInput.focus();
-        }
-        
-        vsModal.classList.remove('show');
-    });
+            closeLiveIDE();
+        });
+    }
 </script>
