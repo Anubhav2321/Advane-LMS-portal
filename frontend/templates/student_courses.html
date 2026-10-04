@@ -5,427 +5,244 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* --- GLOBAL THEME --- */
-    :root {
-        --bg-dark: #0a0a0f;
-        --card-bg: #13131a;
-        --border-color: #2a2a35;
-        --neon-blue: #00f3ff;
-        --neon-purple: #bc13fe;
-        --text-main: #e0e0e0;
-        --glass: rgba(19, 19, 26, 0.95);
-        --gold-coin: #ffd700;
-    }
+    .cs-page { --cs-cyan:#00f3ff; --cs-gold:#ffd700; --cs-green:#00ff88; --cs-purple:#bc13fe;
+        font-family:'Outfit',sans-serif; color:#e6e6ee; padding:36px 40px; max-width:1400px; margin:0 auto; }
+    .cs-glass { background:linear-gradient(145deg,rgba(24,24,36,.72),rgba(12,12,20,.88));
+        border:1px solid rgba(255,255,255,.08); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+        box-shadow:0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); border-radius:22px; }
 
-    body {
-        font-family: 'Outfit', sans-serif;
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-    }
+    /* Hero */
+    .cs-hero { padding:30px 36px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px; margin-bottom:22px; position:relative; overflow:hidden; }
+    .cs-hero::after { content:''; position:absolute; right:-80px; top:-80px; width:260px; height:260px; border-radius:50%;
+        background:radial-gradient(circle,rgba(0,243,255,.18),transparent 70%); pointer-events:none; }
+    .cs-hero h1 { font-family:'Space Grotesk',sans-serif; font-size:2rem; margin:0 0 6px; color:#fff; letter-spacing:1px; }
+    .cs-hero h1 i { color:var(--cs-cyan); margin-right:10px; }
+    .cs-hero p { margin:0; color:#8a8aa0; }
+    .cs-wallet { display:flex; gap:14px; flex-wrap:wrap; }
+    .cs-wallet-box { padding:12px 20px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); min-width:140px; }
+    .cs-wallet-box small { display:block; color:#7c7c92; font-size:.7rem; text-transform:uppercase; letter-spacing:1.2px; }
+    .cs-wallet-box strong { font-family:'Space Grotesk'; font-size:1.3rem; color:#fff; }
+    .cs-wallet-box.gold strong { color:var(--cs-gold); }
+    .cs-wallet-box.green strong { color:var(--cs-green); }
 
-    .container-fluid {
-        padding: 40px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
+    /* Toolbar */
+    .cs-toolbar { padding:16px 22px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:26px; }
+    .cs-search { position:relative; flex:1; min-width:240px; }
+    .cs-search input { width:100%; padding:12px 48px 12px 20px; border-radius:50px; background:rgba(0,0,0,.4);
+        border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; font-size:1rem; outline:none; transition:.25s; }
+    .cs-search input:focus { border-color:var(--cs-cyan); box-shadow:0 0 18px rgba(0,243,255,.2); }
+    .cs-search button { position:absolute; right:5px; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%;
+        border:1px solid rgba(0,243,255,.3); background:rgba(0,243,255,.1); color:var(--cs-cyan); cursor:pointer; transition:.25s; }
+    .cs-search button:hover { background:var(--cs-cyan); color:#000; }
+    .cs-chips { display:flex; gap:8px; flex-wrap:wrap; }
+    .cs-chip { padding:9px 18px; border-radius:50px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03);
+        color:#a8a8bc; font-weight:600; font-size:.85rem; cursor:pointer; transition:.25s; font-family:inherit; }
+    .cs-chip:hover { color:#fff; border-color:rgba(255,255,255,.25); }
+    .cs-chip.active { background:rgba(0,243,255,.12); border-color:var(--cs-cyan); color:var(--cs-cyan); box-shadow:0 0 14px rgba(0,243,255,.15); }
+    .cs-select { padding:10px 16px; border-radius:12px; background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; outline:none; cursor:pointer; }
+    .cs-select option { background:#13131a; }
 
-    /* --- UTILITIES (Fixing Inline CSS Warnings) --- */
-    .icon-neon-blue { color: var(--neon-blue); margin-right: 10px; }
-    .ml-5 { margin-left: 5px; }
-    .empty-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #050505; }
-    .icon-dark-grey { color: #333; }
-    .view-all-link { color: var(--neon-blue); margin-top: 15px; display: inline-block; text-decoration: none; transition: 0.3s; }
-    .view-all-link:hover { color: #fff; text-shadow: 0 0 10px var(--neon-blue); }
+    /* Grid */
+    .cs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:26px; padding-bottom:40px; }
+    .cs-card { overflow:hidden; display:flex; flex-direction:column; transition:transform .35s cubic-bezier(.175,.885,.32,1.275), border-color .3s, box-shadow .3s; position:relative; }
+    .cs-card:hover { transform:translateY(-6px); border-color:rgba(0,243,255,.3); box-shadow:0 22px 50px rgba(0,243,255,.09); }
+    .cs-card.hidden { display:none; }
+    .cs-thumb { height:180px; position:relative; background:#050508; border-bottom:1px solid rgba(255,255,255,.06); overflow:hidden; }
+    .cs-thumb img { width:100%; height:100%; object-fit:cover; opacity:.85; transition:.4s; }
+    .cs-card:hover .cs-thumb img { opacity:1; transform:scale(1.05); }
+    .cs-thumb-empty { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#2a2a38; font-size:3rem;
+        background:radial-gradient(circle at 30% 30%,rgba(0,243,255,.08),transparent 60%); }
+    .cs-badge { position:absolute; top:14px; left:14px; padding:4px 12px; border-radius:20px; font-size:.7rem; font-weight:700; text-transform:uppercase;
+        background:rgba(0,0,0,.75); border:1px solid var(--cs-cyan); color:var(--cs-cyan); backdrop-filter:blur(6px); }
+    .cs-ribbon { position:absolute; top:14px; right:14px; padding:4px 12px; border-radius:20px; font-size:.7rem; font-weight:800; letter-spacing:.5px;
+        background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000; }
+    .cs-ribbon.free { background:linear-gradient(135deg,#bc13fe,#7a0cff); color:#fff; }
+    .cs-body { padding:22px 24px 24px; display:flex; flex-direction:column; flex:1; }
+    .cs-title { font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.3; }
+    .cs-rating { color:#ffc107; font-size:.85rem; margin-bottom:12px; }
+    .cs-rating span { color:#6d6d82; margin-left:6px; font-size:.8rem; }
+    .cs-desc { color:#9a9ab0; font-size:.93rem; line-height:1.6; flex-grow:1; margin-bottom:16px; }
+    .cs-meta { display:flex; gap:16px; flex-wrap:wrap; padding-top:14px; border-top:1px solid rgba(255,255,255,.07); font-size:.82rem; color:#85859a; margin-bottom:16px; }
+    .cs-meta i { color:var(--cs-cyan); margin-right:5px; }
 
-    /* --- PAGE HEADER & SEARCH --- */
-    .header-section {
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-left: 5px solid var(--neon-blue);
-        border-radius: 20px;
-        padding: 30px 40px;
-        margin-bottom: 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        animation: fadeInDown 0.8s ease-out;
-    }
+    /* Price & payments */
+    .cs-price-row { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
+    .cs-price { font-family:'Space Grotesk'; font-size:1.55rem; font-weight:700; color:#fff; line-height:1; }
+    .cs-price.free { color:var(--cs-purple); }
+    .cs-coin { margin-top:7px; display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:600; color:var(--cs-gold);
+        background:rgba(255,215,0,.1); border:1px solid rgba(255,215,0,.3); padding:3px 10px; border-radius:12px; }
+    .cs-buy { padding:11px 20px; border-radius:13px; text-decoration:none; font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:1px;
+        background:linear-gradient(135deg,var(--cs-cyan),#0088ff); color:#001018; transition:.3s; white-space:nowrap; box-shadow:0 8px 20px rgba(0,243,255,.2); }
+    .cs-buy:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,243,255,.4); color:#000; }
+    .cs-accept { margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,.08); display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+    .cs-accept small { color:#6d6d82; font-size:.68rem; text-transform:uppercase; letter-spacing:1px; margin-right:4px; }
+    .cs-pm { height:24px; min-width:38px; padding:0 7px; border-radius:6px; background:#fff; display:inline-flex; align-items:center; justify-content:center; }
+    .cs-pm img { height:13px; max-width:30px; object-fit:contain; }
+    .cs-pm.dark { background:rgba(255,255,255,.08); color:#ccc; font-size:.62rem; font-weight:700; border:1px solid rgba(255,255,255,.12); }
+    .cs-pm.coin { background:rgba(255,215,0,.12); color:var(--cs-gold); border:1px solid rgba(255,215,0,.3); font-size:.7rem; }
+    .cs-secure { margin-top:10px; font-size:.7rem; color:#5f7f6f; }
+    .cs-secure i { color:var(--cs-green); margin-right:4px; }
 
-    @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    .cs-empty { grid-column:1/-1; text-align:center; padding:70px 20px; color:#6d6d82; border:1px dashed rgba(255,255,255,.12); border-radius:22px; }
+    .cs-empty i { font-size:3rem; color:#2c2c3a; margin-bottom:16px; display:block; }
+    .cs-empty a { color:var(--cs-cyan); text-decoration:none; }
+    .cs-pager { display:flex; justify-content:center; gap:10px; padding-bottom:20px; }
+    .cs-pager a, .cs-pager span { padding:8px 16px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:#aaa; text-decoration:none; }
+    .cs-pager a:hover, .cs-pager span.active { border-color:var(--cs-cyan); color:var(--cs-cyan); }
 
-    .title-area h2 {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 2rem;
-        margin: 0 0 5px 0;
-        color: #fff;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-    }
-    .title-area p { color: #888; font-size: 0.95rem; margin: 0; }
-
-    /* Search Bar */
-    .search-wrapper {
-        position: relative;
-        width: 100%;
-        max-width: 450px;
-    }
-    .search-input {
-        width: 100%;
-        padding: 12px 20px;
-        padding-right: 50px;
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-        border-radius: 50px;
-        font-family: 'Outfit', sans-serif;
-        font-size: 1rem;
-        outline: none;
-        transition: 0.3s;
-        backdrop-filter: blur(10px);
-    }
-    .search-input:focus {
-        border-color: var(--neon-blue);
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-        background: rgba(0, 0, 0, 0.6);
-    }
-    .search-btn {
-        position: absolute;
-        right: 5px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: rgba(0, 243, 255, 0.1);
-        border: 1px solid rgba(0, 243, 255, 0.3);
-        color: var(--neon-blue);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    .search-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
-
-    /* --- COURSE GRID --- */
-    .course-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        gap: 30px;
-        padding-bottom: 50px;
-    }
-
-    /* Course Card */
-    .course-card {
-        background: linear-gradient(145deg, rgba(20, 20, 30, 0.8), rgba(15, 15, 22, 0.95));
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 20px;
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        animation: fadeInUp 0.8s ease-out forwards;
-        opacity: 0;
-    }
-    
-    .course-card:hover {
-        border-color: rgba(0, 243, 255, 0.3);
-        box-shadow: 0 15px 40px rgba(0, 243, 255, 0.08), 0 0 0 1px rgba(0, 243, 255, 0.1);
-        transform: translateY(-6px);
-    }
-
-    /* Stagger Animation Delay */
-    .course-card:nth-child(1) { animation-delay: 0.1s; }
-    .course-card:nth-child(2) { animation-delay: 0.2s; }
-    .course-card:nth-child(3) { animation-delay: 0.3s; }
-    .course-card:nth-child(4) { animation-delay: 0.4s; }
-    .course-card:nth-child(5) { animation-delay: 0.5s; }
-    .course-card:nth-child(6) { animation-delay: 0.6s; }
-
-    @keyframes fadeInUp {
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .thumb-wrapper {
-        position: relative;
-        height: 180px;
-        background: #000;
-        border-bottom: 1px solid var(--border-color);
-    }
-    
-    .course-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.8;
-        transition: 0.3s;
-    }
-    .course-card:hover .course-img { opacity: 1; }
-
-    .category-badge {
-        position: absolute; top: 15px; left: 15px;
-        background: rgba(0, 0, 0, 0.8);
-        border: 1px solid var(--neon-blue);
-        color: var(--neon-blue);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
-    }
-
-    .card-content {
-        padding: 25px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .course-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #fff;
-        margin-bottom: 10px;
-        line-height: 1.3;
-    }
-
-    .rating-row {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        color: #ffc107;
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-    }
-    .rating-text { color: #666; font-size: 0.8rem; margin-left: 5px; }
-
-    .course-desc {
-        color: #aaa;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        margin-bottom: 20px;
-        flex-grow: 1;
-    }
-
-    /* Meta Info */
-    .meta-info {
-        display: flex;
-        justify-content: space-between;
-        padding-top: 15px;
-        border-top: 1px solid var(--border-color);
-        margin-bottom: 20px;
-        font-size: 0.85rem;
-        color: #888;
-    }
-    .meta-item i { margin-right: 5px; color: var(--neon-blue); }
-
-    /* Footer Action */
-    .card-action {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: auto;
-    }
-
-    /* --- NEW DUAL PRICING STYLES --- */
-    .price-wrapper {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .price-label {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #fff;
-    }
-    
-    .coin-price-badge {
-        font-size: 0.8rem;
-        color: var(--gold-coin);
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        margin-top: 3px;
-        background: rgba(255, 215, 0, 0.1);
-        padding: 2px 8px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 215, 0, 0.3);
-    }
-    
-    .free-tag { color: var(--neon-purple); }
-
-    .enroll-btn {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 136, 255, 0.1));
-        border: 1px solid rgba(0, 243, 255, 0.3);
-        color: var(--neon-blue);
-        padding: 10px 20px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
-    }
-    .enroll-btn::before {
-        content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
-        transition: left 0.5s ease;
-    }
-    .enroll-btn:hover::before { left: 100%; }
-    .enroll-btn:hover {
-        background: var(--neon-blue);
-        color: #000;
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-        transform: translateY(-2px);
-    }
-
-    /* --- EMPTY STATE --- */
-    .empty-box {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 80px;
-        border: 1px dashed var(--border-color);
-        border-radius: 20px;
-        color: #666;
-    }
-    .empty-icon { font-size: 3rem; margin-bottom: 20px; color: #333; }
-
-    /* --- PAGINATION --- */
-    .pagination-area {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .page-link {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        color: #aaa;
-        padding: 8px 15px;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: 0.3s;
-    }
-    .page-link:hover, .page-link.active {
-        border-color: var(--neon-blue);
-        color: var(--neon-blue);
-    }
-
+    @media (max-width:768px){ .cs-page{padding:20px 14px;} .cs-grid{grid-template-columns:1fr;} }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="cs-page">
 
-    <div class="header-section">
-        <div class="title-area">
-            <h2><i class="fas fa-layer-group icon-neon-blue"></i> Course Library</h2>
-            <p>Unlock new skills with our premium content.</p>
+    <div class="cs-glass cs-hero">
+        <div>
+            <h1><i class="fas fa-layer-group"></i>Course Store</h1>
+            <p>Pay with Card, UPI, Net Banking, Wallets or LMS Coins.</p>
         </div>
-
-        <div class="search-wrapper">
-            <form method="GET">
-                <input type="text" name="search" class="search-input" placeholder="Search courses..." value="{{ search_query|default:'' }}">
-                <button type="submit" class="search-btn" title="Search courses"><i class="fas fa-search"></i></button>
-            </form>
+        <div class="cs-wallet">
+            <div class="cs-wallet-box gold"><small>Your Coins</small><strong><i class="fas fa-coins"></i> {{ request.user.lms_coins|default:0 }}</strong></div>
+            <div class="cs-wallet-box green"><small>Secure Checkout</small><strong><i class="fas fa-shield-alt"></i> 256-bit</strong></div>
         </div>
     </div>
 
-    <div class="course-grid">
+    <div class="cs-glass cs-toolbar">
+        <form method="GET" class="cs-search">
+            <input type="text" name="search" id="cs-search-input" placeholder="Search courses..." value="{{ search_query|default:'' }}">
+            <button type="submit" title="Search"><i class="fas fa-search"></i></button>
+        </form>
+        <div class="cs-chips" id="cs-chips">
+            <button type="button" class="cs-chip active" data-filter="all">All</button>
+            <button type="button" class="cs-chip" data-filter="paid">Paid</button>
+            <button type="button" class="cs-chip" data-filter="free">Free</button>
+            <button type="button" class="cs-chip" data-filter="coin"><i class="fas fa-coins"></i> Coin Unlock</button>
+        </div>
+        <select class="cs-select" id="cs-sort" title="Sort courses">
+            <option value="default">Sort: Featured</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+            <option value="az">Title: A–Z</option>
+        </select>
+    </div>
+
+    <div class="cs-grid" id="cs-grid">
         {% for course in courses %}
-        <div class="course-card">
-            
-            <div class="thumb-wrapper">
-                <span class="category-badge">{{ course.difficulty_level }}</span>
+        <div class="cs-glass cs-card"
+             data-title="{{ course.title|lower }}"
+             data-price="{{ course.price|default:0 }}"
+             data-free="{% if course.price > 0 %}0{% else %}1{% endif %}"
+             data-coin="{% if course.is_coin_purchasable %}1{% else %}0{% endif %}">
+            <div class="cs-thumb">
+                <span class="cs-badge">{{ course.difficulty_level }}</span>
+                {% if course.price > 0 %}{% if course.is_coin_purchasable %}<span class="cs-ribbon">COINS OK</span>{% endif %}{% else %}<span class="cs-ribbon free">FREE</span>{% endif %}
                 {% if course.thumbnail %}
-                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="course-img">
+                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
                 {% else %}
-                    <div class="empty-img-placeholder">
-                        <i class="fas fa-code fa-3x icon-dark-grey"></i>
-                    </div>
+                    <div class="cs-thumb-empty"><i class="fas fa-code"></i></div>
                 {% endif %}
             </div>
 
-            <div class="card-content">
-                <div class="course-title">{{ course.title }}</div>
-                
-                <div class="rating-row">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                    <span class="rating-text">(4.8 Reviews)</span>
+            <div class="cs-body">
+                <div class="cs-title">{{ course.title }}</div>
+                <div class="cs-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8 Reviews)</span></div>
+                <div class="cs-desc">{{ course.description|truncatewords:20 }}</div>
+
+                <div class="cs-meta">
+                    <span><i class="fas fa-cube"></i>{{ course.total_modules }} Modules</span>
+                    <span><i class="fas fa-infinity"></i>Lifetime Access</span>
+                    <span><i class="fas fa-certificate"></i>Certificate</span>
                 </div>
 
-                <div class="course-desc">
-                    {{ course.description|truncatewords:20 }}
-                </div>
-
-                <div class="meta-info">
-                    <div class="meta-item"><i class="fas fa-cube"></i> {{ course.total_modules }} Modules</div>
-                    <div class="meta-item"><i class="fas fa-user-friends"></i> Popular</div>
-                </div>
-
-                <div class="card-action">
-                    
-                    <div class="price-wrapper">
+                <div class="cs-price-row">
+                    <div>
                         {% if course.price > 0 %}
-                            <div class="price-label">₹{{ course.price }}</div>
+                            <div class="cs-price">₹{{ course.price }}</div>
                         {% else %}
-                            <div class="price-label"><span class="free-tag">Free</span></div>
+                            <div class="cs-price free">Free</div>
                         {% endif %}
-                        
                         {% if course.is_coin_purchasable %}
-                            <div class="coin-price-badge" title="Can be purchased with LMS Coins">
-                                <i class="fas fa-coins"></i> {{ course.coin_price }} Coins
-                            </div>
+                            <div class="cs-coin" title="Can be purchased with LMS Coins"><i class="fas fa-coins"></i> {{ course.coin_price }} Coins</div>
                         {% endif %}
                     </div>
-                    
-                    <a href="{% url 'enroll_course' course.id %}" class="enroll-btn">
-                        Enroll Now <i class="fas fa-arrow-right ml-5"></i>
-                    </a>
+                    <a href="{% url 'enroll_course' course.id %}" class="cs-buy">{% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i></a>
                 </div>
-            </div>
 
+                {% if course.price > 0 %}
+                <div class="cs-accept">
+                    <small>Pay with</small>
+                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
+                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/mastercard/EB001B" alt="Mastercard"></span>
+                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="Google Pay"></span>
+                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></span>
+                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></span>
+                    <span class="cs-pm dark">UPI</span>
+                    <span class="cs-pm dark"><i class="fas fa-university"></i>&nbsp;Net Banking</span>
+                    {% if course.is_coin_purchasable %}<span class="cs-pm coin"><i class="fas fa-coins"></i></span>{% endif %}
+                </div>
+                <div class="cs-secure"><i class="fas fa-lock"></i>Secure payment · Instant access after purchase</div>
+                {% endif %}
+            </div>
         </div>
         {% empty %}
-            <div class="empty-box">
-                <i class="fas fa-search empty-icon"></i>
-                <h3>No courses found matching your search.</h3>
-                <a href="{% url 'all_courses' %}" class="view-all-link">View All Courses</a>
-            </div>
+        <div class="cs-empty">
+            <i class="fas fa-search"></i>
+            <h3>No courses found matching your search.</h3>
+            <a href="{% url 'all_courses' %}">View All Courses</a>
+        </div>
         {% endfor %}
+        <div class="cs-empty hidden-empty" id="cs-filter-empty" style="display:none;">
+            <i class="fas fa-filter"></i>
+            <h3>No courses match this filter.</h3>
+        </div>
     </div>
 
     {% if courses.has_other_pages %}
-    <div class="pagination-area">
-        {% if courses.has_previous %}
-            <a href="?page={{ courses.previous_page_number }}" class="page-link">&laquo; Prev</a>
-        {% endif %}
-        
-        <span class="page-link active">{{ courses.number }}</span>
-        
-        {% if courses.has_next %}
-            <a href="?page={{ courses.next_page_number }}" class="page-link">Next &raquo;</a>
-        {% endif %}
+    <div class="cs-pager">
+        {% if courses.has_previous %}<a href="?page={{ courses.previous_page_number }}">&laquo; Prev</a>{% endif %}
+        <span class="active">{{ courses.number }}</span>
+        {% if courses.has_next %}<a href="?page={{ courses.next_page_number }}">Next &raquo;</a>{% endif %}
     </div>
     {% endif %}
-
 </div>
 
+<script>
+(function () {
+    const grid = document.getElementById('cs-grid');
+    const cards = Array.from(grid.querySelectorAll('.cs-card'));
+    const chips = document.querySelectorAll('.cs-chip');
+    const sortSel = document.getElementById('cs-sort');
+    const emptyMsg = document.getElementById('cs-filter-empty');
+    let filter = 'all';
+
+    function apply() {
+        let visible = 0;
+        cards.forEach(c => {
+            const ok = filter === 'all'
+                || (filter === 'free' && c.dataset.free === '1')
+                || (filter === 'paid' && c.dataset.free === '0')
+                || (filter === 'coin' && c.dataset.coin === '1');
+            c.classList.toggle('hidden', !ok);
+            if (ok) visible++;
+        });
+        emptyMsg.style.display = (cards.length && !visible) ? 'block' : 'none';
+    }
+    function sortCards() {
+        const v = sortSel.value;
+        const sorted = cards.slice();
+        if (v === 'low') sorted.sort((a, b) => a.dataset.price - b.dataset.price);
+        if (v === 'high') sorted.sort((a, b) => b.dataset.price - a.dataset.price);
+        if (v === 'az') sorted.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
+        sorted.forEach(c => grid.insertBefore(c, emptyMsg));
+    }
+    chips.forEach(ch => ch.addEventListener('click', () => {
+        chips.forEach(x => x.classList.remove('active'));
+        ch.classList.add('active');
+        filter = ch.dataset.filter;
+        apply();
+    }));
+    sortSel.addEventListener('change', sortCards);
+})();
+</script>
 {% endblock %}

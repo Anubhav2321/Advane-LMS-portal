@@ -4,302 +4,151 @@
 {% block content %}
 
 <audio id="sound-processing" src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3" preload="auto"></audio>
-<audio id="sound-success" src="https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3" preload="auto"></audio>
 
 <style>
-    /* --- GLOBAL STYLES --- */
-    .checkout-wrapper {
-        min-height: calc(100vh - 80px);
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        padding: 10px 20px 20px 20px;
-        position: relative;
-    }
-    
-    .checkout-wrapper::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 60%);
-        pointer-events: none;
-        z-index: 0;
-    }
+    .pay-page { font-family:'Outfit',sans-serif; padding:24px 30px 30px; position:relative; }
+    .pay-page::before { content:''; position:absolute; inset:0; pointer-events:none;
+        background:radial-gradient(circle at 20% 10%,rgba(0,243,255,.07),transparent 45%), radial-gradient(circle at 85% 80%,rgba(188,19,254,.07),transparent 45%); }
+    .pay-glass { background:linear-gradient(145deg,rgba(24,24,36,.74),rgba(12,12,20,.9));
+        border:1px solid rgba(255,255,255,.08); backdrop-filter:blur(26px); -webkit-backdrop-filter:blur(26px);
+        box-shadow:0 25px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06); border-radius:24px; position:relative; z-index:1; }
+    .pay-layout { display:grid; grid-template-columns:300px 1fr 330px; gap:22px; align-items:start; }
 
-    /* --- GLASSMORPHISM CARD --- */
-    .pay-card {
-        width: 100%;
-        max-width: 100%;
-        background: linear-gradient(145deg, rgba(15, 15, 20, 0.85), rgba(10, 10, 15, 0.95));
-        -webkit-backdrop-filter: blur(40px);
-        backdrop-filter: blur(40px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        display: grid;
-        grid-template-columns: 350px 1fr;
-        overflow: hidden;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        position: relative;
-        z-index: 1;
-    }
+    /* Method menu */
+    .pay-menu { padding:22px 0; }
+    .pay-menu h3 { color:#6d6d82; font-size:.75rem; text-transform:uppercase; letter-spacing:1.5px; padding:0 26px; margin:0 0 14px; }
+    .pay-method { padding:15px 26px; color:#a8a8bc; cursor:pointer; display:flex; align-items:center; gap:14px; font-weight:500; border-left:3px solid transparent; transition:.25s; }
+    .pay-method:hover { background:rgba(255,255,255,.04); color:#fff; }
+    .pay-method.active { background:linear-gradient(90deg,rgba(0,255,136,.12),transparent); color:#00ff88; border-left-color:#00ff88; }
+    .pay-method.coin-active { background:linear-gradient(90deg,rgba(255,215,0,.15),transparent); color:#ffd700; border-left-color:#ffd700; }
+    .pay-method i { width:20px; text-align:center; }
+    .pay-method small { display:block; color:#6d6d82; font-size:.7rem; font-weight:400; }
+    .pay-method-sep { margin:14px 26px; border-top:1px solid rgba(255,255,255,.06); }
 
-    /* --- SIDEBAR --- */
-    .sidebar {
-        background: rgba(0,0,0,0.3);
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 30px 0;
-    }
-    
-    .sidebar h3 {
-        color: #666;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        padding-left: 30px;
-        margin-bottom: 20px;
-    }
+    /* Main */
+    .pay-main { padding:30px; }
+    .pay-main h3.pay-h { color:#fff; margin:0 0 20px; font-size:1.2rem; }
+    .pay-tab { display:none; animation:paySlide .35s ease; }
+    .pay-tab.active { display:block; }
+    @keyframes paySlide { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:none;} }
 
-    .method-item {
-        padding: 18px 30px;
-        color: #aaa;
-        cursor: pointer;
-        transition: 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        font-weight: 500;
-        border-left: 3px solid transparent;
-    }
-    
-    .method-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: white;
-    }
-    
-    .method-item.active {
-        background: linear-gradient(90deg, rgba(0, 255, 136, 0.1), transparent);
-        color: #00ff88;
-        border-left-color: #00ff88;
-    }
-    
-    /* 🪙 COIN STORE SIDEBAR ITEM 🪙 */
-    .method-item.coin-active {
-        background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent);
-        color: #ffd700;
-        border-left-color: #ffd700;
-    }
+    /* Card preview */
+    .cc-preview { width:100%; max-width:380px; height:215px; border-radius:20px; padding:22px 24px; margin:0 auto 26px; position:relative; overflow:hidden;
+        background:linear-gradient(135deg,#1c2b4a,#2b1a4f 55%,#0e3b4a); border:1px solid rgba(255,255,255,.15);
+        box-shadow:0 20px 45px rgba(0,0,0,.5); display:flex; flex-direction:column; justify-content:space-between; transition:background .4s; }
+    .cc-preview::after { content:''; position:absolute; top:-60%; left:-30%; width:80%; height:200%; transform:rotate(25deg);
+        background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent); animation:ccShine 4s infinite; }
+    @keyframes ccShine { 0%{left:-60%;} 60%,100%{left:130%;} }
+    .cc-preview.visa { background:linear-gradient(135deg,#142a6b,#1a1f71 60%,#0a1440); }
+    .cc-preview.mastercard { background:linear-gradient(135deg,#3b1010,#5a1a1a 55%,#2b2b0a); }
+    .cc-preview.rupay { background:linear-gradient(135deg,#0d3b2e,#145a3f 55%,#10304a); }
+    .cc-preview.amex { background:linear-gradient(135deg,#0e4a5a,#117a8b 60%,#0a3340); }
+    .cc-top { display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1; }
+    .cc-chip { width:46px; height:34px; border-radius:7px; background:linear-gradient(135deg,#f3d77a,#b88a2c); position:relative; }
+    .cc-chip::before,.cc-chip::after { content:''; position:absolute; background:rgba(0,0,0,.25); }
+    .cc-chip::before { left:0; right:0; top:50%; height:1px; }
+    .cc-chip::after { top:0; bottom:0; left:50%; width:1px; }
+    .cc-brand { height:34px; display:flex; align-items:center; }
+    .cc-brand img { height:28px; filter:brightness(0) invert(1); }
+    .cc-brand img.color { filter:none; }
+    .cc-num { font-family:'Space Grotesk',monospace; font-size:1.45rem; letter-spacing:3px; color:#fff; position:relative; z-index:1; text-shadow:0 2px 6px rgba(0,0,0,.4); }
+    .cc-bottom { display:flex; justify-content:space-between; position:relative; z-index:1; }
+    .cc-bottom small { display:block; color:rgba(255,255,255,.55); font-size:.6rem; text-transform:uppercase; letter-spacing:1.2px; }
+    .cc-bottom span { color:#fff; font-size:.95rem; text-transform:uppercase; letter-spacing:1px; }
 
-    /* --- MAIN CONTENT --- */
-    .main-content {
-        padding: 40px;
-        position: relative;
-    }
+    /* Forms */
+    .pf-group { margin-bottom:18px; }
+    .pf-split { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .pf-group label { display:flex; justify-content:space-between; align-items:center; color:#c4c4d4; font-size:.88rem; margin-bottom:8px; }
+    .pf-input { width:100%; padding:15px 18px; background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.14); border-radius:13px; color:#fff; outline:none;
+        font-family:'Outfit',sans-serif; font-size:1.05rem; letter-spacing:.6px; transition:.25s; box-sizing:border-box; }
+    .pf-input::placeholder { color:#555; }
+    .pf-input:focus { border-color:#00ff88; box-shadow:0 0 18px rgba(0,255,136,.2); background:rgba(0,0,0,.7); }
+    .pf-row { display:flex; gap:10px; }
+    .pf-save { display:flex; align-items:center; gap:10px; color:#9a9ab0; font-size:.85rem; margin:4px 0 18px; cursor:pointer; }
+    .pf-save input { accent-color:#00ff88; width:16px; height:16px; }
+    .pay-btn { width:100%; padding:16px; border:none; border-radius:15px; cursor:pointer; font-weight:800; font-size:1.05rem; letter-spacing:2px; text-transform:uppercase;
+        background:linear-gradient(135deg,#00ff88,#00b35f); color:#00170c; box-shadow:0 10px 26px rgba(0,255,136,.3); transition:.3s; font-family:inherit; }
+    .pay-btn:hover { transform:translateY(-3px); box-shadow:0 16px 36px rgba(0,255,136,.5); }
+    .pay-btn.small { width:130px; flex-shrink:0; }
+    .pay-btn.coin { background:linear-gradient(135deg,#ffd700,#ffaa00); color:#201600; box-shadow:0 10px 26px rgba(255,215,0,.35); }
+    .pay-btn.disabled { background:#2a2a35; color:#777; cursor:not-allowed; box-shadow:none; }
+    .pay-btn.disabled:hover { transform:none; }
 
-    /* Summary Header */
-    .summary-box {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: rgba(255, 255, 255, 0.03);
-        padding: 20px;
-        border-radius: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        margin-bottom: 30px;
-    }
-    
-    .summary-title { color: #888; font-size: 0.8rem; margin-bottom: 5px; }
-    .summary-course-name { color: #fff; font-weight: bold; font-size: 1.1rem; }
-    .summary-total-label { color: #888; font-size: 0.8rem; margin-bottom: 5px; text-align: right; }
-    
-    .price-tag {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #00ff88;
-        text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-    }
-    
-    /* Coin Price Tag */
-    .coin-price-tag {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #ffd700;
-        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    }
+    /* Logo tiles (UPI / wallets / banks) */
+    .tile-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:22px; }
+    .tile-grid.three { grid-template-columns:repeat(3,1fr); }
+    .tile { background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:16px; cursor:pointer;
+        display:flex; align-items:center; gap:14px; color:#fff; font-weight:600; transition:.25s; }
+    .tile:hover { border-color:#00ff88; transform:translateY(-3px); background:rgba(0,255,136,.05); box-shadow:0 12px 26px rgba(0,255,136,.12); }
+    .tile.selected { border-color:#00ff88; background:rgba(0,255,136,.1); }
+    .tile-logo { width:44px; height:44px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .tile-logo img { width:26px; height:26px; object-fit:contain; }
+    .tile-logo.bank { color:#fff; font-weight:800; font-size:.85rem; letter-spacing:.5px; }
+    .tile small { display:block; color:#7c7c92; font-weight:400; font-size:.72rem; }
+    .tile-grid.three .tile { flex-direction:column; text-align:center; gap:8px; padding:16px 8px; font-size:.82rem; }
+    .or-line { text-align:center; color:#6d6d82; margin:22px 0; font-size:.78rem; letter-spacing:2px; display:flex; align-items:center; gap:14px; }
+    .or-line::before,.or-line::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.08); }
 
-    /* Inputs */
-    .form-group { margin-bottom: 20px; }
-    .form-group-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-group-upi { display: flex; gap: 10px; }
-    
-    .form-group label {
-        display: block;
-        color: #ccc;
-        font-size: 0.9rem;
-        margin-bottom: 8px;
-    }
-    .input-field {
-        width: 100%;
-        padding: 16px 20px;
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
-        color: white;
-        outline: none;
-        transition: all 0.3s ease;
-        font-family: 'Outfit', monospace;
-        font-size: 1.1rem;
-        backdrop-filter: blur(10px);
-        letter-spacing: 1px;
-    }
-    .input-field::placeholder { color: #555; }
-    .input-field-margin { margin-bottom: 25px; }
-    .input-field-nomargin { margin-bottom: 0; }
-    .select-pointer { cursor: pointer; }
-    
-    .input-field:focus {
-        border-color: #00ff88;
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-        background: rgba(0, 0, 0, 0.7);
-    }
+    .qr-box { background:#fff; padding:14px; display:inline-block; border-radius:16px; box-shadow:0 0 40px rgba(0,255,136,.2); }
+    .qr-apps { display:flex; justify-content:center; gap:10px; margin:18px 0 6px; }
+    .qr-timer { color:#ffb347; font-family:'Space Grotesk'; margin-top:14px; }
+    .text-center { text-align:center; }
+    .muted { color:#6d6d82; }
+    .danger { color:#ff3366; font-size:.9rem; font-weight:700; margin-top:12px; }
+    .success-txt { color:#00ff88; font-weight:700; margin-top:16px; }
 
-    /* Pay Button */
-    .btn-pay {
-        width: 100%;
-        padding: 16px;
-        background: linear-gradient(135deg, #00ff88, #00b35f);
-        color: #000;
-        border: none;
-        border-radius: 14px;
-        font-weight: 800;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
-    }
-    .btn-pay:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(0, 255, 136, 0.5);
-    }
-    .btn-pay-small { width: 120px; margin: 0; }
-    .btn-pay-qr { margin-top: 20px; }
+    .coin-balance { text-align:center; margin:26px 0; padding:22px; background:rgba(255,215,0,.05); border:1px dashed rgba(255,215,0,.3); border-radius:16px; }
+    .coin-balance small { color:#888; text-transform:uppercase; font-size:.8rem; }
+    .coin-balance div { font-family:'Space Grotesk'; font-size:2.4rem; color:#fff; font-weight:700; margin-top:6px; }
+    .coin-balance i { color:#ffd700; }
 
-    /* 🪙 COIN BUTTON STYLES 🪙 */
-    .btn-coin {
-        background: linear-gradient(135deg, #ffd700, #ffaa00);
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-    }
-    .btn-coin:hover {
-        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
-    }
-    .btn-disabled {
-        background: #333; color: #777; cursor: not-allowed; box-shadow: none;
-    }
-    .btn-disabled:hover { transform: none; box-shadow: none; }
+    /* Summary */
+    .pay-summary { padding:26px; position:sticky; top:20px; }
+    .pay-summary h3 { margin:0 0 18px; color:#fff; font-size:1.05rem; }
+    .sum-course { padding:16px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); margin-bottom:18px; }
+    .sum-course small { color:#7c7c92; font-size:.7rem; letter-spacing:1.2px; text-transform:uppercase; }
+    .sum-course div { color:#fff; font-weight:700; margin-top:4px; }
+    .sum-row { display:flex; justify-content:space-between; color:#a0a0b4; font-size:.92rem; padding:8px 0; }
+    .sum-row.discount { color:#00ff88; }
+    .sum-total { display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:8px; border-top:1px dashed rgba(255,255,255,.12); }
+    .sum-total span { color:#ccc; }
+    .sum-total strong { font-family:'Space Grotesk'; font-size:1.9rem; color:#00ff88; text-shadow:0 0 18px rgba(0,255,136,.3); }
+    .sum-total strong.gold { color:#ffd700; text-shadow:0 0 18px rgba(255,215,0,.3); }
+    .coupon { display:flex; gap:8px; margin:16px 0 4px; }
+    .coupon input { flex:1; padding:11px 14px; border-radius:11px; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:#fff; outline:none; text-transform:uppercase; font-family:inherit; min-width:0; }
+    .coupon button { padding:0 16px; border-radius:11px; border:1px solid rgba(0,243,255,.35); background:rgba(0,243,255,.1); color:#00f3ff; font-weight:700; cursor:pointer; font-family:inherit; }
+    .coupon-msg { font-size:.78rem; min-height:18px; margin-bottom:8px; }
+    .trust { margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,.07); display:grid; gap:10px; }
+    .trust div { color:#8a8aa0; font-size:.8rem; display:flex; align-items:center; gap:10px; }
+    .trust i { color:#00ff88; width:16px; text-align:center; }
 
-    .coin-balance-display {
-        text-align: center; margin: 30px 0; padding: 20px;
-        background: rgba(255, 215, 0, 0.05); border: 1px dashed rgba(255, 215, 0, 0.3);
-        border-radius: 15px;
-    }
+    .d-none { display:none !important; }
 
-    /* Tabs Logic */
-    .d-none { display: none !important; }
-    .tab-view { display: none; animation: slideUp 0.4s ease; }
-    .tab-view.active { display: block; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Overlay */
+    #overlay-screen { position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:9999; display:none; align-items:center; justify-content:center; flex-direction:column;
+        -webkit-backdrop-filter:blur(15px); backdrop-filter:blur(15px); overflow:hidden; }
+    .loader { width:100px; height:100px; border:3px solid transparent; border-top-color:#00ff88; border-radius:50%; animation:spin 1s linear infinite; position:relative; margin:0 auto; }
+    .loader::before { content:""; position:absolute; inset:5px; border:3px solid transparent; border-top-color:#00d4ff; border-radius:50%; animation:spin 2s linear infinite; }
+    .loader-gold { border-top-color:#ffd700; } .loader-gold::before { border-top-color:#ffaa00; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .processing-title { color:#fff; margin-top:30px; font-family:'Space Grotesk',sans-serif; letter-spacing:2px; font-size:1.5rem; text-align:center; }
+    .processing-text { color:#00ff88; font-size:.9rem; margin-top:10px; text-align:center; }
+    .processing-text-gold { color:#ffd700; }
+    .success-container { text-align:center; display:none; transform:scale(.5); opacity:0; transition:.5s cubic-bezier(.175,.885,.32,1.275); }
+    .success-container.show { transform:scale(1); opacity:1; }
+    .check-icon { width:120px; height:120px; background:#00ff88; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 30px; animation:pulse 1.5s infinite; }
+    .check-icon-gold { background:#ffd700; animation:pulseGold 1.5s infinite; }
+    .check-icon i { color:#000; font-size:4rem; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(0,255,136,.7);} 70%{box-shadow:0 0 0 24px rgba(0,255,136,0);} 100%{box-shadow:0 0 0 0 rgba(0,255,136,0);} }
+    @keyframes pulseGold { 0%{box-shadow:0 0 0 0 rgba(255,215,0,.7);} 70%{box-shadow:0 0 0 24px rgba(255,215,0,0);} 100%{box-shadow:0 0 0 0 rgba(255,215,0,0);} }
+    .status-msg { color:#fff; font-size:2rem; font-weight:800; margin-bottom:10px; }
+    .sub-msg { color:#aaa; }
+    .money-bill { position:absolute; top:-100px; animation:fall linear forwards; z-index:10000; opacity:.9; }
+    @keyframes fall { to { transform:translateY(110vh) rotate(360deg); } }
 
-    /* Text Alignments & Utilities */
-    .text-center { text-align: center; }
-    .text-white { color: white; }
-    .text-muted { color: #666; }
-    .text-danger { color: #ff3366; font-size: 0.9rem; font-weight: bold; margin-top: 10px; }
-    .text-success { color: #00ff88; font-weight: bold; margin-top: 20px; }
-    .mb-20 { margin-bottom: 20px; }
-    .my-20 { margin: 20px 0; }
-    
-    .qr-container { background: white; padding: 15px; display: inline-block; border-radius: 10px; }
-
-    /* UPI Grid */
-    .upi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-    .upi-box {
-        background: rgba(0, 0, 0, 0.5); padding: 18px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
-        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px; color: #fff; transition: all 0.3s ease; backdrop-filter: blur(10px);
-        font-size: 1.1rem; font-weight: 600;
-    }
-    .upi-box:hover { border-color: #00ff88; transform: translateY(-4px); background: rgba(0, 255, 136, 0.05); box-shadow: 0 12px 25px rgba(0, 255, 136, 0.15); }
-    .upi-logo { height: 28px; object-fit: contain; }
-
-    /* ========================================= */
-    /* --- SUPER COOL ANIMATION OVERLAY --- */
-    /* ========================================= */
-    #overlay-screen {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.95); z-index: 9999;
-        display: none; align-items: center; justify-content: center;
-        flex-direction: column; 
-        -webkit-backdrop-filter: blur(15px); /* Fixed Warning */
-        backdrop-filter: blur(15px);
-        overflow: hidden; /* For Confetti */
-    }
-
-    /* 1. Processing Loader */
-    .loader {
-        width: 100px; height: 100px;
-        border: 3px solid transparent;
-        border-top-color: #00ff88;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        position: relative;
-        margin: 0 auto;
-    }
-    .loader::before {
-        content: ""; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
-        border: 3px solid transparent; border-top-color: #00d4ff; border-radius: 50%;
-        animation: spin 2s linear infinite;
-    }
-    .loader-gold { border-top-color: #ffd700; }
-    .loader-gold::before { border-top-color: #ffaa00; }
-    
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    .processing-title { color: white; margin-top: 30px; font-family: 'Space Grotesk', sans-serif; letter-spacing: 2px; font-size: 1.5rem; text-align: center; }
-    .processing-text { color: #00ff88; font-size: 0.9rem; margin-top: 10px; text-align: center; }
-    .processing-text-gold { color: #ffd700; }
-
-    /* 2. Success Animation */
-    .success-container { text-align: center; display: none; transform: scale(0.5); opacity: 0; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .success-container.show { transform: scale(1); opacity: 1; }
-
-    .check-icon {
-        width: 120px; height: 120px; background: #00ff88;
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 30px; box-shadow: 0 0 60px rgba(0, 255, 136, 0.6);
-        animation: pulse 1.5s infinite;
-    }
-    .check-icon-gold { background: #ffd700; box-shadow: 0 0 60px rgba(255, 215, 0, 0.6); }
-    
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,255,136, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(0,255,136, 0); } 100% { box-shadow: 0 0 0 0 rgba(0,255,136, 0); } }
-    @keyframes pulse-gold { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
-    .check-icon-gold { animation: pulse-gold 1.5s infinite; }
-
-    .check-icon i { color: #000; font-size: 4rem; }
-
-    .status-msg { color: #fff; font-size: 2rem; font-weight: 800; margin-bottom: 10px; letter-spacing: 1px; }
-    .sub-msg { color: #aaa; font-size: 1rem; }
-
-    /* 3. Money Rain / Confetti */
-    .money-bill {
-        position: absolute; top: -100px; font-size: 30px;
-        animation: fall linear forwards; z-index: 10000; opacity: 0.9;
-    }
-    @keyframes fall {
-        0% { transform: translateY(0) rotate(0deg); }
-        100% { transform: translateY(110vh) rotate(360deg); }
-    }
-
+    @media (max-width:1200px){ .pay-layout{grid-template-columns:260px 1fr;} .pay-summary{grid-column:1/-1; position:static; order:-1;} }
+    @media (max-width:800px){ .pay-layout{grid-template-columns:1fr;} .pf-split{grid-template-columns:1fr;} .tile-grid.three{grid-template-columns:repeat(2,1fr);} }
 </style>
 
 <div id="overlay-screen">
@@ -308,406 +157,416 @@
         <h2 class="processing-title">PROCESSING</h2>
         <p class="processing-text" id="loading-text">Securely connecting to bank...</p>
     </div>
-
     <div id="state-success" class="success-container">
-        <div class="check-icon" id="success-check">
-            <i class="fas fa-check"></i>
-        </div>
+        <div class="check-icon" id="success-check"><i class="fas fa-check"></i></div>
         <div class="status-msg" id="success-title">PAYMENT SUCCESSFUL!</div>
         <div class="sub-msg" id="success-sub">Transaction ID: #TXN{{ course.id }}8829</div>
     </div>
 </div>
 
-<div class="checkout-wrapper">
-    <div class="pay-card">
-        
-        <div class="sidebar">
-            <h3>Payment Method</h3>
-            <div class="method-item active" onclick="setTab('card', this)">
-                <i class="far fa-credit-card"></i> Credit / Debit Card
+<div class="pay-page">
+<div class="pay-layout">
+
+    <!-- METHODS -->
+    <div class="pay-glass pay-menu">
+        <h3>Payment Method</h3>
+        <div class="pay-method active" onclick="setTab('card', this)"><i class="far fa-credit-card"></i><div>Credit / Debit Card<small>Visa, Mastercard, RuPay, Amex</small></div></div>
+        <div class="pay-method" onclick="setTab('upi', this)"><i class="fas fa-mobile-alt"></i><div>UPI<small>GPay, PhonePe, Paytm, BHIM</small></div></div>
+        <div class="pay-method" onclick="setTab('net', this)"><i class="fas fa-university"></i><div>Net Banking<small>All major Indian banks</small></div></div>
+        <div class="pay-method" onclick="setTab('wallet', this)"><i class="fas fa-wallet"></i><div>Wallets<small>Paytm, Amazon Pay, Mobikwik</small></div></div>
+        <div class="pay-method" onclick="setTab('qr', this)"><i class="fas fa-qrcode"></i><div>Scan QR<small>Pay from any UPI app</small></div></div>
+        {% if course.is_coin_purchasable %}
+        <div class="pay-method-sep"></div>
+        <div class="pay-method" onclick="setTab('coin', this)"><i class="fas fa-coins" style="color:#ffd700;"></i><div>LMS Coin Store<small>Unlock using earned coins</small></div></div>
+        {% endif %}
+    </div>
+
+    <!-- MAIN -->
+    <div class="pay-glass pay-main">
+
+        <!-- CARD -->
+        <div id="tab-card" class="pay-tab active">
+            <h3 class="pay-h">Enter Card Details</h3>
+
+            <div class="cc-preview" id="cc-preview">
+                <div class="cc-top"><div class="cc-chip"></div><div class="cc-brand" id="cc-brand"><i class="far fa-credit-card" style="color:#fff;font-size:1.6rem;"></i></div></div>
+                <div class="cc-num" id="cc-num">•••• •••• •••• ••••</div>
+                <div class="cc-bottom">
+                    <div><small>Card Holder</small><span id="cc-name">YOUR NAME</span></div>
+                    <div><small>Expires</small><span id="cc-exp">MM/YY</span></div>
+                </div>
             </div>
-            <div class="method-item" onclick="setTab('upi', this)">
-                <i class="fas fa-mobile-alt"></i> UPI / GPay
-            </div>
-            <div class="method-item" onclick="setTab('net', this)">
-                <i class="fas fa-university"></i> Net Banking
-            </div>
-            <div class="method-item" onclick="setTab('qr', this)">
-                <i class="fas fa-qrcode"></i> Scan QR
-            </div>
-            
-            {% if course.is_coin_purchasable %}
-            <div class="method-item" onclick="setTab('coin', this)" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-                <i class="fas fa-coins" style="color:#ffd700;"></i> LMS Coin Store
-            </div>
-            {% endif %}
+
+            <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'card')">
+                {% csrf_token %}
+                <div class="pf-group">
+                    <label><span>Card Number</span>
+                        <span style="display:flex;gap:6px;">
+                            <span class="tile-logo" style="width:36px;height:24px;border-radius:6px;"><img style="width:24px;height:12px;" src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
+                            <span class="tile-logo" style="width:36px;height:24px;border-radius:6px;"><img style="width:24px;height:16px;" src="https://cdn.simpleicons.org/mastercard/EB001B" alt="Mastercard"></span>
+                            <span class="tile-logo" style="width:36px;height:24px;border-radius:6px;color:#0b6b3a;font-size:.55rem;font-weight:800;">RuPay</span>
+                        </span>
+                    </label>
+                    <input type="text" id="card-number" class="pf-input" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number" required>
+                </div>
+                <div class="pf-split">
+                    <div class="pf-group"><label>Expiry Date</label><input type="text" id="card-exp" class="pf-input" inputmode="numeric" placeholder="MM / YY" maxlength="5" autocomplete="cc-exp" required></div>
+                    <div class="pf-group"><label>CVV</label><input type="password" id="card-cvv" class="pf-input" inputmode="numeric" placeholder="•••" maxlength="4" autocomplete="cc-csc" required></div>
+                </div>
+                <div class="pf-group"><label>Card Holder Name</label><input type="text" id="card-name" class="pf-input" placeholder="Name on card" autocomplete="cc-name" required></div>
+                <label class="pf-save"><input type="checkbox" checked> Save this card securely for future payments</label>
+                <div class="danger" id="card-error" style="margin:0 0 12px;"></div>
+                <button type="submit" class="pay-btn">PAY ₹<span class="js-final">{{ course.price }}</span></button>
+            </form>
         </div>
 
-        <div class="main-content">
-            
-            <div class="summary-box" id="rupee-header">
-                <div>
-                    <div class="summary-title">PAYING FOR</div>
-                    <div class="summary-course-name">{{ course.title }}</div>
-                </div>
-                <div>
-                    <div class="summary-total-label">TOTAL</div>
-                    <div class="price-tag">₹{{ course.price }}</div>
-                </div>
+        <!-- UPI -->
+        <div id="tab-upi" class="pay-tab">
+            <h3 class="pay-h">Pay via UPI App</h3>
+            <div class="tile-grid">
+                <div class="tile" onclick="triggerDirectPay('gpay')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="Google Pay"></div><div>Google Pay<small>gpay@upi</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('phonepe')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></div><div>PhonePe<small>ybl / ibl</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('paytm')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></div><div>Paytm<small>paytm UPI</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('bhim')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/upi/097939" alt="BHIM UPI"></div><div>BHIM UPI<small>NPCI</small></div></div>
             </div>
-
-            <div class="summary-box d-none" id="coin-header" style="border-color: rgba(255, 215, 0, 0.3); background: rgba(255, 215, 0, 0.05);">
-                <div>
-                    <div class="summary-title" style="color: #ffd700;">UNLOCKING</div>
-                    <div class="summary-course-name">{{ course.title }}</div>
-                </div>
-                <div>
-                    <div class="summary-total-label" style="color: #ffd700;">COIN PRICE</div>
-                    <div class="coin-price-tag" id="required-coins"></div>
-                </div>
-            </div>
-
-            <div id="tab-card" class="tab-view active">
-                <h3 class="text-white mb-20">Enter Card Details</h3>
-                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'card')">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>Card Number</span>
-                            <span style="display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 8px;">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style="height: 12px; filter: brightness(0) invert(1);">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 16px;">
-                            </span>
-                        </label>
-                        <input type="text" class="input-field input-field-margin" placeholder="0000 0000 0000 0000" maxlength="19" required>
-                    </div>
-                    <div class="form-group-split">
-                        <div class="form-group">
-                            <label>Expiry Date</label>
-                            <input type="text" class="input-field" placeholder="MM / YY" required>
-                        </div>
-                        <div class="form-group">
-                            <label>CVV</label>
-                            <input type="password" class="input-field" placeholder="123" maxlength="3" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Card Holder Name</label>
-                        <input type="text" class="input-field" placeholder="Name on card" required>
-                    </div>
-                    <button type="submit" class="btn-pay">PAY ₹{{ course.price }}</button>
-                </form>
-            </div>
-
-            <div id="tab-upi" class="tab-view">
-                <h3 class="text-white mb-20">Pay via UPI App</h3>
-                <div class="upi-grid">
-                    <div class="upi-box" onclick="triggerDirectPay('gpay')">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" class="upi-logo" style="height: 24px;"> 
-                        <span>Google Pay</span>
-                    </div>
-                    <div class="upi-box" onclick="triggerDirectPay('phonepe')">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" class="upi-logo"> 
-                        <span>PhonePe</span>
-                    </div>
-                    <div class="upi-box" onclick="triggerDirectPay('paytm')">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm" class="upi-logo" style="height: 20px;"> 
-                        <span>Paytm</span>
-                    </div>
-                    <div class="upi-box" onclick="triggerDirectPay('bhim')">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" alt="BHIM UPI" class="upi-logo" style="height: 22px;"> 
-                        <span>BHIM UPI</span>
+            <div class="or-line">OR ENTER UPI ID</div>
+            <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'upi')">
+                {% csrf_token %}
+                <div class="pf-group">
+                    <label>UPI ID</label>
+                    <div class="pf-row">
+                        <input type="text" class="pf-input" placeholder="mobilenumber@upi" pattern="[\w.\-]{2,}@[A-Za-z]{2,}" title="Example: name@okaxis" required>
+                        <button type="submit" class="pay-btn small">VERIFY & PAY</button>
                     </div>
                 </div>
-                
-                <p class="text-center text-muted my-20">-- OR ENTER UPI ID --</p>
-                
-                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'upi')">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label>UPI ID</label>
-                        <div class="form-group-upi">
-                            <input type="text" class="input-field input-field-nomargin" placeholder="mobileNumber@upi" required>
-                            <button type="submit" class="btn-pay btn-pay-small">VERIFY</button>
-                        </div>
-                    </div>
-                </form>
-                <form id="hidden-form" action="{% url 'process_payment' course.id %}" method="POST" class="d-none">{% csrf_token %}</form>
-            </div>
+            </form>
+            <form id="hidden-form" action="{% url 'process_payment' course.id %}" method="POST" class="d-none">{% csrf_token %}</form>
+        </div>
 
-            <div id="tab-net" class="tab-view">
-                <h3 class="text-white mb-20">Select Bank</h3>
-                <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'net')">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <select class="input-field select-pointer">
-                            <option>State Bank of India</option>
-                            <option>HDFC Bank</option>
-                            <option>ICICI Bank</option>
-                            <option>Axis Bank</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-pay">PAY ₹{{ course.price }}</button>
-                </form>
-            </div>
-
-            <div id="tab-qr" class="tab-view text-center">
-                <h3 class="text-white mb-20">Scan QR to Pay</h3>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=learning365@upi&pn=Learning365&am={{ course.price }}" alt="QR">
+        <!-- NET BANKING -->
+        <div id="tab-net" class="pay-tab">
+            <h3 class="pay-h">Select Your Bank</h3>
+            <form action="{% url 'process_payment' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'rupee', 'net')">
+                {% csrf_token %}
+                <div class="tile-grid three" id="bank-grid">
+                    <div class="tile selected" data-bank="State Bank of India"><div class="tile-logo bank" style="background:#1a4f9c;">SBI</div>SBI</div>
+                    <div class="tile" data-bank="HDFC Bank"><div class="tile-logo bank" style="background:#004c8f;">HDFC</div>HDFC Bank</div>
+                    <div class="tile" data-bank="ICICI Bank"><div class="tile-logo bank" style="background:#b02a30;">ICICI</div>ICICI Bank</div>
+                    <div class="tile" data-bank="Axis Bank"><div class="tile-logo bank" style="background:#97144d;">AXIS</div>Axis Bank</div>
+                    <div class="tile" data-bank="Kotak Mahindra Bank"><div class="tile-logo bank" style="background:#d71920;">KMB</div>Kotak</div>
+                    <div class="tile" data-bank="Punjab National Bank"><div class="tile-logo bank" style="background:#a2262b;">PNB</div>PNB</div>
                 </div>
-                <p class="text-success">Waiting for payment...</p>
-                <button type="button" class="btn-pay btn-pay-qr" onclick="handlePayment(event, document.getElementById('hidden-form'), 'rupee', 'qr')">I Have Paid</button>
-            </div>
-
-            <div id="tab-coin" class="tab-view text-center">
-                <h3 style="color:#ffd700; margin-bottom:10px;"><i class="fas fa-crown"></i> Premium Unlock</h3>
-                <p class="text-muted">Use your hard-earned learning coins to get this course for free!</p>
-                
-                <div class="coin-balance-display">
-                    <div style="color:#888; font-size:0.9rem; margin-bottom:10px; text-transform: uppercase;">Your Current Balance</div>
-                    <div style="font-size:2.5rem; font-family:'Space Grotesk'; color:#fff; font-weight:bold;">
-                        <i class="fas fa-coins" style="color:#ffd700;"></i> <span id="user-balance">{{ request.user.lms_coins }}</span>
-                    </div>
+                <div class="pf-group">
+                    <label>Other Banks</label>
+                    <select class="pf-input" id="bank-select" style="cursor:pointer;">
+                        <option value="">— Select another bank —</option>
+                        <option>Bank of Baroda</option><option>Canara Bank</option><option>Union Bank of India</option>
+                        <option>Yes Bank</option><option>IndusInd Bank</option><option>IDFC FIRST Bank</option><option>Bank of India</option>
+                    </select>
                 </div>
+                <div class="muted" style="font-size:.82rem;margin-bottom:16px;"><i class="fas fa-info-circle"></i> You'll be redirected to <b id="bank-chosen" style="color:#fff;">State Bank of India</b> to authorise this payment.</div>
+                <button type="submit" class="pay-btn">PAY ₹<span class="js-final">{{ course.price }}</span></button>
+            </form>
+        </div>
 
-                <form id="coin-purchase-form" action="{% url 'purchase_with_coins' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'coin')">
-                    {% csrf_token %}
-                    <div id="coin-action-area"></div>
-                </form>
+        <!-- WALLETS -->
+        <div id="tab-wallet" class="pay-tab">
+            <h3 class="pay-h">Pay with Wallet</h3>
+            <div class="tile-grid">
+                <div class="tile" onclick="triggerDirectPay('paytm')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></div><div>Paytm Wallet<small>Balance & Postpaid</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('amazon')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/amazonpay/FF9900" alt="Amazon Pay"></div><div>Amazon Pay<small>Wallet balance</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('phonepe')"><div class="tile-logo"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></div><div>PhonePe Wallet<small>Instant debit</small></div></div>
+                <div class="tile" onclick="triggerDirectPay('mobikwik')"><div class="tile-logo bank" style="background:#2f80ed;">MK</div><div>Mobikwik<small>Wallet balance</small></div></div>
             </div>
+            <div class="muted" style="font-size:.82rem;"><i class="fas fa-lock" style="color:#00ff88;"></i> Wallet payments are processed over a secure, encrypted channel.</div>
+        </div>
 
+        <!-- QR -->
+        <div id="tab-qr" class="pay-tab text-center">
+            <h3 class="pay-h">Scan QR to Pay</h3>
+            <div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=190x190&data=upi://pay?pa=learning365@upi%26pn=Learning365%26am={{ course.price }}" alt="UPI QR code" width="190" height="190"></div>
+            <div class="qr-apps">
+                <span class="tile-logo" style="width:38px;height:38px;"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="GPay"></span>
+                <span class="tile-logo" style="width:38px;height:38px;"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></span>
+                <span class="tile-logo" style="width:38px;height:38px;"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></span>
+                <span class="tile-logo" style="width:38px;height:38px;"><img src="https://cdn.simpleicons.org/upi/097939" alt="UPI"></span>
+            </div>
+            <div class="qr-timer"><i class="far fa-clock"></i> QR expires in <span id="qr-timer">05:00</span></div>
+            <p class="success-txt">Waiting for payment...</p>
+            <button type="button" class="pay-btn" style="max-width:300px;margin-top:10px;" onclick="handlePayment(event, document.getElementById('hidden-form'), 'rupee', 'qr')">I Have Paid</button>
+        </div>
+
+        <!-- COIN -->
+        <div id="tab-coin" class="pay-tab text-center">
+            <h3 class="pay-h" style="color:#ffd700;"><i class="fas fa-crown"></i> Premium Unlock</h3>
+            <p class="muted">Use your hard-earned learning coins to get this course for free!</p>
+            <div class="coin-balance"><small>Your Current Balance</small><div><i class="fas fa-coins"></i> <span id="user-balance">{{ request.user.lms_coins }}</span></div></div>
+            <form id="coin-purchase-form" action="{% url 'purchase_with_coins' course.id %}" method="POST" onsubmit="return handlePayment(event, this, 'coin')">
+                {% csrf_token %}
+                <div id="coin-action-area"></div>
+            </form>
         </div>
     </div>
+
+    <!-- SUMMARY -->
+    <div class="pay-glass pay-summary">
+        <h3><i class="fas fa-receipt" style="color:#00f3ff;"></i> Order Summary</h3>
+        <div class="sum-course"><small id="sum-label">Paying for</small><div>{{ course.title }}</div></div>
+
+        <div id="rupee-summary">
+            <div class="sum-row"><span>Course price</span><span>₹{{ course.price }}</span></div>
+            <div class="sum-row discount d-none" id="disc-row"><span>Coupon discount</span><span id="disc-amt">-₹0</span></div>
+            <div class="sum-row"><span>Platform fee</span><span>₹0</span></div>
+            <div class="sum-total"><span>Total</span><strong>₹<span class="js-final">{{ course.price }}</span></strong></div>
+            <div class="coupon"><input type="text" id="coupon-input" placeholder="Coupon code"><button type="button" onclick="applyCoupon()">APPLY</button></div>
+            <div class="coupon-msg" id="coupon-msg"></div>
+        </div>
+
+        <div id="coin-summary" class="d-none">
+            <div class="sum-row"><span>Course price</span><span>{{ course.coin_price|default:0 }} coins</span></div>
+            <div class="sum-total"><span>Total</span><strong class="gold"><i class="fas fa-coins" style="font-size:1.2rem;"></i> <span id="required-coins"></span></strong></div>
+        </div>
+
+        <div class="trust">
+            <div><i class="fas fa-lock"></i> 256-bit SSL encrypted payment</div>
+            <div><i class="fas fa-bolt"></i> Instant course access after payment</div>
+            <div><i class="fas fa-infinity"></i> Lifetime access & certificate</div>
+        </div>
+    </div>
+
+</div>
 </div>
 
 <script>
-    // --- 🪙 COIN SYSTEM LOGIC 🪙 ---
-    const coursePrice = parseInt("{{ course.price }}");
-    const requiredCoins = parseInt("{{ course.coin_price|default:'0' }}"); // Use assigned coin price
-    const userCoins = parseInt("{{ request.user.lms_coins }}");
-    
-    // Set UI Values
+    // --- COIN SYSTEM ---
+    const coursePrice = parseInt("{{ course.price }}") || 0;
+    const requiredCoins = parseInt("{{ course.coin_price|default:'0' }}") || 0;
+    const userCoins = parseInt("{{ request.user.lms_coins }}") || 0;
+
     document.getElementById('required-coins').innerText = requiredCoins;
     const actionArea = document.getElementById('coin-action-area');
-
     if (userCoins >= requiredCoins) {
-        actionArea.innerHTML = `<button type="submit" class="btn-pay btn-coin"><i class="fas fa-unlock-alt"></i> UNLOCK WITH ${requiredCoins} COINS</button>`;
+        actionArea.innerHTML = `<button type="submit" class="pay-btn coin"><i class="fas fa-unlock-alt"></i> UNLOCK WITH ${requiredCoins} COINS</button>`;
     } else {
-        const shortage = requiredCoins - userCoins;
-        actionArea.innerHTML = `
-            <button type="button" class="btn-pay btn-disabled" disabled><i class="fas fa-lock"></i> NOT ENOUGH COINS</button>
-            <div class="text-danger">You need ${shortage} more coins. Keep learning to earn!</div>
-        `;
+        actionArea.innerHTML = `<button type="button" class="pay-btn disabled" disabled><i class="fas fa-lock"></i> NOT ENOUGH COINS</button>
+            <div class="danger">You need ${requiredCoins - userCoins} more coins. Keep learning to earn!</div>`;
     }
 
-    // --- Tabs Logic ---
+    // --- Tabs ---
     function setTab(id, btn) {
-        document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.method-item').forEach(b => {
-            b.classList.remove('active');
-            b.classList.remove('coin-active');
-        });
-        
+        document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.pay-method').forEach(b => b.classList.remove('active', 'coin-active'));
         document.getElementById('tab-' + id).classList.add('active');
-        
-        // Handle UI Swaps for Coin Store
-        if(id === 'coin') {
-            btn.classList.add('coin-active');
-            document.getElementById('rupee-header').classList.add('d-none');
-            document.getElementById('coin-header').classList.remove('d-none');
-        } else {
-            btn.classList.add('active');
-            document.getElementById('rupee-header').classList.remove('d-none');
-            document.getElementById('coin-header').classList.add('d-none');
-        }
+        const isCoin = id === 'coin';
+        btn.classList.add(isCoin ? 'coin-active' : 'active');
+        document.getElementById('rupee-summary').classList.toggle('d-none', isCoin);
+        document.getElementById('coin-summary').classList.toggle('d-none', !isCoin);
+        document.getElementById('sum-label').innerText = isCoin ? 'Unlocking' : 'Paying for';
     }
 
-    // --- WEB AUDIO API SYNTHESIZER ---
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    // --- Card: live preview, formatting, validation ---
+    const numEl = document.getElementById('card-number'), expEl = document.getElementById('card-exp'),
+          cvvEl = document.getElementById('card-cvv'), nameEl = document.getElementById('card-name'),
+          prev = document.getElementById('cc-preview'), brandEl = document.getElementById('cc-brand'),
+          errEl = document.getElementById('card-error');
+
+    function detectBrand(n) {
+        if (/^4/.test(n)) return 'visa';
+        if (/^(5[1-5]|2[2-7])/.test(n)) return 'mastercard';
+        if (/^3[47]/.test(n)) return 'amex';
+        if (/^(60|65|81|82|508)/.test(n)) return 'rupay';
+        return '';
+    }
+    function luhn(n) {
+        let s = 0, alt = false;
+        for (let i = n.length - 1; i >= 0; i--) {
+            let d = +n[i];
+            if (alt) { d *= 2; if (d > 9) d -= 9; }
+            s += d; alt = !alt;
+        }
+        return n.length >= 13 && s % 10 === 0;
+    }
+    numEl.addEventListener('input', () => {
+        const raw = numEl.value.replace(/\D/g, '').slice(0, 16);
+        numEl.value = raw.replace(/(.{4})/g, '$1 ').trim();
+        const padded = (raw + '•'.repeat(16)).slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+        document.getElementById('cc-num').innerText = padded;
+        const b = detectBrand(raw);
+        prev.className = 'cc-preview ' + b;
+        const logos = {
+            visa: '<img src="https://cdn.simpleicons.org/visa/ffffff" alt="Visa">',
+            mastercard: '<img src="https://cdn.simpleicons.org/mastercard/ffffff" alt="Mastercard">',
+            amex: '<img src="https://cdn.simpleicons.org/americanexpress/ffffff" alt="Amex">',
+            rupay: '<span style="color:#fff;font-weight:800;letter-spacing:1px;font-size:1.1rem;">RuPay</span>'
+        };
+        brandEl.innerHTML = logos[b] || '<i class="far fa-credit-card" style="color:#fff;font-size:1.6rem;"></i>';
+    });
+    expEl.addEventListener('input', () => {
+        let v = expEl.value.replace(/\D/g, '').slice(0, 4);
+        if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+        expEl.value = v;
+        document.getElementById('cc-exp').innerText = v || 'MM/YY';
+    });
+    cvvEl.addEventListener('input', () => { cvvEl.value = cvvEl.value.replace(/\D/g, ''); });
+    nameEl.addEventListener('input', () => { document.getElementById('cc-name').innerText = nameEl.value || 'YOUR NAME'; });
+
+    function validateCard() {
+        const raw = numEl.value.replace(/\s/g, '');
+        if (!luhn(raw)) return 'Invalid card number.';
+        const m = expEl.value.match(/^(\d{2})\/(\d{2})$/);
+        if (!m || +m[1] < 1 || +m[1] > 12) return 'Invalid expiry date.';
+        const now = new Date(), yy = now.getFullYear() % 100, mm = now.getMonth() + 1;
+        if (+m[2] < yy || (+m[2] === yy && +m[1] < mm)) return 'This card has expired.';
+        if (cvvEl.value.length < 3) return 'Invalid CVV.';
+        return '';
+    }
+
+    // --- Net banking ---
+    const bankChosen = document.getElementById('bank-chosen');
+    document.querySelectorAll('#bank-grid .tile').forEach(t => t.addEventListener('click', () => {
+        document.querySelectorAll('#bank-grid .tile').forEach(x => x.classList.remove('selected'));
+        t.classList.add('selected');
+        document.getElementById('bank-select').value = '';
+        bankChosen.innerText = t.dataset.bank;
+    }));
+    document.getElementById('bank-select').addEventListener('change', e => {
+        if (!e.target.value) return;
+        document.querySelectorAll('#bank-grid .tile').forEach(x => x.classList.remove('selected'));
+        bankChosen.innerText = e.target.value;
+    });
+
+    // --- Coupon (demo codes, UI-side) ---
+    let discount = 0;
+    function setFinal() {
+        const final = Math.max(coursePrice - discount, 0);
+        document.querySelectorAll('.js-final').forEach(e => e.innerText = final);
+    }
+    function applyCoupon() {
+        const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+        const msg = document.getElementById('coupon-msg');
+        const codes = { 'LEARN10': 0.10, 'WELCOME20': 0.20 };
+        if (codes[code]) {
+            discount = Math.round(coursePrice * codes[code]);
+            document.getElementById('disc-row').classList.remove('d-none');
+            document.getElementById('disc-amt').innerText = '-₹' + discount;
+            msg.style.color = '#00ff88'; msg.innerText = 'Coupon applied!';
+        } else {
+            discount = 0;
+            document.getElementById('disc-row').classList.add('d-none');
+            msg.style.color = '#ff3366'; msg.innerText = 'Invalid coupon code.';
+        }
+        setFinal();
+    }
+
+    // --- QR countdown ---
+    let qrLeft = 300;
+    setInterval(() => {
+        if (qrLeft <= 0) return;
+        qrLeft--;
+        const el = document.getElementById('qr-timer');
+        if (el) el.innerText = String(Math.floor(qrLeft / 60)).padStart(2, '0') + ':' + String(qrLeft % 60).padStart(2, '0');
+    }, 1000);
+
+    // --- WEB AUDIO SYNTH ---
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx;
-
-    function playCustomSound(provider) {
-        if (!audioCtx) audioCtx = new AudioContext();
+    function tone(type, freqs, dur, vol, start) {
+        const t = audioCtx.currentTime + (start || 0);
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = type; o.connect(g); g.connect(audioCtx.destination);
+        freqs.forEach(([f, off]) => o.frequency.setValueAtTime(f, t + off));
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(vol, t + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.01, t + dur);
+        o.start(t); o.stop(t + dur);
+    }
+    function playCustomSound(p) {
+        if (!audioCtx) audioCtx = new AudioCtx();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-
-        const t = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        
-        if (provider === 'gpay') {
-            // Google Pay: Smooth ascending tri-tone
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(523.25, t); // C5
-            osc.frequency.exponentialRampToValueAtTime(659.25, t + 0.15); // E5
-            osc.frequency.exponentialRampToValueAtTime(783.99, t + 0.3); // G5
-            gainNode.gain.setValueAtTime(0, t);
-            gainNode.gain.linearRampToValueAtTime(0.5, t + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
-            osc.start(t);
-            osc.stop(t + 0.6);
-        } else if (provider === 'phonepe') {
-            // PhonePe: Quick double bell
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(880, t);
-            gainNode.gain.setValueAtTime(0, t);
-            gainNode.gain.linearRampToValueAtTime(0.4, t + 0.05);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-            osc.start(t); osc.stop(t + 0.2);
-            
-            const osc2 = audioCtx.createOscillator();
-            const gain2 = audioCtx.createGain();
-            osc2.type = 'triangle';
-            osc2.frequency.setValueAtTime(1108.73, t + 0.2); // C#6
-            osc2.connect(gain2);
-            gain2.connect(audioCtx.destination);
-            gain2.gain.setValueAtTime(0, t + 0.2);
-            gain2.gain.linearRampToValueAtTime(0.4, t + 0.25);
-            gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-            osc2.start(t + 0.2); osc2.stop(t + 0.5);
-        } else if (provider === 'paytm') {
-            // Paytm: Distinct longer melody
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(587.33, t); // D5
-            osc.frequency.setValueAtTime(739.99, t + 0.15); // F#5
-            osc.frequency.setValueAtTime(880.00, t + 0.3); // A5
-            gainNode.gain.setValueAtTime(0, t);
-            gainNode.gain.linearRampToValueAtTime(0.2, t + 0.05);
-            gainNode.gain.setValueAtTime(0.2, t + 0.3);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.7);
-            osc.start(t);
-            osc.stop(t + 0.7);
-        } else if (provider === 'coin') {
-            // LMS Coin: Arcade coin sound (Mario-esque)
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(987.77, t); // B5
-            osc.frequency.setValueAtTime(1318.51, t + 0.1); // E6
-            gainNode.gain.setValueAtTime(0, t);
-            gainNode.gain.linearRampToValueAtTime(0.2, t + 0.05);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-            osc.start(t);
-            osc.stop(t + 0.4);
-        } else {
-            // Card / Generic / NetBanking: Clean sharp cash ding
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(1200, t);
-            osc.frequency.exponentialRampToValueAtTime(2400, t + 0.1);
-            gainNode.gain.setValueAtTime(0, t);
-            gainNode.gain.linearRampToValueAtTime(0.6, t + 0.05);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
-            osc.start(t);
-            osc.stop(t + 0.6);
-        }
+        if (p === 'gpay') tone('sine', [[523.25,0],[659.25,.15],[783.99,.3]], .6, .5);
+        else if (p === 'phonepe') { tone('triangle', [[880,0]], .2, .4); tone('triangle', [[1108.73,0]], .3, .4, .2); }
+        else if (p === 'paytm') tone('square', [[587.33,0],[739.99,.15],[880,.3]], .7, .2);
+        else if (p === 'coin') tone('square', [[987.77,0],[1318.51,.1]], .4, .2);
+        else tone('sine', [[1200,0],[2400,.1]], .6, .6);
     }
 
-    // --- PAYMENT ANIMATION LOGIC ---
+    // --- Payment flow ---
     function handlePayment(e, form, type, provider) {
-        e.preventDefault(); 
-        if (!provider) provider = type; // fallback
+        e.preventDefault();
+        if (!provider) provider = type;
+
+        if (provider === 'card') {
+            const err = validateCard();
+            errEl.innerText = err;
+            if (err) return false;
+        }
 
         const overlay = document.getElementById('overlay-screen');
         const processing = document.getElementById('state-processing');
         const success = document.getElementById('state-success');
         const text = document.getElementById('loading-text');
-        
-        // Theme Elements
         const mainLoader = document.getElementById('main-loader');
         const successCheck = document.getElementById('success-check');
         const successTitle = document.getElementById('success-title');
         const successSub = document.getElementById('success-sub');
-
-        // Processing Sound
         const processSound = document.getElementById('sound-processing');
 
-        // Apply Gold Theme if paying with coins
-        if(type === 'coin') {
-            mainLoader.classList.add('loader-gold');
-            text.classList.add('processing-text-gold');
-            text.innerText = "Verifying Coin Balance...";
+        if (type === 'coin') {
+            mainLoader.classList.add('loader-gold'); text.classList.add('processing-text-gold');
+            text.innerText = 'Verifying Coin Balance...';
         } else {
-            mainLoader.classList.remove('loader-gold');
-            text.classList.remove('processing-text-gold');
-            text.innerText = "Securely connecting to bank...";
+            mainLoader.classList.remove('loader-gold'); text.classList.remove('processing-text-gold');
+            text.innerText = provider === 'net' ? 'Redirecting to ' + bankChosen.innerText + '...' : 'Securely connecting to bank...';
         }
 
-        // 1. Start Processing Phase
         overlay.style.display = 'flex';
         processSound.volume = 0.5;
-        processSound.play().catch(e => console.log("Audio play failed:", e));
+        processSound.play().catch(() => {});
 
-        // Simulate Connection Steps
-        if(type === 'rupee') {
-            setTimeout(() => { text.innerText = "Verifying Credentials..."; }, 1500);
-            setTimeout(() => { text.innerText = "Requesting Bank Authorization..."; }, 3000);
+        if (type === 'rupee') {
+            setTimeout(() => { text.innerText = 'Verifying Credentials...'; }, 1500);
+            setTimeout(() => { text.innerText = 'Requesting Bank Authorization...'; }, 3000);
         } else {
-            setTimeout(() => { text.innerText = "Deducting " + requiredCoins + " Coins..."; }, 1500);
-            setTimeout(() => { text.innerText = "Unlocking Course Content..."; }, 3000);
+            setTimeout(() => { text.innerText = 'Deducting ' + requiredCoins + ' Coins...'; }, 1500);
+            setTimeout(() => { text.innerText = 'Unlocking Course Content...'; }, 3000);
         }
 
-        // 2. Success Phase (After 4.5 seconds)
         setTimeout(() => {
             processing.style.display = 'none';
             success.style.display = 'block';
-            
-            if(type === 'coin') {
+            if (type === 'coin') {
                 successCheck.classList.add('check-icon-gold');
-                successTitle.innerText = "COURSE UNLOCKED!";
-                successTitle.style.color = "#ffd700";
-                successSub.innerText = "-" + requiredCoins + " Coins Deducted";
+                successTitle.innerText = 'COURSE UNLOCKED!';
+                successTitle.style.color = '#ffd700';
+                successSub.innerText = '-' + requiredCoins + ' Coins Deducted';
             }
-
-            setTimeout(() => success.classList.add('show'), 50); 
-            
-            // Stop processing sound & Play Custom Synthesized Success Sound
-            processSound.pause();
-            processSound.currentTime = 0;
+            setTimeout(() => success.classList.add('show'), 50);
+            processSound.pause(); processSound.currentTime = 0;
             playCustomSound(provider);
-
-            // Vibration (if mobile)
             if (navigator.vibrate) navigator.vibrate([200]);
-
-            // Trigger Money Rain
             createMoneyRain(type);
-
-            // 3. Final Redirect (After animation)
-            setTimeout(() => {
-                form.submit();
-            }, 3500);
-
+            setTimeout(() => form.submit(), 3500);
         }, 4500);
 
         return false;
     }
 
     function triggerDirectPay(provider) {
-        if(confirm("Open App to complete payment?")) {
-            const form = document.getElementById('hidden-form');
-            handlePayment({ preventDefault: () => {} }, form, 'rupee', provider);
+        if (confirm('Open ' + provider.toUpperCase() + ' to complete payment?')) {
+            handlePayment({ preventDefault: () => {} }, document.getElementById('hidden-form'), 'rupee', provider);
         }
     }
 
-    // --- MONEY RAIN ANIMATION ---
     function createMoneyRain(type) {
-        let symbols = ['💵', '💰', '✨', '🎉', '💸', '🤑'];
-        if (type === 'coin') {
-            symbols = ['🪙', '⭐', '✨', '🏆', '👑']; // Golden items for coin payment
-        }
-
+        const symbols = type === 'coin' ? ['🪙','⭐','✨','🏆','👑'] : ['💵','💰','✨','🎉','💸','🤑'];
         const overlay = document.getElementById('overlay-screen');
-
         for (let i = 0; i < 60; i++) {
             const el = document.createElement('div');
             el.classList.add('money-bill');
             el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-            
-            // Random positioning
             el.style.left = Math.random() * 100 + 'vw';
-            el.style.animationDuration = (Math.random() * 1.5 + 1) + 's'; // Speed
-            el.style.fontSize = (Math.random() * 30 + 20) + 'px'; // Size
-            
+            el.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
+            el.style.fontSize = (Math.random() * 30 + 20) + 'px';
             overlay.appendChild(el);
         }
     }
