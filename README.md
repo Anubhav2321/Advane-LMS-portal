@@ -184,6 +184,7 @@ AdvancedLMS features enterprise-grade permission segregation. The custom `User` 
 > [!IMPORTANT]
 > **Data Integrity Guard**: An automated `pre_save` signal hook on the `User` model guarantees that any account assigned `is_staff=True` or `is_superuser=True` is strictly set to `is_student=False`. Administrative profiles are completely segregated from student leaderboards and enrollment queries.
 
+
 ---
 
 ## 💻 Native Multi-Compiler Execution Matrix
