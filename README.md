@@ -169,6 +169,7 @@ AdvancedLMS/
 
 AdvancedLMS features enterprise-grade permission segregation. The custom `User` model (`students.models.User`) implements strict DB hooks to prevent privilege elevation and cross-panel leakage:
 
+
 | Capability | Super Admin | Staff Administrator | Faculty | Student |
 | :--- | :---: | :---: | :---: | :---: |
 | **System Superuser (`is_superuser=True`)** | ✅ Full | ❌ Restricted | ❌ Restricted | ❌ Restricted |
