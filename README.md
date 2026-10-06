@@ -191,6 +191,7 @@ AdvancedLMS features enterprise-grade permission segregation. The custom `User` 
 
 The internal compiler engine (`students/compiler_service.py`) dynamically detects installed system toolchains and securely executes code submissions:
 
+
 ```
 User Code Submission (Web UI)
        │
