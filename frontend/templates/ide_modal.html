@@ -574,9 +574,12 @@ Output and compilation diagnostics will appear here in real-time...</pre>
     }
 
     // Initialize Ace Editor
+    let vsAceRetries = 0;
     function initAceEditor() {
         if (typeof ace === 'undefined') {
-            setTimeout(initAceEditor, 300);
+            if (vsAceRetries++ < 20) {
+                setTimeout(initAceEditor, 250);
+            }
             return;
         }
 

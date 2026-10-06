@@ -216,38 +216,48 @@ def student_dashboard(request):
         enrollment.real_progress = progress_data['percent']
         enrollment.lessons_completed = progress_data['completed']
         enrollment.total_lessons = progress_data['total']
-        enrollment.lessons_remaining = progress_data['total'] - progress_data['completed']
-        enrollment.ring_offset = round(163.36 - (enrollment.real_progress / 100.0) * 163.36, 2)
+        enrollment.lessons_remaining = max(0, progress_data['total'] - progress_data['completed'])
+        enrollment.ring_offset = round(163.36 - (min(100.0, max(0.0, enrollment.real_progress)) / 100.0) * 163.36, 2)
         
         # Sync the progress field with real data
-        if abs(enrollment.progress - progress_data['percent']) > 0.5:
+        if abs(enrollment.progress - progress_data['percent']) > 0.1:
             enrollment.progress = progress_data['percent']
-            if progress_data['percent'] >= 100.0:
-                enrollment.is_completed = True
+            enrollment.is_completed = (progress_data['percent'] >= 100.0)
             enrollment.save(update_fields=['progress', 'is_completed'])
         
         # --- GRANULAR COMPLETED COUNTS (for clickable chips) ---
         # Lessons: count completed LessonProgress records
         enrollment.total_lessons_count = enrollment.course.lessons.count()
-        enrollment.completed_lessons_count = LessonProgress.objects.filter(
-            student=user, lesson__course=enrollment.course, is_completed=True
-        ).count()
+        enrollment.completed_lessons_count = min(
+            enrollment.total_lessons_count,
+            LessonProgress.objects.filter(
+                student=user, lesson__course=enrollment.course, is_completed=True
+            ).count()
+        )
         
-        # Quizzes: total active quizzes vs attempted
+        # Quizzes: total active quizzes vs passed quizzes (excluding failures & duplicates!)
         enrollment.total_quizzes_count = Exam.objects.filter(
             course=enrollment.course, is_active=True
         ).count()
-        enrollment.completed_quizzes_count = QuizResult.objects.filter(
-            student=user, exam__course=enrollment.course
-        ).count()
+        passed_ids = set()
+        for qr in QuizResult.objects.filter(student=user, exam__course=enrollment.course):
+            if qr.total_marks > 0:
+                if (qr.score / qr.total_marks) >= 0.5:
+                    passed_ids.add(qr.exam_id)
+            elif qr.score > 0:
+                passed_ids.add(qr.exam_id)
+        enrollment.completed_quizzes_count = min(enrollment.total_quizzes_count, len(passed_ids))
         
-        # Tasks (Assignments): total vs submitted
+        # Tasks (Assignments): total vs submitted (distinct)
         enrollment.total_tasks_count = Assignment.objects.filter(
             course=enrollment.course
         ).count()
-        enrollment.completed_tasks_count = AssignmentSubmission.objects.filter(
-            student=user, assignment__course=enrollment.course
-        ).count()
+        enrollment.completed_tasks_count = min(
+            enrollment.total_tasks_count,
+            AssignmentSubmission.objects.filter(
+                student=user, assignment__course=enrollment.course
+            ).values('assignment_id').distinct().count()
+        )
 
         # Legacy fields (kept for backward compatibility)
         enrollment.quiz_count = enrollment.completed_quizzes_count
@@ -316,7 +326,7 @@ def student_dashboard(request):
     today = timezone.now().date()
     fourteen_days_ago = today - datetime.timedelta(days=14)
     
-    # Weekly activity data (last 14 days)
+    # Weekly activity data (continuous 14-day telemetry)
     weekly_activity = (
         StudentActivity.objects.filter(student=user, created_at__date__gte=fourteen_days_ago)
         .annotate(date=TruncDate('created_at'))
@@ -324,17 +334,13 @@ def student_dashboard(request):
         .annotate(count=Count('id'))
         .order_by('date')
     )
+    activity_map = {entry['date']: entry['count'] for entry in weekly_activity}
     activity_labels = []
     activity_data = []
-    for entry in weekly_activity:
-        activity_labels.append(entry['date'].strftime('%d %b'))
-        activity_data.append(entry['count'])
-    
-    if not activity_labels:
-        for i in range(6, -1, -1):
-            d = today - datetime.timedelta(days=i)
-            activity_labels.append(d.strftime('%d %b'))
-            activity_data.append(0)
+    for i in range(13, -1, -1):
+        d = today - datetime.timedelta(days=i)
+        activity_labels.append(d.strftime('%d %b'))
+        activity_data.append(activity_map.get(d, 0))
     
     # Course progress comparison data for bar chart
     course_progress_labels = []
@@ -1186,15 +1192,20 @@ def library_view(request):
 def student_exam_list(request):
     """
     Shows Active Exams AND Exam History/Results.
+    Staff and Superusers can view all exams.
+    Students see exams ONLY for their actively enrolled courses.
     """
-    # 1. Get IDs of courses the student is enrolled in
-    enrolled_courses = Enrollment.objects.filter(student=request.user).values_list('course', flat=True)
-    
-    # 2. Filter exams: ONLY those linked to enrolled courses (Active Exams)
-    available_exams = Exam.objects.filter(
-        course__in=enrolled_courses, 
-        is_active=True
-    ).order_by('-created_at')
+    if request.user.is_staff or request.user.is_superuser:
+        available_exams = Exam.objects.filter(is_active=True).order_by('-created_at')
+    else:
+        # 1. Get IDs of courses the student is enrolled in
+        enrolled_course_ids = Enrollment.objects.filter(student=request.user).values_list('course_id', flat=True)
+        
+        # 2. Filter exams: strictly for courses the student is enrolled in
+        available_exams = Exam.objects.filter(
+            course_id__in=enrolled_course_ids, 
+            is_active=True
+        ).order_by('-created_at')
 
     # 3. Fetch History/Results
     past_results = QuizResult.objects.filter(student=request.user).select_related('exam').order_by('-taken_at')
@@ -1205,19 +1216,25 @@ def student_exam_list(request):
     }
     return render(request, 'exam_list.html', context) 
 
+
 @login_required
 def take_exam(request, exam_id):
     """
-    Exam Taking Page with Enrolled Check.
+    Exam Taking Page with Enrolled Check (bypassed for staff and superusers).
+    Students can only take exams for courses they are enrolled in.
     """
     exam = get_object_or_404(Exam, id=exam_id)
     
-    # 1. If exam is linked to a course, check enrollment
-    if exam.course:
+    # 1. If not staff/superuser, verify active enrollment in the exam's course
+    if not (request.user.is_staff or request.user.is_superuser):
+        if not exam.course:
+            messages.error(request, 'This exam is not associated with an active course.')
+            return redirect('student_exam_list')
+
         is_enrolled = Enrollment.objects.filter(student=request.user, course=exam.course).exists()
         if not is_enrolled:
-            messages.error(request, 'You must enroll in this course to take the exam.')
-            return redirect('dashboard')
+            messages.error(request, f'You must be enrolled in "{exam.course.title}" to take this exam.')
+            return redirect('student_exam_list')
 
     # 2. Render exam page
     context = {
@@ -1239,10 +1256,16 @@ def generate_quiz_view(request):
     """
     if request.method == "POST":
         try:
-            # 1. Capture doc_id
+            # 1. Capture doc_id & question count (between 10 and 20)
             doc_id = request.POST.get('doc_id')
             if not doc_id:
                 return JsonResponse({'status': 'error', 'message': 'No document selected!'}, status=400)
+
+            try:
+                num_questions = int(request.POST.get('num_questions', 10))
+                num_questions = max(10, min(20, num_questions))
+            except (ValueError, TypeError):
+                num_questions = 10
 
             # 2. Find document
             document = get_object_or_404(LibraryDocument, id=doc_id)
@@ -1251,43 +1274,85 @@ def generate_quiz_view(request):
 
             # 3. Extract text
             file_path = document.file.path
+            if not os.path.exists(file_path):
+                return JsonResponse({'status': 'error', 'message': f'Document file does not exist on disk: {document.file.name}'}, status=404)
+
             extracted_text = extract_text_from_file(file_path)
             
-            if len(extracted_text) < 50:
-                return JsonResponse({'status': 'error', 'message': 'File is empty or unreadable.'}, status=400)
+            if len(extracted_text) < 20:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'This document contains insufficient or unreadable text (it may be a scanned image without OCR, or empty). Please upload a document with text content.'
+                }, status=400)
 
-            # 4. Generate Questions via AI
-            generated_questions = generate_quiz_from_text(extracted_text, num_questions=5)
+            # 4. Generate Questions via AI (10 to 20 questions)
+            generated_questions = generate_quiz_from_text(extracted_text, num_questions=num_questions)
             
             if not generated_questions:
-                return JsonResponse({'status': 'error', 'message': 'AI could not generate questions. Please try again.'}, status=500)
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'AI could not generate questions from this document. Please check your Groq API key or try again in a moment.'
+                }, status=500)
 
-            # 5. Transform AI format to frontend format
-            # AI returns: {"question": "...", "options": ["A","B","C","D"], "answer": 0}
-            # Frontend expects: {"question_text": "...", "option_a": "...", ..., "correct_option": "A"}
+            # 5. Transform AI format to frontend format safely
             option_letters = ['A', 'B', 'C', 'D']
             formatted_questions = []
             for q in generated_questions:
-                opts = q.get('options', [])
-                correct_idx = q.get('answer', 0)
+                raw_opts = q.get('options', [])
+                if isinstance(raw_opts, dict):
+                    opts = [str(raw_opts.get(k, '')) for k in ['A', 'B', 'C', 'D'] if k in raw_opts]
+                    if not opts:
+                        opts = [str(v) for v in raw_opts.values()]
+                elif isinstance(raw_opts, list):
+                    opts = [str(o) for o in raw_opts]
+                else:
+                    opts = []
+
+                while len(opts) < 4:
+                    opts.append(f"Option {chr(65 + len(opts))}")
+                opts = opts[:4]
+
+                ans_raw = q.get('answer', 0)
+                ans_idx = 0
+                if isinstance(ans_raw, int) and 0 <= ans_raw <= 3:
+                    ans_idx = ans_raw
+                elif isinstance(ans_raw, str):
+                    clean_ans = ans_raw.strip().upper()
+                    if clean_ans in option_letters:
+                        ans_idx = option_letters.index(clean_ans)
+                    elif clean_ans.isdigit() and int(clean_ans) in range(4):
+                        ans_idx = int(clean_ans)
+
                 formatted_q = {
-                    'question_text': q.get('question', ''),
-                    'option_a': opts[0] if len(opts) > 0 else '-',
-                    'option_b': opts[1] if len(opts) > 1 else '-',
-                    'option_c': opts[2] if len(opts) > 2 else '-',
-                    'option_d': opts[3] if len(opts) > 3 else '-',
-                    'correct_option': option_letters[correct_idx] if correct_idx < len(option_letters) else 'A',
-                    # Keep original format too for save_quiz_view
-                    'question': q.get('question', ''),
+                    'question_text': q.get('question') or q.get('question_text') or '',
+                    'option_a': opts[0],
+                    'option_b': opts[1],
+                    'option_c': opts[2],
+                    'option_d': opts[3],
+                    'correct_option': option_letters[ans_idx],
+                    'question': q.get('question') or q.get('question_text') or '',
                     'options': opts,
-                    'answer': correct_idx,
+                    'answer': ans_idx,
                 }
                 formatted_questions.append(formatted_q)
             
-            return JsonResponse({'status': 'success', 'quiz': formatted_questions})
+            course_data = None
+            if document.course:
+                course_data = {
+                    'id': document.course.id,
+                    'title': document.course.title
+                }
+
+            return JsonResponse({
+                'status': 'success', 
+                'quiz': formatted_questions,
+                'doc_title': document.title,
+                'course': course_data
+            })
 
         except Exception as e:
             print(f"Error generating quiz: {e}")
+            import traceback; traceback.print_exc()
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
@@ -1296,49 +1361,126 @@ def generate_quiz_view(request):
 @login_required
 def save_quiz_view(request):
     """
-    Saves the AI Generated Quiz AND Links it to a Course.
+    Saves the AI Generated Quiz AND Links it to a Course with transaction safety.
     """
     if request.method == "POST":
         try:
+            from django.db import transaction
             data = json.loads(request.body)
-            title = data.get('title', 'AI Generated Quiz')
+            title = (data.get('title') or '').strip() or 'AI Generated Quiz'
+            title = title[:200]
+            description = (data.get('description') or '').strip() or 'Auto-generated quiz from document'
             questions = data.get('questions', [])
+            if isinstance(questions, str):
+                try:
+                    questions = json.loads(questions)
+                except Exception:
+                    questions = []
             course_id = data.get('course_id')
+            doc_id = data.get('doc_id')
             
+            try:
+                duration = int(data.get('duration_minutes', 20))
+            except (ValueError, TypeError):
+                duration = 20
+
+            if not questions:
+                return JsonResponse({'status': 'error', 'message': 'No questions were provided to save!'}, status=400)
+
             course_obj = None
             if course_id:
-                course_obj = get_object_or_404(Course, id=course_id)
+                try:
+                    course_obj = Course.objects.filter(id=int(course_id)).first()
+                except Exception:
+                    course_obj = None
 
-            exam = Exam.objects.create(
-                title=title,
-                course=course_obj,
-                description="Generated by AI Assistant",
-                duration_minutes=20, 
-                is_active=True,
-                total_marks=len(questions)
-            )
-            
-            for q in questions:
-                opts = q.get('options', [])
-                correct_idx = q.get('answer', 0)
-                
-                Question.objects.create(
-                    exam=exam,
-                    question_text=q.get('question'),
-                    option1=opts[0] if len(opts) > 0 else "-",
-                    option2=opts[1] if len(opts) > 1 else "-",
-                    option3=opts[2] if len(opts) > 2 else "-",
-                    option4=opts[3] if len(opts) > 3 else "-",
-                    correct_option=opts[correct_idx] 
+            # Fallback to document's course if course_id was not explicitly specified
+            if not course_obj and doc_id:
+                try:
+                    doc = LibraryDocument.objects.filter(id=int(doc_id)).first()
+                    if doc and doc.course:
+                        course_obj = doc.course
+                except Exception:
+                    pass
+
+            if not course_obj:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Please select a Course to link this quiz to. Quizzes must be linked to a specific course so only enrolled students can access them.'
+                }, status=400)
+
+            with transaction.atomic():
+                exam = Exam.objects.create(
+                    title=title,
+                    course=course_obj,
+                    description=description,
+                    duration_minutes=duration if duration > 0 else 20, 
+                    is_active=True,
+                    total_marks=len(questions)
                 )
                 
-            return JsonResponse({'status': 'success', 'message': 'Quiz Saved Successfully!'})
+                option_letters = ['A', 'B', 'C', 'D']
+                for q in questions:
+                    q_text = (q.get('question') or q.get('question_text') or 'Quiz Question').strip()
+                    opts = q.get('options', [])
+                    if not isinstance(opts, list) or len(opts) < 4:
+                        opts = [
+                            str(q.get('option_a', opts[0] if len(opts) > 0 else '-')),
+                            str(q.get('option_b', opts[1] if len(opts) > 1 else '-')),
+                            str(q.get('option_c', opts[2] if len(opts) > 2 else '-')),
+                            str(q.get('option_d', opts[3] if len(opts) > 3 else '-'))
+                        ]
+                    opts = [str(o)[:200] for o in opts[:4]]
+                    while len(opts) < 4:
+                        opts.append(f"Option {chr(65 + len(opts))}")
+
+                    # Resolve correct option
+                    ans_raw = q.get('answer')
+                    if ans_raw is None:
+                        ans_raw = q.get('correct_option', 0)
+
+                    ans_idx = 0
+                    if isinstance(ans_raw, int) and 0 <= ans_raw <= 3:
+                        ans_idx = ans_raw
+                    elif isinstance(ans_raw, str):
+                        clean_ans = ans_raw.strip().upper()
+                        if clean_ans in option_letters:
+                            ans_idx = option_letters.index(clean_ans)
+                        elif clean_ans.isdigit() and int(clean_ans) in range(4):
+                            ans_idx = int(clean_ans)
+                        else:
+                            for idx_opt, opt_val in enumerate(opts):
+                                if clean_ans == opt_val.strip().upper():
+                                    ans_idx = idx_opt
+                                    break
+
+                    correct_opt_text = opts[ans_idx] if ans_idx < len(opts) else opts[0]
+
+                    Question.objects.create(
+                        exam=exam,
+                        question_text=q_text,
+                        option1=str(opts[0])[:200],
+                        option2=str(opts[1])[:200],
+                        option3=str(opts[2])[:200],
+                        option4=str(opts[3])[:200],
+                        correct_option=str(correct_opt_text)[:200],
+                        marks=1
+                    )
+                
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Quiz Saved Successfully!',
+                'exam_id': exam.id,
+                'exam_title': exam.title,
+                'course_title': course_obj.title if course_obj else 'General (All Courses)'
+            })
             
         except Exception as e:
             print(f"Error saving quiz: {e}")
+            import traceback; traceback.print_exc()
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
             
-    return JsonResponse({'status': 'error'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
 
 
 @login_required
@@ -1435,7 +1577,11 @@ def ai_chat(request):
             user_message = data.get('question', '')
             history = data.get('history', [])
 
-            ai_reply = generate_learning_assistant_response(user_message, history)
+            ai_reply = generate_learning_assistant_response(
+                user_message, 
+                history, 
+                user=request.user if request.user.is_authenticated else None
+            )
 
             return JsonResponse({'answer': ai_reply})
         except Exception as e:

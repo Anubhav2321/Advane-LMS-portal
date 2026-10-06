@@ -168,6 +168,7 @@ urlpatterns = [
     # New Exam Logic (Course Linked)
     path('my-exams/', student_exam_list, name='student_exam_list'), 
     path('take-exam/<int:exam_id>/', take_exam, name='take_exam'), 
+    path('take-quiz/<int:exam_id>/', take_exam, name='take_quiz'), 
     
     # AI Quiz Generation
     path('quiz/generate/', generate_quiz_view, name='generate_quiz'),
@@ -182,6 +183,7 @@ urlpatterns = [
 
     # 6. Admin Panel System
     path('admin-panel/', admin_dashboard, name='admin_dashboard'),
+    path('faculty/dashboard/', admin_dashboard, name='faculty_dashboard'),
     path('admin-panel/profile/', admin_profile, name='admin_profile'),
     
     #  A. Student Management 

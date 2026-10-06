@@ -330,8 +330,9 @@ class Enrollment(models.Model):
 
     def get_real_progress(self):
         """
-        Calculate real progress based on Overall Task Count.
-        Tasks = Lessons (watch time > 80%) + Quizzes + Live Classes + PDFs
+        Calculate real progress based on Overall Course Requirements.
+        Tasks = Lessons (watch time > 80% or marked complete) + Quizzes (PASSED, score >= 50%) + Live Classes (attended) + Documents (read) + Assignments (submitted)
+        Duplicate attempts and failed quizzes do NOT falsely inflate progress.
         """
         # 1. Lesson Tasks
         total_lessons = self.course.lessons.count()
@@ -340,27 +341,48 @@ class Enrollment(models.Model):
             required_time = lp.lesson.duration_in_seconds * 0.8
             if lp.is_completed or (required_time > 0 and lp.watch_time_seconds >= required_time):
                 completed_lessons += 1
+        completed_lessons = min(total_lessons, completed_lessons)
 
-        # 2. Quiz Tasks
+        # 2. Quiz Tasks (Count ONLY distinct PASSED quizzes; failed attempts do not count!)
         total_quizzes = Exam.objects.filter(course=self.course, is_active=True).count()
-        attempted_quizzes = QuizResult.objects.filter(student=self.student, exam__course=self.course).count()
+        passed_exam_ids = set()
+        for qr in QuizResult.objects.filter(student=self.student, exam__course=self.course):
+            if qr.total_marks > 0:
+                if (qr.score / qr.total_marks) >= 0.5:
+                    passed_exam_ids.add(qr.exam_id)
+            elif qr.score > 0:
+                passed_exam_ids.add(qr.exam_id)
+        completed_quizzes = min(total_quizzes, len(passed_exam_ids))
 
         # 3. Live Class Tasks
         total_classes = self.course.live_classes.count()
-        attended_classes = LiveClassAttendance.objects.filter(student=self.student, live_class__course=self.course).count()
+        attended_classes = min(
+            total_classes,
+            LiveClassAttendance.objects.filter(student=self.student, live_class__course=self.course).values('live_class_id').distinct().count()
+        )
 
         # 4. Document Tasks
         total_docs = self.course.documents.count()
-        read_docs = DocumentView.objects.filter(student=self.student, document__course=self.course).count()
+        read_docs = min(
+            total_docs,
+            DocumentView.objects.filter(student=self.student, document__course=self.course).values('document_id').distinct().count()
+        )
 
-        total_tasks = total_lessons + total_quizzes + total_classes + total_docs
-        completed_tasks = completed_lessons + attempted_quizzes + attended_classes + read_docs
+        # 5. Assignment Tasks
+        total_assignments = self.course.assignments.count()
+        submitted_assignments = min(
+            total_assignments,
+            AssignmentSubmission.objects.filter(student=self.student, assignment__course=self.course).values('assignment_id').distinct().count()
+        )
+
+        total_tasks = total_lessons + total_quizzes + total_classes + total_docs + total_assignments
+        completed_tasks = completed_lessons + completed_quizzes + attended_classes + read_docs + submitted_assignments
 
         if total_tasks == 0:
             return {'percent': 0.0, 'completed': 0, 'total': 0}
         
-        percent = round((completed_tasks / total_tasks) * 100, 1)
-        return {'percent': percent, 'completed': completed_tasks, 'total': total_tasks}
+        percent = min(100.0, max(0.0, round((completed_tasks / total_tasks) * 100, 1)))
+        return {'percent': percent, 'completed': min(total_tasks, completed_tasks), 'total': total_tasks}
 
     def sync_progress(self):
         """Sync the progress field with real lesson progress data."""

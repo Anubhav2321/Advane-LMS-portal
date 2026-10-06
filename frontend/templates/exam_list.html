@@ -150,6 +150,17 @@
 
 <div class="ac-page">
 
+    {% if messages %}
+    <div style="margin-bottom: 20px;">
+        {% for message in messages %}
+        <div style="padding: 14px 20px; border-radius: 12px; margin-bottom: 10px; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; {% if message.tags == 'error' %}background: rgba(244,63,94,0.12); border: 1px solid rgba(244,63,94,0.3); color: var(--ac-red);{% else %}background: rgba(34,211,238,0.12); border: 1px solid rgba(34,211,238,0.3); color: var(--ac-cyan);{% endif %}">
+            <i class="fas {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <section class="glass ac-hero">
         <div>
             <div class="ac-eyebrow">Student Panel</div>

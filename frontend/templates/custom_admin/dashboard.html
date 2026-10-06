@@ -1216,11 +1216,11 @@
                             </div>
                         </div>
                         {% if doc.course %}
-                            <button class="quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title }}" data-course-id="{{ doc.course.id }}" onclick="openQuizModal(this)">
+                            <button type="button" class="quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title|escape }}" data-course-id="{{ doc.course.id }}" data-course-title="{{ doc.course.title|escape }}" onclick="openQuizModal(this)">
                                 <i class="fas fa-magic"></i> AI Quiz
                             </button>
                         {% else %}
-                            <button class="quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title }}" onclick="openQuizModal(this)">
+                            <button type="button" class="quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title|escape }}" onclick="openQuizModal(this)">
                                 <i class="fas fa-magic"></i> AI Quiz
                             </button>
                         {% endif %}
@@ -1239,16 +1239,61 @@
 <div id="quizModal" class="quiz-modal-overlay">
     <div class="quiz-modal">
         <div class="quiz-modal-header">
-            <h3><i class="fas fa-brain"></i> Generating Quiz: <span id="modalDocTitle"></span></h3>
-            <span class="quiz-modal-close" onclick="document.getElementById('quizModal').style.display='none'">&times;</span>
+            <h3><i class="fas fa-magic" style="color: var(--accent-purple);"></i> AI Quiz Generator: <span id="modalDocTitle"></span></h3>
+            <span class="quiz-modal-close" onclick="closeQuizModal()">&times;</span>
         </div>
-        <div id="quizLoader" style="text-align:center; padding:50px; display:none;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: var(--primary);"></i>
-            <p style="color: var(--text-secondary); margin-top: 15px;">AI is analyzing the document...</p>
+
+        <!-- Quiz Settings Bar (Title, Course Selection, Duration, Question Count) -->
+        <div id="quizSettingsBar" style="padding: 16px 24px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass-border); display: none;">
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                <div style="flex: 2 1 200px; min-width: 180px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;">Quiz Title</label>
+                    <input type="text" id="modalQuizTitle" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem;" placeholder="Exam Title">
+                </div>
+                <div style="flex: 1.5 1 180px; min-width: 160px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;">Link To Course <span style="color:var(--accent-red);">*</span></label>
+                    <select id="modalQuizCourse" style="width:100%; background:#121324; border:1px solid var(--glass-border); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem;" required>
+                        <option value="">-- Select Course (Required) --</option>
+                        {% for c in courses %}
+                        <option value="{{ c.id }}">{{ c.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="flex: 0.8 1 90px; min-width: 85px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;">Duration (m)</label>
+                    <input type="number" id="modalQuizDuration" value="20" min="5" max="180" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem;">
+                </div>
+                <div style="flex: 1 1 140px; min-width: 120px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--accent-purple); font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;"><i class="fas fa-list-ol"></i> Questions (10-20)</label>
+                    <select id="modalQuizCount" style="width:100%; background:#121324; border:1px solid var(--accent-purple); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem; font-weight:600;">
+                        <option value="10">10 Questions</option>
+                        <option value="12">12 Questions</option>
+                        <option value="15" selected>15 Questions</option>
+                        <option value="18">18 Questions</option>
+                        <option value="20">20 Questions</option>
+                    </select>
+                </div>
+                <div style="align-self: flex-end;">
+                    <button type="button" class="btn-action" id="btnRegenerateQuiz" onclick="regenerateQuizWithCount()" style="background:rgba(124, 77, 255, 0.2); border:1px solid var(--accent-purple); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:0.82rem; cursor:pointer; height:37px; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;" title="Regenerate questions with selected count">
+                        <i class="fas fa-sync-alt"></i> Regenerate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="quizLoader" style="text-align:center; padding:60px 20px; display:none;">
+            <div style="display:inline-block; position:relative; margin-bottom:20px;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 48px; color: var(--accent-purple);"></i>
+                <i class="fas fa-brain" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:20px; color:var(--secondary);"></i>
+            </div>
+            <h4 style="color:#fff; margin-bottom:8px; font-size:1.05rem;" id="quizLoaderTitle">Generating Quiz from Document...</h4>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; max-width:440px; margin:0 auto;" id="quizLoaderSubtitle">AI is analyzing the content and generating between 10–20 comprehensive multiple-choice questions with answers.</p>
         </div>
         <div id="quizContent" class="quiz-modal-body"></div>
         <div class="quiz-modal-footer">
-            <button id="saveQuizBtn" class="btn-save-quiz" onclick="saveQuizToDB()">Save to Exams</button>
+            <span id="quizQuestionsCount" style="float:left; color:var(--text-muted); font-size:0.85rem; line-height:38px;"></span>
+            <button type="button" class="btn-action" style="background:var(--glass-bg); color:var(--text-secondary); border:1px solid var(--glass-border); margin-right:8px; padding:10px 18px;" onclick="closeQuizModal()">Cancel</button>
+            <button type="button" id="saveQuizBtn" class="btn-save-quiz" onclick="saveQuizToDB()">Save to Exams</button>
         </div>
     </div>
 </div>
@@ -1542,69 +1587,164 @@
     let currentQuestions = [];
     let currentDocTitle = "";
     let currentCourseId = null;
+    let currentDocId = null;
 
-    async function openQuizModal(docId, title, courseId) {
+    function closeQuizModal() {
+        const modal = document.getElementById('quizModal');
+        if (modal) modal.style.display = 'none';
+        const settingsBar = document.getElementById('quizSettingsBar');
+        if (settingsBar) settingsBar.style.display = 'none';
+        const content = document.getElementById('quizContent');
+        if (content) content.innerHTML = '';
+        currentQuestions = [];
+        const saveBtn = document.getElementById('saveQuizBtn');
+        if (saveBtn) {
+            saveBtn.style.display = 'inline-block';
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function openQuizModal(docId, title, courseId, questionCount) {
         if (docId && (docId instanceof HTMLElement || docId.dataset)) {
-            const btn = docId;
+            const btn = docId.closest('.quiz-btn') || docId;
             title = btn.dataset.title || btn.getAttribute('data-title') || '';
             courseId = btn.dataset.courseId ? parseInt(btn.dataset.courseId) : null;
             docId = btn.dataset.docId || btn.getAttribute('data-doc-id');
         }
-        console.log('openQuizModal called:', docId, title, courseId);
+        console.log('openQuizModal called:', docId, title, courseId, questionCount);
+
+        currentDocId = docId;
+        currentDocTitle = title || "Document";
+        currentCourseId = courseId;
+        currentQuestions = [];
+
         const modal = document.getElementById('quizModal');
         const loader = document.getElementById('quizLoader');
         const content = document.getElementById('quizContent');
         const saveBtn = document.getElementById('saveQuizBtn');
+        const settingsBar = document.getElementById('quizSettingsBar');
+        const docTitleEl = document.getElementById('modalDocTitle');
+        const titleInput = document.getElementById('modalQuizTitle');
+        const courseSelect = document.getElementById('modalQuizCourse');
+        const countSelect = document.getElementById('modalQuizCount');
+        const questionsCount = document.getElementById('quizQuestionsCount');
+        const loaderSubtitle = document.getElementById('quizLoaderSubtitle');
 
-        currentDocTitle = title;
-        currentCourseId = courseId;
-        currentQuestions = [];
-
-        if (!currentCourseId) {
-            alert("Warning: This document is not linked to any course.");
+        // Resolve question count (between 10 and 20, default 15)
+        let numQuestions = questionCount || (countSelect ? parseInt(countSelect.value) : 15);
+        if (isNaN(numQuestions) || numQuestions < 10 || numQuestions > 20) {
+            numQuestions = 15;
         }
+        if (countSelect) countSelect.value = String(numQuestions);
 
         modal.style.display = 'flex';
-        document.getElementById('modalDocTitle').innerText = title;
+        docTitleEl.innerText = currentDocTitle;
         content.innerHTML = '';
         loader.style.display = 'block';
-        saveBtn.style.display = 'none';
+        if (loaderSubtitle) {
+            loaderSubtitle.innerText = `AI is analyzing the content and generating ${numQuestions} comprehensive multiple-choice questions with answers.`;
+        }
+        if (settingsBar) settingsBar.style.display = 'none';
+        if (saveBtn) {
+            saveBtn.style.display = 'none';
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+        }
+        if (questionsCount) questionsCount.innerText = '';
+
+        // Prefill settings
+        if (titleInput) titleInput.value = `AI Quiz: ${currentDocTitle}`;
+        if (courseSelect) courseSelect.value = currentCourseId ? String(currentCourseId) : "";
 
         const formData = new FormData();
         formData.append('doc_id', docId);
+        formData.append('num_questions', numQuestions);
+
+        const csrfToken = getCookie('csrftoken') || '{{ csrf_token }}';
 
         try {
             const response = await fetch("{% url 'generate_quiz' %}", {
                 method: 'POST',
                 body: formData,
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+                headers: { 'X-CSRFToken': csrfToken }
             });
             const data = await response.json();
             loader.style.display = 'none';
 
             if (data.status === 'success' && data.quiz && data.quiz.length > 0) {
                 currentQuestions = data.quiz;
-                saveBtn.style.display = 'inline-block';
+                if (data.doc_title) {
+                    currentDocTitle = data.doc_title;
+                    docTitleEl.innerText = currentDocTitle;
+                    if (titleInput) titleInput.value = `AI Quiz: ${currentDocTitle}`;
+                }
+                if (data.course && data.course.id) {
+                    currentCourseId = data.course.id;
+                    if (courseSelect) courseSelect.value = String(currentCourseId);
+                }
+
+                if (settingsBar) settingsBar.style.display = 'block';
+                if (saveBtn) {
+                    saveBtn.style.display = 'inline-block';
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                }
+                if (questionsCount) questionsCount.innerText = `${data.quiz.length} Questions Generated`;
                 renderQuestions(data.quiz);
             } else if (data.status === 'success' && (!data.quiz || data.quiz.length === 0)) {
                 content.innerHTML = `<div style="text-align:center; padding:40px;">
                     <i class="fas fa-exclamation-triangle" style="font-size:40px; color:var(--accent-amber); margin-bottom:15px;"></i>
-                    <p style="color:var(--accent-amber);">AI could not generate questions from this document. The document may be too short or unreadable.</p>
-                    <p style="color:var(--text-muted); margin-top:10px; font-size:0.85rem;">Try uploading a PDF/DOCX with more text content.</p>
+                    <p style="color:var(--accent-amber); font-weight:600;">AI could not generate questions from this document.</p>
+                    <p style="color:var(--text-muted); margin-top:10px; font-size:0.85rem;">The document may have insufficient selectable text or scanned images.</p>
+                    <button type="button" class="btn-action" style="margin-top:16px; background:var(--glass-bg); color:#fff; border:1px solid var(--glass-border); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="openQuizModal('${docId}', '${currentDocTitle}', ${currentCourseId || 'null'}, ${numQuestions})"><i class="fas fa-redo"></i> Retry Generation</button>
                 </div>`;
             } else {
                 content.innerHTML = `<div style="text-align:center; padding:40px;">
                     <i class="fas fa-times-circle" style="font-size:40px; color:var(--accent-red); margin-bottom:15px;"></i>
-                    <p style="color:var(--accent-red);">Error: ${data.message || 'Unknown error occurred'}</p>
+                    <p style="color:var(--accent-red); font-weight:600;">Error: ${data.message || 'Unknown error occurred'}</p>
+                    <button type="button" class="btn-action" style="margin-top:16px; background:var(--glass-bg); color:#fff; border:1px solid var(--glass-border); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="openQuizModal('${docId}', '${currentDocTitle}', ${currentCourseId || 'null'}, ${numQuestions})"><i class="fas fa-redo"></i> Try Again</button>
                 </div>`;
             }
         } catch (error) {
+            console.error('Quiz generation error:', error);
             loader.style.display = 'none';
             content.innerHTML = `<div style="text-align:center; padding:40px;">
                 <i class="fas fa-wifi" style="font-size:40px; color:var(--accent-red); margin-bottom:15px;"></i>
-                <p style="color:var(--accent-red);">Network Error or Server Timeout.</p>
-                <p style="color:var(--text-muted); margin-top:10px; font-size:0.85rem;">Please check your internet connection and try again.</p>
+                <p style="color:var(--accent-red); font-weight:600;">Network Error or Server Timeout.</p>
+                <p style="color:var(--text-muted); margin-top:10px; font-size:0.85rem;">The AI took longer than expected to process or connection was interrupted.</p>
+                <button type="button" class="btn-action" style="margin-top:16px; background:var(--glass-bg); color:#fff; border:1px solid var(--glass-border); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="openQuizModal('${docId}', '${currentDocTitle}', ${currentCourseId || 'null'}, ${numQuestions})"><i class="fas fa-redo"></i> Retry</button>
             </div>`;
+        }
+    }
+
+    async function regenerateQuizWithCount() {
+        if (!currentDocId) return;
+        const countSelect = document.getElementById('modalQuizCount');
+        const count = countSelect ? parseInt(countSelect.value) : 15;
+        await openQuizModal(currentDocId, currentDocTitle, currentCourseId, count);
+    }
+
+    function setQuizQuestionAnswer(qIdx, optLetter) {
+        if (currentQuestions && currentQuestions[qIdx]) {
+            currentQuestions[qIdx].correct_option = optLetter;
+            currentQuestions[qIdx].answer = ['A', 'B', 'C', 'D'].indexOf(optLetter);
+            renderQuestions(currentQuestions);
         }
     }
 
@@ -1616,14 +1756,30 @@
         }
         let html = '<div class="generated-quiz-list">';
         questions.forEach((q, idx) => {
+            const optA = q.correct_option === 'A';
+            const optB = q.correct_option === 'B';
+            const optC = q.correct_option === 'C';
+            const optD = q.correct_option === 'D';
+
             html += `
-                <div class="q-item" style="background:rgba(0,0,0,0.3); padding:16px; margin-bottom:10px; border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-                    <div class="q-text" style="margin-bottom:10px; font-weight:600;"><strong>Q${idx+1}:</strong> ${q.question_text}</div>
+                <div class="q-item" style="background:rgba(0,0,0,0.3); padding:16px; margin-bottom:12px; border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
+                    <div class="q-text" style="margin-bottom:10px; font-weight:600; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                        <span><strong>Q${idx+1}:</strong> ${q.question_text}</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Click any option to set as correct answer</span>
+                    </div>
                     <div class="q-options" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                        <div class="opt ${q.correct_option === 'A' ? 'correct' : ''}" style="padding:8px; border-radius:4px; ${q.correct_option === 'A' ? 'background:rgba(0,230,118,0.2); border:1px solid var(--accent-green);' : 'background:var(--glass-bg);'}">A) ${q.option_a}</div>
-                        <div class="opt ${q.correct_option === 'B' ? 'correct' : ''}" style="padding:8px; border-radius:4px; ${q.correct_option === 'B' ? 'background:rgba(0,230,118,0.2); border:1px solid var(--accent-green);' : 'background:var(--glass-bg);'}">B) ${q.option_b}</div>
-                        <div class="opt ${q.correct_option === 'C' ? 'correct' : ''}" style="padding:8px; border-radius:4px; ${q.correct_option === 'C' ? 'background:rgba(0,230,118,0.2); border:1px solid var(--accent-green);' : 'background:var(--glass-bg);'}">C) ${q.option_c}</div>
-                        <div class="opt ${q.correct_option === 'D' ? 'correct' : ''}" style="padding:8px; border-radius:4px; ${q.correct_option === 'D' ? 'background:rgba(0,230,118,0.2); border:1px solid var(--accent-green);' : 'background:var(--glass-bg);'}">D) ${q.option_d}</div>
+                        <div class="opt ${optA ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'A')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optA ? 'background:rgba(0,230,118,0.18); border:1px solid var(--accent-green); color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-secondary);'}">
+                            <strong>A)</strong> ${q.option_a} ${optA ? '<i class="fas fa-check-circle" style="color:var(--accent-green); float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                        <div class="opt ${optB ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'B')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optB ? 'background:rgba(0,230,118,0.18); border:1px solid var(--accent-green); color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-secondary);'}">
+                            <strong>B)</strong> ${q.option_b} ${optB ? '<i class="fas fa-check-circle" style="color:var(--accent-green); float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                        <div class="opt ${optC ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'C')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optC ? 'background:rgba(0,230,118,0.18); border:1px solid var(--accent-green); color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-secondary);'}">
+                            <strong>C)</strong> ${q.option_c} ${optC ? '<i class="fas fa-check-circle" style="color:var(--accent-green); float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                        <div class="opt ${optD ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'D')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optD ? 'background:rgba(0,230,118,0.18); border:1px solid var(--accent-green); color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--text-secondary);'}">
+                            <strong>D)</strong> ${q.option_d} ${optD ? '<i class="fas fa-check-circle" style="color:var(--accent-green); float:right; margin-top:2px;"></i>' : ''}
+                        </div>
                     </div>
                 </div>
             `;
@@ -1633,50 +1789,122 @@
     }
 
     async function saveQuizToDB() {
-        if (currentQuestions.length === 0) return;
+        if (!currentQuestions || currentQuestions.length === 0) {
+            alert('No questions were found to save. Please generate questions first.');
+            return;
+        }
         
         const saveBtn = document.getElementById('saveQuizBtn');
-        saveBtn.innerText = 'Saving...';
-        saveBtn.disabled = true;
+        const titleInput = document.getElementById('modalQuizTitle');
+        const courseSelect = document.getElementById('modalQuizCourse');
+        const durationInput = document.getElementById('modalQuizDuration');
+        const settingsBar = document.getElementById('quizSettingsBar');
 
-        const payload = {
-            title: `AI Quiz: ${currentDocTitle}`,
-            description: `Auto-generated quiz from document: ${currentDocTitle}`,
-            course_id: currentCourseId,
-            questions: currentQuestions
-        };
+        let selectedCourseId = courseSelect && courseSelect.value ? parseInt(courseSelect.value) : (currentCourseId || null);
+        const duration = (durationInput && durationInput.value && !isNaN(parseInt(durationInput.value))) 
+            ? Math.max(5, parseInt(durationInput.value)) 
+            : 20;
+
+        if (!selectedCourseId) {
+            alert('Please select a course to link this quiz to so enrolled students can access it.');
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                saveBtn.disabled = false;
+            }
+            if (courseSelect) courseSelect.focus();
+            return;
+        }
+
+        const quizTitle = (titleInput && titleInput.value && titleInput.value.trim()) 
+            ? titleInput.value.trim() 
+            : (currentDocTitle ? `AI Quiz: ${currentDocTitle}` : 'AI Generated Quiz');
+
+        if (saveBtn) {
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving to Exams...';
+            saveBtn.disabled = true;
+        }
 
         try {
+            const payload = {
+                title: quizTitle,
+                description: `Auto-generated AI Quiz from document: ${currentDocTitle}`,
+                course_id: selectedCourseId,
+                doc_id: currentDocId,
+                duration_minutes: duration,
+                questions: currentQuestions
+            };
+
+            const csrfToken = getCookie('csrftoken') || '{{ csrf_token }}';
+
             const response = await fetch("{% url 'save_quiz' %}", {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    'X-CSRFToken': csrfToken
                 },
                 body: JSON.stringify(payload)
             });
+
+            if (!response.ok) {
+                let errMsg = `Server returned status ${response.status}`;
+                try {
+                    const errData = await response.json();
+                    if (errData && errData.message) errMsg = errData.message;
+                } catch (_) {}
+                throw new Error(errMsg);
+            }
+
             const data = await response.json();
             
             if (data.status === 'success') {
+                if (settingsBar) settingsBar.style.display = 'none';
+                if (saveBtn) saveBtn.style.display = 'none';
+                const countEl = document.getElementById('quizQuestionsCount');
+                if (countEl) countEl.innerText = '';
+
                 document.getElementById('quizContent').innerHTML = `
-                    <div style="text-align:center; padding: 40px;">
-                        <i class="fas fa-check-circle" style="font-size: 50px; color: var(--accent-green); margin-bottom:15px;"></i>
-                        <h3 style="color: #fff;">Quiz Saved Successfully!</h3>
-                        <p style="color: var(--text-muted);">You can now link it to an exam module.</p>
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <i class="fas fa-check-circle" style="font-size: 54px; color: var(--accent-green); margin-bottom:18px; filter: drop-shadow(0 0 15px rgba(0,230,118,0.4));"></i>
+                        <h3 style="color: #fff; font-size:1.3rem; margin-bottom:8px;">Quiz Created &amp; Saved Successfully!</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">
+                            <strong>${data.exam_title || quizTitle}</strong> has been created and published under 
+                            <span style="color:var(--accent-purple); font-weight:600;">${data.course_title || 'General Exams'}</span>.
+                        </p>
+                        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                            <a href="/take-exam/${data.exam_id}/" target="_blank" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; padding:11px 22px; background:var(--accent-green); color:#000; font-weight:700; border-radius:var(--radius-sm); transition:transform 0.2s;">
+                                <i class="fas fa-play"></i> Preview / Take Quiz
+                            </a>
+                            <a href="/my-exams/" target="_blank" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; padding:11px 22px; background:var(--glass-bg); color:#fff; border:1px solid var(--glass-border); font-weight:600; border-radius:var(--radius-sm);">
+                                <i class="fas fa-clipboard-list"></i> View In Exams
+                            </a>
+                            <button type="button" onclick="closeQuizModal()" style="padding:11px 22px; background:rgba(255,255,255,0.06); color:var(--text-secondary); border:1px solid var(--glass-border); border-radius:var(--radius-sm); cursor:pointer; font-weight:600;">
+                                Done
+                            </button>
+                        </div>
                     </div>
                 `;
-                saveBtn.style.display = 'none';
             } else {
-                alert("Error saving quiz: " + data.message);
-                saveBtn.innerText = 'Save to Exams';
-                saveBtn.disabled = false;
+                alert("Error saving quiz: " + (data.message || 'Unknown error'));
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                    saveBtn.disabled = false;
+                }
             }
         } catch (error) {
-            alert("Network Error saving quiz.");
-            saveBtn.innerText = 'Save to Exams';
-            saveBtn.disabled = false;
+            console.error('Save quiz error:', error);
+            alert("Error saving quiz: " + (error.message || "Please check connection."));
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                saveBtn.disabled = false;
+            }
         }
     }
+
+    window.openQuizModal = openQuizModal;
+    window.closeQuizModal = closeQuizModal;
+    window.saveQuizToDB = saveQuizToDB;
+    window.regenerateQuizWithCount = regenerateQuizWithCount;
+    window.setQuizQuestionAnswer = setQuizQuestionAnswer;
     
     // ============================================= //
     // COURSE ACTIVITY TRACKER LOGIC                 //
