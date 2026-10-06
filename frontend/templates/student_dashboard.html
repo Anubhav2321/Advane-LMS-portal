@@ -1096,512 +1096,404 @@
     .n-date { color: #64748b; font-size: 0.72rem; margin-top: 6px; display: block; }
 
     /* ============================================= */
-    /* 🚀 ADVANCED LMS AI PORTAL COPILOT & BOARD     */
+    /* 🚀 ADVANCED LMS AI PORTAL COPILOT & BOAR    /* ============================================= */
+    /* ============================================= */
+    /* 🚀 LEARNING-365 COPILOT (ULTRA-PREMIUM DARK)  */
     /* ============================================= */
     #ai-chat-toggle {
-        position: fixed; bottom: 32px; right: 32px; width: 64px; height: 64px;
-        background: linear-gradient(135deg, #00f3ff, #0077ff 60%, #bc13fe);
-        border-radius: 50%; display: flex; justify-content: center; align-items: center;
-        color: #060814; font-size: 26px; cursor: pointer; z-index: 9999;
-        box-shadow: 0 10px 35px rgba(0, 243, 255, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2);
-        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: fixed; bottom: 28px; right: 28px; width: 62px; height: 62px;
+        background: linear-gradient(135deg, #090e1f 0%, #151d38 100%);
+        border: 2px solid #00f3ff; border-radius: 50%;
+        display: flex; justify-content: center; align-items: center;
+        color: #00f3ff; font-size: 24px; cursor: pointer; z-index: 99999;
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 243, 255, 0.4);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     #ai-chat-toggle:hover {
-        transform: scale(1.1) translateY(-3px);
-        box-shadow: 0 14px 45px rgba(0, 243, 255, 0.6), 0 0 25px rgba(188, 19, 254, 0.5);
+        transform: scale(1.1) translateY(-2px);
+        box-shadow: 0 14px 42px rgba(0, 0, 0, 0.8), 0 0 36px rgba(0, 243, 255, 0.6);
+        border-color: #ffffff;
     }
     .ai-launcher-inner { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
     .ai-launcher-pulse {
-        position: absolute; inset: -4px; border-radius: 50%;
-        border: 2px solid rgba(0, 243, 255, 0.6);
+        position: absolute; inset: -6px; border-radius: 50%;
+        border: 2px solid rgba(0, 243, 255, 0.65);
         animation: launcherRadar 2.4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
         pointer-events: none;
     }
     @keyframes launcherRadar {
-        0% { transform: scale(0.9); opacity: 1; }
-        100% { transform: scale(1.6); opacity: 0; }
+        0% { transform: scale(0.95); opacity: 1; }
+        100% { transform: scale(1.65); opacity: 0; }
     }
     .ai-launcher-pill {
         position: absolute; right: 76px; white-space: nowrap;
-        background: rgba(12, 16, 30, 0.94); border: 1px solid rgba(0, 243, 255, 0.4);
-        color: #e2e8f0; font-size: 0.8rem; font-weight: 600;
-        padding: 6px 14px; border-radius: 20px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(12px);
+        background: rgba(9, 13, 25, 0.96); backdrop-filter: blur(14px);
+        border: 1px solid rgba(0, 243, 255, 0.35);
+        color: #f8fafc; font-size: 0.82rem; font-weight: 600;
+        padding: 7px 16px; border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65), 0 0 16px rgba(0, 243, 255, 0.2);
         display: flex; align-items: center; gap: 8px;
         pointer-events: none; opacity: 0; transform: translateX(10px);
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
     #ai-chat-toggle:hover .ai-launcher-pill {
         opacity: 1; transform: translateX(0);
     }
     .ai-live-dot {
         width: 8px; height: 8px; border-radius: 50%;
-        background: #00e676; box-shadow: 0 0 10px #00e676;
+        background: #00f3ff; box-shadow: 0 0 10px #00f3ff;
     }
 
+    /* Main Floating Chat Window */
     #ai-chat-container {
-        position: fixed; bottom: 108px; right: 32px; width: 480px; height: 650px;
-        max-width: calc(100vw - 32px); max-height: calc(100vh - 125px);
-        background: rgba(10, 14, 26, 0.96);
-        border: 1px solid rgba(0, 243, 255, 0.3);
-        border-radius: 24px; display: flex; flex-direction: column; overflow: hidden;
-        z-index: 9999;
-        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.92), 0 0 40px rgba(0, 243, 255, 0.15);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: fixed; bottom: 100px; right: 28px; width: 425px; height: 645px;
+        max-width: calc(100vw - 32px); max-height: calc(100vh - 120px);
+        background: rgba(8, 12, 22, 0.96); backdrop-filter: blur(32px);
+        -webkit-backdrop-filter: blur(32px);
+        border: 1px solid rgba(0, 243, 255, 0.28);
+        border-top: 3px solid #00f3ff;
+        border-radius: 22px; display: flex; flex-direction: column; overflow: hidden;
+        z-index: 99999;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 243, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         transform-origin: bottom right;
     }
     #ai-chat-container.closed {
-        opacity: 0; pointer-events: none; transform: scale(0.85) translateY(40px);
-    }
-    #ai-chat-container.fullscreen-mode {
-        width: 95vw !important; height: 93vh !important;
-        max-width: 1400px; max-height: 94vh;
-        bottom: 3.5vh !important; right: 2.5vw !important;
-        border-radius: 24px !important;
+        opacity: 0; pointer-events: none; transform: scale(0.9) translateY(24px);
     }
 
     /* Header */
     .chat-header {
-        padding: 14px 20px;
-        background: linear-gradient(90deg, rgba(0, 243, 255, 0.08), rgba(188, 19, 254, 0.06), rgba(0,0,0,0.4));
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 14px 18px;
+        background: linear-gradient(135deg, rgba(14, 20, 42, 0.98) 0%, rgba(22, 30, 60, 0.98) 100%);
+        border-bottom: 1px solid rgba(0, 243, 255, 0.22);
         display: flex; justify-content: space-between; align-items: center;
-        flex-shrink: 0;
+        flex-shrink: 0; color: #ffffff;
     }
     .header-identity { display: flex; align-items: center; gap: 12px; }
     .header-avatar {
-        position: relative; width: 38px; height: 38px; border-radius: 12px;
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(188, 19, 254, 0.25));
-        border: 1px solid rgba(0, 243, 255, 0.4);
-        display: flex; align-items: center; justify-content: center;
-        color: var(--neon-cyan); font-size: 18px;
-    }
-    .avatar-status-dot {
-        position: absolute; bottom: -2px; right: -2px; width: 10px; height: 10px;
-        background: #00e676; border: 2px solid #0a0e1a; border-radius: 50%;
-        box-shadow: 0 0 8px #00e676;
+        width: 44px; height: 44px; border-radius: 50%;
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(188, 19, 254, 0.2));
+        border: 2px solid #00f3ff; display: flex; align-items: center; justify-content: center;
+        color: #00f3ff; font-size: 20px; box-shadow: 0 0 16px rgba(0, 243, 255, 0.4);
+        flex-shrink: 0;
     }
     .header-title-box { display: flex; flex-direction: column; }
     .header-title {
-        font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #fff;
-        font-size: 1.02rem; display: flex; align-items: center; gap: 8px; line-height: 1.2;
+        font-family: 'Space Grotesk', -apple-system, sans-serif; font-weight: 700; color: #ffffff;
+        font-size: 1.05rem; line-height: 1.25; display: flex; align-items: center; gap: 8px;
     }
     .header-version-pill {
-        font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 10px;
-        background: rgba(0, 243, 255, 0.15); color: var(--neon-cyan);
-        border: 1px solid rgba(0, 243, 255, 0.3); text-transform: uppercase; letter-spacing: 0.5px;
+        font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 8px;
+        background: rgba(0, 243, 255, 0.15); color: #00f3ff; border: 1px solid rgba(0, 243, 255, 0.35);
+        text-transform: uppercase; letter-spacing: 0.5px;
     }
     .header-subtitle {
-        font-size: 0.72rem; color: #94a3b8; display: flex; align-items: center; gap: 6px; margin-top: 2px;
+        font-size: 0.74rem; color: #94a3b8;
+        display: flex; align-items: center; gap: 6px; margin-top: 3px; font-weight: 500;
     }
     .pulse-indicator {
-        width: 6px; height: 6px; border-radius: 50%; background: #00e676;
-        animation: pulseSubDot 1.6s infinite;
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #00e676; box-shadow: 0 0 10px #00e676;
+        animation: pulseSubDot 1.8s infinite;
     }
     @keyframes pulseSubDot {
         0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(0.8); }
+        50% { opacity: 0.4; transform: scale(0.85); }
     }
-
     .header-controls { display: flex; align-items: center; gap: 8px; }
     .chat-hdr-btn {
-        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #94a3b8; width: 34px; height: 34px; border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #cbd5e1; width: 34px; height: 34px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center; cursor: pointer;
-        font-size: 14px; transition: all 0.2s ease;
+        font-size: 13px; transition: all 0.2s ease;
     }
     .chat-hdr-btn:hover {
-        background: rgba(0, 243, 255, 0.12); color: var(--neon-cyan);
-        border-color: rgba(0, 243, 255, 0.35); transform: translateY(-1px);
-    }
-    .chat-hdr-btn#btn-toggle-view {
-        width: auto; padding: 0 10px; gap: 6px; font-size: 0.78rem; font-weight: 600;
-    }
-    .chat-hdr-btn#btn-toggle-view.active {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(0, 119, 255, 0.3));
-        color: #fff; border-color: var(--neon-cyan);
-    }
-    .chat-hdr-btn.close-btn:hover {
-        background: rgba(255, 51, 102, 0.15); color: #ff3366; border-color: rgba(255, 51, 102, 0.4);
+        background: rgba(0, 243, 255, 0.15); border-color: #00f3ff;
+        color: #00f3ff; transform: scale(1.08); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
     }
 
-    /* Navigation Tabs */
-    .chat-nav-tabs {
-        display: flex; padding: 6px 14px; background: rgba(0, 0, 0, 0.35);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06); gap: 8px; flex-shrink: 0;
-    }
-    .chat-nav-tab {
-        flex: 1; padding: 8px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;
-        color: #94a3b8; background: transparent; cursor: pointer;
-        display: flex; align-items: center; justify-content: center; gap: 8px;
-        transition: all 0.25s ease; border: 1px solid transparent;
-    }
-    .chat-nav-tab:hover { color: #fff; background: rgba(255, 255, 255, 0.04); }
-    .chat-nav-tab.active {
-        color: var(--neon-cyan); background: rgba(0, 243, 255, 0.08);
-        border-color: rgba(0, 243, 255, 0.25);
-    }
-    .tab-badge {
-        font-size: 0.65rem; padding: 1px 6px; border-radius: 10px;
-        background: rgba(188, 19, 254, 0.2); color: var(--neon-purple);
-        border: 1px solid rgba(188, 19, 254, 0.3);
-    }
-
-    /* ============================================= */
-    /* VIEW 1: TOPICS DIRECTORY BOARD PANEL          */
-    /* ============================================= */
-    #ai-topics-panel {
-        flex: 1; overflow-y: auto; padding: 16px 18px;
-        display: flex; flex-direction: column; gap: 14px;
-        background: radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.04), transparent 70%);
-    }
-    #ai-topics-panel.topics-panel-hidden { display: none !important; }
-    #ai-topics-panel::-webkit-scrollbar { width: 5px; }
-    #ai-topics-panel::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.25); border-radius: 10px; }
-
-    .topics-panel-header {
-        display: flex; flex-direction: column; gap: 10px;
-    }
-    .topics-intro h4 {
-        font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 3px 0;
-        display: flex; align-items: center; gap: 8px;
-    }
-    .topics-intro p { font-size: 0.78rem; color: #94a3b8; margin: 0; line-height: 1.4; }
-
-    .topics-search-wrap {
-        position: relative; display: flex; align-items: center; width: 100%;
-    }
-    .topics-search-icon {
-        position: absolute; left: 14px; color: #64748b; font-size: 13px; pointer-events: none;
-    }
-    #topics-search-input {
-        width: 100%; background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px;
-        padding: 9px 14px 9px 38px; color: #fff; font-size: 0.82rem; outline: none;
-        transition: all 0.2s ease;
-    }
-    #topics-search-input:focus {
-        border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.05);
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
-    }
-
-    .topics-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 12px; padding-bottom: 8px;
-    }
-    .topic-card {
-        background: rgba(16, 22, 38, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px; padding: 14px; cursor: pointer;
-        display: flex; flex-direction: column; gap: 8px;
-        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        position: relative; overflow: hidden;
-    }
-    .topic-card::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-        background: linear-gradient(90deg, transparent, var(--topic-accent, var(--neon-cyan)), transparent);
-        opacity: 0; transition: opacity 0.3s;
-    }
-    .topic-card:hover {
-        transform: translateY(-3px);
-        background: rgba(22, 30, 52, 0.95);
-        border-color: rgba(0, 243, 255, 0.35);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 243, 255, 0.1);
-    }
-    .topic-card:hover::before { opacity: 1; }
-    
-    .topic-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .topic-card-icon {
-        width: 36px; height: 36px; border-radius: 10px;
-        display: flex; align-items: center; justify-content: center; font-size: 16px;
-        background: var(--topic-icon-bg, rgba(0, 243, 255, 0.12));
-        color: var(--topic-accent, var(--neon-cyan));
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .topic-card-badge {
-        font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 8px;
-        background: rgba(255, 255, 255, 0.06); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .topic-card-title {
-        font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 700;
-        color: #fff; margin: 0; line-height: 1.3;
-    }
-    .topic-card-desc {
-        font-size: 0.72rem; color: #94a3b8; line-height: 1.4; margin: 0;
-    }
-    .topic-card-action {
-        margin-top: auto; font-size: 0.7rem; font-weight: 600;
-        color: var(--topic-accent, var(--neon-cyan));
-        display: flex; align-items: center; gap: 5px;
-        transition: gap 0.2s;
-    }
-    .topic-card:hover .topic-card-action { gap: 8px; }
-
-    /* ============================================= */
-    /* VIEW 2: CHAT CONVERSATION VIEW                */
-    /* ============================================= */
-    #ai-chat-view {
-        flex: 1; display: flex; flex-direction: column; overflow: hidden;
-    }
-    #ai-chat-view.chat-view-hidden { display: none !important; }
-
+    /* Message Body Scroll Area */
     #chat-box {
-        flex: 1; padding: 18px; overflow-y: auto;
-        display: flex; flex-direction: column; gap: 16px;
+        flex: 1; padding: 16px; overflow-y: auto;
+        display: flex; flex-direction: column; gap: 14px;
+        background: #070913;
     }
     #chat-box::-webkit-scrollbar { width: 5px; }
-    #chat-box::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.25); border-radius: 10px; }
+    #chat-box::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.22); border-radius: 10px; }
 
-    .message { display: flex; gap: 12px; max-width: 90%; animation: msgSlide 0.3s ease-out; }
+    /* Messages & Bubbles */
+    .message { display: flex; gap: 10px; max-width: 95%; animation: msgSlide 0.25s ease-out; }
     @keyframes msgSlide {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .bot-msg { align-self: flex-start; }
     .user-msg { align-self: flex-end; flex-direction: row-reverse; }
 
     .msg-avatar {
-        width: 36px; height: 36px; border-radius: 12px;
+        width: 32px; height: 32px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 15px; flex-shrink: 0; overflow: hidden;
+        font-size: 13px; flex-shrink: 0;
     }
     .bot-msg .msg-avatar {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 119, 255, 0.2));
-        color: var(--neon-cyan); border: 1px solid rgba(0, 243, 255, 0.3);
+        background: rgba(0, 243, 255, 0.15); border: 1.5px solid #00f3ff; color: #00f3ff;
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
     .user-msg .msg-avatar {
-        background: linear-gradient(135deg, rgba(188, 19, 254, 0.2), rgba(0, 243, 255, 0.2));
-        color: #fff; border: 1px solid rgba(188, 19, 254, 0.35);
+        background: rgba(188, 19, 254, 0.15); border: 1.5px solid #bc13fe; color: #bc13fe;
+        box-shadow: 0 0 10px rgba(188, 19, 254, 0.3);
     }
-    .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .msg-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
     .msg-text {
-        padding: 12px 18px; border-radius: 18px; font-size: 0.92rem;
-        line-height: 1.6; word-wrap: break-word; position: relative;
+        padding: 13px 16px; border-radius: 16px; font-size: 0.89rem;
+        line-height: 1.55; word-break: break-word;
     }
     .bot-msg .msg-text {
-        background: rgba(18, 24, 42, 0.85); color: #e2e8f0;
-        border-top-left-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        background: rgba(14, 20, 38, 0.92); color: #f1f5f9;
+        border: 1px solid rgba(0, 243, 255, 0.22);
+        border-left: 3px solid #00f3ff;
+        border-top-left-radius: 4px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
     }
     .user-msg .msg-text {
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-        color: #060814; font-weight: 600; border-top-right-radius: 4px;
-        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.25);
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.22) 0%, rgba(188, 19, 254, 0.22) 100%);
+        border: 1px solid rgba(0, 243, 255, 0.45); color: #ffffff; font-weight: 500;
+        border-top-right-radius: 4px; box-shadow: 0 4px 18px rgba(0, 243, 255, 0.18);
     }
 
-    /* Embedded In-Chat Welcome Options Hub Grid */
-    .chat-welcome-hub {
-        margin-top: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    /* Telemetry HUD inside Welcome Card */
+    .lms-telemetry-hud {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+        margin: 10px 0 12px; padding: 10px;
+        background: rgba(255, 255, 255, 0.035); border: 1px solid rgba(0, 243, 255, 0.18);
+        border-radius: 12px;
     }
-    .hub-mini-card {
-        background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px; padding: 10px 12px; cursor: pointer;
-        display: flex; align-items: center; gap: 10px;
-        transition: all 0.2s ease;
+    .hud-stat {
+        display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px;
     }
-    .hub-mini-card:hover {
-        background: rgba(0, 243, 255, 0.08); border-color: rgba(0, 243, 255, 0.35);
-        transform: translateY(-2px);
+    .hud-stat span {
+        font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .hub-mini-icon {
+    .hud-stat b {
+        font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; color: #ffffff;
+    }
+
+    /* Category 2-Column Grid (Learning-365 Cyber Design) */
+    .lms-category-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; width: 100%;
+    }
+    .lms-cat-card {
+        background: rgba(17, 24, 46, 0.75); border: 1px solid rgba(0, 243, 255, 0.16);
+        border-radius: 12px; padding: 10px 10px; cursor: pointer;
+        display: flex; flex-direction: column; gap: 6px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        text-align: left; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .lms-cat-card:hover {
+        border-color: #00f3ff; background: rgba(0, 243, 255, 0.1);
+        transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 243, 255, 0.22);
+    }
+    .lms-cat-hdr {
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .lms-cat-icon {
         width: 28px; height: 28px; border-radius: 8px;
         display: flex; align-items: center; justify-content: center;
         font-size: 13px; flex-shrink: 0;
     }
-    .hub-mini-text { display: flex; flex-direction: column; overflow: hidden; }
-    .hub-mini-title { font-size: 0.78rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hub-mini-sub { font-size: 0.65rem; color: #94a3b8; }
-
-    /* Topic Dossier Detail Card inside Bot Message */
-    .bot-dossier-card {
-        background: rgba(14, 19, 34, 0.95); border: 1px solid rgba(0, 243, 255, 0.35);
-        border-radius: 16px; padding: 16px; margin: 8px 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(0, 243, 255, 0.1);
-        display: flex; flex-direction: column; gap: 12px;
+    .lms-cat-title {
+        color: #f1f5f9; font-size: 0.8rem; font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif; line-height: 1.25;
     }
-    .dossier-header {
+    .lms-cat-card:hover .lms-cat-title { color: #00f3ff; }
+    .lms-cat-badge {
+        font-size: 0.65rem; color: #94a3b8; line-height: 1.2;
+    }
+
+    /* Detail Cards inside Bot Messages */
+    .lms-detail-card {
+        background: rgba(14, 20, 38, 0.95); border: 1px solid rgba(0, 243, 255, 0.25);
+        border-radius: 14px; padding: 14px; margin-top: 8px; display: flex;
+        flex-direction: column; gap: 10px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+    }
+    .lms-detail-title {
+        font-size: 0.92rem; font-weight: 700; color: #ffffff;
+        font-family: 'Space Grotesk', sans-serif;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .lms-detail-body { font-size: 0.84rem; color: #94a3b8; line-height: 1.55; }
+    .lms-detail-body b { color: #f8fafc; }
+    .lms-item-card {
+        background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px; padding: 9px 12px; margin-top: 6px;
         display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;
     }
-    .dossier-title-box { display: flex; align-items: center; gap: 10px; }
-    .dossier-icon {
-        width: 34px; height: 34px; border-radius: 10px;
-        display: flex; align-items: center; justify-content: center; font-size: 15px;
+    .lms-actions-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .lms-action-btn {
+        padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        cursor: pointer; transition: all 0.2s; border: none;
     }
-    .dossier-title {
-        font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700;
-        color: #fff; margin: 0;
+    .lms-action-btn.primary {
+        background: linear-gradient(135deg, #00f3ff 0%, #0284c7 100%);
+        color: #070913; font-weight: 700;
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.35);
     }
-    .dossier-badge {
-        font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 12px;
+    .lms-action-btn.primary:hover {
+        transform: translateY(-1px); box-shadow: 0 0 24px rgba(0, 243, 255, 0.55);
+        color: #000;
     }
-    .dossier-section {
-        font-size: 0.82rem; color: #cbd5e1; line-height: 1.55;
+    .lms-action-btn.secondary {
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e2e8f0;
     }
-    .dossier-section-title {
-        font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
-        color: var(--neon-cyan); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
-    }
-    .dossier-stat-row {
-        display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0;
-    }
-    .dossier-stat-pill {
-        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 10px; padding: 5px 10px; font-size: 0.72rem; color: #e2e8f0;
-        display: flex; align-items: center; gap: 6px;
-    }
-    .dossier-stat-pill b { color: var(--neon-cyan); }
-    .dossier-actions {
-        display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
-    }
-    .dossier-action-btn {
-        padding: 7px 14px; border-radius: 10px; font-size: 0.78rem; font-weight: 700;
-        cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-        text-decoration: none; transition: all 0.2s ease; border: none;
-    }
-    .dossier-action-btn.primary {
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff); color: #060814;
-        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
-    }
-    .dossier-action-btn.primary:hover {
-        transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 243, 255, 0.45);
-    }
-    .dossier-action-btn.secondary {
-        background: rgba(255, 255, 255, 0.08); color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    .dossier-action-btn.secondary:hover {
-        background: rgba(255, 255, 255, 0.15); border-color: rgba(0, 243, 255, 0.4);
+    .lms-action-btn.secondary:hover {
+        background: rgba(0, 243, 255, 0.12); border-color: #00f3ff; color: #00f3ff;
     }
 
-    .dossier-prompts {
-        display: flex; flex-direction: column; gap: 6px; margin-top: 4px;
-        border-top: 1px dashed rgba(255, 255, 255, 0.08); padding-top: 8px;
+    .lms-back-btn {
+        margin-top: 8px; background: rgba(0, 243, 255, 0.05);
+        border: 1px dashed rgba(0, 243, 255, 0.3); color: #00f3ff;
+        padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+        cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+        transition: all 0.2s;
     }
-    .dossier-prompt-chip {
-        background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.2);
-        color: #94a3b8; font-size: 0.74rem; padding: 6px 10px; border-radius: 8px;
-        cursor: pointer; display: flex; align-items: center; gap: 6px;
-        transition: all 0.2s ease;
+    .lms-back-btn:hover {
+        background: rgba(0, 243, 255, 0.15); border-color: #00f3ff;
+        transform: translateX(-2px); box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
     }
-    .dossier-prompt-chip:hover {
-        background: rgba(0, 243, 255, 0.12); color: var(--neon-cyan);
-        border-color: var(--neon-cyan); transform: translateX(3px);
+    .lms-prompt-chips {
+        display: flex; flex-direction: column; gap: 6px; margin-top: 8px;
+    }
+    .lms-prompt-chip {
+        background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.16);
+        color: #38bdf8; font-size: 0.78rem; font-weight: 500; padding: 7px 12px;
+        border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .lms-prompt-chip:hover {
+        background: rgba(0, 243, 255, 0.12); border-color: #00f3ff;
+        color: #00f3ff; transform: translateX(2px);
     }
 
     /* Markdown Code Blocks */
     .code-block-wrapper {
-        background: #090c15; border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #060913; border: 1px solid rgba(0, 243, 255, 0.25);
         border-radius: 12px; overflow: hidden; margin: 10px 0;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     }
     .code-block-header {
-        background: #121727; padding: 6px 14px; display: flex;
+        background: #0f1629; padding: 6px 12px; display: flex;
         justify-content: space-between; align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        border-bottom: 1px solid rgba(0, 243, 255, 0.18);
     }
     .code-lang-tag {
-        font-family: 'Space Grotesk', monospace; font-size: 0.7rem; font-weight: 700;
-        color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 0.5px;
+        font-family: 'Fira Code', monospace; font-size: 0.72rem; font-weight: 700;
+        color: #00f3ff; text-transform: uppercase; letter-spacing: 0.5px;
     }
     .copy-code-btn {
-        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #94a3b8; font-size: 0.68rem; font-weight: 600; padding: 3px 8px;
+        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #cbd5e1; font-size: 0.7rem; font-weight: 600; padding: 3px 8px;
         border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;
         transition: all 0.2s ease;
     }
-    .copy-code-btn:hover { background: rgba(0, 243, 255, 0.15); color: #fff; }
+    .copy-code-btn:hover { background: #00f3ff; color: #070913; border-color: #00f3ff; }
     pre.code-content {
         margin: 0; padding: 12px 14px; overflow-x: auto;
-        font-family: 'Consolas', 'Monaco', monospace; font-size: 0.8rem;
+        font-family: 'Fira Code', 'Consolas', 'Monaco', monospace; font-size: 0.82rem;
         color: #e2e8f0; line-height: 1.5;
     }
     pre.code-content::-webkit-scrollbar { height: 4px; }
-    pre.code-content::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.2); border-radius: 4px; }
+    pre.code-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
     /* Markdown Elements */
-    .chat-md-h4 { font-family: 'Space Grotesk', sans-serif; color: #fff; font-size: 0.95rem; margin: 10px 0 4px 0; }
-    .chat-md-li { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0; line-height: 1.5; font-size: 0.88rem; }
-    .chat-md-bullet { color: var(--neon-cyan); font-weight: 700; flex-shrink: 0; }
-    .chat-md-link { color: var(--neon-cyan); text-decoration: underline; font-weight: 600; }
-    .chat-md-link:hover { color: #fff; }
+    .chat-md-h4 { color: #00f3ff; font-size: 0.95rem; font-weight: 700; margin: 10px 0 4px 0; font-family: 'Space Grotesk', sans-serif; }
+    .chat-md-li { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0; line-height: 1.5; font-size: 0.88rem; color: #cbd5e1; }
+    .chat-md-bullet { color: #00f3ff; font-weight: 700; flex-shrink: 0; }
+    .chat-md-link { color: #00f3ff; text-decoration: underline; font-weight: 600; }
+    .chat-md-link:hover { color: #38bdf8; text-shadow: 0 0 8px rgba(0, 243, 255, 0.4); }
 
-    /* Sticky Quick Chips Bar */
-    .quick-chips-bar {
-        display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px;
-        background: rgba(0, 0, 0, 0.25); border-top: 1px solid rgba(255, 255, 255, 0.04);
-        flex-shrink: 0; scrollbar-width: none; -ms-overflow-style: none;
+    /* Quick Actions Strip */
+    .chat-quick-actions-strip {
+        display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 6px;
+        scrollbar-width: none; -ms-overflow-style: none;
     }
-    .quick-chips-bar::-webkit-scrollbar { display: none; }
-    .chat-chip {
-        flex-shrink: 0; background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
-        color: #cbd5e1; font-size: 0.74rem; font-weight: 600;
-        padding: 5px 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;
-        white-space: nowrap; transition: all 0.2s ease;
+    .chat-quick-actions-strip::-webkit-scrollbar { display: none; }
+    .quick-chip {
+        background: rgba(18, 25, 48, 0.85); border: 1px solid rgba(0, 243, 255, 0.2);
+        color: #cbd5e1; font-size: 0.74rem; font-weight: 600; padding: 4px 10px;
+        border-radius: 12px; cursor: pointer; white-space: nowrap;
+        transition: all 0.2s ease; font-family: 'Space Grotesk', sans-serif;
+        display: inline-flex; align-items: center; gap: 5px;
     }
-    .chat-chip:hover {
-        background: rgba(0, 243, 255, 0.12); color: #fff;
-        border-color: rgba(0, 243, 255, 0.35); transform: translateY(-1px);
+    .quick-chip:hover {
+        background: rgba(0, 243, 255, 0.14); border-color: #00f3ff;
+        color: #00f3ff; transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
 
-    /* Input Area */
-    .chat-input-area {
-        padding: 12px 18px; background: rgba(0,0,0,0.45);
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        display: flex; gap: 10px; align-items: center; flex-shrink: 0;
+    /* Footer Input Area */
+    .chat-footer-area {
+        padding: 10px 16px 10px; background: rgba(10, 14, 26, 0.98);
+        border-top: 1px solid rgba(0, 243, 255, 0.15); display: flex;
+        flex-direction: column; gap: 6px; flex-shrink: 0;
     }
+    .chat-input-row { display: flex; align-items: center; gap: 8px; }
     #user-input {
-        flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-        color: #fff; padding: 11px 16px; border-radius: 24px; outline: none; font-size: 0.9rem;
-        transition: all 0.25s ease;
+        flex: 1; background: rgba(18, 25, 48, 0.9); border: 1.5px solid rgba(0, 243, 255, 0.24);
+        border-radius: 24px; padding: 10px 16px; font-size: 0.88rem;
+        color: #f8fafc; outline: none; transition: all 0.2s ease;
+        font-family: 'Outfit', sans-serif;
     }
+    #user-input::placeholder { color: #64748b; }
     #user-input:focus {
-        border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.04);
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+        border-color: #00f3ff; box-shadow: 0 0 16px rgba(0, 243, 255, 0.28);
     }
     #send-btn {
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-        border: none; width: 42px; height: 42px; border-radius: 50%;
-        color: #060814; font-size: 15px; cursor: pointer; display: flex;
-        justify-content: center; align-items: center; transition: all 0.2s ease;
-        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.35); flex-shrink: 0;
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08); color: #64748b; border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; font-size: 15px;
     }
-    #send-btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0, 243, 255, 0.5); }
+    #send-btn.active, #send-btn:hover {
+        background: linear-gradient(135deg, #00f3ff 0%, #0284c7 100%);
+        color: #070913; border-color: #00f3ff; transform: scale(1.05);
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.45);
+    }
     #mic-btn {
-        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
-        width: 42px; height: 42px; border-radius: 50%; color: var(--neon-cyan);
-        cursor: pointer; display: flex; justify-content: center; align-items: center;
-        transition: all 0.2s ease; flex-shrink: 0;
+        width: 36px; height: 36px; border-radius: 50%;
+        background: transparent; color: #64748b; border: none;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: color 0.2s ease; flex-shrink: 0; font-size: 15px;
     }
-    #mic-btn:hover { background: rgba(0, 243, 255, 0.12); border-color: var(--neon-cyan); }
-    #mic-btn.listening { background: var(--neon-purple); color: #fff; animation: pulseMic 1.4s infinite; }
-    @keyframes pulseMic {
-        0% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.6); }
-        70% { box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); }
+    #mic-btn:hover { color: #00f3ff; }
+    #mic-btn.listening { color: #ef4444; animation: micPulse 1.2s infinite; }
+    @keyframes micPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+    .chat-helper-caption {
+        font-size: 0.7rem; color: #64748b; padding-left: 6px;
     }
 
     /* Loader */
-    #chat-loader { display: none; padding: 8px 18px; flex-shrink: 0; }
-    .typing-indicator-box {
-        display: inline-flex; align-items: center; gap: 10px;
-        background: rgba(18, 24, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 6px 14px; border-radius: 16px;
+    #chat-loader {
+        display: none; padding: 6px 16px; flex-shrink: 0; background: #080c18;
     }
-    .typing-dots { display: flex; gap: 5px; }
+    .typing-indicator-box {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(17, 24, 46, 0.85); border: 1px solid rgba(0, 243, 255, 0.22);
+        padding: 6px 12px; border-radius: 14px;
+    }
+    .typing-dots { display: flex; gap: 4px; }
     .typing-dots span {
-        width: 7px; height: 7px; background: var(--neon-cyan); border-radius: 50%;
+        width: 6px; height: 6px; background: #00f3ff; border-radius: 50%;
         animation: typing 1.4s infinite ease-in-out both;
     }
     .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
     .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
     .typing-status-text { font-size: 0.74rem; color: #94a3b8; }
-
     @keyframes typing {
         0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
         40% { transform: scale(1); opacity: 1; }
@@ -1624,9 +1516,7 @@
             height: calc(100vh - 105px) !important; max-height: calc(100vh - 105px) !important;
             border-radius: 20px;
         }
-        #ai-chat-toggle { bottom: 20px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
-        .topics-grid { grid-template-columns: 1fr; }
-        .chat-welcome-hub { grid-template-columns: 1fr; }
+        #ai-chat-toggle { bottom: 20px; right: 20px; width: 54px; height: 54px; font-size: 22px; }
     }
 </style>
 
@@ -2064,127 +1954,78 @@
 {% include 'ide_modal.html' %}
 
 <!-- ============================================= -->
-<!-- 🚀 ULTRA-PREMIUM LMS AI PORTAL COPILOT & BOARD -->
+<!-- 🚀 LEARNING-365 COPILOT & ACADEMIC HUB        -->
 <!-- ============================================= -->
-<div id="ai-chat-toggle" onclick="toggleChat()" title="Open LMS AI Copilot & Portal Board">
+<div id="ai-chat-toggle" onclick="toggleChat()" title="Open Learning-365 AI Copilot">
     <div class="ai-launcher-inner">
         <i class="fas fa-brain" id="ai-toggle-icon"></i>
         <span class="ai-launcher-pulse"></span>
     </div>
     <div class="ai-launcher-pill">
         <span class="ai-live-dot"></span>
-        <span><b>AI Copilot & Hub</b> • Online</span>
+        <span><b>Learning-365 AI</b> • Online</span>
     </div>
 </div>
 
 <div id="ai-chat-container" class="closed">
-    <!-- Header -->
+    <!-- Header: Learning-365 Copilot -->
     <div class="chat-header">
         <div class="header-identity">
             <div class="header-avatar">
-                <i class="fas fa-robot"></i>
-                <span class="avatar-status-dot" title="Online & Connected"></span>
+                <i class="fas fa-brain"></i>
             </div>
             <div class="header-title-box">
                 <div class="header-title">
-                    <span>LMS Intelligent Copilot</span>
-                    <span class="header-version-pill">v2.5 Pro</span>
+                    <span>Learning-365 Copilot</span>
+                    <span class="header-version-pill">v3.0 Pro</span>
                 </div>
                 <div class="header-subtitle">
-                    <span class="pulse-indicator"></span> Groq Academic Intelligence Core Active
+                    <span class="pulse-indicator"></span> Academic Intelligence Core • Online
                 </div>
             </div>
         </div>
         <div class="header-controls">
-            <button class="chat-hdr-btn" id="btn-toggle-view" onclick="toggleChatView()" title="Toggle Topics Directory">
-                <i class="fas fa-th-large"></i>
-                <span class="btn-lbl">Topics</span>
-            </button>
-            <button class="chat-hdr-btn" onclick="resetChat()" title="Clear & Restart Conversation">
+            <button class="chat-hdr-btn" onclick="resetChat()" title="Restart Session">
                 <i class="fas fa-redo-alt"></i>
             </button>
-            <button class="chat-hdr-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
-                <i class="fas fa-expand-alt"></i>
-            </button>
-            <button class="chat-hdr-btn close-btn" onclick="toggleChat()" title="Minimize Copilot">
+            <button class="chat-hdr-btn" onclick="toggleChat()" title="Minimize Copilot">
                 <i class="fas fa-times"></i>
             </button>
         </div>
     </div>
 
-    <!-- Navigation Sub-Bar (Tab switch: Chat vs Topics Board) -->
-    <div class="chat-nav-tabs">
-        <div class="chat-nav-tab active" id="tab-chat" onclick="switchChatTab('chat')">
-            <i class="fas fa-comments"></i> <span>Live Assistant</span>
-        </div>
-        <div class="chat-nav-tab" id="tab-topics" onclick="switchChatTab('topics')">
-            <i class="fas fa-compass"></i> <span>Portal Options Board</span>
-            <span class="tab-badge">7 Topics</span>
+    <!-- Chat Messages Stream -->
+    <div id="chat-box"></div>
+
+    <!-- Typing Loader -->
+    <div id="chat-loader">
+        <div class="typing-indicator-box">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+            <span class="typing-status-text">Learning-365 AI is thinking...</span>
         </div>
     </div>
 
-    <!-- VIEW 1: Dedicated Topics Board Panel -->
-    <div id="ai-topics-panel" class="topics-panel-hidden">
-        <div class="topics-panel-header">
-            <div class="topics-intro">
-                <h4><i class="fas fa-compass" style="color:var(--neon-cyan)"></i> Official Portal Hub</h4>
-                <p>Click any topic below to view official instructions, live progress, and instant actions.</p>
-            </div>
-            <div class="topics-search-wrap">
-                <i class="fas fa-search topics-search-icon"></i>
-                <input type="text" id="topics-search-input" placeholder="Search guides, exams, coins, compiler..." oninput="filterTopicCards(this.value)">
-            </div>
+    <!-- Footer Input Area -->
+    <div class="chat-footer-area">
+        <!-- Quick Actions Strip -->
+        <div class="chat-quick-actions-strip">
+            <button class="quick-chip" onclick="sendQuickPrompt('What is my current LMS Coin balance and how do I earn more?')"><i class="fas fa-coins" style="color:#ffd700;"></i> Coins</button>
+            <button class="quick-chip" onclick="sendQuickPrompt('Show my enrolled courses and real completion progress')"><i class="fas fa-graduation-cap" style="color:#00f3ff;"></i> Courses</button>
+            <button class="quick-chip" onclick="sendQuickPrompt('What examinations are currently active on the portal?')"><i class="fas fa-clipboard-check" style="color:#00e676;"></i> Exams</button>
+            <button class="quick-chip" onclick="sendQuickPrompt('How do I earn bounties in Syntax Singularity?')"><i class="fas fa-crosshairs" style="color:#bc13fe;"></i> Arena</button>
+            <button class="quick-chip" onclick="launchCloudIDEModal()"><i class="fas fa-terminal" style="color:#38bdf8;"></i> Compiler</button>
+            <button class="quick-chip" onclick="showCategories()"><i class="fas fa-th-large" style="color:#f59e0b;"></i> Menu</button>
         </div>
-        <div class="topics-grid" id="topics-grid">
-            <!-- Populated dynamically by JS with interactive topic cards -->
-        </div>
-    </div>
-
-    <!-- VIEW 2: Chat Stream -->
-    <div id="ai-chat-view" class="chat-view-active">
-        <div id="chat-box">
-            <!-- Welcome message with embedded Quick Topics Overview Grid -->
-        </div>
-
-        <div id="chat-loader">
-            <div class="typing-indicator-box">
-                <div class="typing-dots"><span></span><span></span><span></span></div>
-                <span class="typing-status-text">Copilot is thinking...</span>
-            </div>
-        </div>
-
-        <!-- Sticky Quick Chips Bar -->
-        <div class="quick-chips-bar" id="quick-chips-bar">
-            <button class="chat-chip" onclick="switchChatTab('topics')">
-                <i class="fas fa-th-large" style="color:var(--neon-cyan)"></i> Explore All Topics
-            </button>
-            <button class="chat-chip" onclick="showTopicDossier('exams')">
-                <i class="fas fa-clipboard-check" style="color:var(--accent-amber)"></i> Exams & Quizzes
-            </button>
-            <button class="chat-chip" onclick="showTopicDossier('coins')">
-                <i class="fas fa-coins" style="color:#ffd700)"></i> LMS Coins Wallet
-            </button>
-            <button class="chat-chip" onclick="showTopicDossier('compiler')">
-                <i class="fas fa-laptop-code" style="color:var(--accent-green)"></i> Cloud IDE
-            </button>
-            <button class="chat-chip" onclick="sendQuickPrompt('Explain how I can score 100% in my enrolled course quizzes')">
-                <i class="fas fa-lightbulb" style="color:var(--neon-cyan)"></i> Quiz Strategy
-            </button>
-            <button class="chat-chip" onclick="sendQuickPrompt('Create a 7-day technical study schedule for my enrolled courses')">
-                <i class="fas fa-calendar-alt" style="color:var(--neon-purple)"></i> Study Schedule
-            </button>
-        </div>
-
-        <!-- Input Area -->
-        <div class="chat-input-area">
-            <button id="mic-btn" onclick="toggleVoiceSearch()" aria-label="Voice Search" title="Speak Question">
+        <div class="chat-input-row">
+            <button id="mic-btn" onclick="toggleVoiceSearch()" aria-label="Voice Input" title="Voice Input">
                 <i class="fas fa-microphone"></i>
             </button>
-            <input type="text" id="user-input" placeholder="Ask questions, request code help, or search guides..." autocomplete="off">
-            <button onclick="sendMessage()" id="send-btn" aria-label="Send">
+            <input type="text" id="user-input" placeholder="Ask about courses, exams, coins, compiler, or code..." autocomplete="off">
+            <button onclick="sendMessage()" id="send-btn" aria-label="Send Message" title="Send Query">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
+        <div class="chat-helper-caption">Press Enter to send • Learning-365 Intelligence Core</div>
     </div>
 </div>
 
@@ -2311,471 +2152,464 @@
 
     const portalUserProfileImgUrl = STUDENT_PORTAL_CONTEXT.profilePicUrl || (typeof window.userProfileImgUrl !== 'undefined' ? window.userProfileImgUrl : '');
     const portalUserHasProfileImg = Boolean(portalUserProfileImgUrl && portalUserProfileImgUrl.trim() !== '');
-
     const chatContainer = document.getElementById('ai-chat-container');
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
     const loader = document.getElementById('chat-loader');
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
     const micBtn = document.getElementById('mic-btn');
-    const tabChat = document.getElementById('tab-chat');
-    const tabTopics = document.getElementById('tab-topics');
-    const aiChatView = document.getElementById('ai-chat-view');
-    const aiTopicsPanel = document.getElementById('ai-topics-panel');
-    const btnToggleView = document.getElementById('btn-toggle-view');
-    const topicsGrid = document.getElementById('topics-grid');
+    const sendBtn = document.getElementById('send-btn');
+    const aiToggleIcon = document.getElementById('ai-toggle-icon');
 
-    let currentChatTab = 'chat';
-
-    // 7 Core Portal Topics Definition
-    const PORTAL_TOPICS = {
-        courses: {
+    // Categories covering every feature of Learning-365
+    const LMS_PORTAL_CATEGORIES = [
+        {
             id: 'courses',
-            title: 'Course Curriculum & Roadmap',
             icon: 'fa-graduation-cap',
-            accent: 'var(--neon-cyan)',
-            iconBg: 'rgba(0, 243, 255, 0.12)',
-            badge: `${STUDENT_PORTAL_CONTEXT.enrolledCourses.length} Enrolled`,
-            desc: 'Syllabus breakdown, video modules & progress roadmap.',
-            renderDossier: function(ctx) {
-                let courseListHtml = '';
-                if (ctx.enrolledCourses.length > 0) {
-                    courseListHtml = ctx.enrolledCourses.map(c => `
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; margin-top:6px; border:1px solid rgba(255,255,255,0.06);">
+            color: '#00f3ff',
+            iconBg: 'rgba(0, 243, 255, 0.15)',
+            title: 'Courses & Video Roadmap',
+            subtitle: '80% Watch = +20 Coins',
+            getContent: function(ctx) {
+                let coursesList = '';
+                if (ctx.enrolledCourses && ctx.enrolledCourses.length > 0) {
+                    coursesList = ctx.enrolledCourses.map(c => `
+                        <div class="lms-item-card">
                             <div>
-                                <div style="font-weight:600; color:#fff; font-size:0.82rem;">${c.title}</div>
-                                <div style="font-size:0.7rem; color:#94a3b8;">Progress: <b style="color:var(--neon-cyan)">${c.progress}%</b></div>
+                                <div style="font-weight:600; color:#f8fafc; font-size:0.84rem;">${c.title}</div>
+                                <div style="font-size:0.72rem; color:#94a3b8;">Real Progress: <b style="color:#00f3ff;">${c.progress}%</b></div>
                             </div>
-                            <a href="/courses/watch/${c.id}/" class="dossier-action-btn secondary" style="padding:4px 10px; font-size:0.72rem;">
+                            <a href="/courses/watch/${c.id}/" class="lms-action-btn secondary" style="font-size:0.74rem; padding:4px 10px;">
                                 Watch <i class="fas fa-play" style="font-size:10px;"></i>
                             </a>
                         </div>
                     `).join('');
                 } else {
-                    courseListHtml = '<p style="color:#94a3b8; font-size:0.8rem; margin:6px 0;">You are not enrolled in any course yet. Explore our technical catalog to get started!</p>';
+                    coursesList = '<p style="color:#94a3b8; font-size:0.82rem; margin:6px 0;">No active enrollments found yet. Explore our technical catalog to get started.</p>';
                 }
-
                 return `
-                    <div class="bot-dossier-card" style="--topic-accent: var(--neon-cyan);">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(0,243,255,0.15); color:var(--neon-cyan); border:1px solid rgba(0,243,255,0.3);">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                                <div>
-                                    <h4 class="dossier-title">Academic Courses & Study Roadmap</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">Official Academic Department</span>
-                                </div>
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-graduation-cap" style="color:#00f3ff;"></i> Academic Courses & Learning Engine
+                        </div>
+                        <div class="lms-detail-body">
+                            Watch recorded lecture modules, track video progress, and generate AI concept notes.
+                            <br><br>
+                            ⚡ <b>Progress Rules:</b> Watching at least <b>80%</b> of any lecture video automatically marks it complete and awards <b>+20 LMS Coins</b>!
+                            <div style="margin-top:10px;">${coursesList}</div>
+                        </div>
+                        <div class="lms-actions-row">
+                            <a href="/courses/" class="lms-action-btn primary"><i class="fas fa-th-large"></i> Explore All Courses</a>
+                        </div>
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How do I generate AI smart notes for my video lessons?')">
+                                <i class="fas fa-sparkles" style="color:#00f3ff;"></i> How do I generate AI smart notes?
                             </div>
-                            <span class="dossier-badge" style="background:rgba(0,243,255,0.15); color:var(--neon-cyan); border:1px solid rgba(0,243,255,0.3);">${ctx.enrolledCourses.length} Active</span>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-info-circle"></i> Curriculum Overview & Rules</div>
-                            Access high-definition recorded lectures, curated module reading materials, and AI-generated concept notes.
-                            Course completion certificates unlock once all video modules reach 100% and passing grades are obtained in course quizzes.
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-book-reader"></i> Your Enrolled Courses</div>
-                            ${courseListHtml}
-                        </div>
-                        <div class="dossier-actions">
-                            <a href="/courses/" class="dossier-action-btn primary"><i class="fas fa-th-large"></i> Explore Course Catalog</a>
-                        </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('Generate a comprehensive 7-day study schedule for my enrolled courses')">
-                                <i class="fas fa-sparkles" style="color:var(--neon-cyan)"></i> "Generate a 7-day study plan for my courses"
-                            </div>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('What are the key technical concepts I should master first in my courses?')">
-                                <i class="fas fa-sparkles" style="color:var(--neon-cyan)"></i> "What technical concepts should I master first?"
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How is my course completion percentage calculated?')">
+                                <i class="fas fa-sparkles" style="color:#00f3ff;"></i> How is course progress calculated?
                             </div>
                         </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
                     </div>
                 `;
             }
         },
-        exams: {
+        {
             id: 'exams',
-            title: 'Exams, Quizzes & Assessments',
             icon: 'fa-clipboard-check',
-            accent: 'var(--accent-amber)',
-            iconBg: 'rgba(255, 183, 77, 0.12)',
-            badge: `${STUDENT_PORTAL_CONTEXT.activeExams.length} Available`,
-            desc: 'Timed evaluations, AI dynamic quizzes & instant grading.',
-            renderDossier: function(ctx) {
-                let examListHtml = '';
-                if (ctx.activeExams.length > 0) {
-                    examListHtml = ctx.activeExams.map(ex => `
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; margin-top:6px; border:1px solid rgba(255,255,255,0.06);">
+            color: '#ffd700',
+            iconBg: 'rgba(255, 215, 0, 0.15)',
+            title: 'Exams & Proctoring',
+            subtitle: 'Pass 60% • +50/+25 Coins',
+            getContent: function(ctx) {
+                let examsList = '';
+                if (ctx.activeExams && ctx.activeExams.length > 0) {
+                    examsList = ctx.activeExams.map(ex => `
+                        <div class="lms-item-card">
                             <div>
-                                <div style="font-weight:600; color:#fff; font-size:0.82rem;">${ex.title}</div>
-                                <div style="font-size:0.7rem; color:#94a3b8;"><i class="far fa-clock"></i> Duration: ${ex.duration} Mins</div>
+                                <div style="font-weight:600; color:#f8fafc; font-size:0.84rem;">${ex.title}</div>
+                                <div style="font-size:0.72rem; color:#94a3b8;"><i class="far fa-clock"></i> Duration: ${ex.duration} Mins</div>
                             </div>
-                            <a href="/exams/take/${ex.id}/" class="dossier-action-btn primary" style="padding:4px 12px; font-size:0.72rem;">
+                            <a href="/take-exam/${ex.id}/" class="lms-action-btn primary" style="font-size:0.74rem; padding:4px 10px;">
                                 Start <i class="fas fa-arrow-right" style="font-size:10px;"></i>
                             </a>
                         </div>
                     `).join('');
                 } else {
-                    examListHtml = '<p style="color:#94a3b8; font-size:0.8rem; margin:6px 0;">No pending exams at this moment. You are completely up to date!</p>';
+                    examsList = '<p style="color:#94a3b8; font-size:0.82rem; margin:6px 0;">No pending exams right now. You are fully up to date!</p>';
                 }
-
                 return `
-                    <div class="bot-dossier-card" style="--topic-accent: var(--accent-amber);">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(255,183,77,0.15); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.3);">
-                                    <i class="fas fa-clipboard-check"></i>
-                                </div>
-                                <div>
-                                    <h4 class="dossier-title">Examinations & Assessment Center</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">Evaluation & Testing Directorate</span>
-                                </div>
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-clipboard-check" style="color:#ffd700;"></i> Examinations & Assessment Center
+                        </div>
+                        <div class="lms-detail-body">
+                            Assessments test your retention across curriculum modules. Evaluations are strictly timed with countdown timers and anti-cheat proctoring.
+                            <br><br>
+                            🎯 <b>Evaluation Rules:</b> Passing mark is <b>60%</b>. Scoring 100% rewards <b>+50 Coins</b>, and scoring ≥80% rewards <b>+25 Coins</b>!
+                            <div style="margin-top:10px;">${examsList}</div>
+                        </div>
+                        <div class="lms-actions-row">
+                            <a href="/my-exams/" class="lms-action-btn primary"><i class="fas fa-external-link-alt"></i> Open Assessment Center</a>
+                        </div>
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('What are the official examination and anti-cheat rules?')">
+                                <i class="fas fa-sparkles" style="color:#ffd700;"></i> What are the examination rules?
                             </div>
-                            <span class="dossier-badge" style="background:rgba(255,183,77,0.15); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.3);">${ctx.activeExams.length} Pending</span>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-gavel"></i> Official Examination Rules</div>
-                            <div class="dossier-stat-row">
-                                <div class="dossier-stat-pill"><i class="fas fa-check-circle" style="color:#00e676"></i> Pass Mark: <b>60%</b></div>
-                                <div class="dossier-stat-pill"><i class="fas fa-coins" style="color:#ffd700"></i> 100% Score: <b>+50 Coins</b></div>
-                                <div class="dossier-stat-pill"><i class="fas fa-coins" style="color:#ffd700"></i> ≥80% Score: <b>+25 Coins</b></div>
-                            </div>
-                            • Exams are strictly timed with countdown timers.<br>
-                            • Quizzes test only enrolled course subjects with isolated question banks.<br>
-                            • Scorecards and correct answer explanations are revealed upon submission.
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-tasks"></i> Active Assessments For You</div>
-                            ${examListHtml}
-                        </div>
-                        <div class="dossier-actions">
-                            <a href="/exams/" class="dossier-action-btn primary"><i class="fas fa-external-link-alt"></i> Open Assessment Center</a>
-                        </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('Give me a 5-question practice quiz on Python basics with multiple choices')">
-                                <i class="fas fa-sparkles" style="color:var(--accent-amber)"></i> "Generate a 5-question practice quiz on Python"
-                            </div>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('What are the top strategies to score 100% in timed multiple-choice exams?')">
-                                <i class="fas fa-sparkles" style="color:var(--accent-amber)"></i> "Strategies to score 100% in timed quizzes"
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('Generate a 5-question multiple choice practice quiz for me')">
+                                <i class="fas fa-sparkles" style="color:#ffd700;"></i> Generate a 5-question practice quiz
                             </div>
                         </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
                     </div>
                 `;
             }
         },
-        coins: {
-            id: 'coins',
-            title: 'LMS Coins & Rewards Wallet',
-            icon: 'fa-coins',
-            accent: '#ffd700',
-            iconBg: 'rgba(255, 215, 0, 0.12)',
-            badge: `${STUDENT_PORTAL_CONTEXT.coins} Coins`,
-            desc: 'Virtual economy, earning matrix & course unlocking.',
-            renderDossier: function(ctx) {
-                return `
-                    <div class="bot-dossier-card" style="--topic-accent: #ffd700;">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(255,215,0,0.15); color:#ffd700; border:1px solid rgba(255,215,0,0.3);">
-                                    <i class="fas fa-coins"></i>
-                                </div>
-                                <div>
-                                    <h4 class="dossier-title">LMS Coins & Gamification Economy</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">Academic Incentive Treasury</span>
-                                </div>
-                            </div>
-                            <span class="dossier-badge" style="background:rgba(255,215,0,0.15); color:#ffd700; border:1px solid rgba(255,215,0,0.3); font-size:0.8rem;">${ctx.coins} Coins</span>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-wallet"></i> Current Wallet Balance</div>
-                            You currently possess <b style="color:#ffd700; font-size:1.05rem;">${ctx.coins} LMS Coins</b> in your academic treasury.
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-chart-line"></i> Official Earning Matrix</div>
-                            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:8px 12px; font-size:0.78rem;">
-                                <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-                                    <span>🎯 Perfect Quiz Score (100%)</span> <b style="color:#00e676">+50 Coins</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-                                    <span>⭐ High Quiz Score (≥80%)</span> <b style="color:#00e676">+25 Coins</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-                                    <span>📤 Assignment Submission</span> <b style="color:#00e676">+20 Coins</b>
-                                </div>
-                                <div style="display:flex; justify-content:space-between; padding:4px 0;">
-                                    <span>💻 Syntax Singularity Bounty</span> <b style="color:#00e676">+30 to +100 Coins</b>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-gift"></i> How to Spend / Redeem Coins</div>
-                            • <b>Unlock Courses Without Cash:</b> Purchase premium courses directly using LMS Coins from the course catalog.<br>
-                            • <b>Climb Institution Leaderboard:</b> Compete with fellow students on the global ranks.
-                        </div>
-                        <div class="dossier-actions">
-                            <a href="/courses/" class="dossier-action-btn primary"><i class="fas fa-shopping-cart"></i> Unlock Courses with Coins</a>
-                        </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('How can I earn 500 LMS coins as quickly as possible on this platform?')">
-                                <i class="fas fa-sparkles" style="color:#ffd700"></i> "How can I earn 500 LMS coins quickly?"
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        },
-        compiler: {
-            id: 'compiler',
-            title: 'Cloud Code Studio & Compiler',
-            icon: 'fa-laptop-code',
-            accent: 'var(--accent-green)',
-            iconBg: 'rgba(0, 230, 118, 0.12)',
-            badge: 'Online Sandbox',
-            desc: 'Zero-setup in-browser IDE for Python, C++, Java & JS.',
-            renderDossier: function(ctx) {
-                return `
-                    <div class="bot-dossier-card" style="--topic-accent: var(--accent-green);">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(0,230,118,0.15); color:var(--accent-green); border:1px solid rgba(0,230,118,0.3);">
-                                    <i class="fas fa-laptop-code"></i>
-                                </div>
-                                <div>
-                                    <h4 class="dossier-title">Cloud Code Studio & Compiler (IDE)</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">High-Performance Code Engine</span>
-                                </div>
-                            </div>
-                            <span class="dossier-badge" style="background:rgba(0,230,118,0.15); color:var(--accent-green); border:1px solid rgba(0,230,118,0.3);">5 Languages</span>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-terminal"></i> Compiler Engine Features</div>
-                            Integrated live multi-language development environment powered by Ace Editor & isolated sandbox execution. No local compiler or terminal setup required.
-                            <div class="dossier-stat-row">
-                                <div class="dossier-stat-pill"><i class="fab fa-python" style="color:#38bdf8"></i> Python 3.10+</div>
-                                <div class="dossier-stat-pill"><i class="fas fa-code" style="color:#bc13fe"></i> C++17 / C</div>
-                                <div class="dossier-stat-pill"><i class="fab fa-java" style="color:#ffb74d"></i> Java 17</div>
-                                <div class="dossier-stat-pill"><i class="fab fa-js" style="color:#ffd700"></i> Node.js</div>
-                            </div>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-keyboard"></i> Shortcuts & Controls</div>
-                            • <b>Ctrl + Enter (or Cmd + Enter):</b> Instantly execute code.<br>
-                            • <b>Custom Stdin Tab:</b> Feed standard console input to interactive programs.<br>
-                            • <b>AI Code Explainer:</b> Ask this Copilot to review or optimize your algorithms anytime.
-                        </div>
-                        <div class="dossier-actions">
-                            <button onclick="launchCloudIDEModal()" class="dossier-action-btn primary"><i class="fas fa-play"></i> Launch Cloud IDE Now</button>
-                        </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('Write a clean Python implementation of Binary Search with detailed time complexity comments')">
-                                <i class="fas fa-sparkles" style="color:var(--accent-green)"></i> "Write a Python Binary Search script"
-                            </div>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('Explain how memory pointers work in C and C++ with diagrams in text')">
-                                <i class="fas fa-sparkles" style="color:var(--accent-green)"></i> "Explain pointers in C/C++"
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        },
-        bounties: {
+        {
             id: 'bounties',
-            title: 'Syntax Singularity (Bounty Arena)',
-            icon: 'fa-bullseye',
-            accent: 'var(--neon-purple)',
-            iconBg: 'rgba(188, 19, 254, 0.12)',
-            badge: 'Live Arena',
-            desc: 'Algorithmic challenges, code bugs & coin bounties.',
-            renderDossier: function(ctx) {
+            icon: 'fa-crosshairs',
+            color: '#bc13fe',
+            iconBg: 'rgba(188, 19, 254, 0.15)',
+            title: 'Syntax Singularity',
+            subtitle: 'AI Coding Bounties',
+            getContent: function() {
                 return `
-                    <div class="bot-dossier-card" style="--topic-accent: var(--neon-purple);">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(188,19,254,0.15); color:var(--neon-purple); border:1px solid rgba(188,19,254,0.3);">
-                                    <i class="fas fa-bullseye"></i>
-                                </div>
-                                <div>
-                                    <h4 class="dossier-title">Syntax Singularity Competitive Arena</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">Elite Coding Division</span>
-                                </div>
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-crosshairs" style="color:#bc13fe;"></i> Syntax Singularity Competitive Arena
+                        </div>
+                        <div class="lms-detail-body">
+                            LeetCode-style algorithmic challenge arena. Solve AI-generated programming riddles, fix real-time system bugs, and debug broken algorithmic snippets against automated validation suites.
+                            <br><br>
+                            🏆 <b>Coin Bounties:</b> Earn <b>+10 to +100 LMS Coins</b> directly into your wallet for passing all visible and hidden test cases before time runs out!
+                        </div>
+                        <div class="lms-actions-row">
+                            <a href="/syntax-singularity/" class="lms-action-btn primary"><i class="fas fa-play"></i> Enter Bounty Arena</a>
+                        </div>
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How do I solve problems and earn coins in Syntax Singularity?')">
+                                <i class="fas fa-sparkles" style="color:#bc13fe;"></i> How do I earn Syntax Singularity bounties?
                             </div>
-                            <span class="dossier-badge" style="background:rgba(188,19,254,0.15); color:var(--neon-purple); border:1px solid rgba(188,19,254,0.3);">Live Arena</span>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-crosshairs"></i> Arena Mechanics</div>
-                            Solve complex programming riddles, fix real-time system bugs, and debug broken algorithmic snippets against automated validation suites.
-                            <div class="dossier-stat-row">
-                                <div class="dossier-stat-pill"><i class="fas fa-trophy" style="color:#ffd700"></i> Bounties: <b>Up to 100 Coins</b></div>
-                                <div class="dossier-stat-pill"><i class="fas fa-shield-alt" style="color:var(--neon-cyan)"></i> Automated Test Harness</div>
-                            </div>
-                        </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-flag-checkered"></i> Participation Guidelines</div>
-                            1. Enter the Syntax Singularity Arena.<br>
-                            2. Review problem statement, test cases, and memory limits.<br>
-                            3. Submit code before the countdown runs out. Correct solutions immediately reward coins!
-                        </div>
-                        <div class="dossier-actions">
-                            <a href="/syntax-singularity/" class="dossier-action-btn primary"><i class="fas fa-external-link-alt"></i> Enter Bounty Arena</a>
-                        </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('Give me a challenging coding problem to test my problem-solving skills')">
-                                <i class="fas fa-sparkles" style="color:var(--neon-purple)"></i> "Give me a challenging coding puzzle"
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('Give me a challenging Python algorithm puzzle to practice')">
+                                <i class="fas fa-sparkles" style="color:#bc13fe;"></i> Give me a Python algorithm challenge
                             </div>
                         </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
                     </div>
                 `;
             }
         },
-        library: {
+        {
+            id: 'compiler',
+            icon: 'fa-laptop-code',
+            color: '#00e676',
+            iconBg: 'rgba(0, 230, 118, 0.15)',
+            title: 'Cloud Code Studio (IDE)',
+            subtitle: 'Python, C++, Java, JS',
+            getContent: function() {
+                return `
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-laptop-code" style="color:#00e676;"></i> Cloud Code Studio & Compiler (IDE)
+                        </div>
+                        <div class="lms-detail-body">
+                            Integrated live multi-language development environment powered by Ace Editor and isolated Piston execution engine. Zero local installation required.
+                            <br><br>
+                            💻 <b>Supported Engines:</b> Python 3.10+, C++17, Java 15+, and JavaScript / Node.js with interactive custom stdin support.
+                        </div>
+                        <div class="lms-actions-row">
+                            <button onclick="launchCloudIDEModal()" class="lms-action-btn primary"><i class="fas fa-terminal"></i> Launch Cloud IDE Now</button>
+                        </div>
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('Write a clean Python script to reverse a linked list with detailed comments')">
+                                <i class="fas fa-sparkles" style="color:#00e676;"></i> Write a Python linked-list script
+                            </div>
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How do pointers and memory allocation work in C and C++?')">
+                                <i class="fas fa-sparkles" style="color:#00e676;"></i> Explain pointers in C/C++
+                            </div>
+                        </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
+                    </div>
+                `;
+            }
+        },
+        {
+            id: 'coins',
+            icon: 'fa-coins',
+            color: '#ffc01e',
+            iconBg: 'rgba(255, 192, 30, 0.15)',
+            title: 'Coins Treasury',
+            subtitle: 'Free Course Unlocks',
+            getContent: function(ctx) {
+                return `
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-coins" style="color:#ffc01e;"></i> LMS Coins Treasury & Economy
+                        </div>
+                        <div class="lms-detail-body">
+                            You currently possess <b style="color:#ffc01e; font-size:1.05rem;">${ctx.coins} LMS Coins</b> in your academic wallet!
+                            <br><br>
+                            🪙 <b>Official Earning Matrix:</b><br>
+                            • 🎯 Perfect Exam Score (100%): <b>+50 Coins</b><br>
+                            • ⭐ High Exam Score (≥80%): <b>+25 Coins</b><br>
+                            • 🎥 Completed Video Lecture: <b>+20 Coins</b><br>
+                            • 📤 Assignment Submission: <b>+20 Coins</b><br>
+                            • 💻 Syntax Singularity Bounties: <b>+10 to +100 Coins</b><br><br>
+                            🔓 <b>Spend Coins:</b> You can purchase and unlock premium courses for <b>100% FREE</b> without cash using your LMS Coins!
+                        </div>
+                        <div class="lms-actions-row">
+                            <a href="/courses/" class="lms-action-btn primary"><i class="fas fa-shopping-bag"></i> Unlock Courses with Coins</a>
+                        </div>
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How can I earn 100 LMS coins as quickly as possible on Learning-365?')">
+                                <i class="fas fa-sparkles" style="color:#ffc01e;"></i> How can I earn 100 coins quickly?
+                            </div>
+                        </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
+                    </div>
+                `;
+            }
+        },
+        {
+            id: 'community',
+            icon: 'fa-comments',
+            color: '#00f3ff',
+            iconBg: 'rgba(0, 243, 255, 0.15)',
+            title: 'Course Community',
+            subtitle: 'Peer Bounties & Forum',
+            getContent: function() {
+                return `
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-comments" style="color:#00f3ff;"></i> Course Community & Discussion Forum
+                        </div>
+                        <div class="lms-detail-body">
+                            Collaborate with course peers and faculty in real-time. Features message pinning, emoji reactions, and snippet sharing.
+                            <br><br>
+                            🤝 <b>Peer Bounty System:</b> Post challenging technical questions with a coin bounty attached to reward fellow students who solve your doubts!
+                        </div>
+                        <div class="lms-actions-row">
+                            <a href="/courses/" class="lms-action-btn primary"><i class="fas fa-users"></i> Go to Course Groups</a>
+                        </div>
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How do I attach a coin bounty to a question in the community chat?')">
+                                <i class="fas fa-sparkles" style="color:#00f3ff;"></i> How do question bounties work?
+                            </div>
+                        </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
+                    </div>
+                `;
+            }
+        },
+        {
             id: 'library',
-            title: 'Digital Library & AI Notes',
             icon: 'fa-book-open',
-            accent: '#38bdf8',
-            iconBg: 'rgba(56, 189, 248, 0.12)',
-            badge: `${STUDENT_PORTAL_CONTEXT.recentDocsCount} Documents`,
-            desc: 'Official university PDFs, textbooks & AI quiz generator.',
-            renderDossier: function(ctx) {
+            color: '#38bdf8',
+            iconBg: 'rgba(56, 189, 248, 0.15)',
+            title: 'Digital Library',
+            subtitle: '1-Click AI Practice Quiz',
+            getContent: function(ctx) {
                 return `
-                    <div class="bot-dossier-card" style="--topic-accent: #38bdf8;">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">
-                                    <i class="fas fa-book-open"></i>
-                                </div>
-                                <div>
-                                    <h4 class="dossier-title">University Digital Library & Archives</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">Academic Knowledge Repository</span>
-                                </div>
-                            </div>
-                            <span class="dossier-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">${ctx.recentDocsCount} Docs</span>
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-book-open" style="color:#38bdf8;"></i> Digital Library & Archives
                         </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-file-pdf"></i> Digital Resources & Quizzes</div>
-                            The Digital Library houses official faculty presentations, textbook chapters, and technical whitepapers.
-                            <div class="dossier-stat-row">
-                                <div class="dossier-stat-pill"><i class="fas fa-magic" style="color:var(--neon-cyan)"></i> 1-Click AI Quiz Generation</div>
-                                <div class="dossier-stat-pill"><i class="fas fa-download" style="color:#00e676"></i> Direct PDF Downloads</div>
-                            </div>
-                            • <b>AI Quiz Generator:</b> Select any textbook PDF in the library to automatically synthesize an interactive 10-20 question test to check your retention.
+                        <div class="lms-detail-body">
+                            The Digital Library houses official faculty presentations, textbook chapters, and technical whitepapers (${ctx.recentDocsCount || 0} documents available).
+                            <br><br>
+                            ✨ <b>1-Click AI Quiz Generator:</b> Select any textbook PDF in the library to automatically synthesize an interactive practice quiz to verify your retention.
                         </div>
-                        <div class="dossier-actions">
-                            <a href="/library/" class="dossier-action-btn primary"><i class="fas fa-book"></i> Open Digital Library</a>
+                        <div class="lms-actions-row">
+                            <a href="/library/" class="lms-action-btn primary"><i class="fas fa-book"></i> Open Digital Library</a>
                         </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('How can I use the library documents to generate AI practice quizzes?')">
-                                <i class="fas fa-sparkles" style="color:#38bdf8"></i> "How do I generate quizzes from PDFs?"
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How can I use the library documents to generate AI practice quizzes?')">
+                                <i class="fas fa-sparkles" style="color:#38bdf8;"></i> How do I generate quizzes from PDFs?
                             </div>
                         </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
                     </div>
                 `;
             }
         },
-        faqs: {
-            id: 'faqs',
-            title: 'Academic Guidelines & FAQs',
-            icon: 'fa-question-circle',
-            accent: '#f43f5e',
-            iconBg: 'rgba(244, 63, 94, 0.12)',
-            badge: 'Policy Hub',
-            desc: 'Certification rules, live sessions & portal support.',
-            renderDossier: function(ctx) {
+        {
+            id: 'profile',
+            icon: 'fa-award',
+            color: '#f43f5e',
+            iconBg: 'rgba(244, 63, 94, 0.15)',
+            title: 'Cadet Certification',
+            subtitle: 'QR-Verified Badges',
+            getContent: function(ctx) {
                 return `
-                    <div class="bot-dossier-card" style="--topic-accent: #f43f5e;">
-                        <div class="dossier-header">
-                            <div class="dossier-title-box">
-                                <div class="dossier-icon" style="background:rgba(244,63,94,0.15); color:#f43f5e; border:1px solid rgba(244,63,94,0.3);">
-                                    <i class="fas fa-question-circle"></i>
-                                </div>
+                    <div class="lms-detail-card">
+                        <div class="lms-detail-title">
+                            <i class="fas fa-award" style="color:#f43f5e;"></i> Cadet Profile & Certification
+                        </div>
+                        <div class="lms-detail-body">
+                            <div class="lms-item-card" style="margin-bottom:10px;">
                                 <div>
-                                    <h4 class="dossier-title">Portal Guidelines & Student Support</h4>
-                                    <span style="font-size:0.7rem; color:#94a3b8;">Institutional Academic Policy</span>
+                                    <div style="font-weight:700; color:#f8fafc;">${ctx.name || 'Cadet'}</div>
+                                    <div style="font-size:0.75rem; color:#94a3b8;">@${ctx.username} • Coins: <b style="color:#ffd700">${ctx.coins}</b></div>
                                 </div>
+                                <a href="/profile/" class="lms-action-btn secondary" style="font-size:0.75rem; padding:4px 10px;">
+                                    Edit Profile <i class="fas fa-external-link-alt" style="font-size:10px;"></i>
+                                </a>
                             </div>
-                            <span class="dossier-badge" style="background:rgba(244,63,94,0.15); color:#f43f5e; border:1px solid rgba(244,63,94,0.3);">Support</span>
+                            🏆 <b>Certification Criteria:</b> Official completion certificates unlock automatically when your real course progress reaches <b>100%</b> and you achieve a <b>≥60% passing score</b> on the course exam.
+                            <br><br>
+                            Every certificate is cryptographically authenticated with a verifiable QR code.
                         </div>
-                        <div class="dossier-section">
-                            <div class="dossier-section-title"><i class="fas fa-certificate"></i> Key Institutional Regulations</div>
-                            • <b>Certification Criteria:</b> 100% video lectures watched + ≥60% quiz score on the course exam.<br>
-                            • <b>Live Classes:</b> Attend scheduled live meetings directly via the Live Classes panel.<br>
-                            • <b>Assignments:</b> Late submissions may incur grade deductions per faculty policy.<br>
-                            • <b>Academic Integrity:</b> Anti-cheating monitoring is enabled on all evaluation portals.
+                        <div class="lms-actions-row">
+                            <a href="/profile/" class="lms-action-btn primary"><i class="fas fa-user"></i> View Profile & Certificates</a>
                         </div>
-                        <div class="dossier-actions">
-                            <a href="/live-classes/" class="dossier-action-btn secondary"><i class="fas fa-video"></i> Live Classes</a>
-                            <a href="/profile/" class="dossier-action-btn secondary"><i class="fas fa-user"></i> My Profile</a>
-                        </div>
-                        <div class="dossier-prompts">
-                            <span style="font-size:0.7rem; color:#64748b; font-weight:600;">Recommended AI Prompts:</span>
-                            <div class="dossier-prompt-chip" onclick="sendQuickPrompt('How do I download my course completion certificate once I finish?')">
-                                <i class="fas fa-sparkles" style="color:#f43f5e"></i> "How do I download my completion certificate?"
+                        <div class="lms-prompt-chips">
+                            <div class="lms-prompt-chip" onclick="sendQuickPrompt('How do I download and share my verified completion certificate?')">
+                                <i class="fas fa-sparkles" style="color:#f43f5e;"></i> How do I download my certificate?
                             </div>
                         </div>
+                        <button class="lms-back-btn" onclick="showCategories()">
+                            <i class="fas fa-chevron-left"></i> Back to Portal Menu
+                        </button>
                     </div>
                 `;
             }
         }
-    };
+    ];
 
-    // Render Topics Cards into the Directory Grid
-    function renderTopicsGrid() {
-        if (!topicsGrid) return;
-        topicsGrid.innerHTML = Object.values(PORTAL_TOPICS).map(topic => `
-            <div class="topic-card" style="--topic-accent: ${topic.accent}; --topic-icon-bg: ${topic.iconBg};" onclick="showTopicDossier('${topic.id}')" data-keywords="${topic.title.toLowerCase()} ${topic.desc.toLowerCase()}">
-                <div class="topic-card-top">
-                    <div class="topic-card-icon"><i class="fas ${topic.icon}"></i></div>
-                    <span class="topic-card-badge">${topic.badge}</span>
-                </div>
-                <h5 class="topic-card-title">${topic.title}</h5>
-                <p class="topic-card-desc">${topic.desc}</p>
-                <div class="topic-card-action">View Official Guide <i class="fas fa-arrow-right"></i></div>
+    // Maintain conversation history for multi-turn contextual intelligence
+    let lmsChatHistory = [];
+
+    // Build categories 2-column grid HTML
+    function buildCategoriesHtml() {
+        return `
+            <div class="lms-category-grid">
+                ${LMS_PORTAL_CATEGORIES.map(cat => `
+                    <div class="lms-cat-card" onclick="handleCategorySelect('${cat.id}')">
+                        <div class="lms-cat-hdr">
+                            <div class="lms-cat-icon" style="background:${cat.iconBg}; color:${cat.color};">
+                                <i class="fas ${cat.icon}"></i>
+                            </div>
+                            <i class="fas fa-arrow-right" style="font-size:10px; color:#64748b;"></i>
+                        </div>
+                        <div class="lms-cat-title">${cat.title}</div>
+                        <div class="lms-cat-badge">${cat.subtitle || 'Platform Feature'}</div>
+                    </div>
+                `).join('')}
             </div>
-        `).join('');
+        `;
     }
 
-    // Filter cards in Topics Board
-    function filterTopicCards(query) {
-        const q = (query || '').toLowerCase().trim();
-        document.querySelectorAll('.topic-card').forEach(card => {
-            const kw = card.getAttribute('data-keywords') || '';
-            card.style.display = (!q || kw.includes(q)) ? 'flex' : 'none';
-        });
+    // Initialize welcome greeting matching Learning-365 design
+    function initWelcomeMessage() {
+        if (!chatBox) return;
+        const cadetName = STUDENT_PORTAL_CONTEXT.name || 'Cadet';
+        const coinsCount = STUDENT_PORTAL_CONTEXT.coins || 0;
+        const enrolledCount = STUDENT_PORTAL_CONTEXT.enrolledCourses ? STUDENT_PORTAL_CONTEXT.enrolledCourses.length : 0;
+        const examsCount = STUDENT_PORTAL_CONTEXT.activeExams ? STUDENT_PORTAL_CONTEXT.activeExams.length : 0;
+
+        chatBox.innerHTML = `
+            <div class="message bot-msg">
+                <div class="msg-avatar"><i class="fas fa-brain"></i></div>
+                <div class="msg-text">
+                    <div style="font-size:1.02rem; font-weight:700; color:#fff; font-family:'Space Grotesk',sans-serif;">
+                        Greetings, <b>${cadetName}</b>! 🚀
+                    </div>
+                    <div style="font-size:0.83rem; color:#94a3b8; margin-top:4px; line-height:1.5;">
+                        I am your official <b>Learning-365 Copilot</b>. I am directly synchronized with your courses, evaluations, coding arena, and coin treasury.
+                    </div>
+                    <div class="lms-telemetry-hud">
+                        <div class="hud-stat">
+                            <span>Coins</span>
+                            <b style="color:#ffd700;"><i class="fas fa-coins" style="font-size:11px;"></i> ${coinsCount}</b>
+                        </div>
+                        <div class="hud-stat">
+                            <span>Enrolled</span>
+                            <b style="color:#00f3ff;"><i class="fas fa-graduation-cap" style="font-size:11px;"></i> ${enrolledCount}</b>
+                        </div>
+                        <div class="hud-stat">
+                            <span>Active Exams</span>
+                            <b style="color:#00e676;"><i class="fas fa-clipboard-check" style="font-size:11px;"></i> ${examsCount}</b>
+                        </div>
+                    </div>
+                    <div style="font-size:0.8rem; font-weight:600; color:#cbd5e1; margin-top:6px;">
+                        Select a platform intelligence module or ask any technical query:
+                    </div>
+                    ${buildCategoriesHtml()}
+                </div>
+            </div>
+        `;
+        chatBox.scrollTop = 0;
     }
 
-    // Navigation Switcher between Live Chat and Topics Board
-    function switchChatTab(tab) {
-        currentChatTab = tab;
-        if (tab === 'chat') {
-            tabChat.classList.add('active');
-            tabTopics.classList.remove('active');
-            aiChatView.classList.remove('chat-view-hidden');
-            aiTopicsPanel.classList.add('topics-panel-hidden');
-            btnToggleView.classList.remove('active');
-            btnToggleView.querySelector('.btn-lbl').innerText = 'Topics';
-            setTimeout(() => userInput.focus(), 100);
-        } else {
-            tabTopics.classList.add('active');
-            tabChat.classList.remove('active');
-            aiTopicsPanel.classList.remove('topics-panel-hidden');
-            aiChatView.classList.add('chat-view-hidden');
-            btnToggleView.classList.add('active');
-            btnToggleView.querySelector('.btn-lbl').innerText = 'Chat';
-            const searchInput = document.getElementById('topics-search-input');
-            if (searchInput) setTimeout(() => searchInput.focus(), 100);
+    // Show categories again
+    function showCategories() {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message bot-msg';
+        msgDiv.innerHTML = `
+            <div class="msg-avatar"><i class="fas fa-brain"></i></div>
+            <div class="msg-text">
+                <div style="font-size:0.92rem; font-weight:700; color:#fff; font-family:'Space Grotesk',sans-serif; margin-bottom:4px;">
+                    <i class="fas fa-th-large" style="color:#00f3ff;"></i> Learning-365 Portal Menu:
+                </div>
+                <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:8px;">
+                    Select an intelligence module below or ask any technical query:
+                </div>
+                ${buildCategoriesHtml()}
+            </div>
+        `;
+        if (chatBox) {
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     }
+    window.showCategories = showCategories;
 
-    function toggleChatView() {
-        switchChatTab(currentChatTab === 'chat' ? 'topics' : 'chat');
+    // Handle Category click
+    function handleCategorySelect(catId) {
+        const category = LMS_PORTAL_CATEGORIES.find(c => c.id === catId);
+        if (!category) return;
+
+        // User bubble
+        appendMessage('user', category.title);
+
+        // Copilot bubble with detail card
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message bot-msg';
+        msgDiv.innerHTML = `
+            <div class="msg-avatar"><i class="fas fa-brain"></i></div>
+            <div class="msg-text">
+                ${category.getContent(STUDENT_PORTAL_CONTEXT)}
+            </div>
+        `;
+        if (chatBox) {
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     }
-    window.toggleChatView = toggleChatView;
+    window.handleCategorySelect = handleCategorySelect;
 
+    // Reset Chat
+    function resetChat() {
+        lmsChatHistory = [];
+        initWelcomeMessage();
+        if (userInput) userInput.value = '';
+    }
+    window.resetChat = resetChat;
+
+    // Toggle Chat visibility
     function toggleChat() {
         const c = document.getElementById('ai-chat-container');
         if (!c) return;
@@ -2783,28 +2617,19 @@
         const icon = document.getElementById('ai-toggle-icon');
         if (!c.classList.contains('closed')) {
             if (icon) icon.className = 'fas fa-times';
-            const inp = document.getElementById('user-input');
-            if (inp && currentChatTab === 'chat') inp.focus();
+            if (userInput) setTimeout(() => userInput.focus(), 150);
         } else {
             if (icon) icon.className = 'fas fa-brain';
         }
     }
     window.toggleChat = toggleChat;
 
-    function toggleFullscreen() {
-        const c = document.getElementById('ai-chat-container');
-        if (!c) return;
-        c.classList.toggle('fullscreen-mode');
-        const fsBtn = document.getElementById('fullscreen-btn');
-        if (fsBtn) {
-            if (c.classList.contains('fullscreen-mode')) {
-                fsBtn.classList.replace('fa-expand-alt', 'fa-compress-alt');
-            } else {
-                fsBtn.classList.replace('fa-compress-alt', 'fa-expand-alt');
-            }
-        }
+    // Send Quick Prompt
+    function sendQuickPrompt(promptText) {
+        if (userInput) userInput.value = promptText;
+        sendMessage();
     }
-    window.toggleFullscreen = toggleFullscreen;
+    window.sendQuickPrompt = sendQuickPrompt;
 
     // Helper to launch IDE Modal from chat buttons
     window.launchCloudIDEModal = function() {
@@ -2816,122 +2641,75 @@
         }
     };
 
-    // Show Topic Dossier inside Chat
-    function showTopicDossier(topicKey) {
-        const topic = PORTAL_TOPICS[topicKey];
-        if (!topic) return;
+    // Input Enter listener
+    if (userInput) {
+        userInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
-        // Switch back to chat tab
-        switchChatTab('chat');
+        userInput.addEventListener("input", function() {
+            if (sendBtn) {
+                if (this.value.trim().length > 0) sendBtn.classList.add('active');
+                else sendBtn.classList.remove('active');
+            }
+        });
+    }
 
-        // Create user click representation message
-        appendMessage('user', `Show official details for: ${topic.title}`);
+    // Send Message to Learning-365 AI
+    function sendMessage() {
+        if (!userInput) return;
+        const text = userInput.value.trim();
+        if (!text) return;
+        appendMessage('user', text);
+        lmsChatHistory.push({ role: 'user', content: text });
+        userInput.value = '';
+        if (sendBtn) sendBtn.classList.remove('active');
+        if (loader) loader.style.display = 'flex';
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
 
-        // Append topic dossier as bot response
+        fetch('/api/ai-chat/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: text, history: lmsChatHistory.slice(-6) })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (loader) loader.style.display = 'none';
+            const botAnswer = data.answer || "Query processed successfully.";
+            lmsChatHistory.push({ role: 'assistant', content: botAnswer });
+            appendMessage('bot', botAnswer);
+        })
+        .catch(() => {
+            if (loader) loader.style.display = 'none';
+            appendMessage('bot', "⚠️ Network error connecting to Learning-365 AI server. Please check your internet connection.");
+        });
+    }
+    window.sendMessage = sendMessage;
+
+    // Append Message helper
+    function appendMessage(sender, text) {
         const msgDiv = document.createElement('div');
-        msgDiv.className = 'message bot-msg';
-        msgDiv.innerHTML = `
-            <div class="msg-avatar"><i class="fas fa-robot"></i></div>
-            <div class="msg-text">
-                ${topic.renderDossier(STUDENT_PORTAL_CONTEXT)}
-            </div>
-        `;
-        const cb = document.getElementById('chat-box');
-        if (cb) {
-            cb.appendChild(msgDiv);
-            cb.scrollTop = cb.scrollHeight;
+        msgDiv.className = 'message ' + (sender === 'user' ? 'user-msg' : 'bot-msg');
+        let iconHtml;
+        if (sender === 'user') {
+            iconHtml = portalUserHasProfileImg
+                ? `<img src="${portalUserProfileImgUrl}" alt="Student">`
+                : '<i class="fas fa-user-graduate"></i>';
+        } else {
+            iconHtml = '<i class="fas fa-brain"></i>';
+        }
+
+        const formattedBody = sender === 'bot' ? renderBotMarkdown(text) : text.replace(/\n/g, '<br>');
+        msgDiv.innerHTML = `<div class="msg-avatar">${iconHtml}</div><div class="msg-text">${formattedBody}</div>`;
+        if (chatBox) {
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     }
-    window.showTopicDossier = showTopicDossier;
-
-    // Quick prompt sender
-    function sendQuickPrompt(promptText) {
-        switchChatTab('chat');
-        const inp = document.getElementById('user-input');
-        if (inp) inp.value = promptText;
-        sendMessage();
-    }
-    window.sendQuickPrompt = sendQuickPrompt;
-
-    // Reset Chat to clean welcome state
-    function resetChat() {
-        initWelcomeMessage();
-        switchChatTab('chat');
-    }
-    window.resetChat = resetChat;
-    window.switchChatTab = switchChatTab;
-
-    // Initialize Welcome Message with embedded mini topic cards
-    function initWelcomeMessage() {
-        if (!chatBox) return;
-        chatBox.innerHTML = `
-            <div class="message bot-msg">
-                <div class="msg-avatar"><i class="fas fa-robot"></i></div>
-                <div class="msg-text">
-                    Greetings, <b>${STUDENT_PORTAL_CONTEXT.name}</b>! 🚀<br>
-                    I am your <b>LMS Intelligent Academic Copilot & Portal Board</b>. I am directly synchronized with your enrolled courses, wallet, and learning analytics.
-                    
-                    <div style="margin-top:10px; font-weight:700; font-size:0.8rem; color:var(--neon-cyan); letter-spacing:0.5px; text-transform:uppercase;">
-                        <i class="fas fa-compass"></i> Quick Portal Services & Instructions:
-                    </div>
-
-                    <div class="chat-welcome-hub">
-                        <div class="hub-mini-card" onclick="showTopicDossier('courses')">
-                            <div class="hub-mini-icon" style="background:rgba(0,243,255,0.15); color:var(--neon-cyan);"><i class="fas fa-graduation-cap"></i></div>
-                            <div class="hub-mini-text">
-                                <span class="hub-mini-title">Courses & Roadmap</span>
-                                <span class="hub-mini-sub">${STUDENT_PORTAL_CONTEXT.enrolledCourses.length} Enrolled</span>
-                            </div>
-                        </div>
-
-                        <div class="hub-mini-card" onclick="showTopicDossier('exams')">
-                            <div class="hub-mini-icon" style="background:rgba(255,183,77,0.15); color:var(--accent-amber);"><i class="fas fa-clipboard-check"></i></div>
-                            <div class="hub-mini-text">
-                                <span class="hub-mini-title">Exams & Quizzes</span>
-                                <span class="hub-mini-sub">${STUDENT_PORTAL_CONTEXT.activeExams.length} Available</span>
-                            </div>
-                        </div>
-
-                        <div class="hub-mini-card" onclick="showTopicDossier('coins')">
-                            <div class="hub-mini-icon" style="background:rgba(255,215,0,0.15); color:#ffd700;"><i class="fas fa-coins"></i></div>
-                            <div class="hub-mini-text">
-                                <span class="hub-mini-title">LMS Coins Wallet</span>
-                                <span class="hub-mini-sub">${STUDENT_PORTAL_CONTEXT.coins} Coins</span>
-                            </div>
-                        </div>
-
-                        <div class="hub-mini-card" onclick="showTopicDossier('compiler')">
-                            <div class="hub-mini-icon" style="background:rgba(0,230,118,0.15); color:var(--accent-green);"><i class="fas fa-laptop-code"></i></div>
-                            <div class="hub-mini-text">
-                                <span class="hub-mini-title">Cloud Code IDE</span>
-                                <span class="hub-mini-sub">Python • C++ • Java</span>
-                            </div>
-                        </div>
-
-                        <div class="hub-mini-card" onclick="showTopicDossier('bounties')">
-                            <div class="hub-mini-icon" style="background:rgba(188,19,254,0.15); color:var(--neon-purple);"><i class="fas fa-bullseye"></i></div>
-                            <div class="hub-mini-text">
-                                <span class="hub-mini-title">Syntax Singularity</span>
-                                <span class="hub-mini-sub">Bounty Challenges</span>
-                            </div>
-                        </div>
-
-                        <div class="hub-mini-card" onclick="showTopicDossier('library')">
-                            <div class="hub-mini-icon" style="background:rgba(56,189,248,0.15); color:#38bdf8;"><i class="fas fa-book-open"></i></div>
-                            <div class="hub-mini-text">
-                                <span class="hub-mini-title">Digital Library</span>
-                                <span class="hub-mini-sub">PDFs & AI Tests</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top:12px; font-size:0.78rem; color:#94a3b8;">
-                        💡 <i>Click any service card above, switch to the <b>Portal Options Board</b>, or ask any technical or portal question below!</i>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+    window.appendMessage = appendMessage;
 
     // Markdown Formatter for Bot Messages
     function renderBotMarkdown(rawText) {
@@ -2965,7 +2743,7 @@
         text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
         // Inline Code: `code`
-        text = text.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08); color:var(--neon-cyan); padding:2px 6px; border-radius:4px; font-size:0.85em;">$1</code>');
+        text = text.replace(/`([^`]+)`/g, '<code style="background:rgba(0,243,255,0.08); color:#00f3ff; padding:2px 6px; border-radius:4px; font-size:0.85em; font-family:monospace;">$1</code>');
 
         // Markdown Links: [text](url)
         text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="chat-md-link" target="_blank" rel="noopener">$1 <i class="fas fa-external-link-alt" style="font-size:10px;"></i></a>');
@@ -2974,7 +2752,7 @@
         text = text.replace(/^[•\-\*]\s+(.*)$/gim, '<div class="chat-md-li"><span class="chat-md-bullet">▸</span><span>$1</span></div>');
 
         // Numbered lists: 1. item
-        text = text.replace(/^(\d+)\.\s+(.*)$/gim, '<div class="chat-md-li"><span class="chat-md-bullet" style="color:var(--neon-purple); font-weight:700;">$1.</span><span>$2</span></div>');
+        text = text.replace(/^(\d+)\.\s+(.*)$/gim, '<div class="chat-md-li"><span class="chat-md-bullet" style="color:#bc13fe; font-weight:700;">$1.</span><span>$2</span></div>');
 
         // Line breaks
         text = text.replace(/\n\n/g, '<br><br>');
@@ -2992,7 +2770,7 @@
 
         navigator.clipboard.writeText(codeEl.innerText).then(() => {
             const originalHtml = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check" style="color:#00e676;"></i> Copied!';
+            button.innerHTML = '<i class="fas fa-check" style="color:#00f3ff;"></i> Copied!';
             setTimeout(() => { button.innerHTML = originalHtml; }, 2000);
         });
     };
@@ -3004,22 +2782,25 @@
         recognition.continuous = false;
         recognition.lang = 'en-US';
         recognition.onstart = function() {
-            micBtn.classList.add('listening');
-            userInput.setAttribute('placeholder', 'Listening to your voice...');
+            if (micBtn) micBtn.classList.add('listening');
+            if (userInput) userInput.setAttribute('placeholder', 'Listening to your voice...');
         };
         recognition.onresult = function(event) {
-            userInput.value = event.results[0][0].transcript;
-            micBtn.classList.remove('listening');
-            userInput.setAttribute('placeholder', 'Ask questions, request code help, or search guides...');
+            if (userInput) {
+                userInput.value = event.results[0][0].transcript;
+                if (sendBtn) sendBtn.classList.add('active');
+            }
+            if (micBtn) micBtn.classList.remove('listening');
+            if (userInput) userInput.setAttribute('placeholder', 'Ask about courses, exams, coins, compiler, or code...');
             sendMessage();
         };
         recognition.onerror = function() {
-            micBtn.classList.remove('listening');
-            userInput.setAttribute('placeholder', 'Ask questions, request code help, or search guides...');
+            if (micBtn) micBtn.classList.remove('listening');
+            if (userInput) userInput.setAttribute('placeholder', 'Ask about courses, exams, coins, compiler, or code...');
         };
         recognition.onend = function() {
-            micBtn.classList.remove('listening');
-            userInput.setAttribute('placeholder', 'Ask questions, request code help, or search guides...');
+            if (micBtn) micBtn.classList.remove('listening');
+            if (userInput) userInput.setAttribute('placeholder', 'Ask about courses, exams, coins, compiler, or code...');
         };
     } else {
         if (micBtn) micBtn.style.display = 'none';
@@ -3027,70 +2808,13 @@
 
     function toggleVoiceSearch() {
         if (recognition) {
-            if (micBtn.classList.contains('listening')) recognition.stop();
+            if (micBtn && micBtn.classList.contains('listening')) recognition.stop();
             else recognition.start();
         }
     }
+    window.toggleVoiceSearch = toggleVoiceSearch;
 
-    // Input Enter listener
-    userInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    // Send Message to Groq AI
-    function sendMessage() {
-        const text = userInput.value.trim();
-        if (!text) return;
-        appendMessage('user', text);
-        userInput.value = '';
-        loader.style.display = 'flex';
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        fetch('/api/ai-chat/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ question: text })
-        })
-        .then(res => res.json())
-        .then(data => {
-            loader.style.display = 'none';
-            appendMessage('bot', data.answer || "Query processed successfully.");
-        })
-        .catch(() => {
-            loader.style.display = 'none';
-            appendMessage('bot', "Network error connecting to AI server. Please check your internet connection.");
-        });
-    }
-
-    // Append Message helper
-    function appendMessage(sender, text) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'message ' + (sender === 'user' ? 'user-msg' : 'bot-msg');
-        let iconHtml;
-        if (sender === 'user') {
-            iconHtml = portalUserHasProfileImg
-                ? `<img src="${portalUserProfileImgUrl}" alt="Student">`
-                : '<i class="fas fa-user-graduate"></i>';
-        } else {
-            iconHtml = '<i class="fas fa-robot"></i>';
-        }
-
-        const formattedBody = sender === 'bot' ? renderBotMarkdown(text) : text.replace(/\n/g, '<br>');
-        msgDiv.innerHTML = `<div class="msg-avatar">${iconHtml}</div><div class="msg-text">${formattedBody}</div>`;
-        const cb = document.getElementById('chat-box');
-        if (cb) {
-            cb.appendChild(msgDiv);
-            cb.scrollTop = cb.scrollHeight;
-        }
-    }
-    window.appendMessage = appendMessage;
-    window.sendMessage = sendMessage;
-
-    // Initialize Topics Grid & Welcome Hub on Load
-    renderTopicsGrid();
+    // Initialize Learning-365 Copilot on load
     initWelcomeMessage();
 
     // 4. Learning Analytics Chart.js Robust Initialization
