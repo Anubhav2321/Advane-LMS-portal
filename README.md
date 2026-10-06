@@ -209,6 +209,7 @@ Standard Output & Error Capture (Truncated to 10KB safe buffer)
 JSON Response to Browser (Output, Memory, Status, Execution Time)
 ```
 
+
 - **Output Sanitization**: Captures `stdout` and `stderr` up to a maximum buffer of 10,000 characters to prevent DOM denial-of-service.
 - **Execution Limits**: Hard 5.0-second process termination timer protects CPU cores against infinite `while` loops or recursion overflow.
 
