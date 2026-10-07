@@ -1,0 +1,714 @@
+<!-- ========================================================== -->
+<!-- 🔔 LEARNING-365 REAL-TIME NOTIFICATION & TASK HUB MODAL -->
+<!-- ========================================================== -->
+<div class="notif-modal-overlay" id="globalNotifModal" onclick="handleNotifOverlayClick(event)">
+    <div class="notif-modal-container" role="dialog" aria-modal="true" aria-labelledby="notifModalTitle">
+        <!-- Header -->
+        <div class="notif-modal-header">
+            <div class="notif-header-left">
+                <div class="notif-bell-icon-wrapper">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div>
+                    <h3 id="notifModalTitle" class="notif-modal-title">Notifications & Task Hub</h3>
+                    <p class="notif-modal-subtitle">Real-time alerts for newly added courses, classes, exams & tasks</p>
+                </div>
+            </div>
+            <div class="notif-header-right">
+                <button type="button" class="notif-btn-mark-all" onclick="markAllNotifsRead()" title="Mark all notifications as read">
+                    <i class="fas fa-check-double"></i> <span>Mark all read</span>
+                </button>
+                <button type="button" class="notif-btn-close" onclick="closeNotificationModal()" aria-label="Close notifications modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Chips Strip -->
+        <div class="notif-filter-strip">
+            <button type="button" class="notif-chip active" data-filter="all" onclick="filterNotifs('all', this)">
+                <i class="fas fa-border-all"></i> All <span class="chip-count" id="chipCountAll">{{ notifications_list|length }}</span>
+            </button>
+            <button type="button" class="notif-chip" data-filter="tasks" onclick="filterNotifs('tasks', this)">
+                <i class="fas fa-tasks"></i> Tasks & Exams
+            </button>
+            <button type="button" class="notif-chip" data-filter="learning" onclick="filterNotifs('learning', this)">
+                <i class="fas fa-graduation-cap"></i> Courses & Lessons
+            </button>
+            <button type="button" class="notif-chip" data-filter="live_class" onclick="filterNotifs('live_class', this)">
+                <i class="fas fa-video"></i> Live Classes
+            </button>
+            <button type="button" class="notif-chip" data-filter="document" onclick="filterNotifs('document', this)">
+                <i class="fas fa-file-alt"></i> Library
+            </button>
+            <button type="button" class="notif-chip" data-filter="notice" onclick="filterNotifs('notice', this)">
+                <i class="fas fa-bullhorn"></i> Notices
+            </button>
+        </div>
+
+        <!-- Scrollable Notifications Stream -->
+        <div class="notif-scroll-body" id="notifScrollBody">
+            {% if notifications_list %}
+                {% for n in notifications_list %}
+                <div class="notif-item-card {% if not n.is_read_by_user %}is-unread{% endif %}" 
+                     id="notif-card-{{ n.id }}"
+                     data-id="{{ n.id }}" 
+                     data-type="{{ n.notification_type }}">
+                    
+                    <!-- Left Category Glow Icon -->
+                    <div class="notif-item-icon-box" style="background: {{ n.badge_bg }}; color: {{ n.badge_color }}; border-color: {{ n.badge_color }}40;">
+                        <i class="{{ n.icon_class }}"></i>
+                        {% if not n.is_read_by_user %}
+                        <span class="notif-unread-dot" title="Unread notification"></span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Center Content -->
+                    <div class="notif-item-content">
+                        <div class="notif-meta-row">
+                            <span class="notif-type-badge" style="background: {{ n.badge_bg }}; color: {{ n.badge_color }}; border: 1px solid {{ n.badge_color }}40;">
+                                <i class="{{ n.icon_class }}"></i> {{ n.badge_text }}
+                            </span>
+                            <span class="notif-time-text">
+                                <i class="far fa-clock"></i> {{ n.created_at|date:"d M, h:i A" }}
+                            </span>
+                        </div>
+
+                        <div class="notif-item-title">{{ n.title }}</div>
+                        <div class="notif-item-message">{{ n.message }}</div>
+
+                        <!-- Action Bar (Suitable Task Button) -->
+                        <div class="notif-item-actions">
+                            {% if n.action_url %}
+                            <a href="{{ n.action_url }}" 
+                               class="notif-action-btn" 
+                               style="background: linear-gradient(135deg, {{ n.badge_color }}22, {{ n.badge_color }}44); border-color: {{ n.badge_color }}; color: #fff;"
+                               onclick="handleNotifActionClick({{ n.id }}, event)">
+                                <span>{{ n.action_label|default:"View Task" }}</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            {% endif %}
+
+                            {% if not n.is_read_by_user %}
+                            <button type="button" class="notif-mark-read-btn" onclick="markNotifRead({{ n.id }}, event)" title="Mark as read">
+                                <i class="fas fa-check"></i> Mark read
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="notif-empty-state">
+                    <div class="notif-empty-icon"><i class="fas fa-sparkles"></i></div>
+                    <h4>All Caught Up!</h4>
+                    <p>No new tasks or notifications at the moment. As soon as the administrator publishes new courses, live classes, exams or study materials, they will appear here.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="notif-modal-footer">
+            <div class="notif-footer-summary">
+                <span class="notif-live-indicator"></span>
+                <span>Real-time Task Synchronizer • Learning-365 Engine</span>
+            </div>
+            <button type="button" class="notif-btn-dismiss" onclick="closeNotificationModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* =====================================================
+   NOTIFICATION MODAL STYLES (PREMIUM DARK CYBERPUNK)
+   ===================================================== */
+.notif-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 5, 11, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    opacity: 0;
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 20px;
+}
+
+.notif-modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.notif-modal-container {
+    background: linear-gradient(180deg, #0e1322 0%, #080b14 100%);
+    border: 1px solid rgba(0, 243, 255, 0.25);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 243, 255, 0.12);
+    transform: scale(0.94) translateY(12px);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.notif-modal-overlay.active .notif-modal-container {
+    transform: scale(1) translateY(0);
+}
+
+/* Header */
+.notif-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 26px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.notif-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.notif-bell-icon-wrapper {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00f3ff;
+    font-size: 1.2rem;
+}
+
+.notif-modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+    margin: 0;
+}
+
+.notif-modal-subtitle {
+    font-size: 0.78rem;
+    color: #8b93a7;
+    margin-top: 2px;
+}
+
+.notif-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notif-btn-mark-all {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.notif-btn-mark-all:hover {
+    background: rgba(0, 243, 255, 0.12);
+    border-color: #00f3ff;
+    color: #00f3ff;
+    box-shadow: 0 0 14px rgba(0, 243, 255, 0.2);
+}
+
+.notif-btn-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.05rem;
+}
+
+.notif-btn-close:hover {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: #f43f5e;
+    color: #f43f5e;
+}
+
+/* Filter Strip */
+.notif-filter-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(10, 14, 26, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.notif-filter-strip::-webkit-scrollbar { display: none; }
+
+.notif-chip {
+    padding: 6px 14px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.notif-chip:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.notif-chip.active {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(59, 130, 246, 0.2));
+    border-color: #00f3ff;
+    color: #00f3ff;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+}
+
+.chip-count {
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 99px;
+}
+
+/* Scroll Body */
+.notif-scroll-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 58vh;
+    scrollbar-width: thin;
+    scrollbar-color: #1e293b transparent;
+}
+
+.notif-scroll-body::-webkit-scrollbar { width: 6px; }
+.notif-scroll-body::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; }
+
+/* Item Card */
+.notif-item-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px 18px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.notif-item-card:hover {
+    background: rgba(255, 255, 255, 0.045);
+    border-color: rgba(0, 243, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.notif-item-card.is-unread {
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-left: 3px solid #00f3ff;
+    border-color: rgba(0, 243, 255, 0.25);
+    box-shadow: 0 4px 18px rgba(0, 243, 255, 0.08);
+}
+
+.notif-item-icon-box {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.notif-unread-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #00f3ff;
+    border-radius: 50%;
+    border: 2px solid #0e1322;
+    box-shadow: 0 0 6px rgba(0, 243, 255, 0.6);
+}
+
+.notif-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.notif-type-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.notif-time-text {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.notif-item-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+    line-height: 1.35;
+}
+
+.notif-item-message {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    word-break: break-word;
+}
+
+.notif-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.notif-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.notif-action-btn:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(0, 243, 255, 0.35);
+    color: #fff;
+}
+
+.notif-mark-read-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.notif-mark-read-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Empty State */
+.notif-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+
+.notif-empty-icon {
+    font-size: 3rem;
+    color: #00f3ff;
+    opacity: 0.5;
+    margin-bottom: 16px;
+}
+
+.notif-empty-state h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    color: #e2e8f0;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.notif-empty-state p {
+    font-size: 0.88rem;
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Footer */
+.notif-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 26px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(10, 14, 26, 0.8);
+}
+
+.notif-footer-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74rem;
+    color: #64748b;
+}
+
+.notif-live-indicator {
+    width: 7px;
+    height: 7px;
+    background: #00e676;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00e676;
+}
+
+.notif-btn-dismiss {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notif-btn-dismiss:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+</style>
+
+<script>
+/* =====================================================
+   NOTIFICATION MODAL JAVASCRIPT CONTROLLER
+   ===================================================== */
+(function() {
+    function getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let c of cookies) {
+            c = c.trim();
+            if (c.startsWith('csrftoken=')) {
+                return decodeURIComponent(c.substring('csrftoken='.length));
+            }
+        }
+        return '';
+    }
+
+    window.openNotificationModal = function() {
+        const modal = document.getElementById('globalNotifModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        // Trigger reflow for transition
+        void modal.offsetWidth;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeNotificationModal = function() {
+        const modal = document.getElementById('globalNotifModal');
+        if (!modal) return;
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 280);
+    };
+
+    window.handleNotifOverlayClick = function(e) {
+        if (e.target === document.getElementById('globalNotifModal')) {
+            window.closeNotificationModal();
+        }
+    };
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('globalNotifModal');
+            if (modal && modal.classList.contains('active')) {
+                window.closeNotificationModal();
+            }
+        }
+    });
+
+    // Mark single notification read
+    window.markNotifRead = function(notifId, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        const card = document.getElementById('notif-card-' + notifId);
+        if (card) {
+            card.classList.remove('is-unread');
+            const dot = card.querySelector('.notif-unread-dot');
+            if (dot) dot.remove();
+            const markBtn = card.querySelector('.notif-mark-read-btn');
+            if (markBtn) markBtn.remove();
+        }
+
+        fetch('/api/notifications/' + notifId + '/mark-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateAllBadgeCounters(data.unread_count);
+            }
+        })
+        .catch(err => console.error('Error marking notification read:', err));
+    };
+
+    // Action button click (marks read then navigates)
+    window.handleNotifActionClick = function(notifId, event) {
+        // Mark read asynchronously in background without delaying link navigation
+        fetch('/api/notifications/' + notifId + '/mark-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).catch(e => console.log(e));
+        // Link continues standard navigation
+    };
+
+    // Mark all notifications read
+    window.markAllNotifsRead = function() {
+        document.querySelectorAll('.notif-item-card.is-unread').forEach(card => {
+            card.classList.remove('is-unread');
+            const dot = card.querySelector('.notif-unread-dot');
+            if (dot) dot.remove();
+            const markBtn = card.querySelector('.notif-mark-read-btn');
+            if (markBtn) markBtn.remove();
+        });
+
+        fetch('/api/notifications/mark-all-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateAllBadgeCounters(0);
+            }
+        })
+        .catch(err => console.error('Error marking all notifications read:', err));
+    };
+
+    // Filter Chips
+    window.filterNotifs = function(filterCategory, btn) {
+        document.querySelectorAll('.notif-chip').forEach(c => c.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        const cards = document.querySelectorAll('.notif-item-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const type = card.getAttribute('data-type');
+            let show = false;
+
+            if (filterCategory === 'all') {
+                show = true;
+            } else if (filterCategory === 'tasks') {
+                show = ['exam', 'assignment', 'live_class'].includes(type);
+            } else if (filterCategory === 'learning') {
+                show = ['course', 'lesson', 'document'].includes(type);
+            } else {
+                show = (type === filterCategory);
+            }
+
+            if (show) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    };
+
+    // Helper to update all unread badge elements across the interface
+    function updateAllBadgeCounters(count) {
+        document.querySelectorAll('#bannerNotifBadge, .glass-notif-badge').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
+        });
+
+        document.querySelectorAll('.notif-count-badge, .bell-count-pill').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'inline-block' : 'none';
+        });
+
+        document.querySelectorAll('.badge-dot, .glass-notif-dot').forEach(el => {
+            el.style.display = count > 0 ? 'block' : 'none';
+        });
+    }
+})();
+</script>
