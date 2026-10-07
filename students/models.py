@@ -475,16 +475,83 @@ class QuizResult(models.Model):
 # 7. UTILITY MODELS
 
 class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('notice', 'Notice / Announcement'),
+        ('course', 'New Course'),
+        ('lesson', 'New Lesson'),
+        ('live_class', 'Live Class'),
+        ('exam', 'AI Exam / Quiz'),
+        ('document', 'Study Material'),
+        ('assignment', 'Assignment Task'),
+        ('coins', 'LMS Coins Reward'),
+        ('system', 'System Alert'),
+    ]
+
     title = models.CharField(max_length=255, default="New Notice")
     message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES, default='notice')
+    action_url = models.CharField(max_length=500, blank=True, null=True, help_text="Direct link to suitable task")
+    action_label = models.CharField(max_length=100, blank=True, null=True, default="View Details", help_text="Button text for suitable task")
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='received_notifications', help_text="Target student or null for global")
     is_global = models.BooleanField(default=True)
+    read_by = models.ManyToManyField(User, blank=True, related_name='read_notifications')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.title
+        return f"[{self.notification_type}] {self.title}"
+
+    @property
+    def icon_class(self):
+        icon_map = {
+            'course': 'fas fa-graduation-cap',
+            'lesson': 'fas fa-play-circle',
+            'live_class': 'fas fa-video',
+            'exam': 'fas fa-clipboard-check',
+            'document': 'fas fa-file-alt',
+            'assignment': 'fas fa-tasks',
+            'notice': 'fas fa-bullhorn',
+            'coins': 'fas fa-coins',
+            'system': 'fas fa-bell',
+        }
+        return icon_map.get(self.notification_type, 'fas fa-bell')
+
+    @property
+    def badge_color(self):
+        color_map = {
+            'course': '#00f3ff',      # Neon Cyan
+            'lesson': '#38bdf8',      # Light Blue
+            'live_class': '#ff3366',  # Neon Red/Pink
+            'exam': '#00e676',        # Emerald Green
+            'document': '#bc13fe',    # Neon Purple
+            'assignment': '#ffaa00',  # Amber
+            'notice': '#f59e0b',      # Yellow
+            'coins': '#ffd700',       # Gold
+            'system': '#94a3b8',      # Slate
+        }
+        return color_map.get(self.notification_type, '#00f3ff')
+
+    @property
+    def badge_bg(self):
+        bg_map = {
+            'course': 'rgba(0, 243, 255, 0.12)',
+            'lesson': 'rgba(56, 189, 248, 0.12)',
+            'live_class': 'rgba(255, 51, 102, 0.12)',
+            'exam': 'rgba(0, 230, 118, 0.12)',
+            'document': 'rgba(188, 19, 254, 0.12)',
+            'assignment': 'rgba(255, 170, 0, 0.12)',
+            'notice': 'rgba(245, 158, 11, 0.12)',
+            'coins': 'rgba(255, 215, 0, 0.15)',
+            'system': 'rgba(148, 163, 184, 0.12)',
+        }
+        return bg_map.get(self.notification_type, 'rgba(0, 243, 255, 0.12)')
+
+    @property
+    def badge_text(self):
+        type_names = dict(self.NOTIFICATION_TYPES)
+        return type_names.get(self.notification_type, 'Notice')
 
 class LiveClass(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='live_classes', null=True, blank=True)
@@ -655,6 +722,120 @@ def save_user_profile(sender, instance, **kwargs):
 def delete_document_file(sender, instance, **kwargs):
     if instance.file and os.path.isfile(instance.file.path):
         os.remove(instance.file.path)
+
+# --- 🔔 REAL-TIME NOTIFICATION SIGNALS (ADMIN ADDS CONTENT / TASKS) ---
+
+@receiver(post_save, sender=Course)
+def notify_on_course_created(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+    if created:
+        try:
+            Notification.objects.create(
+                title=f"New Course: {instance.title}",
+                message=f"A brand new course '{instance.title}' is now open! Check out the modules and enroll to begin your journey.",
+                notification_type='course',
+                action_url=f"/courses/",
+                action_label="Explore Course",
+                is_global=True,
+            )
+        except Exception:
+            pass
+
+@receiver(post_save, sender=Lesson)
+def notify_on_lesson_created(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+    if created:
+        try:
+            course_title = instance.course.title if instance.course else "Course"
+            action_url = f"/courses/watch/{instance.course.id}/{instance.id}/" if instance.course else "/courses/"
+            Notification.objects.create(
+                title=f"New Lesson: {instance.title}",
+                message=f"Lesson #{instance.order} '{instance.title}' has been added to '{course_title}'. Continue your learning!",
+                notification_type='lesson',
+                action_url=action_url,
+                action_label="Watch Lesson",
+                is_global=True,
+            )
+        except Exception:
+            pass
+
+@receiver(post_save, sender=LiveClass)
+def notify_on_live_class_created(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+    if created:
+        try:
+            time_str = instance.date_time.strftime("%d %b %Y at %I:%M %p") if instance.date_time else "soon"
+            c_info = f" for '{instance.course.title}'" if instance.course else ""
+            Notification.objects.create(
+                title=f"Live Class: {instance.title}",
+                message=f"Live interactive class '{instance.title}'{c_info} is scheduled for {time_str}. Make sure to attend!",
+                notification_type='live_class',
+                action_url="/live-classes/",
+                action_label="Join Live Class",
+                is_global=True,
+            )
+        except Exception:
+            pass
+
+@receiver(post_save, sender=Exam)
+def notify_on_exam_created(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+    if created:
+        try:
+            c_info = f" in '{instance.course.title}'" if instance.course else ""
+            Notification.objects.create(
+                title=f"New AI Exam: {instance.title}",
+                message=f"A new exam assessment '{instance.title}'{c_info} is ready. Complete this task to earn certifications & coins!",
+                notification_type='exam',
+                action_url=f"/take-exam/{instance.id}/",
+                action_label="Start Exam",
+                is_global=True,
+            )
+        except Exception:
+            pass
+
+@receiver(post_save, sender=LibraryDocument)
+def notify_on_library_doc_created(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+    if created:
+        try:
+            c_info = f" [{instance.course.title}]" if instance.course else ""
+            Notification.objects.create(
+                title=f"New Study Material: {instance.title}",
+                message=f"Study resource '{instance.title}'{c_info} ({instance.category}) has been uploaded to the Digital Library.",
+                notification_type='document',
+                action_url="/library/",
+                action_label="View in Library",
+                is_global=True,
+            )
+        except Exception:
+            pass
+
+@receiver(post_save, sender=Assignment)
+def notify_on_assignment_created(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+    if created:
+        try:
+            c_info = f" in '{instance.course.title}'" if instance.course else ""
+            due_str = f" Due date: {instance.due_date.strftime('%d %b %Y')}." if hasattr(instance, 'due_date') and instance.due_date else ""
+            action_url = f"/courses/watch/{instance.course.id}/" if instance.course else "/courses/"
+            Notification.objects.create(
+                title=f"New Assignment Task: {instance.title}",
+                message=f"A new course assignment '{instance.title}'{c_info} has been posted.{due_str} Submit your solution on time!",
+                notification_type='assignment',
+                action_url=action_url,
+                action_label="Submit Task",
+                is_global=True,
+            )
+        except Exception:
+            pass
+
 
 # --- 🚀 FIX: GOOGLE PROFILE PICTURE & NAME AUTO-SAVE ---
 
