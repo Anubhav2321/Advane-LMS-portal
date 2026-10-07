@@ -283,8 +283,19 @@ def student_dashboard(request):
     # Overall progress across all courses
     overall_progress = round((total_completed_lessons / max(total_all_lessons, 1)) * 100, 1)
     
-    # Fetch Notifications
-    notifications = Notification.objects.all().order_by('-created_at')[:5]
+    # Fetch Notifications for student
+    user_notifications = list(
+        Notification.objects.filter(
+            Q(is_global=True) | Q(recipient=user)
+        ).select_related('recipient').order_by('-created_at')[:15]
+    )
+    read_ids = set(user.read_notifications.values_list('id', flat=True))
+    for n in user_notifications:
+        n.is_read_by_user = (n.id in read_ids)
+    
+    unread_notif_count = Notification.objects.filter(
+        Q(is_global=True) | Q(recipient=user)
+    ).exclude(read_by=user).count()
     
     # Calculate Stats
     total_enrolled = enrollments.count()
@@ -379,7 +390,8 @@ def student_dashboard(request):
     
     context = {
         'enrollments': enriched_enrollments,
-        'notifications': notifications,
+        'notifications': user_notifications,
+        'unread_notif_count': unread_notif_count,
         'total_enrolled': total_enrolled,
         'completed_courses': completed_courses,
         'certificate_eligible': certificate_eligible,
@@ -1960,10 +1972,20 @@ def admin_create_notice(request):
     if request.method == 'POST':
         form = NotificationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Notification posted to all students.")
+            notice = form.save(commit=False)
+            if notice.recipient:
+                notice.is_global = False
+            else:
+                notice.is_global = True
+            if not notice.action_url:
+                notice.action_url = "/dashboard/"
+            if not notice.action_label:
+                notice.action_label = "View Announcement"
+            notice.save()
+            target_str = f"to {notice.recipient.username}" if notice.recipient else "to all students"
+            messages.success(request, f"Notification posted {target_str} successfully.")
         else:
-            messages.error(request, "Failed to post notice.")
+            messages.error(request, "Failed to post notice. Please check inputs.")
     return redirect('admin_dashboard')
 
 @staff_member_required
@@ -2143,6 +2165,18 @@ def admin_update_student_info(request, user_id):
             if new_coins is not None:
                 student.lms_coins = int(new_coins)
                 student.save(update_fields=['lms_coins'])
+                try:
+                    Notification.objects.create(
+                        recipient=student,
+                        title="LMS Coins Balance Updated! 🪙",
+                        message=f"Administrator updated your coin balance to {new_coins} LMS Coins. Spend them in Syntax Singularity Arena or use them to unlock courses!",
+                        notification_type='coins',
+                        action_url="/syntax-singularity/",
+                        action_label="Enter AI Arena",
+                        is_global=False,
+                    )
+                except Exception:
+                    pass
                 messages.success(request, f"Coin balance updated to {new_coins} for {student.username}.")
         else:
             # --- NORMAL PROFILE UPDATE ---
@@ -2607,6 +2641,7 @@ def generate_ai_challenge(request):
             data = json.loads(request.body)
             course_id = data.get('course_id')
             language = data.get('language', 'python')
+            
             topic = data.get('topic', 'Logic') # Now accepts user-typed topic
             difficulty = data.get('difficulty', 'Easy')
             challenge_type = data.get('challenge_type', 'solve')
@@ -2924,3 +2959,107 @@ def track_progress(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
             
     return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
+
+
+# ==============================================================================
+# 🔔 REAL-TIME NOTIFICATION & SUITABLE TASK ACTION ENDPOINTS
+# ==============================================================================
+
+@login_required
+def mark_notification_read(request, notif_id):
+    """
+    Marks a single notification as read for the logged-in student.
+    Supports both AJAX and standard HTTP redirection.
+    """
+    notif = get_object_or_404(Notification, id=notif_id)
+    notif.read_by.add(request.user)
+
+    unread_count = Notification.objects.filter(
+        Q(is_global=True) | Q(recipient=request.user)
+    ).exclude(read_by=request.user).count()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('ajax') or request.method == 'POST':
+        return JsonResponse({
+            'status': 'success',
+            'notif_id': notif_id,
+            'unread_count': unread_count
+        })
+
+    next_url = request.GET.get('next') or request.META.get('HTTP_REFERER') or 'dashboard'
+    return redirect(next_url)
+
+
+@login_required
+def mark_all_notifications_read(request):
+    """
+    Marks all notifications for the current student as read.
+    """
+    unread_notifs = Notification.objects.filter(
+        Q(is_global=True) | Q(recipient=request.user)
+    ).exclude(read_by=request.user)
+
+    for notif in unread_notifs:
+        notif.read_by.add(request.user)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('ajax') or request.method == 'POST':
+        return JsonResponse({
+            'status': 'success',
+            'unread_count': 0
+        })
+
+    messages.success(request, "All notifications marked as read.")
+    next_url = request.GET.get('next') or request.META.get('HTTP_REFERER') or 'dashboard'
+    return redirect(next_url)
+
+
+@login_required
+def get_student_notifications_api(request):
+    """
+    Dynamic JSON API returning student notifications with read status,
+    action buttons, and category filtering.
+    """
+    from django.utils.timesince import timesince
+    category = request.GET.get('type', 'all').strip()
+    
+    qs = Notification.objects.filter(
+        Q(is_global=True) | Q(recipient=request.user)
+    ).select_related('recipient').order_by('-created_at')
+
+    if category and category != 'all':
+        if category == 'tasks':
+            qs = qs.filter(notification_type__in=['exam', 'assignment', 'live_class'])
+        elif category == 'learning':
+            qs = qs.filter(notification_type__in=['course', 'lesson', 'document'])
+        else:
+            qs = qs.filter(notification_type=category)
+
+    read_ids = set(request.user.read_notifications.values_list('id', flat=True))
+
+    notifications_data = []
+    for n in qs[:30]:
+        is_read = n.id in read_ids
+        notifications_data.append({
+            'id': n.id,
+            'title': n.title,
+            'message': n.message,
+            'type': n.notification_type,
+            'badge_text': n.badge_text,
+            'badge_color': n.badge_color,
+            'badge_bg': n.badge_bg,
+            'icon': n.icon_class,
+            'action_url': n.action_url or '/dashboard/',
+            'action_label': n.action_label or 'View Details',
+            'created_at': n.created_at.strftime('%d %b, %Y • %I:%M %p'),
+            'time_ago': timesince(n.created_at) + " ago",
+            'is_read': is_read,
+        })
+
+    unread_count = Notification.objects.filter(
+        Q(is_global=True) | Q(recipient=request.user)
+    ).exclude(read_by=request.user).count()
+
+    return JsonResponse({
+        'status': 'success',
+        'unread_count': unread_count,
+        'notifications': notifications_data,
+    })
