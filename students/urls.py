@@ -30,8 +30,11 @@ urlpatterns = [
     path('payment/process/<int:course_id>/', views.process_payment, name='process_payment'),
     path('payment/coins/<int:course_id>/', views.purchase_with_coins, name='purchase_with_coins'),
 
-    # API (Chatbot)
+    # API (Chatbot & Notifications)
     path('api/ai-chat/', views.ai_chat, name='ai_chat'),
+    path('api/notifications/<int:notif_id>/mark-read/', views.mark_notification_read, name='mark_notification_read'),
+    path('api/notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    path('api/notifications/list/', views.get_student_notifications_api, name='get_student_notifications_api'),
 
     # Admin Panel System & Forms
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),

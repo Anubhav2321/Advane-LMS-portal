@@ -45,6 +45,9 @@ from students.views import (
     save_quiz_view, 
     submit_quiz_view,   
     ai_chat,
+    mark_notification_read,          # 🔔 Real-time Notifications API
+    mark_all_notifications_read,     # 🔔 Mark All Read API
+    get_student_notifications_api,   # 🔔 Fetch Notifications API
     execute_code_api,   # 👉 🚀 Cloud Code Execution API (Piston)
 
     # 6. Admin Panel (Dashboard & Profile)
@@ -177,6 +180,11 @@ urlpatterns = [
     
     # AI Chatbot Endpoint
     path('api/ai-chat/', ai_chat, name='ai_chat'),
+    
+    # 🔔 Real-time Notifications & Task Action Routes
+    path('api/notifications/<int:notif_id>/mark-read/', mark_notification_read, name='mark_notification_read'),
+    path('api/notifications/mark-all-read/', mark_all_notifications_read, name='mark_all_notifications_read'),
+    path('api/notifications/list/', get_student_notifications_api, name='get_student_notifications_api'),
     
     # 🚀 NEW: Progress Tracking Endpoint
     path('api/track-progress/', track_progress, name='track_progress'),
