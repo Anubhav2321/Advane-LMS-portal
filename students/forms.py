@@ -133,12 +133,22 @@ class LessonForm(forms.ModelForm):
 # 3. NOTIFICATION FORM
 
 class NotificationForm(forms.ModelForm):
+    recipient = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_student=True).order_by('username'),
+        required=False,
+        empty_label="All Students (Broadcast Global)",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Notification
-        fields = ['title', 'message', 'is_global']
+        fields = ['title', 'message', 'notification_type', 'action_url', 'action_label', 'recipient', 'is_global']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Notice Headline'}),
-            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Full Notice Content...'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Mandatory Project Submission'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Write notification details or task requirements...'}),
+            'notification_type': forms.Select(attrs={'class': 'form-control'}),
+            'action_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., /courses/, /my-exams/, /live-classes/ (Optional)'}),
+            'action_label': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Open Task, Start Quiz (Optional)'}),
             'is_global': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

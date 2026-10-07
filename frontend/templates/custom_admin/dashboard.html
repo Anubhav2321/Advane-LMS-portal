@@ -1149,13 +1149,44 @@
             </form>
         </div>
 
-        <!-- Post Notice -->
+        <!-- Post Notice & Task Alert -->
         <div class="form-card form-amber">
-            <div class="form-card-title"><i class="fas fa-bullhorn"></i> Post Notice</div>
+            <div class="form-card-title"><i class="fas fa-bullhorn"></i> Post Notice / Task Alert</div>
             <form action="{% url 'admin_create_notice' %}" method="POST">
                 {% csrf_token %}
-                {{ notice_form.as_p }}
-                <button type="submit" class="btn-submit" style="background: var(--accent-amber);">Post Notice</button>
+                <label>Headline</label>
+                {{ notice_form.title }}
+
+                <div class="form-row">
+                    <div>
+                        <label>Category</label>
+                        {{ notice_form.notification_type }}
+                    </div>
+                    <div>
+                        <label>Target Student (Optional)</label>
+                        {{ notice_form.recipient }}
+                    </div>
+                </div>
+
+                <label>Message / Task Details</label>
+                {{ notice_form.message }}
+
+                <div class="form-row">
+                    <div>
+                        <label>Suitable Task URL (Optional)</label>
+                        {{ notice_form.action_url }}
+                    </div>
+                    <div>
+                        <label>Button Label (Optional)</label>
+                        {{ notice_form.action_label }}
+                    </div>
+                </div>
+
+                <div class="check-group" style="margin-top: 8px;">
+                    <div class="check-item">{{ notice_form.is_global }} <label>Broadcast to all students</label></div>
+                </div>
+
+                <button type="submit" class="btn-submit" style="background: var(--accent-amber); margin-top: 12px;">Publish Notification</button>
             </form>
         </div>
 
