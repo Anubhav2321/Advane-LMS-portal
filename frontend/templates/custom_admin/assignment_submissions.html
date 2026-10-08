@@ -1,0 +1,857 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .page-wrap {
+        padding: 32px;
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+    /* Back & Breadcrumb Bar */
+    .top-nav-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border-radius: var(--radius-sm);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition-fast);
+    }
+
+    .btn-back-link:hover {
+        background: var(--glass-bg-hover);
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateX(-4px);
+    }
+
+    .breadcrumb-trail {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .breadcrumb-trail a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+    .breadcrumb-trail a:hover { color: var(--secondary); }
+
+    /* Assignment Overview Card */
+    .asgn-overview-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .asgn-overview-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, var(--secondary), var(--primary), var(--accent-amber));
+    }
+
+    .overview-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .subject-pill-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 212, 255, 0.12);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: var(--secondary);
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 10px;
+    }
+
+    .overview-title {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 8px 0;
+        line-height: 1.25;
+    }
+
+    .overview-desc {
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+        line-height: 1.6;
+        max-width: 850px;
+        margin-bottom: 16px;
+    }
+
+    .overview-badges-strip {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .meta-badge-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 14px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        font-size: 0.82rem;
+        color: #cbd5e1;
+        font-weight: 600;
+    }
+
+    .meta-badge-item i { color: var(--secondary); }
+
+    .btn-download-brief-lg {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        border-radius: 10px;
+        background: rgba(0, 212, 255, 0.15);
+        border: 1px solid rgba(0, 212, 255, 0.4);
+        color: var(--secondary);
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 700;
+        transition: var(--transition-fast);
+    }
+
+    .btn-download-brief-lg:hover {
+        background: var(--secondary);
+        color: #060814;
+        box-shadow: 0 0 18px rgba(0, 212, 255, 0.35);
+    }
+
+    /* Submissions Metrics Bar */
+    .submissions-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .metric-box {
+        background: rgba(10, 14, 28, 0.5);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .metric-icon-wrap {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
+    }
+
+    .metric-box.m-blue .metric-icon-wrap { background: rgba(0, 212, 255, 0.12); color: var(--secondary); }
+    .metric-box.m-purple .metric-icon-wrap { background: rgba(108, 99, 255, 0.12); color: var(--primary); }
+    .metric-box.m-amber .metric-icon-wrap { background: rgba(255, 183, 77, 0.12); color: var(--accent-amber); }
+    .metric-box.m-green .metric-icon-wrap { background: rgba(0, 230, 118, 0.12); color: var(--accent-green); }
+
+    .metric-val {
+        font-family: var(--font-mono);
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+    }
+
+    .metric-lbl {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+        margin-top: 3px;
+    }
+
+    /* Submissions Section Header */
+    .section-head-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .section-head-bar h2 {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sub-filter-input {
+        background: rgba(10, 14, 28, 0.7);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        padding: 8px 14px 8px 36px;
+        color: #fff;
+        font-size: 0.85rem;
+        outline: none;
+        width: 280px;
+        transition: border-color 0.2s;
+    }
+
+    .sub-filter-input:focus {
+        border-color: var(--secondary);
+    }
+
+    /* Submissions List & Cards */
+    .submissions-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .submission-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px 28px;
+        transition: var(--transition-smooth);
+        position: relative;
+    }
+
+    .submission-card:hover {
+        background: var(--glass-bg-hover);
+        border-color: rgba(0, 212, 255, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .sub-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+        padding-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Student Info Block */
+    .student-info-flex {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .student-avatar-box {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: grid;
+        place-items: center;
+        border: 2px solid rgba(0, 212, 255, 0.35);
+        flex-shrink: 0;
+    }
+
+    .student-avatar-box img {
+        width: 100%; height: 100%; object-fit: cover;
+    }
+
+    .student-avatar-fallback {
+        font-size: 1.3rem;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .student-name-h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .student-meta-sub {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Status Badges */
+    .timing-badge {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .timing-badge.ontime {
+        background: rgba(0, 230, 118, 0.15);
+        color: var(--accent-green);
+        border: 1px solid rgba(0, 230, 118, 0.35);
+    }
+
+    .timing-badge.late {
+        background: rgba(255, 51, 102, 0.15);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 51, 102, 0.35);
+    }
+
+    .graded-badge-pill {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .graded-badge-pill.evaluated {
+        background: rgba(108, 99, 255, 0.2);
+        color: #c084fc;
+        border: 1px solid rgba(108, 99, 255, 0.4);
+    }
+
+    .graded-badge-pill.pending {
+        background: rgba(255, 183, 77, 0.15);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.35);
+    }
+
+    /* Sub Deliverables Body */
+    .sub-deliverables-body {
+        padding: 18px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .deliverable-file-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        background: rgba(0, 212, 255, 0.05);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: 12px;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .deliverable-file-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .file-type-icon {
+        font-size: 1.6rem;
+        color: var(--secondary);
+    }
+
+    .deliverable-file-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #fff;
+        display: block;
+    }
+
+    .deliverable-file-sub {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .btn-download-solution {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: var(--secondary);
+        color: #060814;
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-decoration: none;
+        transition: var(--transition-fast);
+    }
+
+    .btn-download-solution:hover {
+        background: #fff;
+        box-shadow: 0 0 16px rgba(0, 212, 255, 0.5);
+    }
+
+    .student-notes-box {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+        padding: 12px 16px;
+    }
+
+    .notes-label {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+        color: var(--secondary);
+        margin-bottom: 4px;
+    }
+
+    .notes-content {
+        font-size: 0.86rem;
+        color: #cbd5e1;
+        line-height: 1.55;
+        white-space: pre-wrap;
+    }
+
+    /* Current Evaluation Recap if graded */
+    .current-eval-recap {
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(0, 212, 255, 0.05));
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 14px;
+    }
+
+    .eval-head-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    .eval-score-text {
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--accent-amber);
+    }
+
+    .eval-feedback-quote {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 0.88rem;
+        font-style: italic;
+    }
+
+    /* Inline Evaluation Form */
+    .grading-form-container {
+        background: rgba(10, 14, 28, 0.6);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 6px;
+    }
+
+    .grading-form-grid {
+        display: grid;
+        grid-template-columns: 180px 1fr auto;
+        gap: 14px;
+        align-items: flex-end;
+    }
+
+    .grade-label {
+        display: block;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .grade-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(12, 16, 32, 0.9);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        color: #fff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .grade-input:focus {
+        border-color: var(--secondary);
+    }
+
+    .btn-save-grade {
+        background: linear-gradient(135deg, var(--accent-green), #00c853);
+        border: none;
+        color: #060814;
+        font-weight: 800;
+        font-size: 0.84rem;
+        padding: 11px 22px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+        white-space: nowrap;
+    }
+
+    .btn-save-grade:hover {
+        box-shadow: 0 0 20px rgba(0, 230, 118, 0.45);
+        transform: translateY(-1px);
+    }
+
+    /* Responsive Media Queries */
+    @media (max-width: 1024px) {
+        .page-wrap { padding: 22px 18px; }
+        .asgn-overview-card { padding: 22px 24px; }
+    }
+
+    @media (max-width: 768px) {
+        .page-wrap { padding: 18px 14px; }
+        .top-nav-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .btn-back-link { width: fit-content; }
+        .breadcrumb-trail { flex-wrap: wrap; font-size: 0.8rem; }
+        .asgn-overview-card { padding: 20px 18px; border-radius: 16px; }
+        .overview-title { font-size: 1.4rem; }
+        .overview-badges-strip { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .student-sub-card { padding: 18px 16px; border-radius: 16px; }
+        .sub-card-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .sub-student-profile { flex-wrap: wrap; }
+        .grading-form-grid { grid-template-columns: 1fr; gap: 12px; }
+        .btn-save-grade { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+        .page-wrap { padding: 14px 10px; }
+        .overview-title { font-size: 1.25rem; }
+        .deliverable-file-box { flex-direction: column; align-items: stretch; gap: 10px; }
+        .btn-download-solution { width: 100%; justify-content: center; }
+    }
+</style>
+
+<div class="page-wrap">
+
+    <!-- TOP NAVIGATION BAR -->
+    <div class="top-nav-bar">
+        <a href="{% url 'admin_assignment_list' %}" class="btn-back-link">
+            <i class="fas fa-arrow-left"></i> Back to Assignments List
+        </a>
+
+        <div class="breadcrumb-trail">
+            <a href="{% url 'admin_dashboard' %}">Admin</a>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            <a href="{% url 'admin_assignment_list' %}">Assignments</a>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            <span>{{ course.title }}</span>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            <span style="color:#fff; font-weight:700;">{{ assignment.title }}</span>
+        </div>
+    </div>
+
+    <!-- ASSIGNMENT OVERVIEW HEADER CARD -->
+    <div class="asgn-overview-card">
+        <div class="overview-top-row">
+            <div>
+                <span class="subject-pill-tag"><i class="fas fa-book"></i> {{ course.title }}</span>
+                <h1 class="overview-title">{{ assignment.title }}</h1>
+                {% if assignment.description %}
+                <div class="overview-desc">{{ assignment.description }}</div>
+                {% endif %}
+
+                <div class="overview-badges-strip">
+                    <span class="meta-badge-item">
+                        <i class="fas fa-award"></i> Total Marks: <strong>{{ assignment.total_marks }}</strong>
+                    </span>
+                    <span class="meta-badge-item">
+                        <i class="far fa-clock"></i> Due Date: <strong>{{ assignment.due_date|date:"d M, Y • h:i A" }}</strong>
+                        {% if assignment.is_past_due %}
+                            <span style="color:var(--accent-red); margin-left:4px;">(Past Due)</span>
+                        {% endif %}
+                    </span>
+                    <span class="meta-badge-item">
+                        <i class="far fa-calendar-plus"></i> Created: <strong>{{ assignment.created_at|date:"d M, Y" }}</strong>
+                    </span>
+                </div>
+            </div>
+
+            {% if assignment.file %}
+            <div>
+                <a href="{{ assignment.file.url }}" target="_blank" download class="btn-download-brief-lg">
+                    <i class="fas fa-cloud-arrow-down"></i> Download Brief Specification ({{ assignment.file_extension }})
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- SUBMISSIONS METRICS -->
+        <div class="submissions-metrics-grid">
+            <div class="metric-box m-blue">
+                <div class="metric-icon-wrap"><i class="fas fa-users"></i></div>
+                <div>
+                    <div class="metric-val">{{ enrolled_count }}</div>
+                    <div class="metric-lbl">Enrolled Students</div>
+                </div>
+            </div>
+
+            <div class="metric-box m-purple">
+                <div class="metric-icon-wrap"><i class="fas fa-inbox"></i></div>
+                <div>
+                    <div class="metric-val">{{ total_submissions }}</div>
+                    <div class="metric-lbl">Submissions Received</div>
+                </div>
+            </div>
+
+            <div class="metric-box m-amber">
+                <div class="metric-icon-wrap"><i class="fas fa-clock-rotate-left"></i></div>
+                <div>
+                    <div class="metric-val">{{ pending_count }}</div>
+                    <div class="metric-lbl">Pending Evaluation</div>
+                </div>
+            </div>
+
+            <div class="metric-box m-green">
+                <div class="metric-icon-wrap"><i class="fas fa-circle-check"></i></div>
+                <div>
+                    <div class="metric-val">{{ graded_count }}</div>
+                    <div class="metric-lbl">Graded & Evaluated</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT SUBMISSIONS SECTION -->
+    <div class="section-head-bar">
+        <h2>
+            <i class="fas fa-users-viewfinder" style="color:var(--secondary);"></i>
+            Student Submissions ({{ total_submissions }})
+        </h2>
+
+        {% if total_submissions > 0 %}
+        <div style="position:relative;">
+            <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.85rem;"></i>
+            <input type="text" id="studentSearchFilter" class="sub-filter-input" placeholder="Search student name, email, or username..." onkeyup="filterStudentSubmissions()">
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- SUBMISSIONS LIST -->
+    {% if submissions %}
+    <div class="submissions-stack" id="submissionsContainer">
+        {% for sub in submissions %}
+        <div class="submission-card sub-item-card" data-student-name="{{ sub.student.get_full_name|lower }} {{ sub.student.username|lower }}" data-student-email="{{ sub.student.email|lower }}">
+            <!-- Card Top: Student Profile & Status -->
+            <div class="sub-card-top">
+                <div class="student-info-flex">
+                    <div class="student-avatar-box">
+                        {% if sub.student.profile and sub.student.profile.profile_pic %}
+                            <img src="{{ sub.student.profile.profile_pic.url }}" alt="{{ sub.student.username }}">
+                        {% else %}
+                            <span class="student-avatar-fallback">{{ sub.student.username|slice:":1"|upper }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h4 class="student-name-h4">
+                            {{ sub.student.get_full_name|default:sub.student.username }}
+                            <span style="color:var(--text-muted); font-size:0.82rem; font-weight:500;">(@{{ sub.student.username }})</span>
+                        </h4>
+                        <div class="student-meta-sub">
+                            <span><i class="far fa-envelope"></i> {{ sub.student.email|default:"No email recorded" }}</span>
+                            <span>•</span>
+                            <span><i class="fas fa-id-badge"></i> Student ID #{{ sub.student.id }}</span>
+                            {% if sub.student.student_level %}
+                            <span>•</span>
+                            <span><i class="fas fa-layer-group"></i> {{ sub.student.student_level }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        {% if sub.is_late %}
+                            <span class="timing-badge late"><i class="fas fa-triangle-exclamation"></i> Late Submission</span>
+                        {% else %}
+                            <span class="timing-badge ontime"><i class="fas fa-check"></i> On Time</span>
+                        {% endif %}
+
+                        {% if sub.is_graded %}
+                            <span class="graded-badge-pill evaluated"><i class="fas fa-award"></i> Graded: {{ sub.marks_obtained|floatformat:1 }}/{{ assignment.total_marks }}</span>
+                        {% else %}
+                            <span class="graded-badge-pill pending"><i class="fas fa-hourglass-half"></i> Pending Review</span>
+                        {% endif %}
+                    </div>
+                    <span style="font-size:0.76rem; color:var(--text-muted);">
+                        Submitted on {{ sub.submitted_at|date:"d M, Y • h:i A" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Deliverables Body -->
+            <div class="sub-deliverables-body">
+                <!-- Deliverable File Download -->
+                {% if sub.file %}
+                <div class="deliverable-file-box">
+                    <div class="deliverable-file-info">
+                        <i class="fas fa-file-code file-type-icon"></i>
+                        <div>
+                            <span class="deliverable-file-title">{{ sub.file_name|default:"Student Solution Deliverable" }}</span>
+                            <span class="deliverable-file-sub">Format: {{ sub.file_extension }}</span>
+                        </div>
+                    </div>
+                    <a href="{{ sub.file.url }}" target="_blank" download class="btn-download-solution">
+                        <i class="fas fa-download"></i> Download Solution File
+                    </a>
+                </div>
+                {% else %}
+                <div style="color:var(--text-muted); font-size:0.85rem; font-style:italic;">
+                    <i class="fas fa-info-circle"></i> No standalone file uploaded.
+                </div>
+                {% endif %}
+
+                <!-- Student Notes / Text Answer -->
+                {% if sub.text_answer %}
+                <div class="student-notes-box">
+                    <div class="notes-label"><i class="fas fa-comment-dots"></i> Student Notes & Repository Links:</div>
+                    <div class="notes-content">{{ sub.text_answer }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Current Evaluation Record if already graded -->
+            {% if sub.is_graded %}
+            <div class="current-eval-recap">
+                <div class="eval-head-row">
+                    <span class="eval-score-text">
+                        <i class="fas fa-star" style="color:#ffb74d;"></i> Score: {{ sub.marks_obtained|floatformat:1 }} / {{ assignment.total_marks }} Marks
+                    </span>
+                    <span style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">
+                        Official Instructor Grade Recorded
+                    </span>
+                </div>
+                {% if sub.feedback %}
+                <p class="eval-feedback-quote">"{{ sub.feedback }}"</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Instructor Evaluation & Grading Form -->
+            <div class="grading-form-container">
+                <form method="POST" action="{% url 'admin_grade_submission' sub.id %}" onsubmit="handleGradingSubmit(event, '{{ sub.id }}')">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'admin_assignment_submissions_detail' assignment.id %}">
+                    
+                    <div class="grading-form-grid">
+                        <div>
+                            <label class="grade-label">Marks (Max {{ assignment.total_marks }}) *</label>
+                            <input type="number" step="0.5" min="0" max="{{ assignment.total_marks }}" name="marks_obtained" id="grade-input-{{ sub.id }}" class="grade-input" value="{{ sub.marks_obtained|default:'' }}" placeholder="e.g. 95" required>
+                        </div>
+
+                        <div>
+                            <label class="grade-label">Instructor Feedback & Critique (Notified to Student)</label>
+                            <input type="text" name="feedback" id="feedback-input-{{ sub.id }}" class="grade-input" value="{{ sub.feedback|default:'' }}" placeholder="Provide praise, code evaluation feedback, or areas for improvement...">
+                        </div>
+
+                        <div>
+                            <button type="submit" class="btn-save-grade" id="btn-grade-{{ sub.id }}">
+                                <i class="fas fa-paper-plane"></i> {% if sub.is_graded %}Update Grade{% else %}Grade & Notify{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="asgn-overview-card" style="text-align:center; padding:60px 20px;">
+        <i class="fas fa-inbox fa-3x" style="color:rgba(255,255,255,0.15); margin-bottom:14px; display:block;"></i>
+        <h3 style="color:#cbd5e1; margin-bottom:6px;">No Submissions Received Yet</h3>
+        <p style="color:var(--text-muted); max-width:480px; margin:0 auto; font-size:0.9rem;">
+            Currently there are <b>{{ enrolled_count }}</b> students enrolled in this course. Once a student submits their deliverable file or solution on the Continue Learning page, their profile and submission will appear here for review.
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    function filterStudentSubmissions() {
+        const q = document.getElementById('studentSearchFilter').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.sub-item-card');
+
+        cards.forEach(card => {
+            const name = card.getAttribute('data-student-name') || '';
+            const email = card.getAttribute('data-student-email') || '';
+            if (!q || name.includes(q) || email.includes(q)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function handleGradingSubmit(e, subId) {
+        // Form submits normally via POST and redirects, but provide instant visual feedback on button
+        const btn = document.getElementById('btn-grade-' + subId);
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+        }
+        e.target.submit();
+    }
+</script>
+{% endblock %}
