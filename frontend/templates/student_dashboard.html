@@ -686,6 +686,25 @@
     .quick-stat-chip.lessons:hover { border-color: var(--neon-cyan); box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15); }
     .quick-stat-chip.quizzes:hover { border-color: var(--accent-green); box-shadow: 0 4px 15px rgba(0, 230, 118, 0.15); }
     .quick-stat-chip.assignments:hover { border-color: var(--accent-amber); box-shadow: 0 4px 15px rgba(255, 183, 77, 0.15); }
+    .quick-stat-chip.assignments.has-pending-tasks {
+        border-color: rgba(255, 183, 77, 0.45);
+        background: rgba(255, 183, 77, 0.06);
+        box-shadow: 0 0 10px rgba(255, 183, 77, 0.15);
+    }
+    .task-reminder-pill {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, rgba(255, 183, 77, 0.35), rgba(245, 158, 11, 0.25));
+        border: 1px solid rgba(255, 183, 77, 0.6);
+        color: #ffb74d;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        margin-top: 2px;
+        box-shadow: 0 0 8px rgba(255, 183, 77, 0.25);
+    }
 
     .quick-stat-chip i { font-size: 0.85rem; margin-bottom: 2px; }
     .quick-stat-chip.lessons i { color: var(--neon-cyan); }
@@ -1553,6 +1572,26 @@
         }
         #ai-chat-toggle { bottom: 20px; right: 20px; width: 54px; height: 54px; font-size: 22px; }
     }
+
+    @media (max-width: 480px) {
+        .dashboard-container { padding: 14px 10px 60px; }
+        .welcome-banner { padding: 18px 14px; border-radius: 16px; margin-bottom: 20px; }
+        .user-info h1 { font-size: 1.5rem; }
+        .banner-avatar-wrap { width: 56px; height: 56px; }
+        .banner-actions { width: 100%; justify-content: space-between; }
+        .btn-quick-ide { flex: 1; justify-content: center; padding: 10px 12px; font-size: 0.8rem; }
+        .glass-notif-btn { width: 44px; height: 44px; min-width: 44px; border-radius: 10px; }
+        .courses-grid { gap: 16px; margin-bottom: 28px; }
+        .course-card-glass { border-radius: 16px; }
+        .sync-card, .analytics-card { padding: 16px 14px; border-radius: 16px; }
+        .stat-card-glass { padding: 16px 14px; border-radius: 16px; }
+        #ai-chat-container {
+            width: calc(100vw - 16px) !important; right: 8px !important; bottom: 75px !important;
+            height: calc(100vh - 95px) !important; max-height: calc(100vh - 95px) !important;
+            border-radius: 16px;
+        }
+        #ai-chat-toggle { bottom: 15px; right: 15px; width: 48px; height: 48px; font-size: 18px; }
+    }
 </style>
 
 <div class="dashboard-ambient"></div>
@@ -1567,9 +1606,7 @@
             <h1>Welcome, <span>{{ request.user.first_name|default:request.user.username }}</span></h1>
             <div class="badge-pill-row">
                 <span class="level-badge"><i class="fas fa-shield-alt"></i> LEVEL: {{ request.user.student_level }}</span>
-                {% if study_streak > 0 %}
-                    <span class="streak-badge"><i class="fas fa-fire"></i> {{ study_streak }} Day{{ study_streak|pluralize }} Streak</span>
-                {% endif %}
+                <span class="streak-badge"><i class="fas fa-fire"></i> {{ study_streak|default:0 }} Day{{ study_streak|default:0|pluralize }} Streak</span>
             </div>
         </div>
         
@@ -1693,10 +1730,13 @@
                                 <span class="chip-count">{{ enrollment.completed_quizzes_count }}/{{ enrollment.total_quizzes_count }}</span>
                                 <span class="chip-label">Quizzes</span>
                             </a>
-                            <a href="{% url 'course_watch' enrollment.course.id %}" class="quick-stat-chip assignments" title="Course Tasks & Assignments">
+                            <a href="{% url 'course_watch' enrollment.course.id %}#assignments" class="quick-stat-chip assignments {% if enrollment.pending_tasks_count > 0 %}has-pending-tasks{% endif %}" title="Course Tasks & Assignments">
                                 <i class="fas fa-tasks"></i>
                                 <span class="chip-count">{{ enrollment.completed_tasks_count }}/{{ enrollment.total_tasks_count }}</span>
                                 <span class="chip-label">Tasks</span>
+                                {% if enrollment.pending_tasks_count > 0 %}
+                                    <span class="task-reminder-pill">{{ enrollment.pending_tasks_count }} Due</span>
+                                {% endif %}
                             </a>
                         </div>
 
@@ -1776,17 +1816,23 @@
                 </div>
                 <div class="sync-item-list">
                     {% for assign in pending_assignments %}
-                    <div class="sync-item">
+                    <div class="sync-item" id="pending-assign-{{ assign.id }}">
                         <div class="sync-item-left">
                             <span class="sync-item-title">{{ assign.title }}</span>
                             <span class="sync-item-meta">
                                 <span><i class="far fa-clock"></i> Due: {{ assign.due_date|date:"d M, Y" }}</span>
                                 <span>• {{ assign.total_marks }} Marks</span>
+                                {% if assign.course %}<span style="color:var(--neon-cyan);">• {{ assign.course.title|truncatechars:20 }}</span>{% endif %}
                             </span>
                         </div>
-                        <a href="{% url 'course_watch' assign.course.id %}" class="btn-sync-action amber">
-                            <i class="fas fa-upload"></i> Submit
-                        </a>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button type="button" class="btn-sync-action amber" onclick="openDashboardSubmitModal('{{ assign.id }}', '{{ assign.title|escapejs }}', '{{ assign.course.title|escapejs }}', '{{ assign.total_marks }}', '{% if assign.file %}{{ assign.file.url|escapejs }}{% endif %}', '{{ assign.file_extension }}')">
+                                <i class="fas fa-upload"></i> Submit
+                            </button>
+                            <a href="{% url 'course_watch' assign.course.id %}#assignments" class="btn-sync-action cyan" title="Open in Course Workspace">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
                     </div>
                     {% empty %}
                         <div class="sync-empty-text">All assignments submitted! You are completely up to date.</div>
@@ -1965,6 +2011,64 @@
                 <span id="sp-coins"></span> <i class="fas fa-coins"></i>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- DASHBOARD QUICK SUBMIT MODAL -->
+<div class="modal-overlay" id="dashboardSubmitModal" style="display:none; z-index: 10000;">
+    <div class="modal-box asgn-modal-box" style="max-width:560px; width:92%; background:#0d1222; border:1px solid rgba(0,243,255,0.3); border-radius:20px; box-shadow:0 25px 60px rgba(0,0,0,0.85);">
+        <div class="modal-header" style="padding:18px 24px; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-cloud-arrow-up" style="color:var(--neon-cyan);"></i> Quick Submit Assignment
+            </span>
+            <i class="fas fa-times" onclick="closeDashboardSubmitModal()" style="color:#94a3b8; cursor:pointer; font-size:1.1rem;"></i>
+        </div>
+        <form id="dashSubmitForm" method="POST" enctype="multipart/form-data" onsubmit="handleDashboardSubmit(event)">
+            {% csrf_token %}
+            <input type="hidden" name="assignment_id" id="dashModalAsgnId">
+            <input type="hidden" name="next" value="{% url 'dashboard' %}">
+            
+            <div class="modal-body-content" style="padding: 20px 24px;">
+                <div class="asgn-modal-summary" style="margin-bottom:18px; padding:14px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.07);">
+                    <div style="font-size:0.75rem; text-transform:uppercase; color:var(--neon-cyan); font-weight:700; margin-bottom:4px;" id="dashModalCourseTitle">Course</div>
+                    <h3 id="dashModalAsgnTitle" style="color:#fff; font-family:'Space Grotesk',sans-serif; margin:0 0 8px 0; font-size:1.15rem;">Assignment Title</h3>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="modal-points-badge" id="dashModalPoints" style="background:rgba(255,183,77,0.15); color:var(--accent-amber); padding:3px 10px; border-radius:12px; font-weight:700; font-size:0.78rem;">100 Marks</span>
+                        <a href="#" id="dashModalBriefLink" target="_blank" download style="display:none; font-size:0.78rem; color:var(--neon-cyan); text-decoration:none;">
+                            <i class="fas fa-download"></i> Download Brief
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Deliverable File -->
+                <div class="asgn-form-group" style="margin-bottom:16px;">
+                    <label class="asgn-form-label" style="display:block; font-size:0.82rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                        <i class="fas fa-file-arrow-up" style="color:var(--neon-cyan); margin-right:6px;"></i> Upload Deliverable (PDF, Code, ZIP, DOCX, etc.)
+                    </label>
+                    <div class="asgn-file-dropzone" onclick="document.getElementById('dashModalFileInput').click()" style="padding:24px 16px; border:2px dashed rgba(0,243,255,0.3); border-radius:14px; text-align:center; cursor:pointer; background:rgba(0,243,255,0.02); transition:all 0.25s;">
+                        <i class="fas fa-cloud-arrow-up" style="font-size:1.8rem; color:var(--neon-cyan); margin-bottom:8px; display:block;"></i>
+                        <div id="dashDropzoneText" style="color:#fff; font-weight:600; font-size:0.88rem;">Click or choose file to upload</div>
+                        <div style="color:var(--text-muted); font-size:0.74rem; margin-top:4px;">Supports any file format (PDF, DOCX, ZIP, PY, etc.)</div>
+                        <input type="file" name="file" id="dashModalFileInput" style="display:none;" onchange="onDashFileSelected(this)">
+                    </div>
+                </div>
+
+                <!-- Text notes -->
+                <div class="asgn-form-group">
+                    <label class="asgn-form-label" style="display:block; font-size:0.82rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                        <i class="fas fa-comment-dots" style="color:var(--neon-purple); margin-right:6px;"></i> Notes, GitHub Links or Execution Info (Optional)
+                    </label>
+                    <textarea name="text_answer" id="dashModalText" class="asgn-textarea" rows="3" placeholder="Provide GitHub repository link, deployment URL, or explanation..." style="width:100%; box-sizing:border-box; background:rgba(12,16,29,0.85); border:1px solid rgba(255,255,255,0.1); border-radius:12px; color:#fff; padding:10px 14px; font-family:'Outfit',sans-serif; font-size:0.88rem; outline:none; resize:vertical;"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer-btns" style="padding:16px 24px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:flex-end; gap:12px;">
+                <button type="button" class="btn-modal-cancel" onclick="closeDashboardSubmitModal()" style="padding:10px 18px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; font-weight:600; cursor:pointer;">Cancel</button>
+                <button type="submit" class="btn-modal-submit" id="btnDashSubmitAction" style="padding:10px 22px; border-radius:10px; background:linear-gradient(135deg,var(--accent-amber),#f59e0b); border:none; color:#060814; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fas fa-paper-plane"></i> Submit Deliverable
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -2976,6 +3080,92 @@
         const w = el.getAttribute('data-width');
         if (w) el.style.width = w;
     });
+
+    // =========================================
+    // 📋 DASHBOARD QUICK SUBMIT MODAL HANDLERS
+    // =========================================
+    window.openDashboardSubmitModal = function(asgnId, asgnTitle, courseTitle, marks, briefUrl, fileExt) {
+        document.getElementById('dashModalAsgnId').value = asgnId;
+        document.getElementById('dashModalAsgnTitle').textContent = asgnTitle;
+        document.getElementById('dashModalCourseTitle').textContent = courseTitle;
+        document.getElementById('dashModalPoints').textContent = marks + ' Marks';
+        document.getElementById('dashSubmitForm').action = '/assignments/' + asgnId + '/submit/';
+        
+        const briefLink = document.getElementById('dashModalBriefLink');
+        if (briefUrl && briefUrl !== '') {
+            briefLink.href = briefUrl;
+            briefLink.style.display = 'inline-flex';
+            briefLink.innerHTML = `<i class="fas fa-download"></i> Download Brief (${fileExt || 'PDF'})`;
+        } else {
+            briefLink.style.display = 'none';
+        }
+        
+        const modal = document.getElementById('dashboardSubmitModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('modal-open'), 10);
+        }
+    };
+
+    window.closeDashboardSubmitModal = function() {
+        const modal = document.getElementById('dashboardSubmitModal');
+        if (modal) {
+            modal.classList.remove('modal-open');
+            setTimeout(() => modal.style.display = 'none', 250);
+        }
+    };
+
+    window.onDashFileSelected = function(input) {
+        const textEl = document.getElementById('dashDropzoneText');
+        if (input.files && input.files[0]) {
+            textEl.innerHTML = `<i class="fas fa-check-circle" style="color:var(--accent-green);"></i> Selected: <b>${input.files[0].name}</b> (${Math.round(input.files[0].size/1024)} KB)`;
+        } else {
+            textEl.textContent = 'Click or choose file to upload';
+        }
+    };
+
+    window.handleDashboardSubmit = function(e) {
+        e.preventDefault();
+        const form = document.getElementById('dashSubmitForm');
+        const formData = new FormData(form);
+        const asgnId = document.getElementById('dashModalAsgnId').value;
+        const btn = document.getElementById('btnDashSubmitAction');
+        const orig = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        fetch(form.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+            if (data.success) {
+                closeDashboardSubmitModal();
+                // Remove item from pending list
+                const item = document.getElementById('pending-assign-' + asgnId);
+                if (item) {
+                    item.style.transition = 'all 0.4s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateX(20px)';
+                    setTimeout(() => item.remove(), 400);
+                }
+                alert(data.message);
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                alert(data.message || 'Submission failed.');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+            form.submit();
+        });
+    };
 </script>
 
 {% endblock %}

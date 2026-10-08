@@ -94,7 +94,22 @@
     .cs-pager a, .cs-pager span { padding:8px 16px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:#aaa; text-decoration:none; }
     .cs-pager a:hover, .cs-pager span.active { border-color:var(--cs-cyan); color:var(--cs-cyan); }
 
-    @media (max-width:768px){ .cs-page{padding:20px 14px;} .cs-grid{grid-template-columns:1fr;} }
+    @media (max-width:768px){ 
+        .cs-page{padding:20px 14px;} 
+        .cs-grid{grid-template-columns:1fr;} 
+        .cs-hero{flex-direction:column; align-items:stretch; padding:20px 16px;}
+        .cs-toolbar{flex-direction:column; align-items:stretch; padding:16px 14px;}
+        .cs-search{min-width:100%;}
+        .cs-chips{overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+        .cs-chip{white-space:nowrap; flex-shrink:0;}
+        .cs-select{width:100%;}
+    }
+    @media (max-width:480px){
+        .cs-page{padding:14px 10px;}
+        .cs-hero h1{font-size:1.6rem;}
+        .cs-wallet{flex-direction:column;}
+        .cs-wallet-box{width:100%;}
+    }
 </style>
 {% endblock %}
 

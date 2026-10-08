@@ -179,32 +179,149 @@
         .main-content::-webkit-scrollbar-thumb { background: #2a2f3d; border-radius: 10px; }
         .main-content::-webkit-scrollbar-thumb:hover { background: #3b4155; }
 
-        /* Mobile */
-        .lms-menu-toggle {
-            display: none; position: fixed; top: 16px; right: 16px; z-index: 2000;
-            background: rgba(15,18,26,0.9); color: #fff; border: 1px solid var(--border-color);
-            padding: 10px 12px; border-radius: 10px; cursor: pointer;
+        /* Mobile & Tablet Header */
+        .lms-mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            background: rgba(10, 12, 18, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 950;
+            padding: 0 16px;
+            align-items: center;
+            justify-content: space-between;
         }
-        .lms-scrim { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); }
-        .lms-scrim.show { display: block; }
 
-        @media (max-width: 768px) {
-            #lmsSidebar.lms-sidebar { transform: translateX(-100%); transition: transform .25s ease; }
+        .lms-mobile-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: grid; place-items: center;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lms-mobile-toggle-btn:hover {
+            background: rgba(34, 211, 238, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .lms-mobile-brand {
+            display: flex; align-items: center; gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem; font-weight: 700; color: #fff;
+        }
+        .lms-mobile-brand i { color: var(--accent-cyan); }
+        .lms-mobile-brand span strong { color: var(--accent-cyan); }
+
+        .lms-mobile-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: grid; place-items: center;
+            border: 2px solid rgba(0, 243, 255, 0.45);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .lms-mobile-avatar img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .lms-mobile-avatar .fallback {
+            width: 100%; height: 100%;
+            display: grid; place-items: center;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #fff; font-size: 0.85rem; font-weight: 700;
+        }
+
+        .lms-sidebar-close-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: auto;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .lms-sidebar-close-btn:hover {
+            color: #fff;
+            background: rgba(244, 63, 94, 0.2);
+            border-color: var(--danger-color);
+        }
+
+        .lms-scrim {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1050;
+            background: rgba(4, 6, 18, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+        .lms-scrim.show {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .lms-mobile-topbar { display: flex; }
+            .lms-sidebar-close-btn { display: flex; }
+
+            #lmsSidebar.lms-sidebar { 
+                transform: translateX(-100%); 
+                transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1);
+                z-index: 2000;
+                width: 280px; max-width: 85vw;
+                box-shadow: 20px 0 60px rgba(0, 0, 0, 0.85);
+                background: #0a0d14 !important;
+            }
             #lmsSidebar.lms-sidebar.active { transform: translateX(0); }
-            .main-content { left: 0; }
-            .lms-menu-toggle { display: block; }
+            .main-content { left: 0; padding-top: 56px; }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="lms-body">
 
-    <button class="lms-menu-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
-        <i class="fas fa-bars"></i>
-    </button>
+    <div class="lms-mobile-topbar">
+        <button class="lms-mobile-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="lms-mobile-brand">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Learning-<strong>365</strong></span>
+        </div>
+        <a href="{% url 'profile' %}" class="lms-mobile-avatar" title="My Profile">
+            {% if request.user.profile_pic_url %}
+                <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                <div class="fallback" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+            {% elif request.user.profile.profile_pic and request.user.profile.profile_pic.name != 'profile_pics/default.png' %}
+                <img src="{{ request.user.profile.profile_pic.url }}" alt="{{ request.user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                <div class="fallback" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+            {% else %}
+                <div class="fallback">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- Scrim overlay outside app-shell -->
     <div class="lms-scrim" id="lmsScrim" onclick="toggleSidebar()"></div>
 
-    <div class="lms-shell">
+    <!-- Navigation sidebar drawer outside app-shell for direct z-index stacking -->
     <nav class="lms-sidebar" id="lmsSidebar">
         <div class="lms-brand">
             <div class="lms-brand-icon"><i class="fas fa-graduation-cap"></i></div>
@@ -212,6 +329,9 @@
                 <div class="lms-brand-text">Learning-<span>365</span></div>
                 <span class="lms-brand-sub">Student Panel</span>
             </div>
+            <button type="button" class="lms-sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close navigation">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
         <div class="lms-scroll">
@@ -265,17 +385,37 @@
         </div>
     </nav>
 
-    <main class="main-content">
-        {% block content %}
-        {% endblock %}
-    </main>
+    <!-- Main Application Shell -->
+    <div class="lms-shell">
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
     </div>
 
     <script>
         function toggleSidebar() {
-            document.getElementById('lmsSidebar').classList.toggle('active');
-            document.getElementById('lmsScrim').classList.toggle('show');
+            const sidebar = document.getElementById('lmsSidebar');
+            const scrim = document.getElementById('lmsScrim');
+            if (sidebar && scrim) {
+                sidebar.classList.toggle('active');
+                scrim.classList.toggle('show');
+            }
         }
+
+        // Close sidebar drawer when clicking links on mobile/tablet
+        document.querySelectorAll('#lmsSidebar a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    const sidebar = document.getElementById('lmsSidebar');
+                    const scrim = document.getElementById('lmsScrim');
+                    if (sidebar && sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                        if (scrim) scrim.classList.remove('show');
+                    }
+                }
+            });
+        });
     </script>
 
     {% if messages %}
