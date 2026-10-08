@@ -192,14 +192,49 @@
     .t-info { color: var(--c-cyan); }
     .t-warning { color: var(--c-amber); }
 
-    @media (max-width: 1000px) {
+    @media (max-width: 1024px) {
+        .ss-root { height: auto; min-height: calc(100vh - 56px); }
         .setup-split { grid-template-columns: 1fr; gap: 28px; }
-        .brief { position: static; }
-        #setup-view { padding: 24px 18px 50px; }
+        .brief { position: static; margin-top: 10px; }
+        #setup-view { padding: 24px 18px 50px; height: auto; }
         .field-row { grid-template-columns: 1fr; }
-        .ss-workspace { flex-direction: column; overflow-y: auto; }
-        .ss-left-pane, .ss-right-pane { width: 100%; min-height: 420px; }
-        .setup-hero h1 { font-size: 1.9rem; }
+        .ss-workspace { flex-direction: column; overflow-y: visible; }
+        .ss-left-pane, .ss-right-pane { width: 100%; min-height: 400px; }
+        .setup-hero h1 { font-size: 2rem; }
+    }
+
+    @media (max-width: 640px) {
+        #setup-view { padding: 16px 12px 40px; }
+        .setup-hero h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
+        .setup-hero p { font-size: 0.88rem; }
+        .type-opt { padding: 12px 14px; gap: 12px; }
+        .type-opt .t-ico { width: 30px; height: 30px; font-size: 0.8rem; }
+        .type-opt .t-body b { font-size: 0.88rem; }
+        .type-opt .t-body small { font-size: 0.72rem; }
+        .seg button { padding: 8px 6px; font-size: 0.78rem; }
+        .chips { gap: 6px; }
+        .chip-btn { padding: 5px 10px; font-size: 0.72rem; }
+        .brief { padding: 18px 16px; border-radius: 16px; }
+        .btn-generate { padding: 13px; font-size: 0.88rem; }
+
+        /* Workspace Mobile View */
+        #workspace-view { padding: 10px 8px 20px; gap: 10px; height: auto; }
+        .ss-top-bar { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 14px; }
+        .top-meta { justify-content: space-between; width: 100%; }
+        .ss-brand { font-size: 0.85rem; }
+        .ss-brand .logo { width: 28px; height: 28px; font-size: 0.8rem; }
+        .pill { padding: 5px 10px; font-size: 0.72rem; }
+        .btn-end { padding: 6px 12px; font-size: 0.74rem; }
+        .ss-left-pane { min-height: 280px; }
+        .ss-right-pane { min-height: 480px; }
+        .ss-problem-content { padding: 16px 14px; }
+        .ss-q-title { font-size: 1.3rem; }
+        .pane-head { padding: 9px 12px; font-size: 0.74rem; }
+        .ed-tools { gap: 4px; }
+        .tool-btn { width: 26px; height: 26px; font-size: 0.7rem; }
+        .tool-btn.wide { padding: 0 6px; font-size: 0.68rem; }
+        .term-head { flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
+        .btn-run { margin-left: 0; width: 100%; justify-content: center; padding: 10px; }
     }
 </style>
 

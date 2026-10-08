@@ -141,6 +141,16 @@
     .ans-correct { color: #00e676; font-weight: bold; }
     .ans-wrong { color: #ff1744; font-weight: bold; }
 
+    @media (max-width: 600px) {
+        .result-container { padding: 24px 14px 50px; }
+        .score-card { padding: 24px 16px; border-radius: 16px; }
+        .score-circle { width: 120px; height: 120px; font-size: 2rem; margin-bottom: 16px; }
+        .result-title { font-size: 1.5rem; }
+        .action-buttons { flex-direction: column; width: 100%; gap: 10px; }
+        .btn-action { width: 100%; justify-content: center; }
+        .review-card { padding: 16px 14px; border-radius: 12px; }
+        .question-text { font-size: 1rem; }
+    }
 </style>
 
 <div class="result-container">

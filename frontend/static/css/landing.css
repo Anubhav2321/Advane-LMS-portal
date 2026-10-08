@@ -2737,7 +2737,38 @@ ul { list-style: none; }
 
 @media (max-width: 768px) {
     :root {
-        --section-padding: 60px 4%;
+        --section-padding: 50px 4%;
+    }
+
+    .navbar {
+        padding: 12px 16px;
+    }
+
+    .nav-brand {
+        font-size: 1.15rem;
+    }
+
+    .nav-actions {
+        display: none;
+    }
+
+    .mobile-nav {
+        width: min(320px, 85vw);
+        padding: 80px 24px 30px;
+        overflow-y: auto;
+    }
+
+    .hero-section {
+        padding-top: 100px;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+        line-height: 1.55;
     }
 
     .features-grid {
@@ -2759,12 +2790,12 @@ ul { list-style: none; }
     }
 
     .dev-avatar-ring {
-        width: 140px;
-        height: 140px;
+        width: 130px;
+        height: 130px;
     }
 
     .dev-card {
-        padding: 36px 24px 32px;
+        padding: 30px 20px 26px;
     }
 
     .gamification-flow {
@@ -2777,14 +2808,14 @@ ul { list-style: none; }
 
     .contact-container {
         grid-template-columns: 1fr;
-        padding: 32px;
+        padding: 24px 18px;
     }
 
     .contact-info {
         border-left: none;
         border-top: 1px solid var(--glass-border);
         padding-left: 0;
-        padding-top: 32px;
+        padding-top: 24px;
     }
 
     .footer-grid {
@@ -2794,41 +2825,67 @@ ul { list-style: none; }
 
     .heatmap-grid-wrapper {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         padding-bottom: 8px;
+    }
+
+    .dashboard-mockup,
+    .ide-mockup,
+    .exam-mockup {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
 @media (max-width: 480px) {
+    :root {
+        --section-padding: 40px 14px;
+    }
+
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.85rem;
+        line-height: 1.25;
     }
 
     .hero-btns {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+    }
+
+    .hero-btns .btn-cta-large,
+    .hero-btns .btn-secondary {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
     }
 
     .hero-social-proof {
         flex-wrap: wrap;
-        gap: 24px;
+        gap: 16px;
     }
 
     .btn-cta-large {
-        padding: 16px 36px;
-        font-size: 0.95rem;
+        padding: 14px 28px;
+        font-size: 0.92rem;
     }
 
     .gamification-flow .flow-step {
-        min-width: 100px;
+        min-width: 100%;
     }
 
     .achievements-row {
         gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .achievement-badge {
         min-width: 80px;
-        padding: 12px 10px;
+        padding: 10px 8px;
     }
 }
 

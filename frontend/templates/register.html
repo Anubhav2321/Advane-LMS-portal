@@ -169,10 +169,19 @@
             font-size: 0.9rem;
         }
 
-        /* Mobile Responsive */
+        /* Mobile & Tablet Responsive */
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .register-card { padding: 30px 20px; }
+            body { padding: 24px 16px; }
+            .form-grid { grid-template-columns: 1fr; gap: 14px; }
+            .register-card { padding: 30px 22px; border-radius: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 16px 10px; }
+            .register-card { padding: 24px 16px; border-radius: 14px; }
+            .brand-logo { font-size: 1.8rem; }
+            .header-area { margin-bottom: 22px; }
+            .btn-register { padding: 12px; font-size: 0.98rem; }
         }
 
     </style>

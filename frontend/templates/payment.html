@@ -149,6 +149,25 @@
 
     @media (max-width:1200px){ .pay-layout{grid-template-columns:260px 1fr;} .pay-summary{grid-column:1/-1; position:static; order:-1;} }
     @media (max-width:800px){ .pay-layout{grid-template-columns:1fr;} .pf-split{grid-template-columns:1fr;} .tile-grid.three{grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:600px){
+        .pay-page { padding:14px 10px 40px; }
+        .pay-glass { border-radius:18px; }
+        .pay-menu { padding:12px 6px; display:flex; overflow-x:auto; -webkit-overflow-scrolling:touch; gap:6px; }
+        .pay-menu::-webkit-scrollbar { display:none; }
+        .pay-menu h3 { display:none; }
+        .pay-method-sep { display:none; }
+        .pay-method { padding:8px 14px; border-left:none; border-bottom:3px solid transparent; border-radius:10px; flex-shrink:0; font-size:0.85rem; }
+        .pay-method small { display:none; }
+        .pay-method.active { border-left-color:transparent; border-bottom-color:#00ff88; }
+        .pay-method.coin-active { border-left-color:transparent; border-bottom-color:#ffd700; }
+        .pay-main { padding:18px 14px; }
+        .cc-preview { height:185px; padding:16px 18px; border-radius:16px; }
+        .cc-num { font-size:1.15rem; letter-spacing:2px; }
+        .tile-grid { grid-template-columns:1fr; }
+        .tile-grid.three { grid-template-columns:1fr; }
+        .pay-summary { padding:18px 14px; border-radius:18px; }
+        .pay-btn { padding:14px; font-size:0.95rem; }
+    }
 </style>
 
 <div id="overlay-screen">

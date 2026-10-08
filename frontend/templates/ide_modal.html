@@ -419,6 +419,16 @@
         .terminal-column { flex: 0.8; }
         .hotkey-hint { display: none; }
     }
+
+    @media (max-width: 600px) {
+        .vscode-container { width: 98vw; height: 96vh; border-radius: 12px; }
+        .vscode-header { padding: 10px 14px; }
+        .vscode-title { font-size: 0.82rem; }
+        .ide-engine-badge { display: none; }
+        .vscode-toolbar { padding: 8px 12px; gap: 8px; }
+        .vscode-select { padding: 6px 10px 6px 28px; font-size: 0.8rem; }
+        .vscode-btn { padding: 6px 12px; font-size: 0.78rem; }
+    }
 </style>
 
 <div class="ide-modal-overlay" id="vsCodeModal">

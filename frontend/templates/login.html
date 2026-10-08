@@ -26,13 +26,16 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            height: 100vh;
+            min-height: 100vh;
+            height: auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
             background-color: #0a0a0f;
+            padding: 30px 16px;
         }
 
         /* --- BACKGROUND IMAGE WITH BLUR --- */
@@ -237,7 +240,17 @@
             font-weight: 600;
         }
         .footer-links a:hover { text-decoration: underline; }
-
+        
+        /* Mobile & Tablet Responsive */
+        @media (max-width: 480px) {
+            body { padding: 20px 12px; }
+            .login-card { padding: 28px 18px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+            .brand-logo { font-size: 1.75rem; }
+            .welcome-text { margin-bottom: 20px; font-size: 1rem; }
+            .message-container { width: calc(100% - 24px); right: 12px; left: 12px; }
+            .btn-login, .btn-google { padding: 11px; font-size: 0.95rem; }
+            .divider { margin: 18px 0; }
+        }
     </style>
 </head>
 <body>

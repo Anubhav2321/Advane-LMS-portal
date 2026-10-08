@@ -23,6 +23,15 @@
     .ph-pill.refunded { background:rgba(255,179,71,.12); color:#ffb347; border:1px solid rgba(255,179,71,.35); }
     .ph-empty { text-align:center; padding:60px 20px; color:#6d6d82; }
     .ph-empty a { color:#00f3ff; text-decoration:none; }
+
+    @media (max-width: 640px) {
+        .ph-page { padding: 0 10px; margin: 16px auto; }
+        .ph-head { padding: 18px 16px; flex-direction: column; align-items: flex-start; }
+        .ph-head h1 { font-size: 1.4rem; }
+        .ph-stats { width: 100%; justify-content: space-between; }
+        .ph-stat { flex: 1; text-align: center; padding: 8px 12px; }
+        .ph-table { min-width: 580px; }
+    }
 </style>
 {% endblock %}
 

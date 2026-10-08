@@ -565,10 +565,64 @@
         #vsInputArea textarea::-webkit-scrollbar { width: 10px; }
         #vsInputArea textarea::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; }
         .input-hint { padding: 10px 20px; font-size: 0.85rem; color: #888; border-bottom: 1px solid #333; background: #252526;}
+
+        /* Mobile Sidebar Toggle Button */
+        .chat-sidebar-toggle {
+            display: none; background: rgba(0, 243, 255, 0.08); border: 1px solid rgba(0, 243, 255, 0.25);
+            color: var(--neon-cyan); width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+            align-items: center; justify-content: center; font-size: 1rem; margin-right: 10px; transition: 0.2s;
+        }
+        .chat-sidebar-toggle:hover { background: rgba(0, 243, 255, 0.2); }
+
+        .chat-sidebar-scrim {
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 998;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 900px) {
+            .app-container { padding: 0; gap: 0; position: relative; }
+            .chat-sidebar-toggle { display: inline-flex; }
+            .sidebar {
+                position: fixed; left: 0; top: 0; bottom: 0; width: 290px; max-width: 85vw;
+                z-index: 999; transform: translateX(-100%); border-radius: 0; border: none;
+                border-right: 1px solid var(--glass-border); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 10px 0 40px rgba(0, 0, 0, 0.7);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .chat-sidebar-scrim.open { display: block; }
+            .chat-area { border-radius: 0; border: none; }
+            .chat-header { padding: 12px 16px; }
+            .chat-header h3 { font-size: 1.05rem; }
+            .search-box { display: none; }
+            .pinned-bar { padding: 8px 16px; }
+            .chat-box { padding: 16px 14px; }
+            .msg-wrapper { max-width: 88%; }
+            .msg { font-size: 0.95rem; padding: 10px 14px; }
+            .chat-input-container { padding: 10px 14px 16px; }
+            .chat-form { gap: 8px; padding: 8px 14px; border-radius: 20px; }
+            .file-upload-label { font-size: 1.2rem; padding: 6px; }
+            .send-btn { width: 40px; height: 40px; font-size: 1rem; }
+            .bounty-input-wrapper { display: none; }
+            .vscode-container { width: 98vw; height: 96vh; }
+            .vscode-body { flex-direction: column; }
+            #vsAceEditor { flex: 1.2; border-right: none; border-bottom: 1px solid #3c3c3c; }
+            .vscode-terminal { flex: 0.8; }
+            .vscode-toolbar { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .chat-header h3 span.title-txt { font-size: 0.9rem; }
+            .header-actions { gap: 8px; }
+            .header-action-btn { padding: 6px 10px; font-size: 0.8rem; }
+            .msg-wrapper { max-width: 95%; }
+            .msg { font-size: 0.9rem; }
+            .profile-modal { width: 90vw; padding: 20px; }
+        }
     </style>
 </head>
 <body>
-
+    <div class="chat-sidebar-scrim" id="chatSidebarScrim"></div>
     <div class="vfx-bg"></div>
 
     <div id="focus-overlay" class="focus-overlay">
@@ -618,7 +672,12 @@
 
         <div class="chat-area">
             <div class="chat-header">
-                <h3><i class="fas fa-satellite-dish"></i> SECURE COMMLINK</h3>
+                <div style="display: flex; align-items: center;">
+                    <button type="button" class="chat-sidebar-toggle" id="chatSidebarToggle" title="View Units & Members">
+                        <i class="fas fa-users"></i>
+                    </button>
+                    <h3><i class="fas fa-satellite-dish"></i> <span class="title-txt">SECURE COMMLINK</span></h3>
+                </div>
                 
                 <div class="header-actions">
                     <button class="header-action-btn" id="openCodeEditorBtn" title="Live Code Editor"><i class="fas fa-laptop-code"></i></button>
@@ -1353,6 +1412,21 @@
                 fetchAndInjectChat(false);
             }
         }, 800);
+
+        // Mobile sidebar drawer toggle handler
+        const chatToggleBtn = document.getElementById('chatSidebarToggle');
+        const chatSidebarEl = document.querySelector('.sidebar');
+        const chatScrimEl = document.getElementById('chatSidebarScrim');
+        if (chatToggleBtn && chatSidebarEl && chatScrimEl) {
+            chatToggleBtn.addEventListener('click', () => {
+                chatSidebarEl.classList.toggle('open');
+                chatScrimEl.classList.toggle('open');
+            });
+            chatScrimEl.addEventListener('click', () => {
+                chatSidebarEl.classList.remove('open');
+                chatScrimEl.classList.remove('open');
+            });
+        }
     </script>
 </body>
 </html>
