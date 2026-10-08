@@ -19,6 +19,14 @@ from students.views import (
     all_courses, 
     enroll_course, 
     course_watch,       
+    submit_assignment,
+    admin_assignment_list,
+    admin_create_assignment_panel,
+    admin_assignment_submissions_detail,
+    admin_create_assignment,
+    admin_assignment_submissions_api,
+    admin_grade_submission,
+    admin_delete_assignment,
     live_classes, 
     library_view, 
     profile_view,       #  Profile View
@@ -136,6 +144,11 @@ urlpatterns = [
     # Watch Course & Learning Engine
     path('courses/watch/<int:course_id>/', course_watch, name='course_watch'),
     path('courses/watch/<int:course_id>/<int:lesson_id>/', course_watch, name='course_watch'),
+    path('assignments/<int:assignment_id>/submit/', submit_assignment, name='submit_assignment'),
+    path('admin-panel/courses/<int:course_id>/create-assignment/', admin_create_assignment, name='admin_create_assignment'),
+    path('admin-panel/assignments/<int:assignment_id>/submissions/', admin_assignment_submissions_api, name='admin_assignment_submissions_api'),
+    path('admin-panel/submissions/<int:submission_id>/grade/', admin_grade_submission, name='admin_grade_submission'),
+    path('admin-panel/assignments/<int:assignment_id>/delete/', admin_delete_assignment, name='admin_delete_assignment'),
     path('api/track-progress/', track_progress, name='track_progress'),
     path('api/lesson/ai-notes/<int:lesson_id>/', lesson_ai_notes, name='lesson_ai_notes'),
 
@@ -206,6 +219,11 @@ urlpatterns = [
     path('admin-panel/courses/', admin_course_list, name='admin_course_list'),
     path('admin-panel/courses/edit/<int:course_id>/', admin_edit_course, name='admin_edit_course'),
     path('admin-panel/course/delete/<int:course_id>/', admin_delete_course, name='admin_delete_course'),
+
+    #  Assignments Management (Subject-Wise & Submissions)
+    path('admin-panel/assignments/', admin_assignment_list, name='admin_assignment_list'),
+    path('admin-panel/assignments/create/', admin_create_assignment_panel, name='admin_create_assignment_panel'),
+    path('admin-panel/assignments/<int:assignment_id>/submissions-page/', admin_assignment_submissions_detail, name='admin_assignment_submissions_detail'),
 
     #  C. Library Management (List & Edit) 
     path('admin-panel/documents/', admin_document_list, name='admin_document_list'),

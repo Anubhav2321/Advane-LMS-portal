@@ -36,6 +36,8 @@ from .forms import (
     ProfilePictureForm,
     LessonForm,
     LessonCommentForm,
+    AssignmentForm,
+    AssignmentSubmissionForm,
 )
 
 # Import Models
@@ -258,6 +260,7 @@ def student_dashboard(request):
                 student=user, assignment__course=enrollment.course
             ).values('assignment_id').distinct().count()
         )
+        enrollment.pending_tasks_count = max(0, enrollment.total_tasks_count - enrollment.completed_tasks_count)
 
         # Legacy fields (kept for backward compatibility)
         enrollment.quiz_count = enrollment.completed_quizzes_count
@@ -312,7 +315,7 @@ def student_dashboard(request):
         course_id__in=enrolled_course_ids
     ).exclude(
         submissions__student=user
-    ).order_by('due_date')[:5]
+    ).select_related('course').order_by('due_date')[:6]
     
     # 2. Fetch Upcoming Live Classes for enrolled courses
     upcoming_classes = LiveClass.objects.filter(
@@ -374,19 +377,28 @@ def student_dashboard(request):
     avg_quiz_score = round(avg_quiz_score, 1) if avg_quiz_score else 0
     
     # Study streak (consecutive days with at least 1 activity)
+    # Allows active streak continuation from yesterday pending today's session
     study_streak = 0
-    check_date = today
-    while True:
-        has_activity = StudentActivity.objects.filter(
-            student=user, created_at__date=check_date
-        ).exists()
-        if has_activity:
-            study_streak += 1
-            check_date -= datetime.timedelta(days=1)
-        else:
-            break
-        if study_streak > 365:
-            break
+    yesterday = today - datetime.timedelta(days=1)
+    if StudentActivity.objects.filter(student=user, created_at__date=today).exists():
+        check_date = today
+    elif StudentActivity.objects.filter(student=user, created_at__date=yesterday).exists():
+        check_date = yesterday
+    else:
+        check_date = None
+
+    if check_date:
+        while True:
+            has_activity = StudentActivity.objects.filter(
+                student=user, created_at__date=check_date
+            ).exists()
+            if has_activity:
+                study_streak += 1
+                check_date -= datetime.timedelta(days=1)
+            else:
+                break
+            if study_streak > 365:
+                break
     
     context = {
         'enrollments': enriched_enrollments,
@@ -468,20 +480,29 @@ def profile_view(request):
     # --- TOP STATS LOGIC FOR PROFILE ---
     today = timezone.now().date()
     
-    # Calculate study streak
+    # Calculate study streak (consecutive days with at least 1 activity)
+    # Allows active streak continuation from yesterday pending today's session
     study_streak = 0
-    check_date = today
-    while True:
-        has_activity = StudentActivity.objects.filter(
-            student=user, created_at__date=check_date
-        ).exists()
-        if has_activity:
-            study_streak += 1
-            check_date -= datetime.timedelta(days=1)
-        else:
-            break
-        if study_streak > 365:
-            break
+    yesterday = today - datetime.timedelta(days=1)
+    if StudentActivity.objects.filter(student=user, created_at__date=today).exists():
+        check_date = today
+    elif StudentActivity.objects.filter(student=user, created_at__date=yesterday).exists():
+        check_date = yesterday
+    else:
+        check_date = None
+
+    if check_date:
+        while True:
+            has_activity = StudentActivity.objects.filter(
+                student=user, created_at__date=check_date
+            ).exists()
+            if has_activity:
+                study_streak += 1
+                check_date -= datetime.timedelta(days=1)
+            else:
+                break
+            if study_streak > 365:
+                break
 
     # Calculate lessons done & overall progress
     total_all_lessons = 0
@@ -1028,15 +1049,25 @@ def course_watch(request, course_id, lesson_id=None):
         
     documents = course.documents.all().order_by('-uploaded_at')
     course_exams = Exam.objects.filter(course=course, is_active=True).order_by('-created_at')
-    course_assignments = Assignment.objects.filter(course=course).order_by('-due_date')
     
-    # Check completed exams and assignments by current student
+    # --- ASSIGNMENT DATA ENRICHMENT ---
+    course_assignments = list(Assignment.objects.filter(course=course).select_related('course').order_by('due_date'))
+    user_submissions_map = {
+        sub.assignment_id: sub for sub in AssignmentSubmission.objects.filter(
+            student=request.user,
+            assignment__course=course
+        )
+    }
+    for asgn in course_assignments:
+        asgn.user_sub = user_submissions_map.get(asgn.id)
+        asgn.is_submitted = asgn.user_sub is not None
+        asgn.submissions_count = asgn.submissions.count()
+
     passed_exam_ids = set(
         QuizResult.objects.filter(student=request.user, exam__course=course).values_list('exam_id', flat=True)
     )
-    submitted_assignment_ids = set(
-        AssignmentSubmission.objects.filter(student=request.user, assignment__course=course).values_list('assignment_id', flat=True)
-    )
+    submitted_assignment_ids = set(user_submissions_map.keys())
+    pending_assignments_count = len([a for a in course_assignments if not a.is_submitted])
 
     # Current lesson AI notes if already generated
     current_ai_note = None
@@ -1075,9 +1106,304 @@ def course_watch(request, course_id, lesson_id=None):
         'course_assignments': course_assignments,
         'passed_exam_ids': passed_exam_ids,
         'submitted_assignment_ids': submitted_assignment_ids,
+        'pending_assignments_count': pending_assignments_count,
         'current_ai_note': current_ai_note,
+        'is_admin_or_faculty': is_admin_or_faculty,
+        'assignment_form': AssignmentForm(initial={'course': course}) if is_admin_or_faculty else None,
+        'submission_form': AssignmentSubmissionForm(),
     }
     return render(request, 'course_watch.html', context)
+
+
+# ========================================================
+# 🚀 REAL-TIME ASSIGNMENT SUBMISSION & FACULTY WORKFLOW
+# ========================================================
+
+@login_required
+def submit_assignment(request, assignment_id):
+    """
+    Submits a student solution (file attachment + text note) for an assignment.
+    Accessible from Course Watch or Student Dashboard Quick Submit modal.
+    """
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    is_enrolled = Enrollment.objects.filter(student=request.user, course=assignment.course).exists()
+    is_staff_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+
+    if not is_enrolled and not is_staff_faculty:
+        msg = "You must be enrolled in this course to submit assignments."
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': msg}, status=403)
+        messages.error(request, msg)
+        return redirect('course_watch', course_id=assignment.course.id)
+
+    if request.method == 'POST':
+        submission, created = AssignmentSubmission.objects.get_or_create(
+            assignment=assignment,
+            student=request.user
+        )
+
+        if 'file' in request.FILES:
+            submission.file = request.FILES['file']
+        if 'text_answer' in request.POST:
+            submission.text_answer = request.POST.get('text_answer', '').strip()
+
+        submission.submitted_at = timezone.now()
+        submission.save()
+
+        # Sync enrollment progress
+        enrollment = Enrollment.objects.filter(student=request.user, course=assignment.course).first()
+        if enrollment:
+            enrollment.sync_progress()
+
+        # Log student activity
+        log_student_activity(
+            request.user,
+            'lesson_watch',
+            f'Submitted assignment: "{assignment.title}" for {assignment.course.title}',
+            course=assignment.course
+        )
+
+        # First-time submission bonus (+15 Coins)
+        coin_awarded = False
+        if created:
+            request.user.lms_coins += 15
+            request.user.save(update_fields=['lms_coins'])
+            coin_awarded = True
+
+        coin_note = " (+15 Coins Earned! 🎉)" if coin_awarded else ""
+        msg = f'Assignment "{assignment.title}" submitted successfully!{coin_note}'
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': msg,
+                'assignment_id': assignment.id,
+                'file_url': submission.file.url if submission.file else None,
+                'file_name': submission.file_name,
+                'submitted_at': submission.submitted_at.strftime('%d %b, %Y • %I:%M %p'),
+                'is_late': submission.is_late,
+                'coins_earned': 15 if coin_awarded else 0
+            })
+
+        messages.success(request, msg)
+        next_url = request.POST.get('next')
+        if next_url:
+            return redirect(next_url)
+        return redirect('course_watch', course_id=assignment.course.id)
+
+    return redirect('course_watch', course_id=assignment.course.id)
+
+
+@login_required
+def admin_create_assignment(request, course_id):
+    """
+    Creates a new assignment for a course. Supports PDF/DOCX/ZIP/any attachment.
+    Auto-dispatches real-time student notification with deep link.
+    """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        msg = "Only academic faculty and administrators can post assignments."
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': msg}, status=403)
+        messages.error(request, msg)
+        return redirect('all_courses')
+
+    course = get_object_or_404(Course, id=course_id)
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        due_date_str = request.POST.get('due_date', '').strip()
+        total_marks_str = request.POST.get('total_marks', '100').strip()
+        file_obj = request.FILES.get('file')
+
+        if not title:
+            msg = "Assignment title is required."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=400)
+            messages.error(request, msg)
+            return redirect('course_watch', course_id=course.id)
+
+        # Parse due date safely
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = datetime.datetime.fromisoformat(due_date_str)
+                if timezone.is_naive(due_date):
+                    due_date = timezone.make_aware(due_date)
+            except Exception:
+                due_date = None
+        if not due_date:
+            due_date = timezone.now() + datetime.timedelta(days=7)
+
+        try:
+            total_marks = int(total_marks_str)
+            if total_marks <= 0:
+                total_marks = 100
+        except ValueError:
+            total_marks = 100
+
+        assignment = Assignment.objects.create(
+            course=course,
+            title=title,
+            description=description,
+            file=file_obj,
+            due_date=due_date,
+            total_marks=total_marks
+        )
+
+        msg = f'Assignment "{assignment.title}" posted successfully! Students have been alerted.'
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': msg,
+                'assignment': {
+                    'id': assignment.id,
+                    'title': assignment.title,
+                    'due_date': assignment.due_date.strftime('%d %b, %Y • %I:%M %p'),
+                    'total_marks': assignment.total_marks,
+                    'file_url': assignment.file.url if assignment.file else None,
+                    'file_name': assignment.file_name,
+                }
+            })
+
+        messages.success(request, msg)
+        return redirect('course_watch', course_id=course.id)
+
+    return redirect('course_watch', course_id=course.id)
+
+
+@login_required
+def admin_assignment_submissions_api(request, assignment_id):
+    """
+    Returns all student submissions for an assignment with complete student profiles,
+    file download links, answer text, late submission flag, and evaluation status.
+    """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        return JsonResponse({'success': False, 'message': 'Permission denied.'}, status=403)
+
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    submissions = assignment.submissions.select_related('student', 'student__profile').all()
+
+    submissions_data = []
+    for s in submissions:
+        prof = getattr(s.student, 'profile', None)
+        avatar = prof.profile_pic.url if (prof and prof.profile_pic) else None
+        submissions_data.append({
+            'submission_id': s.id,
+            'student_id': s.student.id,
+            'student_name': s.student.get_full_name() or s.student.username,
+            'student_username': s.student.username,
+            'student_email': s.student.email,
+            'student_avatar': avatar,
+            'student_level': getattr(s.student, 'student_level', 'Beginner'),
+            'student_coins': getattr(s.student, 'lms_coins', 0),
+            'submitted_at': s.submitted_at.strftime('%d %b, %Y • %I:%M %p'),
+            'is_late': s.is_late,
+            'file_url': s.file.url if s.file else None,
+            'file_name': s.file_name,
+            'file_extension': s.file_extension,
+            'text_answer': s.text_answer or '',
+            'is_graded': s.is_graded,
+            'marks_obtained': s.marks_obtained,
+            'feedback': s.feedback or '',
+        })
+
+    return JsonResponse({
+        'success': True,
+        'assignment': {
+            'id': assignment.id,
+            'title': assignment.title,
+            'course_title': assignment.course.title,
+            'due_date': assignment.due_date.strftime('%d %b, %Y • %I:%M %p'),
+            'total_marks': assignment.total_marks,
+            'brief_file_url': assignment.file.url if assignment.file else None,
+            'brief_file_name': assignment.file_name,
+            'total_submissions': len(submissions_data),
+        },
+        'submissions': submissions_data
+    })
+
+
+@login_required
+def admin_grade_submission(request, submission_id):
+    """
+    Evaluates a student submission, recording marks and instructor feedback.
+    Sends an automated notification to the student with results.
+    """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        return JsonResponse({'success': False, 'message': 'Permission denied.'}, status=403)
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'POST request required.'}, status=405)
+
+    submission = get_object_or_404(AssignmentSubmission, id=submission_id)
+    marks_str = (request.POST.get('marks_obtained') or request.POST.get('score') or '').strip()
+    feedback = request.POST.get('feedback', '').strip()
+
+    try:
+        marks = float(marks_str)
+        if marks < 0 or marks > submission.assignment.total_marks:
+            return JsonResponse({'success': False, 'message': f'Marks must be between 0 and {submission.assignment.total_marks}.'}, status=400)
+    except (ValueError, TypeError):
+        return JsonResponse({'success': False, 'message': 'Please enter a valid numeric score.'}, status=400)
+
+    submission.marks_obtained = marks
+    submission.feedback = feedback
+    submission.is_graded = True
+    submission.save()
+
+    # Notify student in real-time
+    try:
+        Notification.objects.create(
+            recipient=submission.student,
+            title=f"Assignment Evaluated: {submission.assignment.title}",
+            message=f"Your assignment for '{submission.assignment.course.title}' has been evaluated. Score: {marks}/{submission.assignment.total_marks}. Feedback: {feedback[:120] if feedback else 'Good effort!'}",
+            notification_type='assignment',
+            action_url=f"/courses/watch/{submission.assignment.course.id}/",
+            action_label="Review Grade",
+            is_global=False
+        )
+    except Exception:
+        pass
+
+    msg = f'Evaluation recorded for {submission.student.get_full_name() or submission.student.username}! Score: {marks}/{submission.assignment.total_marks}'
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': msg,
+            'marks_obtained': marks,
+            'feedback': feedback
+        })
+
+    messages.success(request, msg)
+    next_url = request.POST.get('next')
+    if next_url:
+        return redirect(next_url)
+    return redirect('admin_assignment_submissions_detail', assignment_id=submission.assignment.id)
+
+
+@login_required
+def admin_delete_assignment(request, assignment_id):
+    """Deletes an assignment along with submissions."""
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        return JsonResponse({'success': False, 'message': 'Permission denied.'}, status=403)
+
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    course_id = assignment.course.id
+    title = assignment.title
+    assignment.delete()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': f'Assignment "{title}" deleted.'})
+    messages.success(request, f'Assignment "{title}" deleted successfully.')
+    next_url = request.POST.get('next') or request.GET.get('next')
+    if next_url:
+        return redirect(next_url)
+    return redirect('admin_assignment_list')
 
 
 # --- AI LESSON NOTES API ---
@@ -2292,7 +2618,191 @@ def admin_delete_enrollment(request, enroll_id):
     return redirect('admin_enrollment_list')
 
 
-# --- ADMIN ACTIVITY DATA API (For AJAX Charts) ---
+# ========================================================
+# 📋 ADMIN PANEL: ASSIGNMENTS & EVALUATIONS SYSTEM
+# ========================================================
+
+@staff_member_required
+def admin_assignment_list(request):
+    """
+    Renders the Admin Panel Assignments section organized subject-wise.
+    Enables creating assignments, filtering by subject/course, and inspecting submissions.
+    """
+    courses = Course.objects.all().order_by('title')
+    course_filter = request.GET.get('course', '').strip()
+    search_q = request.GET.get('q', '').strip()
+
+    assignments_qs = Assignment.objects.select_related('course').prefetch_related('submissions', 'submissions__student').order_by('course__title', 'due_date')
+
+    if course_filter and course_filter.isdigit():
+        assignments_qs = assignments_qs.filter(course_id=int(course_filter))
+    
+    if search_q:
+        assignments_qs = assignments_qs.filter(
+            Q(title__icontains=search_q) |
+            Q(description__icontains=search_q) |
+            Q(course__title__icontains=search_q)
+        )
+
+    all_assignments = list(assignments_qs)
+
+    total_assignments = len(all_assignments)
+    all_submissions = AssignmentSubmission.objects.filter(assignment__in=all_assignments)
+    total_submissions = all_submissions.count()
+    graded_submissions = all_submissions.filter(is_graded=True).count()
+    pending_submissions = all_submissions.filter(is_graded=False).count()
+
+    courses_map = {}
+    for asgn in all_assignments:
+        c = asgn.course
+        if c.id not in courses_map:
+            courses_map[c.id] = {
+                'course': c,
+                'assignments': [],
+                'total_subs': 0,
+                'pending_subs': 0,
+                'graded_subs': 0,
+                'enrolled_count': c.enrollments.count()
+            }
+        
+        subs = list(asgn.submissions.all())
+        asgn.subs_count = len(subs)
+        asgn.graded_count = sum(1 for s in subs if s.is_graded)
+        asgn.pending_count = sum(1 for s in subs if not s.is_graded)
+        
+        courses_map[c.id]['assignments'].append(asgn)
+        courses_map[c.id]['total_subs'] += asgn.subs_count
+        courses_map[c.id]['pending_subs'] += asgn.pending_count
+        courses_map[c.id]['graded_subs'] += asgn.graded_count
+
+    grouped_courses = list(courses_map.values())
+
+    course_assignment_counts = {
+        row['course_id']: row['count']
+        for row in Assignment.objects.values('course_id').annotate(count=Count('id'))
+    }
+    for c in courses:
+        c.assignment_count = course_assignment_counts.get(c.id, 0)
+
+    context = {
+        'courses': courses,
+        'grouped_courses': grouped_courses,
+        'all_assignments': all_assignments,
+        'selected_course_id': int(course_filter) if course_filter.isdigit() else None,
+        'search_query': search_q,
+        'total_assignments': total_assignments,
+        'total_submissions': total_submissions,
+        'pending_submissions': pending_submissions,
+        'graded_submissions': graded_submissions,
+        'total_subjects_count': len(grouped_courses),
+    }
+    return render(request, 'custom_admin/assignment_list.html', context)
+
+
+@staff_member_required
+def admin_create_assignment_panel(request):
+    """
+    Creates an assignment directly from the Admin Panel.
+    Receives course_id, title, description, due_date, total_marks, and optional brief file.
+    Dispatches notifications to all students enrolled in the selected course.
+    """
+    if request.method != 'POST':
+        return redirect('admin_assignment_list')
+
+    course_id = request.POST.get('course_id') or request.POST.get('course')
+    title = request.POST.get('title', '').strip()
+    description = request.POST.get('description', '').strip()
+    due_date_str = request.POST.get('due_date', '').strip()
+    total_marks_str = request.POST.get('total_marks', '100').strip()
+    file_obj = request.FILES.get('file')
+
+    if not course_id:
+        messages.error(request, "Please select a Subject / Course for the assignment.")
+        return redirect('admin_assignment_list')
+
+    course = get_object_or_404(Course, id=course_id)
+
+    if not title:
+        messages.error(request, "Assignment Title is required.")
+        return redirect('admin_assignment_list')
+
+    due_date = None
+    if due_date_str:
+        try:
+            due_date = datetime.datetime.fromisoformat(due_date_str)
+            if timezone.is_naive(due_date):
+                due_date = timezone.make_aware(due_date)
+        except Exception:
+            due_date = None
+    if not due_date:
+        due_date = timezone.now() + datetime.timedelta(days=7)
+
+    try:
+        total_marks = int(total_marks_str)
+        if total_marks <= 0:
+            total_marks = 100
+    except ValueError:
+        total_marks = 100
+
+    assignment = Assignment.objects.create(
+        course=course,
+        title=title,
+        description=description,
+        file=file_obj,
+        due_date=due_date,
+        total_marks=total_marks
+    )
+
+    # Notify enrolled students in real-time
+    try:
+        enrollments = course.enrollments.select_related('student').all()
+        notifs = [
+            Notification(
+                recipient=enrollment.student,
+                title=f"New Assignment: {assignment.title}",
+                message=f"New assignment scheduled in '{course.title}'. Due date: {assignment.due_date.strftime('%d %b, %Y')}.",
+                notification_type='assignment',
+                action_url=f"/courses/watch/{course.id}/#assignments",
+                action_label="View Assignment",
+                is_global=False
+            )
+            for enrollment in enrollments
+        ]
+        if notifs:
+            Notification.objects.bulk_create(notifs)
+    except Exception:
+        pass
+
+    messages.success(request, f'Assignment "{assignment.title}" created successfully for {course.title}! Enrolled students have been notified.')
+    return redirect('admin_assignment_list')
+
+
+@staff_member_required
+def admin_assignment_submissions_detail(request, assignment_id):
+    """
+    Renders dedicated Admin Submissions & Evaluation page for an assignment.
+    Displays all student submissions with complete student profiles, deliverable files,
+    text answers, and grading/feedback controls.
+    """
+    assignment = get_object_or_404(Assignment.objects.select_related('course'), id=assignment_id)
+    submissions = assignment.submissions.select_related('student', 'student__profile').all().order_by('-submitted_at')
+    
+    enrolled_count = assignment.course.enrollments.count()
+    submissions_list = list(submissions)
+    total_submissions = len(submissions_list)
+    graded_count = sum(1 for s in submissions_list if s.is_graded)
+    pending_count = total_submissions - graded_count
+
+    context = {
+        'assignment': assignment,
+        'course': assignment.course,
+        'submissions': submissions_list,
+        'enrolled_count': enrolled_count,
+        'total_submissions': total_submissions,
+        'graded_count': graded_count,
+        'pending_count': pending_count,
+    }
+    return render(request, 'custom_admin/assignment_submissions.html', context)
 
 @staff_member_required
 def admin_activity_api(request):

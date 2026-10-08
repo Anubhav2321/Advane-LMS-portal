@@ -11,7 +11,9 @@ from .models import (
     Profile,
     Lesson,
     LessonComment, # UPDATE: Imported LessonComment Model
-    CourseGroupMessage    # Community Chat Message Form
+    CourseGroupMessage,    # Community Chat Message Form
+    Assignment,
+    AssignmentSubmission
 )
 
 User = get_user_model()
@@ -259,4 +261,41 @@ class CourseGroupMessageForm(forms.ModelForm):
                 'id': 'chat_attachment',
                 'onchange': 'this.form.submit();'
             })
+        }
+
+
+# 10. ASSIGNMENT MANAGEMENT FORMS
+
+class AssignmentForm(forms.ModelForm):
+    due_date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={
+            'type': 'datetime-local',
+            'class': 'form-control',
+        }),
+        required=True
+    )
+
+    class Meta:
+        model = Assignment
+        fields = ['course', 'title', 'description', 'file', 'due_date', 'total_marks']
+        widgets = {
+            'course': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Full-Stack REST API & Database Migration'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Provide instructions, evaluation criteria, and submission specifications...'}),
+            'file': forms.FileInput(attrs={'class': 'form-control'}),
+            'total_marks': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '100'}),
+        }
+
+
+class AssignmentSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['file', 'text_answer']
+        widgets = {
+            'file': forms.FileInput(attrs={'class': 'form-control'}),
+            'text_answer': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Add code explanations, live deployment links, GitHub repos, or execution notes...'
+            }),
         }
