@@ -1229,6 +1229,838 @@
             padding: 20px;
         }
     }
+
+    @media (max-width: 768px) {
+        .watch-command-strip {
+            padding: 10px 14px;
+            gap: 10px;
+        }
+        .cinema-stage {
+            padding: 14px 10px;
+        }
+        .workstation-tabs {
+            gap: 4px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab-trigger {
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .glass-card {
+            padding: 18px 14px;
+            border-radius: 14px;
+        }
+        .asgn-hub-card {
+            padding: 18px 14px;
+        }
+        .asgn-hub-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .btn-create-assignment-glow {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .playlist-dock {
+            height: 420px;
+        }
+        .asgn-modal-box {
+            width: 95vw !important;
+            max-width: 95vw !important;
+            margin: 8px !important;
+            border-radius: 16px !important;
+        }
+        .modal-header {
+            padding: 14px 16px;
+            font-size: 1rem;
+        }
+        .asgn-modal-footer {
+            flex-direction: column-reverse;
+            gap: 8px;
+            padding: 12px 14px;
+        }
+        .asgn-modal-footer button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* ======================================================== */
+    /* 📋 ASSIGNMENTS WORKSTATION & MODALS STYLING              */
+    /* ======================================================== */
+    .asgn-hub-card {
+        padding: 26px 30px;
+    }
+    .asgn-hub-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border-glass);
+        flex-wrap: wrap;
+    }
+    .asgn-hub-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .asgn-hub-sub {
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        margin: 0;
+        max-width: 600px;
+        line-height: 1.5;
+    }
+    .asgn-hub-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .btn-create-assignment-glow {
+        background: linear-gradient(135deg, rgba(255, 183, 77, 0.18), rgba(245, 158, 11, 0.28));
+        border: 1px solid rgba(255, 183, 77, 0.45);
+        color: #fff;
+        padding: 9px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.84rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 16px rgba(255, 183, 77, 0.18);
+    }
+    .btn-create-assignment-glow:hover {
+        background: linear-gradient(135deg, #ffb74d, #f59e0b);
+        color: #060814;
+        box-shadow: 0 6px 24px rgba(255, 183, 77, 0.4);
+        transform: translateY(-2px);
+    }
+    .asgn-counter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .asgn-cards-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+    .asgn-card-glass {
+        background: rgba(14, 19, 32, 0.72);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 22px 26px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .asgn-card-glass::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        width: 4px;
+        background: linear-gradient(to bottom, var(--accent-amber), rgba(255, 183, 77, 0.2));
+        opacity: 0.7;
+    }
+    .asgn-card-glass.submitted::before {
+        background: linear-gradient(to bottom, var(--accent-emerald), rgba(0, 230, 118, 0.2));
+    }
+    .asgn-card-glass.overdue::before {
+        background: linear-gradient(to bottom, var(--accent-red), rgba(255, 51, 102, 0.2));
+    }
+    .asgn-card-glass:hover {
+        border-color: rgba(255, 255, 255, 0.16);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .asgn-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .asgn-card-left-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .asgn-points-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: rgba(255, 183, 77, 0.12);
+        border: 1px solid rgba(255, 183, 77, 0.3);
+        color: var(--accent-amber);
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.78rem;
+    }
+    .asgn-format-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: rgba(0, 243, 255, 0.08);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+        color: var(--neon-cyan);
+        font-size: 0.76rem;
+        font-weight: 600;
+    }
+    .asgn-status-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .asgn-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+    .asgn-status-pill.graded {
+        background: rgba(0, 230, 118, 0.12);
+        border: 1px solid rgba(0, 230, 118, 0.35);
+        color: var(--accent-emerald);
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.15);
+    }
+    .asgn-status-pill.submitted {
+        background: rgba(0, 243, 255, 0.1);
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        color: var(--neon-cyan);
+    }
+    .asgn-status-pill.overdue {
+        background: rgba(255, 51, 102, 0.12);
+        border: 1px solid rgba(255, 51, 102, 0.35);
+        color: var(--accent-red);
+    }
+    .asgn-status-pill.pending {
+        background: rgba(255, 183, 77, 0.1);
+        border: 1px solid rgba(255, 183, 77, 0.3);
+        color: var(--accent-amber);
+    }
+    .badge-late-flag {
+        background: rgba(255, 51, 102, 0.25);
+        color: #ff3366;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        margin-left: 4px;
+    }
+
+    .asgn-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 8px 0;
+    }
+    .asgn-description {
+        color: #cbd5e1;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        margin-bottom: 14px;
+    }
+
+    /* Brief File Download Bar */
+    .asgn-brief-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: rgba(0, 243, 255, 0.04);
+        border: 1px solid rgba(0, 243, 255, 0.18);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .asgn-brief-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .asgn-brief-icon {
+        font-size: 1.4rem;
+        color: var(--neon-cyan);
+    }
+    .asgn-brief-title {
+        display: block;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.88rem;
+    }
+    .asgn-brief-meta {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+    }
+    .btn-download-brief {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 9px;
+        background: rgba(0, 243, 255, 0.12);
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        color: var(--neon-cyan);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .btn-download-brief:hover {
+        background: var(--neon-cyan);
+        color: #060814;
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.35);
+    }
+
+    /* Submission recap area */
+    .asgn-submission-recap {
+        background: rgba(0, 230, 118, 0.04);
+        border: 1px solid rgba(0, 230, 118, 0.2);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 10px;
+    }
+    .recap-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .recap-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    .recap-file-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.84rem;
+        color: #cbd5e1;
+        margin-bottom: 8px;
+    }
+    .recap-file-row i { color: var(--accent-emerald); }
+    .recap-file-link {
+        color: var(--neon-cyan);
+        text-decoration: none;
+        font-weight: 600;
+        word-break: break-all;
+    }
+    .recap-file-link:hover { text-decoration: underline; }
+    .recap-file-ext {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+    }
+    .recap-notes {
+        background: rgba(0, 0, 0, 0.25);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        color: #94a3b8;
+        margin-bottom: 10px;
+        line-height: 1.45;
+    }
+    .recap-notes-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #cbd5e1;
+        margin-bottom: 3px;
+    }
+
+    /* Feedback box */
+    .asgn-feedback-box {
+        background: linear-gradient(135deg, rgba(255, 183, 77, 0.08), rgba(0, 243, 255, 0.04));
+        border: 1px solid rgba(255, 183, 77, 0.35);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-top: 10px;
+        margin-bottom: 12px;
+    }
+    .feedback-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+    .feedback-score {
+        color: #ffb74d;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.95rem;
+    }
+    .feedback-badge {
+        font-size: 0.7rem;
+        color: var(--neon-cyan);
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .feedback-text {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 0.88rem;
+        font-style: italic;
+        line-height: 1.5;
+    }
+
+    .btn-asgn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.86rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        border: 1px solid transparent;
+    }
+    .btn-asgn-action.submit {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.18), rgba(0, 119, 255, 0.22));
+        border-color: rgba(0, 243, 255, 0.4);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15);
+    }
+    .btn-asgn-action.submit:hover {
+        background: var(--neon-cyan);
+        color: #060814;
+        box-shadow: 0 6px 25px rgba(0, 243, 255, 0.4);
+        transform: translateY(-2px);
+    }
+    .btn-asgn-action.resubmit {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: #cbd5e1;
+        font-size: 0.8rem;
+        padding: 7px 14px;
+    }
+    .btn-asgn-action.resubmit:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    /* Instructor Control Bar */
+    .asgn-instructor-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .btn-inst-bar {
+        padding: 7px 14px;
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    .btn-inst-bar.submissions {
+        background: rgba(188, 19, 254, 0.12);
+        border-color: rgba(188, 19, 254, 0.35);
+        color: var(--neon-purple);
+    }
+    .btn-inst-bar.submissions:hover {
+        background: var(--neon-purple);
+        color: #fff;
+        box-shadow: 0 0 16px rgba(188, 19, 254, 0.4);
+    }
+    .btn-inst-bar.delete {
+        background: rgba(255, 51, 102, 0.1);
+        border-color: rgba(255, 51, 102, 0.25);
+        color: var(--accent-red);
+    }
+    .btn-inst-bar.delete:hover {
+        background: var(--accent-red);
+        color: #fff;
+    }
+
+    .asgn-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+    .asgn-empty-icon {
+        color: rgba(255, 255, 255, 0.08);
+        margin-bottom: 14px;
+    }
+    .asgn-empty-state h4 {
+        color: #fff;
+        font-family: 'Space Grotesk', sans-serif;
+        margin-bottom: 6px;
+    }
+
+    /* ======================================================== */
+    /* 📋 STUDENT SUBMIT ASSIGNMENT MODAL (FIXED & CENTERED)    */
+    /* ======================================================== */
+    .modal-overlay {
+        display: none;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(3, 6, 18, 0.88) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        z-index: 999999 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
+        opacity: 0;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .modal-overlay.modal-open {
+        display: flex !important;
+        opacity: 1 !important;
+    }
+    .modal-box.asgn-modal-box,
+    .asgn-modal-box {
+        max-width: 600px !important;
+        width: 100% !important;
+        background: #0d1226 !important;
+        border: 1px solid rgba(0, 243, 255, 0.35) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(0, 243, 255, 0.15) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        position: relative !important;
+        transform: scale(0.95);
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        margin: auto !important;
+    }
+    .modal-overlay.modal-open .asgn-modal-box {
+        transform: scale(1) !important;
+    }
+    .modal-header {
+        padding: 20px 26px;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+    .modal-header .fa-times {
+        cursor: pointer;
+        color: var(--text-muted);
+        font-size: 1.25rem;
+        transition: all 0.2s;
+        padding: 4px 8px;
+        border-radius: 8px;
+    }
+    .modal-header .fa-times:hover {
+        color: #ff3366;
+        background: rgba(255, 51, 102, 0.12);
+    }
+    .modal-body-content {
+        padding: 24px 28px;
+        max-height: 72vh;
+        overflow-y: auto;
+    }
+    .modal-body-content::-webkit-scrollbar { width: 6px; }
+    .modal-body-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 4px; }
+    .asgn-modal-summary {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .asgn-modal-summary h4 {
+        margin: 0;
+        color: #fff;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.05rem;
+    }
+    .modal-points-badge {
+        background: rgba(255, 183, 77, 0.15);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.35);
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .asgn-form-group {
+        margin-bottom: 18px;
+    }
+    .asgn-form-row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    .asgn-form-label {
+        display: block;
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 7px;
+    }
+    .asgn-input, .asgn-textarea, .asgn-file-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(12, 16, 29, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.88rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .asgn-input:focus, .asgn-textarea:focus {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+    }
+    .asgn-file-dropzone {
+        border: 2px dashed rgba(0, 243, 255, 0.35);
+        border-radius: 14px;
+        padding: 24px 16px;
+        text-align: center;
+        background: rgba(0, 243, 255, 0.02);
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+    .asgn-file-dropzone:hover {
+        border-color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.06);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+    }
+    .dropzone-icon {
+        font-size: 2rem;
+        color: var(--neon-cyan);
+        margin-bottom: 8px;
+    }
+    .dropzone-text {
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .dropzone-sub {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+    .modal-footer-btns {
+        padding: 16px 28px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+    .btn-modal-cancel {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-modal-submit {
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        border: none;
+        color: #060814;
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.25s;
+    }
+    .btn-modal-submit:hover {
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.45);
+        transform: translateY(-1px);
+    }
+
+    /* Faculty Submissions Viewer */
+    .faculty-asgn-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-glass);
+    }
+    .fac-meta-line {
+        color: var(--text-muted);
+        font-size: 0.82rem;
+    }
+    .fac-count-badge {
+        background: rgba(188, 19, 254, 0.15);
+        border: 1px solid rgba(188, 19, 254, 0.35);
+        color: var(--neon-purple);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.82rem;
+    }
+    .fac-submissions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .fac-sub-card {
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
+        padding: 18px 20px;
+        transition: all 0.2s ease;
+    }
+    .fac-sub-card:hover {
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .fac-student-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .fac-student-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .fac-student-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--neon-cyan);
+        background: #090c15;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .fac-student-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .fac-student-name {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        color: #fff;
+        font-size: 0.95rem;
+    }
+    .fac-student-meta {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+    }
+    .fac-sub-details {
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+    }
+    .fac-grade-form {
+        display: grid;
+        grid-template-columns: 140px 1fr auto;
+        gap: 10px;
+        align-items: center;
+        background: rgba(255, 183, 77, 0.04);
+        border: 1px solid rgba(255, 183, 77, 0.2);
+        padding: 10px 14px;
+        border-radius: 10px;
+    }
+    .fac-grade-input {
+        background: #070a14;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-weight: 700;
+        outline: none;
+    }
+    .fac-feedback-input {
+        background: #070a14;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border-radius: 8px;
+        padding: 8px 12px;
+        outline: none;
+    }
+    .btn-save-grade {
+        background: linear-gradient(135deg, var(--accent-emerald), #059669);
+        border: none;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+    }
 </style>
 
 <div class="watch-ambient"></div>
@@ -1385,10 +2217,27 @@
                 </div>
             </div>
 
+        {% else %}
+            <!-- NO LESSONS FOUND BANNER -->
+            <div style="text-align:center; padding:40px 20px; color:var(--text-muted); background:var(--card-bg); border-radius:18px; border:1px solid var(--border-glass); margin-bottom:24px;">
+                <i class="fas fa-graduation-cap fa-3x" style="color:var(--neon-cyan); margin-bottom:14px; opacity:0.8;"></i>
+                <h2 style="color:#fff; font-family:'Space Grotesk',sans-serif; font-size:1.35rem; margin-bottom:6px;">No video lectures published yet.</h2>
+                <p style="margin-bottom:16px; font-size:0.88rem; max-width:480px; margin-left:auto; margin-right:auto;">Video content is currently being prepared by the instructor, but course assignments, project tasks, and submissions are active below!</p>
+                <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                    <a href="{% url 'dashboard' %}" class="btn-strip-back" style="padding:8px 16px; font-size:0.82rem;"><i class="fas fa-arrow-left"></i> Return to Dashboard</a>
+                </div>
+            </div>
+        {% endif %}
+
             <!-- MULTI-TAB WORKSTATION SYSTEM -->
             <div class="workstation-tabs">
+                {% if current_lesson %}
                 <button class="tab-trigger active" onclick="switchWorkTab('overview')">
                     <i class="fas fa-book-open"></i> Overview & Guide
+                </button>
+                <button class="tab-trigger" data-tab="assignments" onclick="switchWorkTab('assignments')">
+                    <i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> Assignments
+                    <span class="tab-badge" id="assignmentsTabBadge" style="{% if pending_assignments_count > 0 %}background:rgba(255,183,77,0.2); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.4);{% endif %}">{{ course_assignments|length }}</span>
                 </button>
                 <button class="tab-trigger" onclick="switchWorkTab('ainotes')">
                     <i class="fas fa-wand-magic-sparkles" style="color:var(--neon-purple);"></i> ✨ AI Smart Notes
@@ -1404,10 +2253,16 @@
                     <i class="fas fa-folder-open"></i> Resources & Exams
                     <span class="tab-badge">{{ documents|length|add:course_exams|length }}</span>
                 </button>
+                {% else %}
+                <button class="tab-trigger active" data-tab="assignments" onclick="switchWorkTab('assignments')">
+                    <i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> Assignments & Deliverables
+                    <span class="tab-badge" id="assignmentsTabBadge" style="{% if pending_assignments_count > 0 %}background:rgba(255,183,77,0.2); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.4);{% endif %}">{{ course_assignments|length }}</span>
+                </button>
+                {% endif %}
             </div>
 
             <!-- TAB 1: OVERVIEW & INSTRUCTOR -->
-            <div id="pane-overview" class="tab-pane active">
+            <div id="pane-overview" class="tab-pane {% if current_lesson %}active{% endif %}" style="{% if not current_lesson %}display:none;{% endif %}">
                 <div class="glass-card">
                     <h3 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:0; margin-bottom:12px;">
                         Lesson Objectives & Curriculum Scope
@@ -1700,46 +2555,165 @@ solution()
                         <p style="color:var(--text-muted); font-size:0.9rem;">No active exams for this course right now.</p>
                     {% endif %}
 
-                    <!-- Course Assignments -->
+                    <!-- Course Assignments Summary Link -->
                     {% if course_assignments %}
-                        <h4 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:30px; margin-bottom:16px;">
-                            <i class="fas fa-tasks" style="color:var(--neon-purple);"></i> Course Assignments
-                        </h4>
-                        {% for asgn in course_assignments %}
-                            <div class="resource-card">
-                                <div style="display:flex; align-items:center; gap:14px;">
-                                    <i class="fas fa-file-pen" style="font-size:1.6rem; color:var(--neon-purple);"></i>
-                                    <div>
-                                        <span style="display:block; color:#fff; font-weight:600; font-size:0.95rem;">{{ asgn.title }}</span>
-                                        <span style="font-size:0.78rem; color:var(--text-muted);">Due: {{ asgn.due_date|date:"M d, Y" }} • {{ asgn.total_marks }} Marks</span>
-                                    </div>
-                                </div>
+                        <div style="margin-top:28px; padding:16px; background:rgba(255,183,77,0.06); border:1px solid rgba(255,183,77,0.25); border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <i class="fas fa-tasks" style="color:var(--accent-amber); font-size:1.4rem;"></i>
                                 <div>
-                                    {% if asgn.id in submitted_assignment_ids %}
-                                        <span style="color:var(--accent-emerald); font-weight:700; font-size:0.85rem;">
-                                            <i class="fas fa-check"></i> Submitted
-                                        </span>
-                                    {% else %}
-                                        <span style="color:var(--accent-amber); font-weight:600; font-size:0.85rem;">
-                                            Pending Submission
-                                        </span>
-                                    {% endif %}
+                                    <span style="display:block; color:#fff; font-weight:700; font-size:0.92rem;">{{ course_assignments|length }} Practical Assignments Assigned</span>
+                                    <span style="font-size:0.78rem; color:var(--text-muted);">{{ submitted_assignment_ids|length }} submitted • {{ pending_assignments_count }} pending</span>
                                 </div>
                             </div>
-                        {% endfor %}
+                            <button type="button" onclick="switchWorkTab('assignments')" class="btn-pdf-view" style="border-color:var(--accent-amber); color:var(--accent-amber);">
+                                Open Assignments Tab <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
                     {% endif %}
                 </div>
             </div>
 
-        {% else %}
-            <!-- NO LESSONS FOUND -->
-            <div style="text-align:center; padding:80px 20px; color:var(--text-muted);">
-                <i class="fas fa-graduation-cap fa-4x" style="color:var(--border-glass); margin-bottom:18px;"></i>
-                <h2 style="color:#fff; font-family:'Space Grotesk',sans-serif;">No lessons published in this course yet.</h2>
-                <p>The academic instructor is actively preparing content. Check back shortly!</p>
-                <a href="{% url 'dashboard' %}" class="btn-strip-back" style="margin-top:20px;">Return to Dashboard</a>
+            <!-- TAB: COURSE ASSIGNMENTS & DELIVERABLES WORKSTATION -->
+            <div id="pane-assignments" class="tab-pane {% if not current_lesson %}active{% endif %}" style="{% if not current_lesson %}display:block;{% endif %}">
+                <div class="glass-card asgn-hub-card">
+                    <!-- Header Banner -->
+                    <div class="asgn-hub-header">
+                        <div>
+                            <h3 class="asgn-hub-title">
+                                <i class="fas fa-laptop-file" style="color:var(--accent-amber);"></i> Course Practical Assignments
+                            </h3>
+                            <p class="asgn-hub-sub">
+                                Review problem briefs, download specification documents, and upload deliverables for instructor review.
+                            </p>
+                        </div>
+                        <div class="asgn-hub-actions">
+                            <span class="asgn-counter-pill">
+                                <i class="fas fa-list-check"></i> {{ course_assignments|length }} Total • {{ submitted_assignment_ids|length }} Done
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Assignments List -->
+                    <div class="asgn-cards-grid">
+                        {% for asgn in course_assignments %}
+                        <div class="asgn-card-glass {% if asgn.is_submitted %}submitted{% elif asgn.is_past_due %}overdue{% endif %}" id="asgn-card-{{ asgn.id }}">
+                            <!-- Top Meta Strip -->
+                            <div class="asgn-card-top">
+                                <div class="asgn-card-left-meta">
+                                    <span class="asgn-points-badge"><i class="fas fa-award"></i> {{ asgn.total_marks }} Marks</span>
+                                    {% if asgn.file %}
+                                    <span class="asgn-format-badge">
+                                        <i class="fas fa-paperclip"></i> {{ asgn.file_extension }} Attached
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="asgn-status-wrap">
+                                    {% if asgn.user_sub.is_graded %}
+                                        <span class="asgn-status-pill graded">
+                                            <i class="fas fa-circle-check"></i> Graded: {{ asgn.user_sub.marks_obtained|floatformat:1 }}/{{ asgn.total_marks }}
+                                        </span>
+                                    {% elif asgn.is_submitted %}
+                                        <span class="asgn-status-pill submitted">
+                                            <i class="fas fa-clock-rotate-left"></i> Submitted
+                                            {% if asgn.user_sub.is_late %}<span class="badge-late-flag">LATE</span>{% endif %}
+                                        </span>
+                                    {% elif asgn.is_past_due %}
+                                        <span class="asgn-status-pill overdue">
+                                            <i class="fas fa-triangle-exclamation"></i> Overdue (Due: {{ asgn.due_date|date:"d M, Y" }})
+                                        </span>
+                                    {% else %}
+                                        <span class="asgn-status-pill pending">
+                                            <i class="far fa-clock"></i> Due: {{ asgn.due_date|date:"d M, Y • h:i A" }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <h4 class="asgn-title">{{ asgn.title }}</h4>
+                            {% if asgn.description %}
+                            <div class="asgn-description">{{ asgn.description|linebreaksbr }}</div>
+                            {% endif %}
+
+                            <!-- Brief File Download (if uploaded by admin) -->
+                            {% if asgn.file %}
+                            <div class="asgn-brief-box">
+                                <div class="asgn-brief-info">
+                                    <i class="fas fa-file-pdf asgn-brief-icon"></i>
+                                    <div>
+                                        <span class="asgn-brief-title">{{ asgn.file_name|default:"Assignment Brief & Guidelines" }}</span>
+                                        <span class="asgn-brief-meta">Instructor guidelines document ({{ asgn.file_extension }})</span>
+                                    </div>
+                                </div>
+                                <a href="{{ asgn.file.url }}" target="_blank" download class="btn-download-brief">
+                                    <i class="fas fa-cloud-arrow-down"></i> Download Brief
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            <!-- Submission Status Area for Student -->
+                            {% if asgn.is_submitted %}
+                            <div class="asgn-submission-recap">
+                                <div class="recap-header">
+                                    <span><i class="fas fa-check-double" style="color:var(--accent-emerald);"></i> Your Solution Submission</span>
+                                    <span class="recap-time">{{ asgn.user_sub.submitted_at|date:"d M, Y • h:i A" }}</span>
+                                </div>
+                                {% if asgn.user_sub.file %}
+                                <div class="recap-file-row">
+                                    <i class="fas fa-paperclip"></i>
+                                    <a href="{{ asgn.user_sub.file.url }}" target="_blank" class="recap-file-link">
+                                        {{ asgn.user_sub.file_name|default:"View Uploaded Deliverable" }}
+                                    </a>
+                                    <span class="recap-file-ext">{{ asgn.user_sub.file_extension }}</span>
+                                </div>
+                                {% endif %}
+                                {% if asgn.user_sub.text_answer %}
+                                <div class="recap-notes">
+                                    <div class="recap-notes-label">Your Submission Notes:</div>
+                                    <div>{{ asgn.user_sub.text_answer|linebreaksbr }}</div>
+                                </div>
+                                {% endif %}
+
+                                <!-- Instructor Evaluation & Feedback (if graded) -->
+                                {% if asgn.user_sub.is_graded %}
+                                <div class="asgn-feedback-box">
+                                    <div class="feedback-head">
+                                        <span class="feedback-score"><i class="fas fa-star" style="color:#ffb74d;"></i> Score: <strong>{{ asgn.user_sub.marks_obtained|floatformat:1 }}</strong> / {{ asgn.total_marks }}</span>
+                                        <span class="feedback-badge">Official Faculty Evaluation</span>
+                                    </div>
+                                    {% if asgn.user_sub.feedback %}
+                                    <p class="feedback-text">"{{ asgn.user_sub.feedback }}"</p>
+                                    {% else %}
+                                    <p class="feedback-text"><i>Good effort and clean implementation.</i></p>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <div class="recap-actions">
+                                    <button type="button" class="btn-asgn-action resubmit" onclick="openSubmitModal('{{ asgn.id }}', '{{ asgn.title|escapejs }}', '{{ asgn.total_marks }}')">
+                                        <i class="fas fa-arrows-rotate"></i> Re-upload / Update Solution
+                                    </button>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="asgn-card-footer" style="margin-top:14px;">
+                                <button type="button" class="btn-asgn-action submit" onclick="openSubmitModal('{{ asgn.id }}', '{{ asgn.title|escapejs }}', '{{ asgn.total_marks }}')">
+                                    <i class="fas fa-cloud-arrow-up"></i> Submit Solution
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="asgn-empty-state">
+                            <i class="fas fa-clipboard-check fa-3x asgn-empty-icon"></i>
+                            <h4>No Assignments Published Yet</h4>
+                            <p>The academic instructor has not scheduled practical assignments for this course at this moment.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-        {% endif %}
     </div>
 
     <!-- RIGHT CURRICULUM PLAYLIST SIDEBAR -->
@@ -1843,6 +2817,54 @@ solution()
     </div>
 </div>
 
+<!-- STUDENT SUBMIT ASSIGNMENT MODAL -->
+<div class="modal-overlay" id="studentSubmitModal" onclick="onOverlaySubmitClick(event)">
+    <div class="modal-box asgn-modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span><i class="fas fa-cloud-arrow-up" style="color:var(--neon-cyan);"></i> Submit Assignment Solution</span>
+            <i class="fas fa-times" onclick="closeSubmitModal()" title="Close"></i>
+        </div>
+        <form id="studentSubmitForm" method="POST" enctype="multipart/form-data" onsubmit="handleStudentSubmit(event)">
+            {% csrf_token %}
+            <input type="hidden" name="assignment_id" id="modalAsgnId">
+            
+            <div class="modal-body-content">
+                <div class="asgn-modal-summary">
+                    <div>
+                        <div style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; margin-bottom:2px;">Target Assignment</div>
+                        <h4 id="modalAsgnTitle">Assignment Title</h4>
+                    </div>
+                    <span class="modal-points-badge" id="modalAsgnPoints">100 Marks</span>
+                </div>
+
+                <!-- File Input Dropzone -->
+                <div class="asgn-form-group">
+                    <label class="asgn-form-label"><i class="fas fa-file-arrow-up"></i> Deliverable File (PDF, DOCX, ZIP, Code, etc.)</label>
+                    <div class="asgn-file-dropzone" id="asgnDropzone" onclick="document.getElementById('modalAsgnFileInput').click()">
+                        <i class="fas fa-cloud-arrow-up dropzone-icon"></i>
+                        <div class="dropzone-text" id="dropzoneText">Click or drag & drop deliverable file here</div>
+                        <div class="dropzone-sub">Supports PDF, ZIP, TAR, DOCX, Python, Java, JS, or images (Max 50MB)</div>
+                        <input type="file" name="file" id="modalAsgnFileInput" style="display:none;" onchange="onFileSelected(this)">
+                    </div>
+                </div>
+
+                <!-- Text Answer / Notes -->
+                <div class="asgn-form-group">
+                    <label class="asgn-form-label"><i class="fas fa-comment-dots"></i> Explanation, GitHub Links & Notes (Optional)</label>
+                    <textarea name="text_answer" id="modalAsgnText" class="asgn-textarea" rows="4" placeholder="Paste GitHub repository links, live deployment URLs, execution instructions, or problem notes..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer-btns">
+                <button type="button" class="btn-modal-cancel" onclick="closeSubmitModal()">Cancel</button>
+                <button type="submit" class="btn-modal-submit" id="btnModalSubmitAction">
+                    <i class="fas fa-paper-plane"></i> Submit Solution
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- INCLUDE CLOUD IDE MODAL -->
 {% include 'ide_modal.html' %}
 
@@ -1865,8 +2887,135 @@ function switchWorkTab(tabKey) {
     
     const targetPane = document.getElementById('pane-' + tabKey);
     if (targetPane) targetPane.classList.add('active');
-    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+    
+    // Highlight trigger button
+    const triggerBtn = document.querySelector(`.tab-trigger[data-tab="${tabKey}"]`) || (event && event.currentTarget);
+    if (triggerBtn) triggerBtn.classList.add('active');
 }
+
+// Auto-switch to assignments tab if requested in hash
+if (window.location.hash === '#assignments') {
+    switchWorkTab('assignments');
+}
+
+// =========================================
+// 📋 ASSIGNMENTS MODAL & SUBMISSION LOGIC
+// =========================================
+function openSubmitModal(asgnId, asgnTitle, totalMarks) {
+    document.getElementById('modalAsgnId').value = asgnId;
+    document.getElementById('modalAsgnTitle').textContent = asgnTitle;
+    document.getElementById('modalAsgnPoints').textContent = totalMarks + ' Marks';
+    document.getElementById('studentSubmitForm').action = '/assignments/' + asgnId + '/submit/';
+    
+    const modal = document.getElementById('studentSubmitModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('modal-open'), 10);
+    }
+}
+
+function closeSubmitModal() {
+    const modal = document.getElementById('studentSubmitModal');
+    if (modal) {
+        modal.classList.remove('modal-open');
+        setTimeout(() => modal.style.display = 'none', 250);
+    }
+}
+
+function onFileSelected(input) {
+    const textEl = document.getElementById('dropzoneText');
+    if (input.files && input.files[0]) {
+        textEl.innerHTML = `<i class="fas fa-check-circle" style="color:var(--accent-emerald);"></i> Selected: <b>${input.files[0].name}</b> (${Math.round(input.files[0].size/1024)} KB)`;
+    } else {
+        textEl.textContent = 'Click or drag & drop deliverable file here';
+    }
+}
+
+function handleStudentSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('studentSubmitForm');
+    const formData = new FormData(form);
+    const btn = document.getElementById('btnModalSubmitAction');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        if (data.success) {
+            closeSubmitModal();
+            // Show toast
+            const toast = document.getElementById('learningToast');
+            if (toast) {
+                document.getElementById('toastTitle').textContent = 'Assignment Submitted! 🎉';
+                document.getElementById('toastSubtitle').textContent = data.message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+            setTimeout(() => window.location.reload(), 1200);
+        } else {
+            alert(data.message || 'Error submitting assignment.');
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        form.submit(); // fallback to standard POST
+    });
+}
+
+function onOverlaySubmitClick(e) {
+    if (e.target.id === 'studentSubmitModal') {
+        closeSubmitModal();
+    }
+}
+
+// Drag & drop support for student dropzone
+(function setupDropzone() {
+    const dropzone = document.getElementById('asgnDropzone');
+    const fileInput = document.getElementById('modalAsgnFileInput');
+    if (!dropzone || !fileInput) return;
+
+    ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('dragover');
+        });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            onFileSelected(fileInput);
+        }
+    });
+})();
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSubmitModal();
+    }
+});
 
 // Per-Lesson Initial Progress Sync from Server
 (function initLessonProgress() {
