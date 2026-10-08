@@ -616,13 +616,37 @@ class LessonComment(models.Model):
 class Assignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
+    file = models.FileField(upload_to='assignments/briefs/', blank=True, null=True, help_text="Brief attachment in PDF, DOCX, ZIP, image, etc.")
     due_date = models.DateTimeField()
     total_marks = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['due_date', '-created_at']
+
     def __str__(self):
         return f"{self.title} - {self.course.title}"
+
+    @property
+    def file_extension(self):
+        if self.file and self.file.name:
+            return self.file.name.split('.')[-1].upper()
+        return ''
+
+    @property
+    def file_name(self):
+        if self.file and self.file.name:
+            import os
+            return os.path.basename(self.file.name)
+        return ''
+
+    @property
+    def is_past_due(self):
+        if self.due_date:
+            return timezone.now() > self.due_date
+        return False
+
 
 class AssignmentSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
@@ -630,13 +654,37 @@ class AssignmentSubmission(models.Model):
     file = models.FileField(upload_to='assignments/submissions/', blank=True, null=True)
     text_answer = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     is_graded = models.BooleanField(default=False)
     marks_obtained = models.FloatField(blank=True, null=True)
     feedback = models.TextField(blank=True, null=True)
 
+    class Meta:
+        ordering = ['-submitted_at']
+        unique_together = ('assignment', 'student')
+
     def __str__(self):
         return f"{self.student.username} -> {self.assignment.title}"
+
+    @property
+    def is_late(self):
+        if self.assignment and self.assignment.due_date and self.submitted_at:
+            return self.submitted_at > self.assignment.due_date
+        return False
+
+    @property
+    def file_extension(self):
+        if self.file and self.file.name:
+            return self.file.name.split('.')[-1].upper()
+        return ''
+
+    @property
+    def file_name(self):
+        if self.file and self.file.name:
+            import os
+            return os.path.basename(self.file.name)
+        return ''
 
 
 
