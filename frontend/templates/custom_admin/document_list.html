@@ -235,6 +235,31 @@
     }
 
     .btn-save-doc:hover { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
+
+    /* Mobile & Tablet Responsiveness */
+    @media (max-width: 768px) {
+        .page-wrap { padding: 18px 14px; }
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 20px 18px;
+            gap: 16px;
+        }
+        .table-glass {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table { min-width: 650px; }
+        .edit-modal {
+            max-width: 95vw;
+            padding: 24px 18px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-wrap { padding: 14px 10px; }
+        .page-header h2 { font-size: 1.3rem; }
+    }
 </style>
 
 <div class="page-wrap">

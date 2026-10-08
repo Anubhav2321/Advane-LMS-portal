@@ -241,6 +241,29 @@
         margin-bottom: 16px;
         opacity: 0.5;
     }
+
+    /* Mobile & Tablet Responsiveness */
+    @media (max-width: 768px) {
+        .list-container { padding: 18px 14px; }
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 20px 18px;
+            gap: 16px;
+        }
+        .search-form { max-width: 100%; }
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table { min-width: 650px; }
+    }
+
+    @media (max-width: 480px) {
+        .list-container { padding: 14px 10px; }
+        .page-header { padding: 16px 14px; }
+        .header-title h2 { font-size: 1.35rem; }
+    }
 </style>
 {% endblock %}
 

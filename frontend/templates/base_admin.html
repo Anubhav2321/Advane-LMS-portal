@@ -107,13 +107,16 @@
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border-right: 1px solid var(--glass-border);
-            padding: 24px 16px;
+            padding: 20px 14px 16px;
             display: flex;
             flex-direction: column;
             position: fixed;
             height: 100vh;
+            max-height: 100vh;
             z-index: 100;
             transition: var(--transition-smooth);
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .sidebar::after {
@@ -130,19 +133,20 @@
         }
 
         .brand {
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 40px;
-            padding: 12px 16px;
+            margin-bottom: 20px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             position: relative;
+            flex-shrink: 0;
         }
 
         .brand i {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -164,19 +168,42 @@
         }
 
         /* Nav Links */
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 4px; }
+        .nav-links {
+            list-style: none;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            margin-bottom: 10px;
+        }
+
+        .nav-links::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-links::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .nav-links::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+        }
+        .nav-links::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .nav-links li { margin-bottom: 3px; }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 13px 18px;
+            gap: 12px;
+            padding: 10px 14px;
             border-radius: var(--radius-md);
             transition: var(--transition-fast);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 500;
             position: relative;
             overflow: hidden;
@@ -232,17 +259,26 @@
         .nav-divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
-            margin: 16px 8px;
+            margin: 8px 6px;
+        }
+
+        /* Sidebar Footer Wrapper */
+        .sidebar-footer {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid var(--glass-border);
         }
 
         /* Admin Sidebar Profile Card */
         .admin-sidebar-profile-card {
-            margin-top: auto;
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
@@ -250,6 +286,9 @@
             transition: var(--transition-smooth);
             position: relative;
             overflow: hidden;
+            flex-shrink: 0 !important;
+            box-sizing: border-box;
+            min-height: 56px;
         }
 
         .admin-sidebar-profile-card::before {
@@ -267,7 +306,7 @@
             background: rgba(108, 99, 255, 0.12);
             border-color: rgba(108, 99, 255, 0.4);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .admin-sidebar-profile-card:hover::before,
@@ -277,35 +316,41 @@
 
         .admin-profile-avatar-wrapper {
             position: relative;
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            min-height: 38px;
             flex-shrink: 0;
             border-radius: 50%;
         }
 
         .admin-avatar-img {
-            width: 100%;
-            height: 100%;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            min-height: 38px;
             border-radius: 50%;
             object-fit: cover;
             object-position: center;
             border: 2px solid rgba(255, 255, 255, 0.25);
-            box-shadow: 0 0 12px rgba(108, 99, 255, 0.35);
+            box-shadow: 0 0 10px rgba(108, 99, 255, 0.35);
             display: block;
         }
 
         .admin-avatar-initial {
-            width: 100%;
-            height: 100%;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            min-height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: #fff;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            box-shadow: 0 0 12px rgba(108, 99, 255, 0.35);
+            box-shadow: 0 0 10px rgba(108, 99, 255, 0.35);
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -313,8 +358,8 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 11px;
-            height: 11px;
+            width: 10px;
+            height: 10px;
             background: var(--accent-green);
             border: 2px solid #0a0a1a;
             border-radius: 50%;
@@ -326,6 +371,9 @@
             min-width: 0;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            overflow: hidden;
         }
 
         .admin-sidebar-name {
@@ -335,20 +383,29 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.25;
+            display: block;
         }
 
         .admin-sidebar-role {
-            font-size: 0.72rem;
-            font-weight: 600;
+            font-size: 0.68rem;
+            font-weight: 700;
             color: var(--secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+            display: block;
         }
 
         .admin-profile-chevron {
             color: var(--text-muted);
             font-size: 0.75rem;
             transition: var(--transition-fast);
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
         .admin-sidebar-profile-card:hover .admin-profile-chevron {
@@ -360,7 +417,8 @@
         .logout-btn {
             text-decoration: none;
             color: var(--accent-red);
-            padding: 14px 18px;
+            padding: 9px 16px;
+            min-height: 40px;
             border: 1px solid rgba(255, 51, 102, 0.2);
             border-radius: var(--radius-md);
             text-align: center;
@@ -370,7 +428,10 @@
             justify-content: center;
             gap: 10px;
             font-weight: 600;
+            font-size: 0.88rem;
             background: rgba(255, 51, 102, 0.05);
+            flex-shrink: 0 !important;
+            box-sizing: border-box;
         }
 
         .logout-btn:hover {
@@ -378,7 +439,7 @@
             color: #fff;
             border-color: var(--accent-red);
             box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         /* ============================================= */
@@ -517,34 +578,257 @@
         }
 
         /* ============================================= */
-        /* RESPONSIVE                                    */
+        /* ADMIN MOBILE & TABLET TOPBAR                  */
+        /* ============================================= */
+        .admin-mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 58px;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 950;
+            padding: 0 16px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-mobile-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: grid; place-items: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .admin-mobile-toggle-btn:hover {
+            background: rgba(108, 99, 255, 0.2);
+            border-color: var(--primary);
+            color: var(--secondary);
+        }
+
+        .admin-mobile-brand {
+            display: flex; align-items: center; gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem; font-weight: 700; color: #fff;
+        }
+        .admin-mobile-brand i { 
+            color: var(--secondary); 
+            filter: drop-shadow(0 0 6px var(--secondary-glow));
+        }
+        .admin-mobile-brand span strong { color: var(--secondary); }
+
+        .admin-mobile-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: grid; place-items: center;
+            border: 2px solid rgba(0, 212, 255, 0.4);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .admin-mobile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .admin-mobile-avatar .fallback {
+            width: 100%; height: 100%;
+            display: grid; place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff; font-size: 0.85rem; font-weight: 700;
+        }
+
+        .admin-sidebar-close-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: auto;
+            transition: var(--transition-fast);
+        }
+        .admin-sidebar-close-btn:hover {
+            color: #fff;
+            background: rgba(255, 51, 102, 0.2);
+            border-color: var(--accent-red);
+        }
+
+        .admin-scrim {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1050;
+            background: rgba(4, 6, 18, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+        .admin-scrim.show {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ============================================= */
+        /* RESPONSIVE BREAKPOINTS (DESKTOP / TABLET / MOBILE) */
         /* ============================================= */
 
-        @media (max-width: 768px) {
-            .sidebar { 
-                width: var(--sidebar-collapsed); 
-                padding: 16px 8px; 
+        @media (max-width: 1024px) {
+            .admin-mobile-topbar { display: flex; }
+            .admin-sidebar-close-btn { display: flex; }
+
+            .sidebar {
+                width: 280px;
+                max-width: 85vw;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                z-index: 2000;
+                box-shadow: 20px 0 60px rgba(0, 0, 0, 0.85);
             }
-            .brand span, 
-            .nav-links a span, 
-            .logout-btn span,
-            .admin-sidebar-info,
-            .admin-profile-chevron { display: none; }
-            .admin-sidebar-profile-card { justify-content: center; padding: 10px 0; }
-            .main-content { margin-left: var(--sidebar-collapsed); }
-            .brand { justify-content: center; padding: 12px 0; }
-            .nav-links a { justify-content: center; padding: 13px 0; }
-            .logout-btn { padding: 14px 0; }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                min-width: 0;
+                padding-top: 58px;
+            }
+
+            .page-wrap,
+            .dash-container,
+            .list-container {
+                padding: 24px 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-wrap,
+            .dash-container,
+            .list-container {
+                padding: 18px 14px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .top-nav-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            .stat-mini-card {
+                padding: 16px 14px !important;
+            }
+
+            .stat-mini-card .stat-val {
+                font-size: 1.4rem !important;
+            }
+
+            /* Responsive tables */
+            .table-container {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                width: 100% !important;
+            }
+            .table-container table {
+                min-width: 600px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr !important;
+            }
+
+            .page-wrap,
+            .dash-container,
+            .list-container {
+                padding: 14px 10px;
+            }
+
+            .admin-modal-overlay {
+                padding: 10px !important;
+            }
+
+            .admin-modal-box {
+                max-width: 100% !important;
+                width: 100% !important;
+                border-radius: 16px !important;
+            }
+
+            .admin-form-row {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            .admin-modal-footer {
+                padding: 14px 16px !important;
+                flex-direction: column-reverse;
+                gap: 8px;
+            }
+            .admin-modal-footer button,
+            .admin-modal-footer a {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-    <div class="sidebar">
+    <!-- Admin Mobile & Tablet Topbar -->
+    <div class="admin-mobile-topbar">
+        <button class="admin-mobile-toggle-btn" onclick="toggleAdminSidebar()" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="admin-mobile-brand">
+            <i class="fas fa-shield-halved"></i>
+            <span>Admin <strong>Panel</strong></span>
+        </div>
+        <a href="{% url 'admin_profile' %}" class="admin-mobile-avatar" title="Admin Profile">
+            {% if request.user.profile_pic_url %}
+                <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                <div class="fallback" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+            {% elif request.user.profile.profile_pic and request.user.profile.profile_pic.name != 'profile_pics/default.png' %}
+                <img src="{{ request.user.profile.profile_pic.url }}" alt="{{ request.user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+                <div class="fallback" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+            {% else %}
+                <div class="fallback">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- Admin Drawer Scrim Overlay -->
+    <div class="admin-scrim" id="adminScrim" onclick="toggleAdminSidebar()"></div>
+
+    <div class="sidebar" id="adminSidebar">
         <div class="brand">
             <i class="fas fa-shield-halved"></i>
             <span>Admin Panel</span>
+            <button class="admin-sidebar-close-btn" onclick="toggleAdminSidebar()" aria-label="Close navigation">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
         <ul class="nav-links">
@@ -564,9 +848,16 @@
 
 
             <li>
-                <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name and 'assignment' not in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-book-open"></i>
                     <span>Courses</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin_assignment_list' %}" class="{% if 'assignment' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Assignments</span>
                 </a>
             </li>
             
@@ -600,8 +891,6 @@
                 </a>
             </li>
 
-            <div class="nav-divider"></div>
-
             <li>
                 <a href="{% url 'dashboard' %}" style="color: #00d4ff;">
                     <i class="fas fa-graduation-cap"></i>
@@ -619,32 +908,34 @@
             {% endif %}
         </ul>
 
-        <!-- Admin Profile Mini-Card -->
-        <a href="{% url 'admin_profile' %}" class="admin-sidebar-profile-card {% if request.resolver_match.url_name == 'admin_profile' %}active-card{% endif %}" title="Manage Admin Profile">
-            <div class="admin-profile-avatar-wrapper">
-                {% if request.user.profile_pic_url %}
-                    <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" class="admin-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="admin-avatar-initial" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
-                {% elif request.user.profile.profile_pic and request.user.profile.profile_pic.name != 'profile_pics/default.png' %}
-                    <img src="{{ request.user.profile.profile_pic.url }}" alt="{{ request.user.username }}" class="admin-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="admin-avatar-initial" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
-                {% else %}
-                    <div class="admin-avatar-initial">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
-                {% endif %}
-                <span class="admin-status-indicator" title="Active Admin"></span>
-            </div>
-            <div class="admin-sidebar-info">
-                <span class="admin-sidebar-name">{{ request.user.first_name|default:request.user.username }}</span>
-                <span class="admin-sidebar-role">
-                    {% if request.user.is_superuser %}Super Admin{% else %}Administrator{% endif %}
-                </span>
-            </div>
-            <i class="fas fa-chevron-right admin-profile-chevron"></i>
-        </a>
+        <div class="sidebar-footer">
+            <!-- Admin Profile Mini-Card -->
+            <a href="{% url 'admin_profile' %}" class="admin-sidebar-profile-card {% if request.resolver_match.url_name == 'admin_profile' %}active-card{% endif %}" title="Manage Admin Profile">
+                <div class="admin-profile-avatar-wrapper">
+                    {% if request.user.profile_pic_url %}
+                        <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" class="admin-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="admin-avatar-initial" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                    {% elif request.user.profile.profile_pic and request.user.profile.profile_pic.name != 'profile_pics/default.png' %}
+                        <img src="{{ request.user.profile.profile_pic.url }}" alt="{{ request.user.username }}" class="admin-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="admin-avatar-initial" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                    {% else %}
+                        <div class="admin-avatar-initial">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                    {% endif %}
+                    <span class="admin-status-indicator" title="Active Admin"></span>
+                </div>
+                <div class="admin-sidebar-info">
+                    <span class="admin-sidebar-name">{{ request.user.first_name|default:request.user.username }}</span>
+                    <span class="admin-sidebar-role">
+                        {% if request.user.is_superuser %}Super Admin{% else %}Administrator{% endif %}
+                    </span>
+                </div>
+                <i class="fas fa-chevron-right admin-profile-chevron"></i>
+            </a>
 
-        <a href="{% url 'logout' %}" class="logout-btn">
-            <i class="fas fa-power-off"></i> <span>Sign Out</span>
-        </a>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-power-off"></i> <span>Sign Out</span>
+            </a>
+        </div>
     </div>
 
     <div class="main-content page-enter">
@@ -712,6 +1003,30 @@
         }, observerOptions);
 
         document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // Mobile & Tablet Sidebar Drawer Toggle
+        function toggleAdminSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const scrim = document.getElementById('adminScrim');
+            if (sidebar && scrim) {
+                sidebar.classList.toggle('active');
+                scrim.classList.toggle('show');
+            }
+        }
+
+        // Close sidebar drawer when clicking links on mobile/tablet
+        document.querySelectorAll('.sidebar .nav-links a, .sidebar .logout-btn').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    const sidebar = document.getElementById('adminSidebar');
+                    const scrim = document.getElementById('adminScrim');
+                    if (sidebar && sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                        scrim.classList.remove('show');
+                    }
+                }
+            });
+        });
     </script>
     
     {% block extra_js %}

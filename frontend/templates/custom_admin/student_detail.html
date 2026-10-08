@@ -464,14 +464,43 @@
 
     /* Responsive */
     @media (max-width: 1024px) {
+        .detail-container { padding: 24px 18px; }
         .detail-grid, .charts-row { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
-        .profile-hero { flex-direction: column; text-align: center; }
-        .coin-badge { position: static; margin-top: 16px; }
+        .profile-hero { flex-direction: column; text-align: center; padding: 24px 20px; }
+        .coin-badge { position: static; margin-top: 16px; justify-content: center; }
         .hero-badges { justify-content: center; }
-        .quick-stats { grid-template-columns: repeat(2, 1fr); }
+        .quick-stats { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .section-card, .chart-card { padding: 20px 16px; border-radius: 16px; }
+    }
+
+    @media (max-width: 480px) {
+        .detail-container { padding: 14px 10px; }
+        .link-back { padding: 6px 12px; font-size: 0.8rem; margin-bottom: 16px; }
+        .profile-hero { padding: 18px 14px; border-radius: 16px; gap: 16px; }
+        .hero-avatar { width: 75px; height: 75px; }
+        .hero-info h2 { font-size: 1.4rem; }
+        .hero-info .hero-email { font-size: 0.85rem; }
+        .hero-badge { font-size: 0.72rem; padding: 4px 10px; }
+        .coin-badge { padding: 8px 16px; }
+        .coin-badge .coin-val { font-size: 1.2rem; }
+        .quick-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .qs-card { padding: 14px 10px; }
+        .qs-number { font-size: 1.3rem; }
+        .qs-label { font-size: 0.68rem; }
+        .chart-card { padding: 14px 10px; }
+        .chart-title { font-size: 0.9rem; }
+        .chart-badge { font-size: 0.68rem; padding: 3px 8px; }
+        .section-card { padding: 16px 12px; }
+        .section-title { font-size: 0.95rem; }
+        #courseTrackerResults > div:first-child { flex-direction: column; gap: 10px; }
+        .timeline-item { gap: 10px; }
+        .timeline-dot { width: 30px; height: 30px; font-size: 0.72rem; }
+        .timeline-content .tl-desc { font-size: 0.82rem; }
+        .timeline-content .tl-time { font-size: 0.7rem; }
+        .action-btn { padding: 12px 14px; font-size: 0.85rem; }
     }
 </style>
 {% endblock %}

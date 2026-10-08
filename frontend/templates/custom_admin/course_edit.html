@@ -1,34 +1,46 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-<div style="padding: 40px; display: flex; justify-content: center;">
-    <div style="width: 100%; max-width: 700px;">
+<style>
+    .edit-course-wrap { padding: 40px 24px; display: flex; justify-content: center; }
+    .edit-course-box { width: 100%; max-width: 700px; }
+    .edit-course-card { background: #111; padding: 40px; border-radius: 18px; border: 1px solid #333; }
+    .edit-course-title { color: #00d4ff; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; font-size: 1.5rem; word-break: break-word; }
+    label { display: block; color: #ccc; margin-bottom: 8px; font-weight: bold; }
+    input[type="text"], input[type="number"], textarea, select {
+        width: 100%; padding: 12px; background: #000; border: 1px solid #444;
+        border-radius: 8px; color: #fff; margin-bottom: 20px; outline: none; box-sizing: border-box;
+    }
+    input:focus, textarea:focus { border-color: #00d4ff; }
+    .helptext { display: none; }
+    .btn-update-course {
+        width: 100%; padding: 15px; background: #00d4ff; color: #000; border: none;
+        border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px;
+    }
+    @media (max-width: 640px) {
+        .edit-course-wrap { padding: 16px 12px; }
+        .edit-course-card { padding: 20px 16px; border-radius: 14px; }
+        .edit-course-title { font-size: 1.25rem; margin-bottom: 18px; }
+        .btn-update-course { padding: 12px; font-size: 1rem; }
+    }
+</style>
+
+<div class="edit-course-wrap">
+    <div class="edit-course-box">
         
         <div style="margin-bottom: 20px;">
-            <a href="{% url 'admin_course_list' %}" style="color: #aaa; text-decoration: none;">&larr; Back to Course List</a>
+            <a href="{% url 'admin_course_list' %}" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">&larr; Back to Course List</a>
         </div>
 
-        <div style="background: #111; padding: 40px; border-radius: 15px; border: 1px solid #333;">
-            <h2 style="color: #00d4ff; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+        <div class="edit-course-card">
+            <h2 class="edit-course-title">
                 <i class="fas fa-edit"></i> Edit Course: <span style="color: #fff;">{{ course.title }}</span>
             </h2>
 
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                
-                <style>
-                    label { display: block; color: #ccc; margin-bottom: 8px; font-weight: bold; }
-                    input[type="text"], input[type="number"], textarea, select {
-                        width: 100%; padding: 12px; background: #000; border: 1px solid #444;
-                        border-radius: 8px; color: #fff; margin-bottom: 20px; outline: none;
-                    }
-                    input:focus, textarea:focus { border-color: #00d4ff; }
-                    .helptext { display: none; } /* Hide django help text */
-                </style>
-
                 {{ form.as_p }}
-
-                <button type="submit" style="width: 100%; padding: 15px; background: #00d4ff; color: #000; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px;">
+                <button type="submit" class="btn-update-course">
                     Update Course Details
                 </button>
             </form>

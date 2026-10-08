@@ -1868,17 +1868,48 @@
     /* Responsive */
     @media (max-width: 992px) {
         .admin-hero-card { flex-direction: column; align-items: flex-start; gap: 24px; padding: 26px; }
-        .admin-system-metrics { width: 100%; }
+        .admin-system-metrics { width: 100%; min-width: 0; }
         .form-grid-2 { grid-template-columns: 1fr; }
         .modal-details-grid { grid-template-columns: 1fr; }
+        .admin-team-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .admin-header-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+        }
+        .admin-top-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+        .admin-top-actions button,
+        .admin-top-actions a {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+        .admin-tabs-nav {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            padding: 6px;
+        }
+        .admin-tab-btn {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
     }
 
     @media (max-width: 600px) {
-        .admin-profile-page { padding: 18px 12px; }
-        .admin-hero-card { padding: 20px; }
+        .admin-profile-page { padding: 14px 10px; }
+        .admin-hero-card { padding: 18px 14px; }
+        .admin-page-title h1 { font-size: 1.55rem; }
+        .admin-name { font-size: 1.6rem; }
         .admin-system-metrics { grid-template-columns: 1fr; }
-        .admin-tabs-nav { flex-wrap: wrap; }
-        .modal-content-body { padding: 0 18px 24px; }
+        .modal-content-body { padding: 0 16px 20px; }
+        .admin-modal-card { width: 95vw !important; max-width: 95vw !important; margin: 10px !important; }
     }
 </style>
 
