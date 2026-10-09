@@ -6,7 +6,7 @@ pip install -r requirements.txt
 
 python manage.py collectstatic --no-input
 python manage.py migrate
-python manage.py loaddata mydata.json
+python seed_db.py
 
 # --- AUTO-CONFIGURE SITE DOMAIN FOR GOOGLE OAUTH ---
 # Sets the Django Site record to match the Render hostname so 
