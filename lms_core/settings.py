@@ -31,6 +31,12 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Always trust the known live URL
 CSRF_TRUSTED_ORIGINS.append('https://learning-365-ccs7.onrender.com')
 
+# Render Reverse Proxy SSL Support (Ensures HTTPS forms & CSRF tokens submit reliably)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -86,15 +92,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lms_core.wsgi.application'
 
-# Database
+# Database Configuration
+PERSISTENT_DATA_DIR = os.getenv('PERSISTENT_DATA_DIR')
+sqlite_path = Path(PERSISTENT_DATA_DIR) / 'db.sqlite3' if PERSISTENT_DATA_DIR else (BASE_DIR / 'db.sqlite3')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': sqlite_path,
     }
 }
-if os.getenv('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.config(default=os.getenv('DATABASE_URL'), conn_max_age=600, ssl_require=True)
+
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    # Render internal PostgreSQL URLs (dpg-...) operate within Render private network without SSL
+    is_internal_url = ('dpg-' in DATABASE_URL and '.render.com' not in DATABASE_URL) or ('localhost' in DATABASE_URL)
+    DATABASES['default'] = dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=False if is_internal_url else ('sslmode=' not in DATABASE_URL)
+    )
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -121,7 +138,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # --- MEDIA FILES CONFIGURATION ---
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = (Path(PERSISTENT_DATA_DIR) / 'media') if PERSISTENT_DATA_DIR else (BASE_DIR / 'media')
 
 # Custom User Model
 AUTH_USER_MODEL = 'students.User'
