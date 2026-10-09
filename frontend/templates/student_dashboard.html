@@ -1573,24 +1573,209 @@
         #ai-chat-toggle { bottom: 20px; right: 20px; width: 54px; height: 54px; font-size: 22px; }
     }
 
-    @media (max-width: 480px) {
-        .dashboard-container { padding: 14px 10px 60px; }
+    @media (max-width: 640px) {
+        .dashboard-container { padding: 14px 10px 70px; }
         .welcome-banner { padding: 18px 14px; border-radius: 16px; margin-bottom: 20px; }
-        .user-info h1 { font-size: 1.5rem; }
-        .banner-avatar-wrap { width: 56px; height: 56px; }
+        .user-info h1 { font-size: 1.45rem; }
+        .banner-avatar-wrap { width: 54px; height: 54px; }
         .banner-actions { width: 100%; justify-content: space-between; }
         .btn-quick-ide { flex: 1; justify-content: center; padding: 10px 12px; font-size: 0.8rem; }
-        .glass-notif-btn { width: 44px; height: 44px; min-width: 44px; border-radius: 10px; }
+        .glass-notif-btn { width: 42px; height: 42px; min-width: 42px; border-radius: 10px; }
         .courses-grid { gap: 16px; margin-bottom: 28px; }
         .course-card-glass { border-radius: 16px; }
         .sync-card, .analytics-card { padding: 16px 14px; border-radius: 16px; }
         .stat-card-glass { padding: 16px 14px; border-radius: 16px; }
+
+        /* Fullscreen Slide-Up AI Copilot for Mobile */
         #ai-chat-container {
-            width: calc(100vw - 16px) !important; right: 8px !important; bottom: 75px !important;
-            height: calc(100vh - 95px) !important; max-height: calc(100vh - 95px) !important;
-            border-radius: 16px;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100% !important;
+            height: 100dvh !important;
+            max-height: 100dvh !important;
+            border-radius: 0 !important;
+            border: none !important;
+            border-top: none !important;
+            z-index: 999999 !important;
+            transform-origin: bottom center !important;
+            box-shadow: none !important;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
         }
-        #ai-chat-toggle { bottom: 15px; right: 15px; width: 48px; height: 48px; font-size: 18px; }
+        #ai-chat-container.closed {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateY(100%) !important;
+        }
+        body.ai-chat-active #ai-chat-toggle {
+            display: none !important;
+        }
+        #ai-chat-toggle {
+            bottom: 18px;
+            right: 18px;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            z-index: 99999;
+        }
+        .ai-launcher-pill {
+            display: none !important;
+        }
+
+        .chat-header {
+            padding: 12px 14px !important;
+            border-radius: 0 !important;
+            gap: 10px !important;
+        }
+        .header-identity {
+            gap: 10px !important;
+            min-width: 0 !important;
+            flex: 1 !important;
+        }
+        .header-avatar {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 15px !important;
+        }
+        .header-title {
+            font-size: 0.95rem !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            gap: 6px !important;
+        }
+        .header-version-pill {
+            font-size: 0.6rem !important;
+            padding: 1px 5px !important;
+        }
+        .header-subtitle {
+            font-size: 0.68rem !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+        .header-controls {
+            gap: 6px !important;
+            flex-shrink: 0 !important;
+        }
+        .chat-hdr-btn {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 14px !important;
+        }
+
+        #chat-box {
+            padding: 14px 12px !important;
+            gap: 12px !important;
+            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior: contain !important;
+        }
+        .message {
+            max-width: 100% !important;
+            gap: 8px !important;
+        }
+        .msg-avatar {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 11px !important;
+        }
+        .msg-text {
+            padding: 11px 13px !important;
+            font-size: 0.86rem !important;
+            border-radius: 14px !important;
+            max-width: calc(100% - 36px) !important;
+            line-height: 1.5 !important;
+        }
+
+        .lms-category-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+            margin-top: 8px !important;
+        }
+        .lms-cat-card {
+            padding: 10px 12px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        .lms-cat-hdr {
+            flex-shrink: 0 !important;
+        }
+        .lms-cat-hdr i.fa-arrow-right {
+            display: none !important;
+        }
+        .lms-cat-details-col {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+        .lms-cat-title {
+            font-size: 0.84rem !important;
+            margin-bottom: 2px !important;
+        }
+        .lms-cat-badge {
+            font-size: 0.68rem !important;
+        }
+
+        .lms-telemetry-hud {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 4px !important;
+            padding: 8px 6px !important;
+            margin: 8px 0 10px !important;
+        }
+        .hud-stat span {
+            font-size: 0.58rem !important;
+        }
+        .hud-stat b {
+            font-size: 0.82rem !important;
+        }
+
+        .chat-footer-area {
+            padding: 8px 12px max(12px, env(safe-area-inset-bottom)) !important;
+            gap: 6px !important;
+        }
+        #user-input {
+            font-size: 16px !important; /* Prevents auto-zoom on mobile */
+            padding: 9px 14px !important;
+            border-radius: 20px !important;
+        }
+        #send-btn {
+            width: 38px !important;
+            height: 38px !important;
+            font-size: 14px !important;
+        }
+        #mic-btn {
+            width: 34px !important;
+            height: 34px !important;
+            font-size: 14px !important;
+        }
+        .chat-quick-actions-strip {
+            padding: 2px 0 6px !important;
+            gap: 5px !important;
+        }
+        .quick-chip {
+            font-size: 0.72rem !important;
+            padding: 4px 8px !important;
+        }
+        .chat-helper-caption {
+            display: none !important;
+        }
+        .lms-actions-row {
+            flex-direction: column !important;
+            gap: 6px !important;
+        }
+        .lms-action-btn {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 8px 12px !important;
+        }
+        .lms-back-btn {
+            width: 100% !important;
+            justify-content: center !important;
+        }
     }
 </style>
 
@@ -2616,8 +2801,10 @@
                             </div>
                             <i class="fas fa-arrow-right" style="font-size:10px; color:#64748b;"></i>
                         </div>
-                        <div class="lms-cat-title">${cat.title}</div>
-                        <div class="lms-cat-badge">${cat.subtitle || 'Platform Feature'}</div>
+                        <div class="lms-cat-details-col">
+                            <div class="lms-cat-title">${cat.title}</div>
+                            <div class="lms-cat-badge">${cat.subtitle || 'Platform Feature'}</div>
+                        </div>
                     </div>
                 `).join('')}
             </div>
@@ -2727,10 +2914,15 @@
         if (!c) return;
         c.classList.toggle('closed');
         const icon = document.getElementById('ai-toggle-icon');
+        const toggleBtn = document.getElementById('ai-chat-toggle');
         if (!c.classList.contains('closed')) {
+            document.body.classList.add('ai-chat-active');
+            if (toggleBtn) toggleBtn.style.display = 'none';
             if (icon) icon.className = 'fas fa-times';
-            if (userInput) setTimeout(() => userInput.focus(), 150);
+            if (userInput) setTimeout(() => userInput.focus(), 250);
         } else {
+            document.body.classList.remove('ai-chat-active');
+            if (toggleBtn) toggleBtn.style.display = '';
             if (icon) icon.className = 'fas fa-brain';
         }
     }
