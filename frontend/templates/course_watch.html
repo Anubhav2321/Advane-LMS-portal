@@ -1212,84 +1212,422 @@
         opacity: 1;
     }
 
-    /* Responsive */
+    /* ======================================================== */
+    /* 📱 RESPONSIVE ADAPTATIONS (MOBILE, TABLET & DESKTOP)     */
+    /* ======================================================== */
+    .tab-curriculum-mobile {
+        display: none !important;
+    }
+
     @media (max-width: 1024px) {
         .watch-workspace {
-            grid-template-columns: 1fr;
-            height: auto;
-        }
-        .playlist-dock {
-            height: 520px;
-            border-left: none;
-            border-top: 1px solid var(--border-glass);
+            display: flex !important;
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: 100vh !important;
         }
         .cinema-stage {
-            height: auto;
-            overflow-y: visible;
-            padding: 20px;
+            height: auto !important;
+            overflow-y: visible !important;
+            padding: 16px 14px 40px !important;
+        }
+        .tab-curriculum-mobile {
+            display: inline-flex !important;
+        }
+        .curriculum-dock-mount .playlist-dock {
+            height: auto !important;
+            max-height: none !important;
+            border: 1px solid var(--border-glass) !important;
+            border-radius: 16px !important;
+            background: rgba(11, 15, 29, 0.95) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+        }
+        .curriculum-dock-mount .dock-lessons-stream {
+            max-height: 480px !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
         }
     }
 
     @media (max-width: 768px) {
+        /* Command Strip: 2 sleek lines */
         .watch-command-strip {
-            padding: 10px 14px;
-            gap: 10px;
+            padding: 8px 12px !important;
+            gap: 8px !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
         }
+        .watch-command-strip .strip-left {
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 8px !important;
+            flex-wrap: nowrap !important;
+        }
+        .watch-command-strip .strip-actions {
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 6px !important;
+            flex-wrap: nowrap !important;
+        }
+        .btn-strip-back {
+            padding: 6px 10px !important;
+            font-size: 0.78rem !important;
+            flex-shrink: 0 !important;
+            gap: 6px !important;
+        }
+        .course-badge-pill {
+            padding: 5px 10px !important;
+            font-size: 0.78rem !important;
+            flex: 1 !important;
+            min-width: 0 !important;
+            justify-content: flex-start !important;
+            gap: 6px !important;
+        }
+        .course-badge-pill .course-pill-text {
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            display: block !important;
+        }
+        .live-sync-indicator {
+            display: none !important; /* Save space on small screens */
+        }
+        .coins-pill {
+            padding: 5px 10px !important;
+            font-size: 0.76rem !important;
+            flex-shrink: 0 !important;
+            gap: 5px !important;
+        }
+        .btn-strip-action {
+            padding: 6px 10px !important;
+            font-size: 0.78rem !important;
+            flex: 1 !important;
+            justify-content: center !important;
+            gap: 5px !important;
+        }
+
+        /* Player theater */
         .cinema-stage {
-            padding: 14px 10px;
+            padding: 12px 10px 40px !important;
         }
+        .player-theater {
+            border-radius: 12px !important;
+            margin-bottom: 12px !important;
+        }
+
+        /* Player Control Deck */
+        .player-control-deck {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            padding: 10px 12px !important;
+            margin-bottom: 18px !important;
+            border-radius: 12px !important;
+        }
+        .player-control-deck .deck-group {
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 8px !important;
+            flex-wrap: nowrap !important;
+        }
+        .player-control-deck .deck-group-main {
+            order: 1 !important;
+        }
+        .player-control-deck .deck-group-sub {
+            order: 2 !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding-top: 8px !important;
+        }
+        .btn-deck-complete {
+            padding: 8px 12px !important;
+            font-size: 0.8rem !important;
+            flex: 1 !important;
+            justify-content: center !important;
+        }
+        .nav-bar-deck {
+            gap: 6px !important;
+            flex-shrink: 0 !important;
+        }
+        .btn-deck-nav {
+            padding: 7px 11px !important;
+            font-size: 0.78rem !important;
+        }
+        .btn-theater-desktop {
+            display: none !important; /* Hide theater toggle on mobile */
+        }
+        .speed-pills {
+            padding: 2px !important;
+            gap: 1px !important;
+        }
+        .speed-btn {
+            padding: 4px 7px !important;
+            font-size: 0.7rem !important;
+        }
+        .autoplay-toggle {
+            font-size: 0.76rem !important;
+            gap: 6px !important;
+        }
+        .switch-pill {
+            width: 32px !important;
+            height: 18px !important;
+        }
+        .switch-pill::after {
+            width: 14px !important;
+            height: 14px !important;
+        }
+        .autoplay-toggle.active .switch-pill::after {
+            transform: translateX(14px) !important;
+        }
+
+        /* Lesson Metadata */
+        .lesson-meta-header {
+            margin-bottom: 16px !important;
+        }
+        .lesson-title-main {
+            font-size: 1.25rem !important;
+            line-height: 1.35 !important;
+            margin-bottom: 8px !important;
+            letter-spacing: normal !important;
+        }
+        .lesson-pills-row {
+            gap: 6px !important;
+        }
+        .pill-info {
+            font-size: 0.72rem !important;
+            padding: 4px 8px !important;
+        }
+
+        /* Workstation Tabs */
         .workstation-tabs {
-            gap: 4px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-            flex-wrap: nowrap;
-            -webkit-overflow-scrolling: touch;
+            gap: 4px !important;
+            margin-bottom: 16px !important;
+            overflow-x: auto !important;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+            padding-bottom: 4px !important;
+        }
+        .workstation-tabs::-webkit-scrollbar {
+            display: none !important;
         }
         .tab-trigger {
-            padding: 10px 14px;
-            font-size: 0.85rem;
-            flex-shrink: 0;
+            padding: 9px 12px !important;
+            font-size: 0.82rem !important;
+            flex-shrink: 0 !important;
+            gap: 6px !important;
         }
+
+        /* Cards & Content */
         .glass-card {
-            padding: 18px 14px;
-            border-radius: 14px;
+            padding: 16px 12px !important;
+            border-radius: 14px !important;
+            margin-bottom: 16px !important;
         }
+
+        /* Assignments Hub */
         .asgn-hub-card {
-            padding: 18px 14px;
+            padding: 16px 12px !important;
         }
         .asgn-hub-header {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 12px;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            margin-bottom: 16px !important;
+            padding-bottom: 14px !important;
         }
-        .btn-create-assignment-glow {
-            width: 100%;
-            justify-content: center;
+        .asgn-hub-title {
+            font-size: 1.15rem !important;
+        }
+        .asgn-hub-sub {
+            font-size: 0.8rem !important;
+        }
+        .asgn-card-glass {
+            padding: 16px 12px !important;
+            border-radius: 14px !important;
+        }
+        .asgn-card-top {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+        }
+        .asgn-card-left-meta {
+            width: 100% !important;
+            justify-content: space-between !important;
+        }
+        .asgn-status-wrap {
+            width: 100% !important;
+        }
+        .asgn-status-pill {
+            width: 100% !important;
+            justify-content: center !important;
+            font-size: 0.74rem !important;
+            padding: 5px 10px !important;
+        }
+        .asgn-title {
+            font-size: 1.05rem !important;
+        }
+        .asgn-description {
+            font-size: 0.84rem !important;
+        }
+        .asgn-brief-box {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            padding: 10px 12px !important;
+        }
+        .btn-download-brief {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        .btn-asgn-action.submit,
+        .btn-asgn-action.resubmit {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+
+        /* Live Sandbox on Phone */
+        .sandbox-header {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 8px !important;
+            padding: 10px 12px !important;
+        }
+        .sandbox-header > div {
+            width: 100% !important;
+            justify-content: space-between !important;
+        }
+        .sandbox-lang-select {
+            flex: 1 !important;
+            font-size: 0.78rem !important;
+            padding: 6px 8px !important;
+        }
+        .btn-run-code {
+            flex: 1 !important;
+            justify-content: center !important;
+            font-size: 0.78rem !important;
+            padding: 7px 12px !important;
+        }
+        .sandbox-editor {
+            font-size: 0.82rem !important;
+            min-height: 180px !important;
+            padding: 12px 14px !important;
+        }
+
+        /* AI Smart Notes on Phone */
+        .ai-notes-header {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+        }
+        .btn-ai-generate {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        .ai-summary-box {
+            padding: 14px 14px !important;
+        }
+        .point-card {
+            padding: 10px 12px !important;
+            gap: 10px !important;
+        }
+        .point-card span {
+            font-size: 0.85rem !important;
+        }
+
+        /* Q&A on Phone */
+        .qa-input-box {
+            padding: 12px !important;
+        }
+        .qa-textarea {
+            font-size: 0.88rem !important;
+            min-height: 70px !important;
+        }
+        .qa-submit-bar {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 8px !important;
+        }
+        .btn-qa-post {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        .comment-item {
+            gap: 10px !important;
+            padding: 14px 0 !important;
+        }
+        .comment-avatar {
+            width: 36px !important;
+            height: 36px !important;
+        }
+        .comment-author {
+            font-size: 0.88rem !important;
+        }
+        .comment-body {
+            font-size: 0.86rem !important;
+        }
+
+        /* Resources on Phone */
+        .resource-card {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            padding: 12px 14px !important;
+        }
+        .resource-card > div {
+            width: 100% !important;
+        }
+        .btn-pdf-view {
+            width: 100% !important;
+            text-align: center !important;
+            justify-content: center !important;
+            display: inline-flex !important;
+            align-items: center !important;
         }
     }
 
     @media (max-width: 480px) {
-        .playlist-dock {
-            height: 420px;
+        .modal-overlay {
+            padding: 10px !important;
         }
+        .modal-box.asgn-modal-box,
         .asgn-modal-box {
-            width: 95vw !important;
-            max-width: 95vw !important;
-            margin: 8px !important;
+            width: 96vw !important;
+            max-width: 96vw !important;
+            margin: 8px auto !important;
             border-radius: 16px !important;
+            max-height: 92vh !important;
         }
         .modal-header {
-            padding: 14px 16px;
-            font-size: 1rem;
+            padding: 14px 16px !important;
+            font-size: 1rem !important;
         }
-        .asgn-modal-footer {
-            flex-direction: column-reverse;
-            gap: 8px;
-            padding: 12px 14px;
+        .modal-body-content {
+            padding: 16px 14px !important;
+            max-height: 65vh !important;
         }
-        .asgn-modal-footer button {
-            width: 100%;
-            justify-content: center;
+        .asgn-modal-footer,
+        .modal-footer-btns {
+            flex-direction: column-reverse !important;
+            gap: 8px !important;
+            padding: 12px 14px !important;
+        }
+        .asgn-modal-footer button,
+        .modal-footer-btns button {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        .learning-toast {
+            left: 12px !important;
+            right: 12px !important;
+            bottom: 12px !important;
+            justify-content: center !important;
         }
     }
 
@@ -2076,7 +2414,7 @@
         </a>
         <div class="course-badge-pill">
             <i class="fas fa-graduation-cap" style="color: var(--neon-cyan);"></i>
-            <span>{{ course.title }}</span>
+            <span class="course-pill-text">{{ course.title }}</span>
         </div>
         <div class="live-sync-indicator">
             <span class="pulse-dot"></span>
@@ -2135,18 +2473,41 @@
 
             <!-- PLAYER CONTROLS & LEARNING TOOLBAR -->
             <div class="player-control-deck">
-                <div class="deck-group">
+                <div class="deck-group deck-group-main">
                     <!-- Complete Toggle Button -->
                     {% if current_lesson.id in completed_lesson_ids %}
                         <button class="btn-deck-complete completed" id="btnMarkComplete" onclick="markLessonComplete('{{ current_lesson.id }}')">
-                            <i class="fas fa-check-circle"></i> Completed (+20 Coins)
+                            <i class="fas fa-check-circle"></i> <span>Completed (+20)</span>
                         </button>
                     {% else %}
                         <button class="btn-deck-complete not-completed" id="btnMarkComplete" onclick="markLessonComplete('{{ current_lesson.id }}')">
-                            <i class="fas fa-check"></i> Mark Complete (+20 Coins)
+                            <i class="fas fa-check"></i> <span>Mark Complete (+20)</span>
                         </button>
                     {% endif %}
 
+                    <!-- Navigation Next / Prev -->
+                    <div class="nav-bar-deck">
+                        {% if prev_lesson %}
+                            <a href="{% url 'course_watch' course.id prev_lesson.id %}" class="btn-deck-nav" title="Shift + P">
+                                <i class="fas fa-backward-step"></i> <span>Prev</span>
+                            </a>
+                        {% else %}
+                            <a href="#" class="btn-deck-nav disabled"><i class="fas fa-backward-step"></i> <span>Prev</span></a>
+                        {% endif %}
+
+                        {% if next_lesson %}
+                            <a href="{% url 'course_watch' course.id next_lesson.id %}" class="btn-deck-nav" id="nextLessonBtn" title="Shift + N">
+                                <span>Next</span> <i class="fas fa-forward-step"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'dashboard' %}" class="btn-deck-nav btn-finish-course" style="border-color:var(--accent-emerald); color:var(--accent-emerald);">
+                                <span>Finish</span> <i class="fas fa-trophy"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="deck-group deck-group-sub">
                     <!-- Playback Speed -->
                     <div class="speed-pills">
                         <button class="speed-btn" onclick="setSpeed(0.75)">0.75x</button>
@@ -2161,34 +2522,11 @@
                         <div class="switch-pill"></div>
                         <span>Auto-next</span>
                     </div>
-                </div>
 
-                <div class="deck-group">
                     <!-- Theater Fullscreen Toggle -->
-                    <button class="btn-deck-nav" onclick="toggleTheaterMode()" title="Toggle Theater Mode">
+                    <button class="btn-deck-nav btn-theater-desktop" onclick="toggleTheaterMode()" title="Toggle Theater Mode">
                         <i class="fas fa-expand"></i> Theater
                     </button>
-
-                    <!-- Navigation Next / Prev -->
-                    <div class="nav-bar-deck">
-                        {% if prev_lesson %}
-                            <a href="{% url 'course_watch' course.id prev_lesson.id %}" class="btn-deck-nav" title="Shift + P">
-                                <i class="fas fa-backward-step"></i> Prev
-                            </a>
-                        {% else %}
-                            <a href="#" class="btn-deck-nav disabled"><i class="fas fa-backward-step"></i> Prev</a>
-                        {% endif %}
-
-                        {% if next_lesson %}
-                            <a href="{% url 'course_watch' course.id next_lesson.id %}" class="btn-deck-nav" id="nextLessonBtn" title="Shift + N">
-                                Next <i class="fas fa-forward-step"></i>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'dashboard' %}" class="btn-deck-nav" style="border-color:var(--accent-emerald); color:var(--accent-emerald);">
-                                Finish Course <i class="fas fa-trophy"></i>
-                            </a>
-                        {% endif %}
-                    </div>
                 </div>
             </div>
 
@@ -2232,24 +2570,28 @@
             <!-- MULTI-TAB WORKSTATION SYSTEM -->
             <div class="workstation-tabs">
                 {% if current_lesson %}
-                <button class="tab-trigger active" onclick="switchWorkTab('overview')">
+                <button class="tab-trigger tab-curriculum-mobile" data-tab="curriculum" onclick="switchWorkTab('curriculum')">
+                    <i class="fas fa-list-check" style="color:var(--neon-cyan);"></i> Curriculum
+                    <span class="tab-badge">{{ lessons|length }}</span>
+                </button>
+                <button class="tab-trigger active" data-tab="overview" onclick="switchWorkTab('overview')">
                     <i class="fas fa-book-open"></i> Overview & Guide
                 </button>
                 <button class="tab-trigger" data-tab="assignments" onclick="switchWorkTab('assignments')">
                     <i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> Assignments
                     <span class="tab-badge" id="assignmentsTabBadge" style="{% if pending_assignments_count > 0 %}background:rgba(255,183,77,0.2); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.4);{% endif %}">{{ course_assignments|length }}</span>
                 </button>
-                <button class="tab-trigger" onclick="switchWorkTab('ainotes')">
-                    <i class="fas fa-wand-magic-sparkles" style="color:var(--neon-purple);"></i> ✨ AI Smart Notes
+                <button class="tab-trigger" data-tab="ainotes" onclick="switchWorkTab('ainotes')">
+                    <i class="fas fa-wand-magic-sparkles" style="color:var(--neon-purple);"></i> ✨ AI Notes
                 </button>
-                <button class="tab-trigger" onclick="switchWorkTab('sandbox')">
-                    <i class="fas fa-terminal" style="color:var(--neon-cyan);"></i> Live Code Sandbox
+                <button class="tab-trigger" data-tab="sandbox" onclick="switchWorkTab('sandbox')">
+                    <i class="fas fa-terminal" style="color:var(--neon-cyan);"></i> Sandbox
                 </button>
-                <button class="tab-trigger" onclick="switchWorkTab('discussion')">
-                    <i class="far fa-comments"></i> Q&A Discussion
+                <button class="tab-trigger" data-tab="discussion" onclick="switchWorkTab('discussion')">
+                    <i class="far fa-comments"></i> Q&A
                     <span class="tab-badge">{{ comments|length }}</span>
                 </button>
-                <button class="tab-trigger" onclick="switchWorkTab('resources')">
+                <button class="tab-trigger" data-tab="resources" onclick="switchWorkTab('resources')">
                     <i class="fas fa-folder-open"></i> Resources & Exams
                     <span class="tab-badge">{{ documents|length|add:course_exams|length }}</span>
                 </button>
@@ -2714,6 +3056,11 @@ solution()
                     </div>
                 </div>
             </div>
+
+            <!-- TAB: CURRICULUM (MOBILE & TABLET DOCKED) -->
+            <div id="pane-curriculum" class="tab-pane">
+                <div class="curriculum-dock-mount"></div>
+            </div>
     </div>
 
     <!-- RIGHT CURRICULUM PLAYLIST SIDEBAR -->
@@ -2888,10 +3235,30 @@ function switchWorkTab(tabKey) {
     const targetPane = document.getElementById('pane-' + tabKey);
     if (targetPane) targetPane.classList.add('active');
     
-    // Highlight trigger button
-    const triggerBtn = document.querySelector(`.tab-trigger[data-tab="${tabKey}"]`) || (event && event.currentTarget);
-    if (triggerBtn) triggerBtn.classList.add('active');
+    // Highlight trigger buttons matching tabKey
+    document.querySelectorAll(`.tab-trigger[data-tab="${tabKey}"]`).forEach(btn => btn.classList.add('active'));
 }
+
+// Adapt Playlist Placement for Mobile/Tablet (< 1024px)
+function adaptPlaylistPlacement() {
+    const dock = document.querySelector('.playlist-dock');
+    const mount = document.querySelector('.curriculum-dock-mount');
+    const workspace = document.querySelector('.watch-workspace');
+    if (!dock || !mount || !workspace) return;
+    
+    if (window.innerWidth <= 1024) {
+        if (dock.parentElement !== mount) {
+            mount.appendChild(dock);
+        }
+    } else {
+        if (dock.parentElement !== workspace) {
+            workspace.appendChild(dock);
+        }
+    }
+}
+window.addEventListener('resize', adaptPlaylistPlacement);
+document.addEventListener('DOMContentLoaded', adaptPlaylistPlacement);
+setTimeout(adaptPlaylistPlacement, 60);
 
 // Auto-switch to assignments tab if requested in hash
 if (window.location.hash === '#assignments') {
