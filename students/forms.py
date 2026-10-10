@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -13,7 +14,8 @@ from .models import (
     LessonComment, # UPDATE: Imported LessonComment Model
     CourseGroupMessage,    # Community Chat Message Form
     Assignment,
-    AssignmentSubmission
+    AssignmentSubmission,
+    SupportTicket
 )
 
 User = get_user_model()
@@ -22,32 +24,40 @@ User = get_user_model()
 
 class StudentRegistrationForm(forms.ModelForm):
     first_name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
-        required=True
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'autocomplete': 'given-name'}),
+        required=True,
+        label="First Name"
     )
     last_name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
-        required=True
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'autocomplete': 'family-name'}),
+        required=False,
+        label="Last Name"
     )
     email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
-        required=True
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'autocomplete': 'email', 'autocapitalize': 'none', 'spellcheck': 'false'}),
+        required=True,
+        label="Email Address"
+    )
+    phone = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (e.g. +91 98765 43210)', 'autocomplete': 'tel', 'id': 'regPhone'}),
+        required=False,
+        label="Phone Number"
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter Password', 'id': 'regPassword', 'autocomplete': 'new-password'}),
         label="Password",
         help_text="Minimum 8 characters required."
     )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password', 'id': 'regConfirmPassword', 'autocomplete': 'new-password'}),
         label="Confirm Password"
     )
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'password', 'confirm_password', 'stream', 'student_level']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'password', 'confirm_password', 'stream', 'student_level']
         widgets = {
-            'stream': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Science, Arts'}),
+            'stream': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Science, Arts, Engineering'}),
             'student_level': forms.Select(choices=[
                 ('Beginner', 'Beginner'), 
                 ('Intermediate', 'Intermediate'), 
@@ -55,11 +65,33 @@ class StudentRegistrationForm(forms.ModelForm):
             ], attrs={'class': 'form-control'}),
         }
 
+    def clean_first_name(self):
+        first_name = (self.cleaned_data.get('first_name') or '').strip()
+        if not first_name:
+            raise ValidationError("First name is required.")
+        return first_name
+
+    def clean_last_name(self):
+        return (self.cleaned_data.get('last_name') or '').strip()
+
     def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("This email is already registered. Please login.")
+        email = (self.cleaned_data.get('email') or '').strip().lower()
+        if not email:
+            raise ValidationError("Email is required.")
+        if User.objects.filter(email__iexact=email).exists():
+            raise ValidationError("This email is already registered. Please login or use a different email.")
         return email
+
+    def clean_phone(self):
+        phone = (self.cleaned_data.get('phone') or '').strip()
+        if phone:
+            digits = re.sub(r'\D', '', phone)
+            if len(digits) < 7:
+                raise ValidationError("Please enter a valid phone number with at least 7 digits.")
+            from django.db.models import Q
+            if User.objects.filter(Q(phone=phone) | Q(profile__phone=phone)).exists():
+                raise ValidationError("This phone number is already registered. Please login or use a different phone number.")
+        return phone
 
     def clean(self):
         cleaned_data = super().clean()
@@ -77,13 +109,41 @@ class StudentRegistrationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        first_name = (self.cleaned_data.get("first_name") or '').strip()
+        last_name = (self.cleaned_data.get("last_name") or '').strip()
+        email = (self.cleaned_data.get("email") or '').strip().lower()
+        phone = (self.cleaned_data.get("phone") or '').strip()
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.phone = phone
+
+        # 🌟 Username is directly generated from First Name
+        clean_first = re.sub(r'[^a-zA-Z0-9_]', '', first_name.strip().lower())
+        if not clean_first:
+            clean_first = 'student'
+        
+        base_user = clean_first
+        candidate_username = base_user
+        counter = 1
+        while User.objects.filter(username__iexact=candidate_username).exists():
+            counter += 1
+            candidate_username = f"{base_user}{counter}"
+
+        user.username = candidate_username
+        user.is_student = True
         user.set_password(self.cleaned_data["password"])
-        user.username = self.cleaned_data["email"]
         
         if commit:
             user.save()
-            if not hasattr(user, 'profile'):
-                Profile.objects.create(user=user)
+            profile, _ = Profile.objects.get_or_create(user=user)
+            if phone:
+                profile.phone = phone
+            if user.student_id:
+                profile.student_id = user.student_id
+            profile.save()
+
         return user
 
 
@@ -297,5 +357,100 @@ class AssignmentSubmissionForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Add code explanations, live deployment links, GitHub repos, or execution notes...'
+            }),
+        }
+
+
+# ========================================================
+# 11. STUDENT PROFILE UPDATE FORM & SUPPORT TICKET FORM
+# ========================================================
+
+class StudentProfileUpdateForm(forms.Form):
+    first_name = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
+    last_name = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address', 'autocomplete': 'email'})
+    )
+    phone = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (e.g. +91 98765 43210)', 'autocomplete': 'tel'})
+    )
+    bio = forms.CharField(
+        max_length=500,
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write a brief bio about yourself, your skills, goals...'})
+    )
+    profile_pic = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control', 'id': 'modal_profile_pic'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['email'].initial = self.user.email
+            self.fields['phone'].initial = self.user.phone or (getattr(self.user, 'profile', None) and self.user.profile.phone) or ''
+            if hasattr(self.user, 'profile') and self.user.profile:
+                self.fields['bio'].initial = self.user.profile.bio or ''
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        if not email:
+            raise ValidationError("Email is required.")
+        query = User.objects.filter(email__iexact=email)
+        if self.user:
+            query = query.exclude(pk=self.user.pk)
+        if query.exists():
+            raise ValidationError("This email address is already registered with another account.")
+        return email
+
+    def save(self):
+        if not self.user:
+            return None
+        self.user.first_name = self.cleaned_data.get('first_name', self.user.first_name)
+        self.user.last_name = self.cleaned_data.get('last_name', self.user.last_name)
+        self.user.email = self.cleaned_data.get('email')
+        phone = self.cleaned_data.get('phone', '').strip()
+        self.user.phone = phone
+        self.user.save(update_fields=['first_name', 'last_name', 'email', 'phone'])
+
+        profile = getattr(self.user, 'profile', None)
+        if not profile:
+            profile = Profile.objects.create(user=self.user)
+        profile.phone = phone
+        profile.bio = self.cleaned_data.get('bio', '').strip()
+        pic = self.cleaned_data.get('profile_pic')
+        if pic:
+            profile.profile_pic = pic
+        profile.save()
+        return self.user
+
+
+class SupportTicketForm(forms.ModelForm):
+    class Meta:
+        model = SupportTicket
+        fields = ['category', 'priority', 'subject', 'message']
+        widgets = {
+            'category': forms.Select(attrs={'class': 'form-control', 'id': 'ticket_category'}),
+            'priority': forms.Select(attrs={'class': 'form-control', 'id': 'ticket_priority'}),
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Brief summary (e.g. Password reset assistance needed)', 'id': 'ticket_subject'}),
+            'message': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 5, 
+                'placeholder': 'Provide details about your problem, registered contact info, error messages, or request...',
+                'id': 'ticket_message'
             }),
         }

@@ -116,6 +116,36 @@
             background: rgba(0, 0, 0, 0.6);
         }
 
+        /* Password Wrapper & Toggle Button */
+        .pwd-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .pwd-wrapper .form-control {
+            padding-right: 44px;
+        }
+
+        .pwd-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 6px;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .pwd-toggle-btn:hover {
+            color: var(--accent-cyan);
+        }
+
         /* Full Width Span */
         .full-width {
             grid-column: 1 / -1;
@@ -211,6 +241,7 @@
                     <label class="form-label">First Name</label>
                     {{ form.first_name }} 
                     {% if form.first_name.errors %}<small style="color:#ff3366">{{ form.first_name.errors.0 }}</small>{% endif %}
+                    <span class="helper-text">Your First Name will be your Username.</span>
                 </div>
 
                 <div class="form-group">
@@ -218,11 +249,18 @@
                     {{ form.last_name }}
                 </div>
 
-                <div class="form-group full-width">
+                <div class="form-group">
                     <label class="form-label">Email Address</label>
                     {{ form.email }}
                     {% if form.email.errors %}<small style="color:#ff3366">{{ form.email.errors.0 }}</small>{% endif %}
-                    <span class="helper-text">This will be your unique login ID.</span>
+                    <span class="helper-text">Unique Email for your account.</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}<small style="color:#ff3366">{{ form.phone.errors.0 }}</small>{% endif %}
+                    <span class="helper-text">Contact number (can be used to login).</span>
                 </div>
 
                 <div class="form-group">
@@ -237,13 +275,24 @@
 
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    {{ form.password }}
+                    <div class="pwd-wrapper">
+                        {{ form.password }}
+                        <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('regPassword', this)" title="Show/Hide Password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}<small style="color:#ff3366">{{ form.password.errors.0 }}</small>{% endif %}
                     <span class="helper-text"><i class="fas fa-info-circle"></i> Minimum 8 characters required.</span>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Confirm Password</label>
-                    {{ form.confirm_password }}
+                    <div class="pwd-wrapper">
+                        {{ form.confirm_password }}
+                        <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('regConfirmPassword', this)" title="Show/Hide Password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     {% if form.confirm_password.errors %}<small style="color:#ff3366">{{ form.confirm_password.errors.0 }}</small>{% endif %}
                 </div>
             </div>
@@ -255,6 +304,27 @@
             Already have an account? <a href="{% url 'login' %}">Log In</a>
         </div>
     </div>
+
+    <script>
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            } else {
+                input.type = 'password';
+                if (icon) {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        }
+    </script>
 
 </body>
 </html>

@@ -162,6 +162,89 @@
             box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
         }
 
+        /* Password Wrapper & Toggle Button */
+        .pwd-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .pwd-wrapper .form-control {
+            padding-right: 44px;
+        }
+
+        .pwd-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 6px;
+            border-radius: 4px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .pwd-toggle-btn:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Form Options (Remember Me & Helpers) */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0 18px 0;
+            font-size: 0.88rem;
+            color: #aaa;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .form-options input[type="checkbox"] {
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+            width: 15px;
+            height: 15px;
+        }
+
+        .input-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: #777;
+        }
+
+        .input-hint i {
+            color: var(--accent-cyan);
+            margin-right: 4px;
+        }
+
+        .alert-close-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: inherit;
+            opacity: 0.7;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 6px;
+            transition: opacity 0.2s;
+        }
+
+        .alert-close-btn:hover {
+            opacity: 1;
+        }
+
         /* Normal Login Button */
         .btn-login {
             width: 100%;
@@ -261,13 +344,16 @@
     <div class="message-container">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert-box {% if 'success' in message.tags %}alert-success{% else %}alert-error{% endif %}">
+                <div class="alert-box {% if 'success' in message.tags %}alert-success{% else %}alert-error{% endif %}" id="msg-{{ forloop.counter }}">
                     {% if 'success' in message.tags %}
                         <i class="fas fa-check-circle"></i>
                     {% else %}
                         <i class="fas fa-exclamation-triangle"></i>
                     {% endif %}
-                    {{ message }}
+                    <span>{{ message }}</span>
+                    <button type="button" class="alert-close-btn" onclick="dismissAlert('msg-{{ forloop.counter }}')" title="Dismiss">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -281,13 +367,51 @@
             {% csrf_token %}
             
             <div class="form-group">
-                <label class="form-label">Email Address or Username</label>
-                <input type="text" name="username" class="form-control" placeholder="Enter email or username" required>
+                <label class="form-label">Email, Phone Number, or Student ID</label>
+                <input 
+                    type="text" 
+                    name="username" 
+                    class="form-control" 
+                    placeholder="Enter Email, Phone (+91...), or 6-Digit Student ID" 
+                    required 
+                    autocomplete="username" 
+                    autocapitalize="none" 
+                    spellcheck="false"
+                >
+                <span class="input-hint">
+                    <i class="fas fa-id-card"></i> Login with your Email, Phone Number, or 6-digit Student ID
+                </span>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                <div class="pwd-wrapper">
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="loginPassword" 
+                        class="form-control" 
+                        placeholder="••••••••" 
+                        required 
+                        autocomplete="current-password"
+                    >
+                    <button 
+                        type="button" 
+                        class="pwd-toggle-btn" 
+                        id="togglePwdBtn" 
+                        onclick="togglePasswordVisibility('loginPassword', this)" 
+                        title="Show/Hide Password"
+                    >
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label>
+                    <input type="checkbox" name="remember_me" value="1">
+                    Remember me
+                </label>
             </div>
 
             <button type="submit" class="btn-login">Sign In</button>
@@ -314,12 +438,35 @@
     </div>
 
     <script>
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function dismissAlert(alertId) {
+            const el = document.getElementById(alertId);
+            if (el) {
+                el.style.opacity = '0';
+                el.style.transform = 'translateX(100%)';
+                setTimeout(() => el.remove(), 300);
+            }
+        }
+
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert-box');
             alerts.forEach(alert => {
                 alert.style.display = 'none';
             });
-        }, 4500); 
+        }, 5500); 
     </script>
 
 </body>
