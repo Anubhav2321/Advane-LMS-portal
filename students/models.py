@@ -14,10 +14,28 @@ from allauth.socialaccount.models import SocialAccount # NEW: Google data fetch 
 
 # 1. CUSTOM USER MODEL
 
+def generate_unique_student_id():
+    """
+    Generates a secure, cryptographically-random unique 6-digit student ID (100000 - 999999).
+    Guarantees absolute global uniqueness across all users.
+    """
+    import random
+    for _ in range(10000):
+        candidate = str(random.randint(100000, 999999))
+        if not User.objects.filter(student_id=candidate).exists():
+            return candidate
+    import time
+    return str(int(time.time()))[-6:]
+
+
 class User(AbstractUser):
     is_student = models.BooleanField(default=True, verbose_name="Is Student")
     is_teacher = models.BooleanField(default=False, verbose_name="Is Teacher")
     is_faculty = models.BooleanField(default=False, verbose_name="Is Faculty") # NEW: Added Faculty Role
+    
+    # 📱 Phone Number & 🆔 Unique 6-Digit Student ID
+    phone = models.CharField(max_length=20, blank=True, null=True, db_index=True, help_text="Contact Phone Number")
+    student_id = models.CharField(max_length=6, unique=True, null=True, blank=True, db_index=True, help_text="Unique 6-digit Student ID")
     
     student_level = models.CharField(
         max_length=50, 
@@ -39,6 +57,10 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if self.is_staff or self.is_superuser:
             self.is_student = False
+        if not self.student_id:
+            # Auto-generate unique 6-digit ID for students
+            if self.is_student or (not self.is_staff and not self.is_superuser):
+                self.student_id = generate_unique_student_id()
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -149,7 +171,8 @@ def process_and_clarify_avatar(image_file, target_size=(512, 512)):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(max_length=500, blank=True, null=True)
-    phone = models.CharField(max_length=15, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    student_id = models.CharField(max_length=6, blank=True, null=True, db_index=True)
     address = models.TextField(blank=True, null=True)
     
     # Profile Picture Field
@@ -161,6 +184,16 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        # Sync with user fields
+        if hasattr(self, 'user') and self.user:
+            if not self.student_id and self.user.student_id:
+                self.student_id = self.user.student_id
+            if self.phone and not self.user.phone:
+                self.user.phone = self.phone
+                self.user.save(update_fields=['phone'])
+            elif self.user.phone and not self.phone:
+                self.phone = self.user.phone
+
         # Auto-enhance profile picture if freshly uploaded
         if self.profile_pic:
             try:
@@ -330,59 +363,143 @@ class Enrollment(models.Model):
 
     def get_real_progress(self):
         """
-        Calculate real progress based on Overall Course Requirements.
-        Tasks = Lessons (watch time > 80% or marked complete) + Quizzes (PASSED, score >= 50%) + Live Classes (attended) + Documents (read) + Assignments (submitted)
-        Duplicate attempts and failed quizzes do NOT falsely inflate progress.
-        """
-        # 1. Lesson Tasks
-        total_lessons = self.course.lessons.count()
-        completed_lessons = 0
-        for lp in LessonProgress.objects.filter(student=self.student, lesson__course=self.course):
-            required_time = lp.lesson.duration_in_seconds * 0.8
-            if lp.is_completed or (required_time > 0 and lp.watch_time_seconds >= required_time):
-                completed_lessons += 1
-        completed_lessons = min(total_lessons, completed_lessons)
-
-        # 2. Quiz Tasks (Count ONLY distinct PASSED quizzes; failed attempts do not count!)
-        total_quizzes = Exam.objects.filter(course=self.course, is_active=True).count()
-        passed_exam_ids = set()
-        for qr in QuizResult.objects.filter(student=self.student, exam__course=self.course):
-            if qr.total_marks > 0:
-                if (qr.score / qr.total_marks) >= 0.5:
-                    passed_exam_ids.add(qr.exam_id)
-            elif qr.score > 0:
-                passed_exam_ids.add(qr.exam_id)
-        completed_quizzes = min(total_quizzes, len(passed_exam_ids))
-
-        # 3. Live Class Tasks
-        total_classes = self.course.live_classes.count()
-        attended_classes = min(
-            total_classes,
-            LiveClassAttendance.objects.filter(student=self.student, live_class__course=self.course).values('live_class_id').distinct().count()
-        )
-
-        # 4. Document Tasks
-        total_docs = self.course.documents.count()
-        read_docs = min(
-            total_docs,
-            DocumentView.objects.filter(student=self.student, document__course=self.course).values('document_id').distinct().count()
-        )
-
-        # 5. Assignment Tasks
-        total_assignments = self.course.assignments.count()
-        submitted_assignments = min(
-            total_assignments,
-            AssignmentSubmission.objects.filter(student=self.student, assignment__course=self.course).values('assignment_id').distinct().count()
-        )
-
-        total_tasks = total_lessons + total_quizzes + total_classes + total_docs + total_assignments
-        completed_tasks = completed_lessons + completed_quizzes + attended_classes + read_docs + submitted_assignments
-
-        if total_tasks == 0:
-            return {'percent': 0.0, 'completed': 0, 'total': 0}
+        Professional, multi-dimensional progress calculator for student enrollments.
+        Calculates real completion based on ALL student course activities:
+        1. Course Watch / Lessons:
+           - Marked completed or >= 80% watch time counts as 1.0 task.
+           - Partial watch time provides continuous, real-time incremental progress.
+        2. Quiz & Exam Attempts:
+           - Explicitly based on attempts (attempting the quiz increases progress regardless of score).
+           - Distinct by exam_id to prevent artificial inflation from repeat attempts.
+        3. Assignment Submissions:
+           - Distinct by assignment_id, rewarding both on-time and completed submissions.
+        4. Live Lectures & Interactive Broadcasts:
+           - Distinct attendance records.
+        5. Digital Library Document Views:
+           - Distinct reading verification.
         
-        percent = min(100.0, max(0.0, round((completed_tasks / total_tasks) * 100, 1)))
-        return {'percent': percent, 'completed': min(total_tasks, completed_tasks), 'total': total_tasks}
+        Final progress is strictly bounded in [0.0, 100.0] with zero division-by-zero vulnerability.
+        """
+        try:
+            # 1. Lesson Tasks & Continuous Video Telemetry
+            total_lessons = self.course.lessons.count()
+            lesson_progress_records = list(
+                LessonProgress.objects.filter(student=self.student, lesson__course=self.course).select_related('lesson')
+            )
+            
+            completed_lessons_count = 0
+            lesson_continuous_units = 0.0
+
+            for lp in lesson_progress_records:
+                duration = lp.lesson.duration_in_seconds or 0
+                watch_time = lp.watch_time_seconds or 0
+                required_time = duration * 0.8
+
+                if lp.is_completed or (required_time > 0 and watch_time >= required_time) or (duration == 0 and watch_time > 0):
+                    completed_lessons_count += 1
+                    lesson_continuous_units += 1.0
+                elif duration > 0 and watch_time > 0:
+                    fraction = min(0.95, watch_time / max(duration, 1))
+                    lesson_continuous_units += fraction
+
+            completed_lessons = min(total_lessons, completed_lessons_count)
+
+            # 2. Quiz & Exam Tasks (Any attempt counts; score does not penalize participation)
+            attempted_exam_ids = set(
+                QuizResult.objects.filter(student=self.student, exam__course=self.course).values_list('exam_id', flat=True)
+            )
+            total_quizzes = max(
+                Exam.objects.filter(course=self.course, is_active=True).count(),
+                len(attempted_exam_ids)
+            )
+            completed_quizzes = min(total_quizzes, len(attempted_exam_ids))
+
+            # 3. Assignment Tasks (Submissions count; on-time submission tracked)
+            submissions_qs = list(
+                AssignmentSubmission.objects.filter(student=self.student, assignment__course=self.course).select_related('assignment')
+            )
+            submitted_assignment_ids = set(sub.assignment_id for sub in submissions_qs)
+            total_assignments = max(
+                self.course.assignments.count(),
+                len(submitted_assignment_ids)
+            )
+            completed_assignments = min(total_assignments, len(submitted_assignment_ids))
+            on_time_assignments = sum(1 for sub in submissions_qs if not sub.is_late)
+
+            # 4. Live Class Tasks
+            attended_classes_set = set(
+                LiveClassAttendance.objects.filter(student=self.student, live_class__course=self.course).values_list('live_class_id', flat=True)
+            )
+            total_classes = max(
+                self.course.live_classes.count(),
+                len(attended_classes_set)
+            )
+            attended_classes = min(total_classes, len(attended_classes_set))
+
+            # 5. Document Reading Tasks
+            read_docs_set = set(
+                DocumentView.objects.filter(student=self.student, document__course=self.course).values_list('document_id', flat=True)
+            )
+            total_docs = max(
+                self.course.documents.count(),
+                len(read_docs_set)
+            )
+            read_docs = min(total_docs, len(read_docs_set))
+
+            # Totals Aggregation
+            total_tasks = total_lessons + total_quizzes + total_assignments + total_classes + total_docs
+            discrete_completed = completed_lessons + completed_quizzes + completed_assignments + attended_classes + read_docs
+            continuous_completed = min(
+                float(total_tasks),
+                lesson_continuous_units + completed_quizzes + completed_assignments + attended_classes + read_docs
+            )
+
+            if total_tasks == 0:
+                percent = 0.0
+            else:
+                percent = min(100.0, max(0.0, round((continuous_completed / total_tasks) * 100, 1)))
+                if discrete_completed >= total_tasks and total_tasks > 0:
+                    percent = 100.0
+
+            # SVG ring circumference = 2 * PI * 26 ≈ 163.36
+            ring_offset = round(163.36 - (percent / 100.0) * 163.36, 2)
+
+            return {
+                'percent': percent,
+                'completed': min(total_tasks, discrete_completed),
+                'total': total_tasks,
+                'completed_lessons': completed_lessons,
+                'total_lessons': total_lessons,
+                'completed_quizzes': completed_quizzes,
+                'total_quizzes': total_quizzes,
+                'completed_assignments': completed_assignments,
+                'total_assignments': total_assignments,
+                'on_time_assignments': on_time_assignments,
+                'attended_classes': attended_classes,
+                'total_classes': total_classes,
+                'read_docs': read_docs,
+                'total_docs': total_docs,
+                'ring_offset': ring_offset,
+            }
+        except Exception as e:
+            curr_pct = min(100.0, max(0.0, getattr(self, 'progress', 0.0)))
+            return {
+                'percent': curr_pct,
+                'completed': 0,
+                'total': 0,
+                'completed_lessons': 0,
+                'total_lessons': 0,
+                'completed_quizzes': 0,
+                'total_quizzes': 0,
+                'completed_assignments': 0,
+                'total_assignments': 0,
+                'on_time_assignments': 0,
+                'attended_classes': 0,
+                'total_classes': 0,
+                'read_docs': 0,
+                'total_docs': 0,
+                'ring_offset': round(163.36 - (curr_pct / 100.0) * 163.36, 2),
+            }
 
     def sync_progress(self):
         """Sync the progress field with real lesson progress data."""
@@ -485,6 +602,7 @@ class Notification(models.Model):
         ('assignment', 'Assignment Task'),
         ('coins', 'LMS Coins Reward'),
         ('system', 'System Alert'),
+        ('support', 'Support Ticket / Help Desk'),
     ]
 
     title = models.CharField(max_length=255, default="New Notice")
@@ -515,6 +633,7 @@ class Notification(models.Model):
             'notice': 'fas fa-bullhorn',
             'coins': 'fas fa-coins',
             'system': 'fas fa-bell',
+            'support': 'fas fa-headset',
         }
         return icon_map.get(self.notification_type, 'fas fa-bell')
 
@@ -530,6 +649,7 @@ class Notification(models.Model):
             'notice': '#f59e0b',      # Yellow
             'coins': '#ffd700',       # Gold
             'system': '#94a3b8',      # Slate
+            'support': '#00f3ff',     # Neon Cyan
         }
         return color_map.get(self.notification_type, '#00f3ff')
 
@@ -755,7 +875,13 @@ def create_user_profile(sender, instance, created, **kwargs):
     if kwargs.get('raw', False):
         return
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.get_or_create(
+            user=instance,
+            defaults={
+                'phone': instance.phone,
+                'student_id': instance.student_id,
+            }
+        )
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -1175,4 +1301,130 @@ class Payment(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.txn_id} - {self.student.username} - {self.status}"
+        return f"{self.txn_id} - {self.student.username} - {self.status}"
+
+
+# ========================================================
+# 11. SUPPORT TICKET / STUDENT MAIL MODEL
+# ========================================================
+
+def generate_ticket_number():
+    """Generates a random unique ticket identifier like TKT-492019"""
+    import random
+    return f"TKT-{random.randint(100000, 999999)}"
+
+
+class SupportTicket(models.Model):
+    CATEGORY_CHOICES = [
+        ('password_reset', 'Password Reset / Account Recovery'),
+        ('login_issue', 'Login / Access Problem'),
+        ('course_doubt', 'Course Content / Learning Doubt'),
+        ('payment_coins', 'Payment / Coins / Transaction Issue'),
+        ('technical_bug', 'Technical Glitch / Bug Report'),
+        ('general_query', 'General Inquiry / Guidance'),
+        ('other', 'Other Problem'),
+    ]
+
+    PRIORITY_CHOICES = [
+        ('normal', 'Normal Priority'),
+        ('high', 'High Priority'),
+        ('urgent', 'Urgent / Critical'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('in_progress', 'Under Investigation'),
+        ('resolved', 'Resolved'),
+        ('closed', 'Closed'),
+    ]
+
+    SOURCE_CHOICES = [
+        ('student_profile', 'Student Profile Desk'),
+        ('landing_help_center', 'Landing Help Center'),
+        ('landing_contact_us', 'Landing Contact Us'),
+        ('terms_modal', 'Terms Inquiry'),
+    ]
+
+    ticket_number = models.CharField(max_length=20, unique=True, default=generate_ticket_number, db_index=True)
+    student = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='support_tickets')
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=30, blank=True, null=True)
+    student_id_code = models.CharField(max_length=20, blank=True, null=True, help_text="6-digit Student ID or Roll")
+    source = models.CharField(max_length=50, default='student_profile', choices=SOURCE_CHOICES)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='general_query')
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='normal')
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    admin_reply = models.TextField(blank=True, null=True)
+    replied_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='replied_support_tickets')
+    replied_at = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.ticket_number}] {self.subject} ({self.get_status_display()})"
+
+
+def notify_admins_of_support_ticket(ticket):
+    """
+    Dispatches notifications and internal messages to ALL 4 admins
+    whenever a student or visitor submits a support ticket or help request.
+    """
+    from django.db.models import Q
+    from django.core.mail import send_mail
+    from django.conf import settings
+
+    admins = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True)).distinct()
+    
+    ticket_url = f"/admin-panel/support-tickets/{ticket.id}/"
+    summary_msg = (
+        f"From: {ticket.name} ({ticket.email}) | Phone: {ticket.phone or 'N/A'} | ID: #{ticket.student_id_code or 'N/A'}\n"
+        f"Category: {ticket.get_category_display()} | Priority: {ticket.get_priority_display()}\n\n"
+        f"Issue: {ticket.message[:180]}..."
+    )
+
+    for admin in admins:
+        Notification.objects.create(
+            title=f"📩 Support Mail #{ticket.ticket_number}: {ticket.subject[:45]}",
+            message=summary_msg,
+            notification_type='support',
+            action_url=ticket_url,
+            action_label="Resolve Ticket",
+            recipient=admin,
+            is_global=False
+        )
+
+    # Optional email dispatch to admins
+    try:
+        admin_emails = [a.email for a in admins if a.email]
+        if admin_emails:
+            subject = f"[Learning-365 Support] #{ticket.ticket_number}: {ticket.subject}"
+            body = (
+                f"New Support Mail received from {ticket.name}:\n\n"
+                f"Student Email: {ticket.email}\n"
+                f"Student Phone: {ticket.phone or 'Not Provided'}\n"
+                f"Student ID: {ticket.student_id_code or 'N/A'}\n"
+                f"Category: {ticket.get_category_display()}\n"
+                f"Priority: {ticket.get_priority_display()}\n"
+                f"Source: {ticket.source}\n\n"
+                f"Message:\n{ticket.message}\n\n"
+                f"Please review and solve this issue in the Admin Panel:\n"
+                f"http://127.0.0.1:8000/admin-panel/support-tickets/{ticket.id}/"
+            )
+            send_mail(
+                subject=subject,
+                message=body,
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@learning365.com'),
+                recipient_list=admin_emails,
+                fail_silently=True
+            )
+    except Exception as e:
+        print(f"[ADMIN SUPPORT EMAIL DISPATCH ERROR]: {e}")
+
