@@ -597,6 +597,53 @@
         color: #fff;
     }
 
+    /* Hero Overall Progress Ring Card */
+    .hero-progress-ring-card {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .hero-progress-ring-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(0, 243, 255, 0.35);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+    }
+    .hero-ring-wrapper {
+        width: 60px; height: 60px;
+    }
+    .hero-ring-svg {
+        width: 60px; height: 60px;
+    }
+    .hero-ring-text {
+        font-size: 0.82rem;
+    }
+    .hero-ring-labels {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .hero-ring-tag {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .hero-ring-sub {
+        font-size: 0.70rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
     /* Faculty Info */
     .course-faculty-enhanced {
         display: flex;
@@ -1790,6 +1837,9 @@
         <div class="user-info">
             <h1>Welcome, <span>{{ request.user.first_name|default:request.user.username }}</span></h1>
             <div class="badge-pill-row">
+                {% if request.user.student_id %}
+                <span class="level-badge" style="border-color: rgba(0, 243, 255, 0.4);"><i class="fas fa-id-card"></i> ID: #{{ request.user.student_id }}</span>
+                {% endif %}
                 <span class="level-badge"><i class="fas fa-shield-alt"></i> LEVEL: {{ request.user.student_level }}</span>
                 <span class="streak-badge"><i class="fas fa-fire"></i> {{ study_streak|default:0 }} Day{{ study_streak|default:0|pluralize }} Streak</span>
             </div>
@@ -1808,6 +1858,27 @@
                 <div class="mini-stat amber">
                     <div class="mini-stat-number">{{ request.user.lms_coins }}</div>
                     <div class="mini-stat-label">Coins</div>
+                </div>
+            </div>
+
+            <!-- 🌟 HERO OVERALL ACTIVITY RING (GOL GRAPH) 🌟 -->
+            <div class="hero-progress-ring-card" title="Overall Academic Mastery: {{ overall_progress|floatformat:0 }}% ({{ total_completed_lessons }}/{{ total_all_lessons }} Tasks Completed)">
+                <div class="progress-ring-wrapper hero-ring-wrapper">
+                    <svg class="progress-ring-svg hero-ring-svg" viewBox="0 0 68 68">
+                        <circle class="progress-ring-bg" cx="34" cy="34" r="28" stroke-width="5" />
+                        <circle class="progress-ring-fill js-set-offset {% if overall_progress >= 100 %}complete{% endif %}" 
+                            cx="34" cy="34" r="28" stroke-width="5"
+                            style="stroke-dasharray: 175.93; stroke-dashoffset: {{ overall_ring_offset|default:'175.93' }};"
+                            data-offset="{{ overall_ring_offset|default:'175.93' }}"
+                            data-progress="{{ overall_progress|default:0 }}" />
+                    </svg>
+                    <div class="progress-ring-text hero-ring-text">
+                        {{ overall_progress|floatformat:0 }}<small style="font-size:0.6rem; color:#888;">%</small>
+                    </div>
+                </div>
+                <div class="hero-ring-labels">
+                    <span class="hero-ring-tag"><i class="fas fa-bullseye"></i> GOAL</span>
+                    <span class="hero-ring-sub">{{ total_completed_lessons }}/{{ total_all_lessons }} Tasks</span>
                 </div>
             </div>
 
@@ -2342,21 +2413,37 @@
 <!-- JAVASCRIPT & CHART.JS INITIALIZATION          -->
 <!-- ============================================= -->
 <script>
-    // 1. Animate Progress Rings
+    // 1. Animate Progress Rings (Both Hero Master Ring & Course Cards)
     function animateProgressRings() {
         document.querySelectorAll('.progress-ring-fill').forEach(ring => {
             const progress = parseFloat(ring.getAttribute('data-progress') || (ring.dataset && ring.dataset.progress)) || 0;
-            const circumference = 2 * Math.PI * 26;
-            const offset = circumference - (Math.min(100, Math.max(0, progress)) / 100) * circumference;
+            const r = parseFloat(ring.getAttribute('r')) || 26;
+            const circumference = 2 * Math.PI * r;
+            const cleanProgress = Math.min(100, Math.max(0, progress));
+            const targetOffset = circumference - (cleanProgress / 100) * circumference;
+            
             ring.style.strokeDasharray = circumference;
-            setTimeout(() => { ring.style.strokeDashoffset = offset; }, 60);
+            // Start at empty circumference and smoothly sweep to target offset
+            ring.style.strokeDashoffset = circumference;
+            requestAnimationFrame(() => {
+                setTimeout(() => { 
+                    ring.style.strokeDashoffset = targetOffset; 
+                    if (cleanProgress >= 100) {
+                        ring.classList.add('complete');
+                    }
+                }, 40);
+            });
         });
         document.querySelectorAll('.js-set-width').forEach(el => {
             const w = el.getAttribute('data-width');
             if (w) el.style.width = w;
         });
     }
-    animateProgressRings();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', animateProgressRings);
+    } else {
+        animateProgressRings();
+    }
 
     // 2. Modals (Notifications handled globally by notification_modal.html)
 
