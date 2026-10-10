@@ -1,0 +1,1518 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ======================================================== */
+    /* 🌌 EXECUTIVE CYBERPUNK SUPPORT MAILBOX & HELPDESK         */
+    /* ======================================================== */
+
+    .support-wrap {
+        padding: 28px 32px 48px;
+        max-width: 1700px;
+        margin: 0 auto;
+        color: var(--text-primary);
+    }
+
+    /* Ambient Background Light Mesh */
+    .support-ambient-mesh {
+        position: fixed;
+        top: 80px;
+        right: 12%;
+        width: 650px;
+        height: 650px;
+        background: radial-gradient(circle, rgba(0, 212, 255, 0.04) 0%, rgba(108, 99, 255, 0.03) 40%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* --- Page Top Header --- */
+    .support-page-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 26px 32px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+    }
+    .support-page-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, #00d4ff 0%, #6C63FF 40%, #a855f7 70%, #00e676 100%);
+    }
+
+    .support-header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .support-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--secondary);
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        width: fit-content;
+    }
+    .support-title-text {
+        font-size: 1.85rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: -0.5px;
+    }
+    .support-subtitle-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .admin-sync-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 18px;
+        border-radius: 99px;
+        background: rgba(0, 230, 118, 0.06);
+        border: 1px solid rgba(0, 230, 118, 0.25);
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0, 230, 118, 0.08);
+    }
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-green);
+        box-shadow: 0 0 10px var(--accent-green);
+        animation: pulseNeon 1.8s infinite;
+    }
+    @keyframes pulseNeon {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    /* --- Four KPI Stat Cards --- */
+    .support-stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+    .stat-kpi-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 20px 22px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    }
+    .stat-kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+    }
+    .stat-kpi-card.c-amber::before { background: linear-gradient(90deg, #ffb74d, transparent); }
+    .stat-kpi-card.c-cyan::before { background: linear-gradient(90deg, #00d4ff, transparent); }
+    .stat-kpi-card.c-green::before { background: linear-gradient(90deg, #00e676, transparent); }
+    .stat-kpi-card.c-purple::before { background: linear-gradient(90deg, #a855f7, transparent); }
+
+    .stat-kpi-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--glass-border-hover);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+    }
+    .stat-kpi-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+    .stat-kpi-card.c-amber .stat-kpi-icon { background: rgba(255, 183, 77, 0.12); color: #ffb74d; border: 1px solid rgba(255, 183, 77, 0.25); }
+    .stat-kpi-card.c-cyan .stat-kpi-icon { background: rgba(0, 212, 255, 0.12); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.25); }
+    .stat-kpi-card.c-green .stat-kpi-icon { background: rgba(0, 230, 118, 0.12); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.25); }
+    .stat-kpi-card.c-purple .stat-kpi-icon { background: rgba(168, 85, 247, 0.12); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.25); }
+
+    .stat-kpi-val {
+        font-family: var(--font-mono);
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .stat-kpi-lbl {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+    }
+
+    /* --- Control Filter Deck --- */
+    .control-deck-row {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 16px 22px;
+        margin-bottom: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .filter-tabs-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .filter-tab-pill {
+        padding: 7px 16px;
+        border-radius: 99px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        color: var(--text-secondary);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .filter-tab-pill:hover {
+        color: #fff;
+        background: rgba(108, 99, 255, 0.15);
+        border-color: rgba(108, 99, 255, 0.4);
+        transform: translateY(-1px);
+    }
+    .filter-tab-pill.active {
+        color: #fff;
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.35), rgba(0, 212, 255, 0.25));
+        border-color: var(--secondary);
+        box-shadow: 0 0 16px rgba(0, 212, 255, 0.25);
+    }
+    .pill-counter {
+        font-size: 0.7rem;
+        padding: 2px 7px;
+        border-radius: 99px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-tools-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .cyber-search-box {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 4px 14px;
+        min-width: 300px;
+        transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .cyber-search-box:focus-within {
+        border-color: var(--secondary);
+        box-shadow: 0 0 16px rgba(0, 212, 255, 0.25);
+    }
+    .cyber-search-box input {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 0.88rem;
+        padding: 7px 10px;
+        outline: none;
+        width: 100%;
+        font-family: var(--font-body);
+    }
+    .cyber-search-box button {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px;
+        transition: color 0.2s;
+    }
+    .cyber-search-box button:hover { color: var(--secondary); }
+
+    /* Layout Toggle */
+    .view-toggle-wrap {
+        display: inline-flex;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 3px;
+    }
+    .view-toggle-btn {
+        padding: 6px 14px;
+        border-radius: 7px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .view-toggle-btn.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ======================================================== */
+    /* 📬 SPLIT MASTER-DETAIL MAILBOX WORKSPACE                 */
+    /* ======================================================== */
+    .mailbox-workspace {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 22px;
+        min-height: 720px;
+        align-items: stretch;
+    }
+
+    /* Left Column: Tickets Feed */
+    .inbox-list-pane {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        max-height: 840px;
+    }
+    .inbox-pane-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(10, 10, 30, 0.45);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .inbox-pane-header h3 {
+        font-size: 0.96rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .inbox-pane-badge {
+        font-size: 0.74rem;
+        padding: 3px 9px;
+        border-radius: 99px;
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        color: var(--secondary);
+        font-weight: 700;
+    }
+
+    .inbox-scroll-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .inbox-scroll-area::-webkit-scrollbar { width: 5px; }
+    .inbox-scroll-area::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+    }
+    .inbox-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+
+    /* Single Ticket Feed Item */
+    .inbox-item-card {
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+        cursor: pointer;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        border-left: 4px solid transparent;
+    }
+    .inbox-item-card.status-pending { border-left-color: #ffb74d; }
+    .inbox-item-card.status-in_progress { border-left-color: #00d4ff; }
+    .inbox-item-card.status-resolved { border-left-color: #00e676; }
+    .inbox-item-card.status-closed { border-left-color: rgba(160, 160, 184, 0.5); }
+
+    .inbox-item-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(0, 212, 255, 0.3);
+        transform: translateX(3px);
+    }
+    .inbox-item-card.active {
+        background: linear-gradient(135deg, rgba(108, 99, 255, 0.16), rgba(0, 212, 255, 0.12));
+        border-color: var(--secondary);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.18);
+        border-left-width: 5px;
+    }
+
+    .item-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .item-user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .item-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #fff;
+        font: 700 0.85rem 'Space Grotesk', sans-serif;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        overflow: hidden;
+    }
+    .item-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .item-user-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+    }
+    .item-student-id {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--secondary);
+        background: rgba(0, 212, 255, 0.09);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        padding: 1px 6px;
+        border-radius: 5px;
+        font-weight: 700;
+    }
+
+    .item-ticket-number {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+
+    .item-subject-line {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+    }
+    .item-snippet {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .item-bottom-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .badge-pill-cat {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .badge-pill-status {
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 99px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+    .badge-pill-status.pending { background: rgba(255, 183, 77, 0.12); color: #ffb74d; border: 1px solid rgba(255, 183, 77, 0.3); }
+    .badge-pill-status.in_progress { background: rgba(0, 212, 255, 0.12); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); }
+    .badge-pill-status.resolved { background: rgba(0, 230, 118, 0.12); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3); }
+    .badge-pill-status.closed { background: rgba(160, 160, 184, 0.12); color: #a0a0b8; border: 1px solid rgba(160, 160, 184, 0.3); }
+
+    .item-time-stamp {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+    }
+
+    /* Right Column: Active Reading & Resolution Workspace */
+    .reading-workspace-pane {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        padding: 28px 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        position: relative;
+        overflow-y: auto;
+        max-height: 840px;
+    }
+    .reading-workspace-pane::-webkit-scrollbar { width: 6px; }
+    .reading-workspace-pane::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+    }
+
+    /* Detail View Header */
+    .detail-top-banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--glass-border);
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .detail-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .detail-tag-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .detail-tkt-id {
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: var(--secondary);
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        padding: 3px 10px;
+        border-radius: 7px;
+    }
+    .detail-subject-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 4px 0 0;
+        line-height: 1.35;
+    }
+
+    .detail-actions-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-top-action {
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-del-tkt {
+        background: rgba(255, 51, 102, 0.08);
+        border: 1px solid rgba(255, 51, 102, 0.25);
+        color: var(--accent-red);
+    }
+    .btn-del-tkt:hover {
+        background: rgba(255, 51, 102, 0.22);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    /* Sender Information Strip */
+    .sender-card-strip {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-lg);
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+    .sender-profile-flex {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .sender-avatar-large {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #fff;
+        font: 800 1.15rem 'Space Grotesk', sans-serif;
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .sender-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+    .sender-name-text {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 3px;
+    }
+    .sender-contact-details {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .sender-contact-details a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .sender-contact-details a:hover { color: var(--secondary); }
+
+    .sender-action-pills {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .btn-contact-pill {
+        padding: 6px 13px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #e2e8f0;
+        transition: all 0.2s;
+    }
+    .btn-contact-pill:hover {
+        background: rgba(0, 212, 255, 0.15);
+        border-color: var(--secondary);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    /* Inquiry Message Box */
+    .inquiry-message-card {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-lg);
+        padding: 20px 24px;
+        margin-bottom: 22px;
+        position: relative;
+    }
+    .inquiry-label {
+        font-size: 0.74rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--secondary);
+        letter-spacing: 0.8px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .inquiry-body-text {
+        font-size: 0.95rem;
+        color: #e2e8f0;
+        line-height: 1.68;
+        white-space: pre-wrap;
+    }
+
+    /* Admin Resolution Strip (if resolved) */
+    .admin-prev-reply-card {
+        background: rgba(0, 230, 118, 0.06);
+        border: 1px solid rgba(0, 230, 118, 0.25);
+        border-radius: var(--radius-lg);
+        padding: 18px 22px;
+        margin-bottom: 22px;
+    }
+    .reply-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .reply-card-title {
+        color: var(--accent-green);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .reply-card-time {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+    }
+    .reply-card-text {
+        color: #f1f5f9;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    /* --- Inline Resolution Console Form --- */
+    .resolution-console-card {
+        background: rgba(14, 14, 34, 0.6);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        border-radius: var(--radius-lg);
+        padding: 22px 24px;
+        margin-top: auto;
+        position: relative;
+    }
+    .console-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .console-title {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--accent-green);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .canned-pills-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .btn-canned-chip {
+        padding: 4px 11px;
+        border-radius: 7px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--secondary);
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-canned-chip:hover {
+        background: rgba(0, 212, 255, 0.22);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .resolution-textarea {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        color: #fff;
+        font-family: var(--font-body);
+        font-size: 0.92rem;
+        padding: 14px 16px;
+        box-sizing: border-box;
+        margin-bottom: 12px;
+        resize: vertical;
+        min-height: 100px;
+        transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .resolution-textarea:focus {
+        border-color: var(--secondary);
+        outline: none;
+        box-shadow: 0 0 16px rgba(0, 212, 255, 0.25);
+    }
+
+    .console-actions-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+    .status-dropdown-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .status-dropdown-wrap label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
+    .status-dropdown-wrap select {
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        outline: none;
+    }
+
+    .btn-dispatch-res {
+        padding: 10px 24px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent-green), #00b0ff);
+        color: #030014;
+        font-weight: 800;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 18px rgba(0, 230, 118, 0.35);
+        transition: all 0.25s ease;
+    }
+    .btn-dispatch-res:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 230, 118, 0.55);
+    }
+
+    /* ======================================================== */
+    /* 📋 DATA GRID TABLE VIEW (ALTERNATIVE MODE)               */
+    /* ======================================================== */
+    .table-view-container {
+        display: none;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    }
+    .table-view-container.active { display: block; }
+
+    .table-cyber {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-cyber thead {
+        background: rgba(10, 10, 30, 0.5);
+        border-bottom: 1px solid var(--glass-border);
+    }
+    .table-cyber th {
+        padding: 16px 20px;
+        color: var(--text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        letter-spacing: 1px;
+        text-align: left;
+    }
+    .table-cyber td {
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+    .table-cyber tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    /* Empty State */
+    .empty-inbox-state {
+        text-align: center;
+        padding: 70px 24px;
+        color: var(--text-muted);
+        grid-column: 1 / -1;
+    }
+    .empty-inbox-state i {
+        font-size: 3.5rem;
+        color: rgba(255, 255, 255, 0.08);
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .mailbox-workspace { grid-template-columns: 360px 1fr; }
+    }
+    @media (max-width: 992px) {
+        .support-stats-row { grid-template-columns: repeat(2, 1fr); }
+        .mailbox-workspace { grid-template-columns: 1fr; }
+        .inbox-list-pane { max-height: 480px; }
+    }
+    @media (max-width: 600px) {
+        .support-wrap { padding: 18px 14px; }
+        .support-stats-row { grid-template-columns: 1fr; }
+        .control-deck-row { flex-direction: column; align-items: stretch; }
+        .cyber-search-box { min-width: 100%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="support-ambient-mesh"></div>
+
+<div class="support-wrap">
+
+    <!-- 1. Executive Top Header -->
+    <div class="support-page-header">
+        <div class="support-header-left">
+            <div class="support-badge-pill">
+                <i class="fas fa-satellite-dish"></i> Live Helpdesk Desk
+            </div>
+            <h1 class="support-title-text">
+                <i class="fas fa-headset" style="color:var(--secondary);"></i>
+                Support Mailbox & Helpdesk Desk
+            </h1>
+            <p class="support-subtitle-text">Centralized real-time inquiry management connecting students, visitors, and all 4 system administrators.</p>
+        </div>
+
+        <div class="admin-sync-indicator">
+            <div class="pulse-dot"></div>
+            <span>All 4 Administrators Synchronized</span>
+        </div>
+    </div>
+
+    <!-- 2. Four KPI Stat Overview Cards -->
+    <div class="support-stats-row">
+        <div class="stat-kpi-card c-amber">
+            <div class="stat-kpi-icon"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="stat-kpi-val">{{ pending_count }}</div>
+                <div class="stat-kpi-lbl">Pending Review</div>
+            </div>
+        </div>
+
+        <div class="stat-kpi-card c-cyan">
+            <div class="stat-kpi-icon"><i class="fas fa-spinner"></i></div>
+            <div>
+                <div class="stat-kpi-val">{{ in_progress_count }}</div>
+                <div class="stat-kpi-lbl">Under Investigation</div>
+            </div>
+        </div>
+
+        <div class="stat-kpi-card c-green">
+            <div class="stat-kpi-icon"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="stat-kpi-val">{{ resolved_count }}</div>
+                <div class="stat-kpi-lbl">Resolved Inquiries</div>
+            </div>
+        </div>
+
+        <div class="stat-kpi-card c-purple">
+            <div class="stat-kpi-icon"><i class="fas fa-inbox"></i></div>
+            <div>
+                <div class="stat-kpi-val">{{ total_count }}</div>
+                <div class="stat-kpi-lbl">Total Received</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Filter Deck, View Toggle & Search -->
+    <div class="control-deck-row">
+        <div class="filter-tabs-group">
+            <a href="?status=all{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'all' or not current_status %}active{% endif %}">
+                <i class="fas fa-layer-group"></i> All Inbound
+                <span class="pill-counter">{{ total_count }}</span>
+            </a>
+            <a href="?status=pending{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'pending' %}active{% endif %}">
+                <i class="fas fa-exclamation-circle" style="color:#ffb74d;"></i> Pending
+                <span class="pill-counter" style="color:#ffb74d;">{{ pending_count }}</span>
+            </a>
+            <a href="?status=in_progress{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'in_progress' %}active{% endif %}">
+                <i class="fas fa-spinner" style="color:#00d4ff;"></i> In Progress
+                <span class="pill-counter" style="color:#00d4ff;">{{ in_progress_count }}</span>
+            </a>
+            <a href="?status=resolved{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'resolved' %}active{% endif %}">
+                <i class="fas fa-check-circle" style="color:#00e676;"></i> Resolved
+                <span class="pill-counter" style="color:#00e676;">{{ resolved_count }}</span>
+            </a>
+        </div>
+
+        <div class="filter-tools-right">
+            <!-- View Mode Switcher -->
+            <div class="view-toggle-wrap">
+                <button type="button" class="view-toggle-btn active" id="btnMailboxView" onclick="setSupportView('mailbox')">
+                    <i class="fas fa-columns"></i> Mailbox Desk
+                </button>
+                <button type="button" class="view-toggle-btn" id="btnTableView" onclick="setSupportView('table')">
+                    <i class="fas fa-table"></i> Data Grid
+                </button>
+            </div>
+
+            <!-- Search Form -->
+            <form method="GET" class="cyber-search-box">
+                {% if current_status and current_status != 'all' %}
+                    <input type="hidden" name="status" value="{{ current_status }}">
+                {% endif %}
+                <i class="fas fa-search" style="color:var(--text-muted); font-size:0.85rem;"></i>
+                <input type="text" name="search" placeholder="Search ticket #, student, email, ID..." value="{{ search_query }}">
+                {% if search_query %}
+                    <a href="?status={{ current_status|default:'all' }}" style="color:var(--text-muted); text-decoration:none; padding:0 4px;" title="Clear Search"><i class="fas fa-times"></i></a>
+                {% endif %}
+                <button type="submit" title="Search"><i class="fas fa-arrow-right"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. SPLIT MASTER-DETAIL WORKSPACE (Default Mode) -->
+    <div class="mailbox-workspace" id="mailboxContainer">
+        
+        <!-- Left: Tickets Feed Column -->
+        <div class="inbox-list-pane">
+            <div class="inbox-pane-header">
+                <h3><i class="fas fa-envelope-open-text" style="color:var(--secondary);"></i> Inbound Queue</h3>
+                <span class="inbox-pane-badge">{{ tickets|length }} Loaded</span>
+            </div>
+
+            <div class="inbox-scroll-area" id="inboxItemsList">
+                {% if tickets %}
+                    {% for t in tickets %}
+                    <div class="inbox-item-card status-{{ t.status }} {% if forloop.first %}active{% endif %}"
+                         id="itemCard_{{ t.id }}"
+                         onclick="selectTicket({{ t.id }})"
+                         data-id="{{ t.id }}"
+                         data-num="{{ t.ticket_number }}"
+                         data-name="{{ t.name|escapejs }}"
+                         data-email="{{ t.email|escapejs }}"
+                         data-phone="{{ t.phone|default:''|escapejs }}"
+                         data-sid="{{ t.student_id_code|default:''|escapejs }}"
+                         data-cat="{{ t.get_category_display|escapejs }}"
+                         data-cat-code="{{ t.category }}"
+                         data-priority="{{ t.priority }}"
+                         data-source="{{ t.get_source_display|escapejs }}"
+                         data-status="{{ t.status }}"
+                         data-subject="{{ t.subject|escapejs }}"
+                         data-message="{{ t.message|escapejs }}"
+                         data-reply="{{ t.admin_reply|default:''|escapejs }}"
+                         data-replied-by="{% if t.replied_by %}{{ t.replied_by.first_name|default:t.replied_by.username|escapejs }}{% endif %}"
+                         data-replied-at="{% if t.replied_at %}{{ t.replied_at|date:'d M, Y • h:i A' }}{% endif %}"
+                         data-date="{{ t.created_at|date:'d M, Y • h:i A' }}"
+                         data-avatar="{% if t.student and t.student.profile_pic_url %}{{ t.student.profile_pic_url }}{% endif %}">
+
+                        <div class="item-top-row">
+                            <div class="item-user-info">
+                                <div class="item-avatar">
+                                    {% if t.student and t.student.profile_pic_url %}
+                                        <img src="{{ t.student.profile_pic_url }}" alt="{{ t.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                        <span style="display:none;">{{ t.name.0|upper }}</span>
+                                    {% else %}
+                                        <span>{{ t.name.0|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="item-user-name">{{ t.name }}</div>
+                                    {% if t.student_id_code %}
+                                        <span class="item-student-id">#{{ t.student_id_code }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <span class="item-ticket-number">#{{ t.ticket_number }}</span>
+                        </div>
+
+                        <div class="item-subject-line">{{ t.subject }}</div>
+                        <div class="item-snippet">{{ t.message }}</div>
+
+                        <div class="item-bottom-meta">
+                            <span class="badge-pill-cat">
+                                {% if t.category == 'password_reset' %}<i class="fas fa-key" style="color:#00d4ff;"></i>
+                                {% elif t.category == 'login_issue' %}<i class="fas fa-lock" style="color:#ffb74d;"></i>
+                                {% elif t.category == 'course_doubt' %}<i class="fas fa-graduation-cap" style="color:#a855f7;"></i>
+                                {% elif t.category == 'payment_coins' %}<i class="fas fa-coins" style="color:#ffd700;"></i>
+                                {% elif t.category == 'technical_bug' %}<i class="fas fa-bug" style="color:#ff3366;"></i>
+                                {% else %}<i class="fas fa-comment-dots" style="color:#00d4ff;"></i>
+                                {% endif %}
+                                {{ t.get_category_display }}
+                            </span>
+
+                            <span class="badge-pill-status {{ t.status }}">
+                                {% if t.status == 'pending' %}Pending
+                                {% elif t.status == 'in_progress' %}In Progress
+                                {% elif t.status == 'resolved' %}Resolved
+                                {% else %}Closed{% endif %}
+                            </span>
+
+                            <span class="item-time-stamp">{{ t.created_at|date:"d M" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-inbox-state">
+                        <i class="fas fa-inbox"></i>
+                        <h4 style="color:#fff; margin:0 0 6px;">No Tickets Found</h4>
+                        <p style="font-size:0.85rem; margin:0;">No support inquiries match the selected filter.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Active Reading & Resolution Workspace -->
+        <div class="reading-workspace-pane" id="detailWorkspace">
+            {% if tickets %}
+                <!-- Populated dynamically via JS from active ticket data -->
+                <div>
+                    <!-- Banner -->
+                    <div class="detail-top-banner">
+                        <div class="detail-title-block">
+                            <div class="detail-tag-row">
+                                <span class="detail-tkt-id" id="dW_TicketNumber">#TKT-000000</span>
+                                <span class="badge-pill-status" id="dW_StatusBadge">Pending</span>
+                                <span class="badge-pill-cat" id="dW_CategoryBadge"><i class="fas fa-tag"></i> Category</span>
+                                <span class="badge-pill-cat" id="dW_SourceBadge"><i class="fas fa-globe"></i> Portal</span>
+                            </div>
+                            <h2 class="detail-subject-title" id="dW_SubjectTitle">Subject Heading</h2>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;" id="dW_DateSent">
+                                Sent on 10 Oct, 2026
+                            </div>
+                        </div>
+
+                        <div class="detail-actions-top">
+                            <form method="POST" id="dW_DeleteForm" onsubmit="return confirm('Permanently delete this support ticket?');" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-top-action btn-del-tkt" title="Delete Ticket">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sender Info Strip -->
+                    <div class="sender-card-strip">
+                        <div class="sender-profile-flex">
+                            <div class="sender-avatar-large" id="dW_AvatarWrapper">
+                                <span id="dW_AvatarInitial">S</span>
+                            </div>
+                            <div>
+                                <div class="sender-name-text">
+                                    <span id="dW_SenderName">Student Name</span>
+                                    <span class="item-student-id" id="dW_StudentID">#123456</span>
+                                </div>
+                                <div class="sender-contact-details">
+                                    <a href="mailto:" id="dW_EmailLink"><i class="far fa-envelope"></i> <span id="dW_SenderEmail">email@example.com</span></a>
+                                    <span id="dW_PhoneWrap"><i class="fas fa-phone"></i> <a href="tel:" id="dW_PhoneLink"><span id="dW_SenderPhone">+1234567890</span></a></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sender-action-pills">
+                            <a href="mailto:" id="dW_ActionEmailBtn" class="btn-contact-pill"><i class="far fa-envelope"></i> Email</a>
+                            <a href="tel:" id="dW_ActionCallBtn" class="btn-contact-pill"><i class="fas fa-phone"></i> Call</a>
+                            <button type="button" class="btn-contact-pill" onclick="copySenderInfo()"><i class="far fa-copy"></i> Copy Info</button>
+                        </div>
+                    </div>
+
+                    <!-- Customer Message Card -->
+                    <div class="inquiry-message-card">
+                        <div class="inquiry-label">
+                            <i class="fas fa-quote-left"></i> Student Problem Description
+                        </div>
+                        <div class="inquiry-body-text" id="dW_MessageBody">
+                            Detailed student message will be rendered here.
+                        </div>
+                    </div>
+
+                    <!-- Previous Admin Reply (Conditional) -->
+                    <div class="admin-prev-reply-card" id="dW_PrevReplyBox" style="display:none;">
+                        <div class="reply-card-head">
+                            <div class="reply-card-title">
+                                <i class="fas fa-user-shield"></i> <span id="dW_RepliedByAdmin">Resolved by Admin</span>
+                            </div>
+                            <div class="reply-card-time" id="dW_RepliedAtTime">10 Oct, 18:30</div>
+                        </div>
+                        <div class="reply-card-text" id="dW_PrevReplyText">
+                            Previous reply content.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Embedded Resolution Console -->
+                <div class="resolution-console-card">
+                    <form method="POST" id="dW_ReplyForm">
+                        {% csrf_token %}
+                        <div class="console-header-row">
+                            <div class="console-title">
+                                <i class="fas fa-reply-all"></i> Dispatch Administrator Resolution:
+                            </div>
+
+                            <div class="canned-pills-row">
+                                <button type="button" class="btn-canned-chip" onclick="insertCannedSnippet('password_reset')">+ Password Credentials</button>
+                                <button type="button" class="btn-canned-chip" onclick="insertCannedSnippet('investigating')">+ Under Investigation</button>
+                                <button type="button" class="btn-canned-chip" onclick="insertCannedSnippet('solved')">+ Problem Solved</button>
+                                <button type="button" class="btn-canned-chip" onclick="insertCannedSnippet('verify')">+ Verify Details</button>
+                            </div>
+                        </div>
+
+                        <textarea name="admin_reply" id="dW_ReplyTextarea" class="resolution-textarea" placeholder="Type direct resolution or instructions to send to student's portal notifications and email..." required></textarea>
+
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-paper-plane" style="color:var(--secondary);"></i>
+                            Dispatches instant in-app portal notification and sends direct email to the student.
+                        </div>
+
+                        <div class="console-actions-row">
+                            <div class="status-dropdown-wrap">
+                                <label for="dW_StatusSelect">Ticket Status:</label>
+                                <select name="status" id="dW_StatusSelect">
+                                    <option value="resolved">Resolved ✓</option>
+                                    <option value="in_progress">Under Investigation ⚙</option>
+                                    <option value="pending">Pending ⏳</option>
+                                    <option value="closed">Closed ✕</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn-dispatch-res">
+                                <i class="fas fa-check"></i> Dispatch Resolution to Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            {% else %}
+                <div class="empty-inbox-state" style="margin:auto;">
+                    <i class="fas fa-envelope-open" style="font-size:4rem;"></i>
+                    <h3 style="color:#fff; margin-bottom:8px;">No Inquiry Selected</h3>
+                    <p style="font-size:0.9rem; margin:0;">Inquiries will appear here when submitted by students or visitors.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 5. DATA GRID TABLE VIEW (Alternative Mode) -->
+    <div class="table-view-container" id="tableContainer">
+        <table class="table-cyber">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Student / Sender</th>
+                    <th>Category</th>
+                    <th>Subject & Snippet</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if tickets %}
+                    {% for t in tickets %}
+                    <tr>
+                        <td><span class="detail-tkt-id">#{{ t.ticket_number }}</span></td>
+                        <td>
+                            <strong style="color:#fff;">{{ t.name }}</strong>
+                            {% if t.student_id_code %}<span class="item-student-id" style="margin-left:4px;">#{{ t.student_id_code }}</span>{% endif %}
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">{{ t.email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge-pill-cat">{{ t.get_category_display }}</span>
+                        </td>
+                        <td>
+                            <div style="font-weight:700; color:#fff; max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.subject }}</div>
+                            <div style="font-size:0.78rem; color:var(--text-muted); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.message }}</div>
+                        </td>
+                        <td>
+                            <span class="badge-pill-status {{ t.status }}">
+                                {% if t.status == 'pending' %}Pending
+                                {% elif t.status == 'in_progress' %}In Progress
+                                {% elif t.status == 'resolved' %}Resolved
+                                {% else %}Closed{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="font-size:0.82rem; color:var(--text-secondary);">{{ t.created_at|date:"d M, Y" }}</div>
+                        </td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex; align-items:center; gap:8px;">
+                                <button type="button" class="btn-contact-pill" onclick="switchToTicket({{ t.id }})">
+                                    <i class="fas fa-reply"></i> Open
+                                </button>
+                                <form method="POST" action="{% url 'admin_delete_support_ticket' t.id %}" onsubmit="return confirm('Permanently delete ticket #{{ t.ticket_number }}?');" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-top-action btn-del-tkt" style="padding:6px 10px;" title="Delete Ticket"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">
+                            No support tickets found in this filter.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 6. Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div style="display:flex; justify-content:center; gap:8px; margin-top:26px;">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&status={{ current_status|default:'all' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill">&laquo; Previous</a>
+        {% endif %}
+        <span class="filter-tab-pill active">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&status={{ current_status|default:'all' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    // Global active ticket data store
+    let currentActiveTicket = null;
+
+    function selectTicket(id) {
+        const item = document.getElementById('itemCard_' + id);
+        if (!item) return;
+
+        // Active class toggle
+        document.querySelectorAll('.inbox-item-card').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+
+        // Extract dataset
+        const data = item.dataset;
+        currentActiveTicket = data;
+
+        // Populate Right Pane Workspace
+        document.getElementById('dW_TicketNumber').innerText = '#' + data.num;
+        
+        // Status Badge
+        const statusBadge = document.getElementById('dW_StatusBadge');
+        statusBadge.className = 'badge-pill-status ' + data.status;
+        statusBadge.innerText = data.status === 'pending' ? 'Pending' : (data.status === 'in_progress' ? 'In Progress' : (data.status === 'resolved' ? 'Resolved' : 'Closed'));
+
+        // Category Badge
+        document.getElementById('dW_CategoryBadge').innerHTML = '<i class="fas fa-tag"></i> ' + data.cat;
+        
+        // Source Badge
+        document.getElementById('dW_SourceBadge').innerHTML = '<i class="fas fa-globe"></i> ' + (data.source || 'Portal');
+
+        // Subject & Date
+        document.getElementById('dW_SubjectTitle').innerText = data.subject;
+        document.getElementById('dW_DateSent').innerText = 'Received on ' + data.date;
+
+        // Delete Form Action
+        document.getElementById('dW_DeleteForm').action = '/admin-panel/support-tickets/' + id + '/delete/';
+
+        // Sender Info
+        document.getElementById('dW_SenderName').innerText = data.name;
+        document.getElementById('dW_StudentID').innerText = data.sid ? '#' + data.sid : 'Visitor';
+        document.getElementById('dW_SenderEmail').innerText = data.email;
+        document.getElementById('dW_EmailLink').href = 'mailto:' + data.email;
+        document.getElementById('dW_ActionEmailBtn').href = 'mailto:' + data.email;
+
+        // Phone
+        const phoneWrap = document.getElementById('dW_PhoneWrap');
+        const phoneLink = document.getElementById('dW_PhoneLink');
+        const callBtn = document.getElementById('dW_ActionCallBtn');
+        if (data.phone) {
+            phoneWrap.style.display = 'inline';
+            phoneLink.href = 'tel:' + data.phone;
+            document.getElementById('dW_SenderPhone').innerText = data.phone;
+            callBtn.style.display = 'inline-flex';
+            callBtn.href = 'tel:' + data.phone;
+        } else {
+            phoneWrap.style.display = 'none';
+            callBtn.style.display = 'none';
+        }
+
+        // Avatar
+        const avatarWrap = document.getElementById('dW_AvatarWrapper');
+        if (data.avatar) {
+            avatarWrap.innerHTML = `<img src="${data.avatar}" alt="${data.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span style="display:none;">${data.name.charAt(0).toUpperCase()}</span>`;
+        } else {
+            avatarWrap.innerHTML = `<span>${data.name.charAt(0).toUpperCase()}</span>`;
+        }
+
+        // Message Body
+        document.getElementById('dW_MessageBody').innerText = data.message;
+
+        // Previous Admin Reply
+        const prevReplyBox = document.getElementById('dW_PrevReplyBox');
+        if (data.reply) {
+            prevReplyBox.style.display = 'block';
+            document.getElementById('dW_RepliedByAdmin').innerText = 'Resolved by ' + (data.repliedBy || 'Admin');
+            document.getElementById('dW_RepliedAtTime').innerText = data.repliedAt || 'Recently';
+            document.getElementById('dW_PrevReplyText').innerText = data.reply;
+        } else {
+            prevReplyBox.style.display = 'none';
+        }
+
+        // Resolution Form Setup
+        document.getElementById('dW_ReplyForm').action = '/admin-panel/support-tickets/' + id + '/reply/';
+        document.getElementById('dW_ReplyTextarea').value = data.reply || '';
+        document.getElementById('dW_StatusSelect').value = data.status === 'pending' ? 'resolved' : data.status;
+    }
+
+    // Switch view mode (Mailbox vs Table)
+    function setSupportView(mode) {
+        const mailbox = document.getElementById('mailboxContainer');
+        const table = document.getElementById('tableContainer');
+        const btnMailbox = document.getElementById('btnMailboxView');
+        const btnTable = document.getElementById('btnTableView');
+
+        if (mode === 'table') {
+            mailbox.style.display = 'none';
+            table.classList.add('active');
+            btnMailbox.classList.remove('active');
+            btnTable.classList.add('active');
+            localStorage.setItem('admin_support_mode', 'table');
+        } else {
+            mailbox.style.display = 'grid';
+            table.classList.remove('active');
+            btnMailbox.classList.add('active');
+            btnTable.classList.remove('active');
+            localStorage.setItem('admin_support_mode', 'mailbox');
+        }
+    }
+
+    // Switch to ticket from Table view
+    function switchToTicket(id) {
+        setSupportView('mailbox');
+        selectTicket(id);
+        const item = document.getElementById('itemCard_' + id);
+        if (item) item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Quick Canned Response Inserter
+    function insertCannedSnippet(type) {
+        const area = document.getElementById('dW_ReplyTextarea');
+        const name = (currentActiveTicket ? currentActiveTicket.name.split(' ')[0] : 'Student') || 'Student';
+
+        if (type === 'password_reset') {
+            area.value = `Hello ${name},\n\nWe have verified your account details. Your temporary credentials have been generated:\nTemporary Password: TempPass${Math.floor(1000 + Math.random() * 9000)}!\n\nPlease sign in with your email/phone and immediately change your password in your Profile Settings.\n\nBest regards,\nAdministration Team`;
+            document.getElementById('dW_StatusSelect').value = 'resolved';
+        } else if (type === 'investigating') {
+            area.value = `Hello ${name},\n\nOur system administration team is currently investigating your inquiry. We are reviewing the logs and will follow up with an update shortly.\n\nBest regards,\nAdministration Team`;
+            document.getElementById('dW_StatusSelect').value = 'in_progress';
+        } else if (type === 'solved') {
+            area.value = `Hello ${name},\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that everything is working as expected.\n\nBest regards,\nAdministration Team`;
+            document.getElementById('dW_StatusSelect').value = 'resolved';
+        } else if (type === 'verify') {
+            area.value = `Hello ${name},\n\nPlease provide us with your 6-digit Student ID and registration phone number so we can verify account ownership and assist you promptly.\n\nBest regards,\nAdministration Team`;
+            document.getElementById('dW_StatusSelect').value = 'in_progress';
+        }
+        area.focus();
+    }
+
+    // Copy Contact Details
+    function copySenderInfo() {
+        if (!currentActiveTicket) return;
+        const text = `Name: ${currentActiveTicket.name}\nEmail: ${currentActiveTicket.email}\nPhone: ${currentActiveTicket.phone || 'N/A'}\nStudent ID: ${currentActiveTicket.sid || 'N/A'}\nTicket: #${currentActiveTicket.num}`;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Student contact details copied to clipboard!');
+        });
+    }
+
+    // Initialize first ticket on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstItem = document.querySelector('.inbox-item-card');
+        if (firstItem) {
+            const firstId = firstItem.getAttribute('data-id');
+            selectTicket(firstId);
+        }
+
+        const savedMode = localStorage.getItem('admin_support_mode');
+        if (savedMode === 'table') {
+            setSupportView('table');
+        }
+    });
+</script>
+{% endblock %}

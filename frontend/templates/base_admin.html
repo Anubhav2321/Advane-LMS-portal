@@ -876,6 +876,16 @@
             </li>
 
             <li>
+                <a href="{% url 'admin_support_tickets' %}" class="{% if 'support' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-headset" style="color: #00d4ff;"></i>
+                    <span>Support Mailbox</span>
+                    {% if pending_support_count %}
+                        <span style="margin-left: auto; background: #ff3366; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);">{{ pending_support_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+
+            <li>
                 <a href="{% url 'admin_profile' %}" class="{% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Profile</span>
