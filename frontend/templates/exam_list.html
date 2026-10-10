@@ -2,167 +2,719 @@
 {% load static %}
 
 {% block content %}
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
+    /* ======================================================== */
+    /* 🌌 STUDENT PORTAL UNIFIED DESIGN SYSTEM (DASHBOARD-MATCH) */
+    /* ======================================================== */
     :root {
-        --ac-bg: #07090e;
-        --ac-panel: rgba(255,255,255,0.035);
-        --ac-panel-2: rgba(255,255,255,0.06);
-        --ac-border: rgba(255,255,255,0.08);
-        --ac-text: #e8ecf4;
-        --ac-muted: #8b93a7;
-        --ac-cyan: #22d3ee;
-        --ac-blue: #3b82f6;
-        --ac-purple: #a855f7;
-        --ac-green: #34d399;
-        --ac-amber: #fbbf24;
-        --ac-red: #f43f5e;
+        --bg-dark: #07090e;
+        --card-bg: rgba(14, 18, 30, 0.95);
+        --card-bg-hover: rgba(22, 28, 45, 0.95);
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --neon-cyan: #00f3ff;
+        --neon-purple: #bc13fe;
+        --neon-blue: #3b82f6;
+        --accent-green: #00e676;
+        --accent-amber: #ffb74d;
+        --accent-red: #ff3366;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
     }
 
-    body { font-family: 'Inter', sans-serif; background-color: var(--ac-bg); color: var(--ac-text); }
+    /* Ambient Background Mesh */
+    .portal-ambient {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
+    }
 
-    .ac-page {
-        max-width: 1320px; margin: 0 auto; padding: 36px 32px 60px;
+    .portal-container {
+        padding: 35px 40px 80px;
+        max-width: 1440px;
+        margin: 0 auto;
+        font-family: 'Outfit', sans-serif;
+        color: var(--text-main);
+    }
+
+    /* ======================================================== */
+    /* 🚀 DOWN-TO-UP SMOOTH ENTRANCE ANIMATIONS                */
+    /* ======================================================== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.18s; }
+    .delay-3 { animation-delay: 0.26s; }
+
+    /* Staggered card entrance */
+    .stagger-card {
+        animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .stagger-card:nth-child(1) { animation-delay: 0.12s; }
+    .stagger-card:nth-child(2) { animation-delay: 0.17s; }
+    .stagger-card:nth-child(3) { animation-delay: 0.22s; }
+    .stagger-card:nth-child(4) { animation-delay: 0.27s; }
+    .stagger-card:nth-child(5) { animation-delay: 0.32s; }
+    .stagger-card:nth-child(6) { animation-delay: 0.37s; }
+    .stagger-card:nth-child(7) { animation-delay: 0.42s; }
+    .stagger-card:nth-child(8) { animation-delay: 0.47s; }
+
+    /* ======================================================== */
+    /* 1. HERO BANNER (NO LEFT-SIDE BLUE BAR)                   */
+    /* ======================================================== */
+    .portal-hero {
+        background: linear-gradient(135deg, rgba(20, 25, 42, 0.95), rgba(12, 15, 26, 0.98));
+        border: 1px solid var(--border-glass);
+        border-radius: 22px;
+        padding: 30px 38px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        margin-bottom: 26px;
+        position: relative;
+        overflow: hidden;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .portal-hero::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    .portal-badge-pill {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        color: var(--neon-cyan);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .portal-hero-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.1rem;
+        margin: 0 0 8px;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .portal-hero-title span {
+        background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .portal-hero-sub {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        line-height: 1.5;
+        max-width: 540px;
+    }
+
+    /* Mini Stats in Hero */
+    .mini-stats {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .mini-stat {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
+        padding: 12px 18px;
+        text-align: center;
+        min-width: 95px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .mini-stat:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .mini-stat-number {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+        font-weight: 700;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .mini-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
+    .mini-stat.purple .mini-stat-number { color: var(--neon-purple); }
+    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
+    .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+
+    /* ======================================================== */
+    /* 2. TOOLBAR / TABS / CONTROLS                             */
+    /* ======================================================== */
+    .portal-toolbar {
+        background: rgba(14, 18, 30, 0.85);
+        border: 1px solid var(--border-glass);
+        border-radius: 18px;
+        padding: 16px 22px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    .portal-tabs-bar {
+        display: inline-flex;
+        padding: 5px;
+        gap: 5px;
+        border-radius: 50px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border-glass);
+    }
+
+    .ac-tab {
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-muted);
+        padding: 8px 18px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.85rem 'Outfit', sans-serif;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ac-tab:hover {
+        color: #fff;
+    }
+
+    .ac-tab.active {
+        background: rgba(0, 243, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.18);
+    }
+
+    .ac-tab .count {
+        padding: 2px 8px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 0.72rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+    }
+    .ac-tab.active .count {
+        background: rgba(0, 243, 255, 0.25);
+        color: #fff;
+    }
+
+    .portal-controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .portal-search-wrap {
         position: relative;
     }
-    .ac-page::before {
-        content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-        background: radial-gradient(700px 360px at 8% 0%, rgba(59,130,246,0.14), transparent 65%),
-                    radial-gradient(600px 360px at 95% 20%, rgba(168,85,247,0.11), transparent 65%);
+    .portal-search-wrap i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.85rem;
     }
 
-    .glass {
-        background: var(--ac-panel);
-        border: 1px solid var(--ac-border);
+    .portal-search-input {
+        width: 260px;
+        padding: 10px 16px 10px 42px;
+        border-radius: 50px;
+        outline: none;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.88rem;
+        transition: all 0.25s ease;
+    }
+    .portal-search-input:focus {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.25);
+        background: rgba(0, 0, 0, 0.65);
+    }
+
+    .portal-select {
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.88rem;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.25s;
+    }
+    .portal-select:focus {
+        border-color: var(--neon-cyan);
+    }
+    .portal-select option {
+        background: #0d1222;
+        color: #fff;
+    }
+
+    /* ======================================================== */
+    /* 3. EXAM CARDS GRID (DASHBOARD-MATCHING)                  */
+    /* ======================================================== */
+    .portal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 24px;
+    }
+
+    .ex-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
         border-radius: 20px;
-        backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        position: relative;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
     }
 
-    /* Header */
-    .ac-hero { padding: 34px 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
-    .ac-eyebrow { color: var(--ac-cyan); font-size: .75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-    .ac-hero h1 { margin: 0 0 8px; font-size: 2.1rem; font-weight: 800; letter-spacing: -.5px; color: #fff; }
-    .ac-hero p { margin: 0; color: var(--ac-muted); max-width: 520px; line-height: 1.6; }
-
-    .ac-stats { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 12px; }
-    .ac-stat { padding: 16px 20px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--ac-border); text-align: left; }
-    .ac-stat b { display: block; font: 700 1.5rem 'JetBrains Mono', monospace; color: #fff; }
-    .ac-stat small { color: var(--ac-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: 1px; }
-
-    /* Toolbar */
-    .ac-toolbar { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 24px; }
-    .ac-tabs { display: inline-flex; padding: 5px; gap: 4px; border-radius: 14px; background: var(--ac-panel); border: 1px solid var(--ac-border); backdrop-filter: blur(14px); }
-    .ac-tab {
-        border: none; background: transparent; color: var(--ac-muted);
-        padding: 10px 22px; border-radius: 10px; cursor: pointer;
-        font: 600 .88rem 'Inter', sans-serif; transition: .2s;
+    .ex-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--border-glass-glow);
+        box-shadow: 0 18px 45px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
     }
-    .ac-tab:hover { color: #fff; }
-    .ac-tab.active { background: linear-gradient(135deg, var(--ac-blue), var(--ac-purple)); color: #fff; box-shadow: 0 6px 18px rgba(99,102,241,.35); }
-    .ac-tab .count { margin-left: 8px; padding: 1px 8px; border-radius: 99px; background: rgba(255,255,255,.14); font-size: .72rem; }
 
-    .ac-controls { display: flex; gap: 10px; flex-wrap: wrap; }
-    .ac-input, .ac-select {
-        background: var(--ac-panel); border: 1px solid var(--ac-border); color: var(--ac-text);
-        padding: 11px 16px; border-radius: 12px; font: 500 .88rem 'Inter', sans-serif; outline: none; transition: .2s;
-        backdrop-filter: blur(14px);
+    .ex-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
     }
-    .ac-input { min-width: 240px; }
-    .ac-input:focus, .ac-select:focus { border-color: rgba(59,130,246,.6); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
-    .ac-select option { background: #11141c; color: #fff; }
 
-    /* Grids */
-    .ac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 22px; }
+    .ex-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 1.25rem;
+        color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.1);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+    }
 
-    .ex-card { padding: 26px; display: flex; flex-direction: column; gap: 16px; transition: border-color .25s, transform .25s, box-shadow .25s; }
-    .ex-card:hover { border-color: rgba(59,130,246,.5); transform: translateY(-3px); box-shadow: 0 16px 44px rgba(0,0,0,.5), 0 0 0 1px rgba(59,130,246,.15); }
-    .ex-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .ex-icon { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; font-size: 1.15rem; color: var(--ac-cyan); background: rgba(34,211,238,.1); border: 1px solid rgba(34,211,238,.25); }
-    .tag { padding: 5px 12px; border-radius: 99px; font-size: .7rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; border: 1px solid var(--ac-border); color: var(--ac-muted); background: rgba(255,255,255,.04); }
-    .tag.done { color: var(--ac-green); border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.08); }
-    .tag.new { color: var(--ac-cyan); border-color: rgba(34,211,238,.35); background: rgba(34,211,238,.08); }
-    .ex-title { margin: 0; font-size: 1.25rem; font-weight: 700; color: #fff; line-height: 1.35; }
-    .ex-course { color: var(--ac-muted); font-size: .85rem; display: flex; align-items: center; gap: 8px; }
-    .ex-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .meta-box { padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--ac-border); }
-    .meta-box small { display: block; color: var(--ac-muted); font-size: .66rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-    .meta-box b { font: 700 .95rem 'JetBrains Mono', monospace; color: #fff; }
-    .ex-best { font-size: .8rem; color: var(--ac-muted); display: none; }
-    .ex-best b { color: var(--ac-green); }
+    .tag {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        border: 1px solid var(--border-glass);
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .tag.done {
+        color: var(--accent-green);
+        border-color: rgba(0, 230, 118, 0.4);
+        background: rgba(0, 230, 118, 0.1);
+    }
+    .tag.new {
+        color: var(--neon-cyan);
+        border-color: rgba(0, 243, 255, 0.35);
+        background: rgba(0, 243, 255, 0.08);
+    }
+
+    .ex-title {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.35;
+    }
+
+    .ex-course {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ex-course i {
+        color: var(--neon-cyan);
+    }
+
+    .ex-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding-top: 6px;
+    }
+
+    .meta-box {
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--border-glass);
+        text-align: center;
+    }
+    .meta-box small {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+        font-weight: 600;
+    }
+    .meta-box b {
+        font: 700 0.95rem 'Space Grotesk', sans-serif;
+        color: #fff;
+    }
+
+    .ex-best {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: rgba(0, 230, 118, 0.08);
+        border: 1px solid rgba(0, 230, 118, 0.2);
+    }
+    .ex-best b {
+        color: var(--accent-green);
+    }
 
     .btn-start {
-        margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px;
-        padding: 13px; border-radius: 13px; text-decoration: none;
-        background: linear-gradient(135deg, var(--ac-blue), var(--ac-purple)); color: #fff;
-        font: 700 .9rem 'Inter', sans-serif; letter-spacing: .4px; transition: .2s;
-        box-shadow: 0 8px 22px rgba(99,102,241,.3);
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 12px;
+        text-decoration: none;
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        color: #060814;
+        font: 700 0.85rem 'Outfit', sans-serif;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.25s ease;
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.25);
     }
-    .btn-start:hover { filter: brightness(1.12); color: #fff; text-decoration: none; }
+    .btn-start:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+        color: #000;
+        text-decoration: none;
+    }
 
-    /* Info/confirm modal */
-    .ac-overlay { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(4,6,10,.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    .ac-overlay.show { display: flex; }
-    .ac-modal { width: 100%; max-width: 480px; padding: 34px; text-align: center; }
-    .ac-modal h3 { margin: 0 0 8px; font-size: 1.4rem; color: #fff; }
-    .ac-modal p { color: var(--ac-muted); line-height: 1.6; margin: 0 0 20px; }
-    .ac-modal ul { text-align: left; list-style: none; padding: 0; margin: 0 0 22px; }
-    .ac-modal li { padding: 10px 14px; margin-bottom: 8px; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid var(--ac-border); font-size: .88rem; color: #cfd5e3; }
-    .ac-modal li i { color: var(--ac-cyan); margin-right: 10px; width: 16px; text-align: center; }
-    .ac-modal .row { display: flex; gap: 10px; }
-    .ac-btn { flex: 1; padding: 13px; border-radius: 12px; border: 1px solid var(--ac-border); background: var(--ac-panel-2); color: #fff; font: 600 .9rem 'Inter'; cursor: pointer; text-decoration: none; text-align: center; }
-    .ac-btn.primary { background: linear-gradient(135deg, var(--ac-blue), var(--ac-purple)); border-color: transparent; }
+    /* History Cards */
+    .hist-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 20px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+    .hist-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    }
 
-    /* History */
-    .hist-card { padding: 24px; display: flex; flex-direction: column; gap: 14px; transition: .25s; }
-    .hist-card:hover { border-color: rgba(255,255,255,.18); }
-    .hist-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-    .hist-title { margin: 0; font-size: 1.1rem; font-weight: 700; color: #fff; }
-    .hist-date { color: var(--ac-muted); font-size: .8rem; margin-top: 4px; }
-    .grade { padding: 5px 12px; border-radius: 99px; font: 700 .72rem 'Inter'; letter-spacing: .6px; border: 1px solid; }
-    .grade.pass { color: var(--ac-green); border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.08); }
-    .grade.mid { color: var(--ac-amber); border-color: rgba(251,191,36,.35); background: rgba(251,191,36,.08); }
-    .grade.low { color: var(--ac-red); border-color: rgba(244,63,94,.35); background: rgba(244,63,94,.08); }
-    .hist-score { display: flex; align-items: baseline; gap: 6px; font-family: 'JetBrains Mono', monospace; }
-    .hist-score b { font-size: 2rem; color: #fff; }
-    .hist-score span { color: var(--ac-muted); }
-    .hist-score em { margin-left: auto; font-style: normal; font-weight: 700; color: var(--ac-cyan); }
-    .bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
-    .bar > i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--ac-cyan), var(--ac-purple)); transition: width .8s ease; }
+    .hist-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .hist-title {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .hist-date {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        margin-top: 4px;
+    }
 
-    .ac-empty { text-align: center; padding: 70px 20px; }
-    .ac-empty i { font-size: 2.4rem; color: #3a4054; margin-bottom: 16px; }
-    .ac-empty div { color: var(--ac-muted); font-weight: 600; }
+    .grade {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font: 700 0.7rem 'Outfit', sans-serif;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        border: 1px solid;
+    }
+    .grade.pass {
+        color: var(--accent-green);
+        border-color: rgba(0, 230, 118, 0.4);
+        background: rgba(0, 230, 118, 0.1);
+    }
+    .grade.mid {
+        color: var(--accent-amber);
+        border-color: rgba(255, 183, 77, 0.4);
+        background: rgba(255, 183, 77, 0.1);
+    }
+    .grade.low {
+        color: var(--accent-red);
+        border-color: rgba(255, 51, 102, 0.4);
+        background: rgba(255, 51, 102, 0.1);
+    }
 
-    .hidden { display: none !important; }
+    .hist-score {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .hist-score b {
+        font-size: 2rem;
+        color: #fff;
+        line-height: 1;
+    }
+    .hist-score span {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+    .hist-score em {
+        margin-left: auto;
+        font-style: normal;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .bar {
+        height: 6px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+    }
+    .bar > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        transition: width 0.8s ease;
+    }
+
+    /* Modal */
+    .ac-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(4, 6, 12, 0.85);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+    .ac-overlay.show {
+        display: flex;
+    }
+
+    .ac-modal {
+        width: 100%;
+        max-width: 480px;
+        padding: 34px;
+        text-align: center;
+        background: rgba(14, 18, 30, 0.98);
+        border: 1px solid var(--border-glass);
+        border-radius: 22px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .ac-modal h3 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+        color: #fff;
+    }
+    .ac-modal p {
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin: 0 0 20px;
+        font-size: 0.9rem;
+    }
+    .ac-modal ul {
+        text-align: left;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 22px;
+    }
+    .ac-modal li {
+        padding: 11px 14px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-glass);
+        font-size: 0.88rem;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+    }
+    .ac-modal li i {
+        color: var(--neon-cyan);
+        margin-right: 12px;
+        width: 18px;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+    .ac-modal .row {
+        display: flex;
+        gap: 12px;
+    }
+    .ac-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border-glass);
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font: 700 0.88rem 'Outfit', sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+    }
+    .ac-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .ac-btn.primary {
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        color: #060814;
+        border-color: transparent;
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.3);
+    }
+    .ac-btn.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+        color: #000;
+    }
+
+    /* Empty states */
+    .portal-empty {
+        text-align: center;
+        padding: 70px 20px;
+        background: var(--card-bg);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+    }
+    .portal-empty i {
+        font-size: 3rem;
+        color: #334155;
+        margin-bottom: 16px;
+        display: block;
+    }
+    .portal-empty div {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    .hidden {
+        display: none !important;
+    }
 
     @media (max-width: 900px) {
-        .ac-page { padding: 20px 14px 40px; }
-        .ac-hero { padding: 24px; }
-        .ac-stats { grid-template-columns: repeat(2, 1fr); width: 100%; }
-        .ac-input { min-width: 0; width: 100%; }
-        .ac-controls { width: 100%; }
-        .ac-controls > * { flex: 1; }
-    }
-
-    @media (max-width: 480px) {
-        .ac-page { padding: 14px 10px 40px; }
-        .ac-hero { padding: 18px 14px; }
-        .ac-hero h1 { font-size: 1.6rem; }
-        .ac-stats { grid-template-columns: 1fr; }
-        .ac-grid { grid-template-columns: 1fr; }
-        .ex-card { padding: 18px 16px; border-radius: 14px; }
+        .portal-container { padding: 20px 14px 60px; }
+        .portal-hero { padding: 22px 20px; }
+        .portal-search-input { width: 100%; }
+        .portal-controls { width: 100%; }
+        .portal-search-wrap { width: 100%; }
+        .portal-select { width: 100%; }
     }
 </style>
 
-<div class="ac-page">
+<div class="portal-ambient"></div>
+
+<div class="portal-container">
 
     {% if messages %}
-    <div style="margin-bottom: 20px;">
+    <div style="margin-bottom: 20px;" class="fade-in-up">
         {% for message in messages %}
-        <div style="padding: 14px 20px; border-radius: 12px; margin-bottom: 10px; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; {% if message.tags == 'error' %}background: rgba(244,63,94,0.12); border: 1px solid rgba(244,63,94,0.3); color: var(--ac-red);{% else %}background: rgba(34,211,238,0.12); border: 1px solid rgba(34,211,238,0.3); color: var(--ac-cyan);{% endif %}">
+        <div style="padding: 14px 20px; border-radius: 14px; margin-bottom: 10px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; {% if message.tags == 'error' %}background: rgba(255,51,102,0.12); border: 1px solid rgba(255,51,102,0.3); color: var(--accent-red);{% else %}background: rgba(0,243,255,0.12); border: 1px solid rgba(0,243,255,0.3); color: var(--neon-cyan);{% endif %}">
             <i class="fas {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
             <span>{{ message }}</span>
         </div>
@@ -170,28 +722,47 @@
     </div>
     {% endif %}
 
-    <section class="glass ac-hero">
+    <!-- 1. HERO BANNER (NO LEFT-SIDE BLUE BAR) -->
+    <div class="portal-hero fade-in-up">
         <div>
-            <div class="ac-eyebrow">Student Panel</div>
-            <h1>Assessment Center</h1>
-            <p>Take proctored quizzes, track your performance and earn LMS Coins by scoring 80% or above.</p>
+            <div class="portal-badge-pill">
+                <i class="fas fa-brain"></i> AI Proctored Assessments
+            </div>
+            <h1 class="portal-hero-title">Assessment <span>Center</span></h1>
+            <p class="portal-hero-sub">Take proctored quizzes, track your performance and earn LMS Coins by scoring 80% or above.</p>
         </div>
-        <div class="ac-stats">
-            <div class="ac-stat"><b id="statAvail">0</b><small>Available</small></div>
-            <div class="ac-stat"><b id="statTaken">0</b><small>Attempts</small></div>
-            <div class="ac-stat"><b id="statAvg">0%</b><small>Avg Score</small></div>
-            <div class="ac-stat"><b id="statBest">0%</b><small>Best Score</small></div>
+        <div class="mini-stats">
+            <div class="mini-stat cyan">
+                <div class="mini-stat-number" id="statAvail">0</div>
+                <div class="mini-stat-label">Available</div>
+            </div>
+            <div class="mini-stat purple">
+                <div class="mini-stat-number" id="statTaken">0</div>
+                <div class="mini-stat-label">Attempts</div>
+            </div>
+            <div class="mini-stat amber">
+                <div class="mini-stat-number" id="statAvg">0%</div>
+                <div class="mini-stat-label">Avg Score</div>
+            </div>
+            <div class="mini-stat green">
+                <div class="mini-stat-number" id="statBest">0%</div>
+                <div class="mini-stat-label">Best Score</div>
+            </div>
         </div>
-    </section>
+    </div>
 
-    <div class="ac-toolbar">
-        <div class="ac-tabs" role="tablist">
+    <!-- 2. TOOLBAR / TABS / SEARCH -->
+    <div class="portal-toolbar fade-in-up delay-1">
+        <div class="portal-tabs-bar" role="tablist">
             <button class="ac-tab active" id="tabActive" onclick="switchView('active', this)">Active Modules <span class="count" id="cntActive">0</span></button>
             <button class="ac-tab" id="tabHistory" onclick="switchView('history', this)">Result Archives <span class="count" id="cntHist">0</span></button>
         </div>
-        <div class="ac-controls">
-            <input type="search" id="searchBox" class="ac-input" placeholder="Search assessments…" aria-label="Search assessments">
-            <select id="sortBox" class="ac-select" aria-label="Sort">
+        <div class="portal-controls">
+            <div class="portal-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="search" id="searchBox" class="portal-search-input" placeholder="Search assessments…" aria-label="Search assessments">
+            </div>
+            <select id="sortBox" class="portal-select" aria-label="Sort">
                 <option value="new">Newest first</option>
                 <option value="az">Title A–Z</option>
                 <option value="dur">Shortest duration</option>
@@ -200,11 +771,12 @@
         </div>
     </div>
 
+    <!-- 3. ACTIVE ASSESSMENTS -->
     <div id="view-active">
         {% if exams %}
-        <div class="ac-grid" id="examGrid">
+        <div class="portal-grid" id="examGrid">
             {% for exam in exams %}
-            <article class="glass ex-card" data-title="{{ exam.title|lower }}" data-course="{% if exam.course %}{{ exam.course.title|lower }}{% endif %}"
+            <article class="ex-card stagger-card" data-title="{{ exam.title|lower }}" data-course="{% if exam.course %}{{ exam.course.title|lower }}{% endif %}"
                      data-dur="{{ exam.duration_minutes }}" data-marks="{{ exam.total_marks }}" data-order="{{ forloop.counter }}" data-name="{{ exam.title }}">
                 <div class="ex-top">
                     <div class="ex-icon"><i class="fas fa-file-pen"></i></div>
@@ -224,17 +796,18 @@
             </article>
             {% endfor %}
         </div>
-        <div class="glass ac-empty hidden" id="noMatchActive"><i class="fas fa-magnifying-glass"></i><div>No assessments match your search</div></div>
+        <div class="portal-empty hidden stagger-card" id="noMatchActive"><i class="fas fa-magnifying-glass"></i><div>No assessments match your search</div></div>
         {% else %}
-        <div class="glass ac-empty"><i class="fas fa-box-open"></i><div>No active modules found</div></div>
+        <div class="portal-empty stagger-card"><i class="fas fa-box-open"></i><div>No active modules found</div></div>
         {% endif %}
     </div>
 
+    <!-- 4. RESULT ARCHIVES -->
     <div id="view-history" class="hidden">
         {% if results %}
-        <div class="ac-grid" id="histGrid">
+        <div class="portal-grid" id="histGrid">
             {% for result in results %}
-            <article class="glass hist-card" data-title="{{ result.exam.title|lower }}" data-name="{{ result.exam.title }}"
+            <article class="hist-card stagger-card" data-title="{{ result.exam.title|lower }}" data-name="{{ result.exam.title }}"
                      data-score="{{ result.score|floatformat:0 }}" data-total="{{ result.total_marks }}"
                      data-dur="0" data-marks="{{ result.total_marks }}" data-order="{{ forloop.counter }}">
                 <div class="hist-head">
@@ -249,16 +822,17 @@
             </article>
             {% endfor %}
         </div>
-        <div class="glass ac-empty hidden" id="noMatchHist"><i class="fas fa-magnifying-glass"></i><div>No results match your search</div></div>
+        <div class="portal-empty hidden stagger-card" id="noMatchHist"><i class="fas fa-magnifying-glass"></i><div>No results match your search</div></div>
         {% else %}
-        <div class="glass ac-empty"><i class="fas fa-clock-rotate-left"></i><div>Archive is empty</div></div>
+        <div class="portal-empty stagger-card"><i class="fas fa-clock-rotate-left"></i><div>Archive is empty</div></div>
         {% endif %}
     </div>
+
 </div>
 
-<!-- Pre-exam confirmation -->
+<!-- Pre-exam confirmation modal -->
 <div class="ac-overlay" id="preOverlay">
-    <div class="glass ac-modal">
+    <div class="ac-modal">
         <h3 id="preTitle">Start Exam</h3>
         <p id="preMeta">Secure proctored mode</p>
         <ul>
@@ -361,5 +935,4 @@
     document.getElementById('preCancel').onclick = () => document.getElementById('preOverlay').classList.remove('show');
     document.getElementById('preOverlay').addEventListener('click', e => { if (e.target.id === 'preOverlay') e.target.classList.remove('show'); });
 </script>
-
 {% endblock %}

@@ -1,149 +1,734 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extra_css %}
+{% block content %}
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    .cs-page { --cs-cyan:#00f3ff; --cs-gold:#ffd700; --cs-green:#00ff88; --cs-purple:#bc13fe;
-        font-family:'Outfit',sans-serif; color:#e6e6ee; padding:36px 40px; max-width:1400px; margin:0 auto; }
-    .cs-glass { background:linear-gradient(145deg,rgba(24,24,36,.72),rgba(12,12,20,.88));
-        border:1px solid rgba(255,255,255,.08); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-        box-shadow:0 20px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); border-radius:22px; }
-
-    /* Hero */
-    .cs-hero { padding:30px 36px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px; margin-bottom:22px; position:relative; overflow:hidden; }
-    .cs-hero::after { content:''; position:absolute; right:-80px; top:-80px; width:260px; height:260px; border-radius:50%;
-        background:radial-gradient(circle,rgba(0,243,255,.18),transparent 70%); pointer-events:none; }
-    .cs-hero h1 { font-family:'Space Grotesk',sans-serif; font-size:2rem; margin:0 0 6px; color:#fff; letter-spacing:1px; }
-    .cs-hero h1 i { color:var(--cs-cyan); margin-right:10px; }
-    .cs-hero p { margin:0; color:#8a8aa0; }
-    .cs-wallet { display:flex; gap:14px; flex-wrap:wrap; }
-    .cs-wallet-box { padding:12px 20px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); min-width:140px; }
-    .cs-wallet-box small { display:block; color:#7c7c92; font-size:.7rem; text-transform:uppercase; letter-spacing:1.2px; }
-    .cs-wallet-box strong { font-family:'Space Grotesk'; font-size:1.3rem; color:#fff; }
-    .cs-wallet-box.gold strong { color:var(--cs-gold); }
-    .cs-wallet-box.green strong { color:var(--cs-green); }
-
-    /* Toolbar */
-    .cs-toolbar { padding:16px 22px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:26px; }
-    .cs-search { position:relative; flex:1; min-width:240px; }
-    .cs-search input { width:100%; padding:12px 48px 12px 20px; border-radius:50px; background:rgba(0,0,0,.4);
-        border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; font-size:1rem; outline:none; transition:.25s; }
-    .cs-search input:focus { border-color:var(--cs-cyan); box-shadow:0 0 18px rgba(0,243,255,.2); }
-    .cs-search button { position:absolute; right:5px; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%;
-        border:1px solid rgba(0,243,255,.3); background:rgba(0,243,255,.1); color:var(--cs-cyan); cursor:pointer; transition:.25s; }
-    .cs-search button:hover { background:var(--cs-cyan); color:#000; }
-    .cs-chips { display:flex; gap:8px; flex-wrap:wrap; }
-    .cs-chip { padding:9px 18px; border-radius:50px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03);
-        color:#a8a8bc; font-weight:600; font-size:.85rem; cursor:pointer; transition:.25s; font-family:inherit; text-decoration:none; }
-    .cs-count { color:#6d6d82; font-size:.85rem; margin:-8px 4px 18px; }
-    .cs-owned { padding:11px 20px; border-radius:13px; text-decoration:none; font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:1px;
-        background:rgba(0,255,136,.12); border:1px solid rgba(0,255,136,.4); color:#00ff88; white-space:nowrap; transition:.3s; }
-    .cs-owned:hover { background:#00ff88; color:#00170c; }
-    .cs-chip:hover { color:#fff; border-color:rgba(255,255,255,.25); }
-    .cs-chip.active { background:rgba(0,243,255,.12); border-color:var(--cs-cyan); color:var(--cs-cyan); box-shadow:0 0 14px rgba(0,243,255,.15); }
-    .cs-select { padding:10px 16px; border-radius:12px; background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.1); color:#fff; font-family:inherit; outline:none; cursor:pointer; }
-    .cs-select option { background:#13131a; }
-
-    /* Grid */
-    .cs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:26px; padding-bottom:40px; }
-    .cs-card { overflow:hidden; display:flex; flex-direction:column; transition:transform .35s cubic-bezier(.175,.885,.32,1.275), border-color .3s, box-shadow .3s; position:relative; }
-    .cs-card:hover { transform:translateY(-6px); border-color:rgba(0,243,255,.3); box-shadow:0 22px 50px rgba(0,243,255,.09); }
-    .cs-card.hidden { display:none; }
-    .cs-thumb { height:180px; position:relative; background:#050508; border-bottom:1px solid rgba(255,255,255,.06); overflow:hidden; }
-    .cs-thumb img { width:100%; height:100%; object-fit:cover; opacity:.85; transition:.4s; }
-    .cs-card:hover .cs-thumb img { opacity:1; transform:scale(1.05); }
-    .cs-thumb-empty { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#2a2a38; font-size:3rem;
-        background:radial-gradient(circle at 30% 30%,rgba(0,243,255,.08),transparent 60%); }
-    .cs-badge { position:absolute; top:14px; left:14px; padding:4px 12px; border-radius:20px; font-size:.7rem; font-weight:700; text-transform:uppercase;
-        background:rgba(0,0,0,.75); border:1px solid var(--cs-cyan); color:var(--cs-cyan); backdrop-filter:blur(6px); }
-    .cs-ribbon { position:absolute; top:14px; right:14px; padding:4px 12px; border-radius:20px; font-size:.7rem; font-weight:800; letter-spacing:.5px;
-        background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000; }
-    .cs-ribbon.free { background:linear-gradient(135deg,#bc13fe,#7a0cff); color:#fff; }
-    .cs-body { padding:22px 24px 24px; display:flex; flex-direction:column; flex:1; }
-    .cs-title { font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.3; }
-    .cs-rating { color:#ffc107; font-size:.85rem; margin-bottom:12px; }
-    .cs-rating span { color:#6d6d82; margin-left:6px; font-size:.8rem; }
-    .cs-desc { color:#9a9ab0; font-size:.93rem; line-height:1.6; flex-grow:1; margin-bottom:16px; }
-    .cs-meta { display:flex; gap:16px; flex-wrap:wrap; padding-top:14px; border-top:1px solid rgba(255,255,255,.07); font-size:.82rem; color:#85859a; margin-bottom:16px; }
-    .cs-meta i { color:var(--cs-cyan); margin-right:5px; }
-
-    /* Price & payments */
-    .cs-price-row { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
-    .cs-price { font-family:'Space Grotesk'; font-size:1.55rem; font-weight:700; color:#fff; line-height:1; }
-    .cs-price.free { color:var(--cs-purple); }
-    .cs-coin { margin-top:7px; display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:600; color:var(--cs-gold);
-        background:rgba(255,215,0,.1); border:1px solid rgba(255,215,0,.3); padding:3px 10px; border-radius:12px; }
-    .cs-buy { padding:11px 20px; border-radius:13px; text-decoration:none; font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:1px;
-        background:linear-gradient(135deg,var(--cs-cyan),#0088ff); color:#001018; transition:.3s; white-space:nowrap; box-shadow:0 8px 20px rgba(0,243,255,.2); }
-    .cs-buy:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,243,255,.4); color:#000; }
-    .cs-accept { margin-top:16px; padding-top:14px; border-top:1px dashed rgba(255,255,255,.08); display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
-    .cs-accept small { color:#6d6d82; font-size:.68rem; text-transform:uppercase; letter-spacing:1px; margin-right:4px; }
-    .cs-pm { height:24px; min-width:38px; padding:0 7px; border-radius:6px; background:#fff; display:inline-flex; align-items:center; justify-content:center; }
-    .cs-pm img { height:13px; max-width:30px; object-fit:contain; }
-    .cs-pm.dark { background:rgba(255,255,255,.08); color:#ccc; font-size:.62rem; font-weight:700; border:1px solid rgba(255,255,255,.12); }
-    .cs-pm.coin { background:rgba(255,215,0,.12); color:var(--cs-gold); border:1px solid rgba(255,215,0,.3); font-size:.7rem; }
-    .cs-secure { margin-top:10px; font-size:.7rem; color:#5f7f6f; }
-    .cs-secure i { color:var(--cs-green); margin-right:4px; }
-
-    .cs-empty { grid-column:1/-1; text-align:center; padding:70px 20px; color:#6d6d82; border:1px dashed rgba(255,255,255,.12); border-radius:22px; }
-    .cs-empty i { font-size:3rem; color:#2c2c3a; margin-bottom:16px; display:block; }
-    .cs-empty a { color:var(--cs-cyan); text-decoration:none; }
-    .cs-pager { display:flex; justify-content:center; gap:10px; padding-bottom:20px; }
-    .cs-pager a, .cs-pager span { padding:8px 16px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:#aaa; text-decoration:none; }
-    .cs-pager a:hover, .cs-pager span.active { border-color:var(--cs-cyan); color:var(--cs-cyan); }
-
-    @media (max-width:768px){ 
-        .cs-page{padding:20px 14px;} 
-        .cs-grid{grid-template-columns:1fr;} 
-        .cs-hero{flex-direction:column; align-items:stretch; padding:20px 16px;}
-        .cs-toolbar{flex-direction:column; align-items:stretch; padding:16px 14px;}
-        .cs-search{min-width:100%;}
-        .cs-chips{overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
-        .cs-chip{white-space:nowrap; flex-shrink:0;}
-        .cs-select{width:100%;}
+    /* ======================================================== */
+    /* 🌌 STUDENT PORTAL UNIFIED DESIGN SYSTEM (DASHBOARD-MATCH) */
+    /* ======================================================== */
+    :root {
+        --bg-dark: #070913;
+        --card-bg: rgba(14, 18, 30, 0.95);
+        --card-bg-hover: rgba(22, 28, 45, 0.95);
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --neon-cyan: #00f3ff;
+        --neon-purple: #bc13fe;
+        --neon-blue: #3b82f6;
+        --accent-green: #00e676;
+        --accent-amber: #ffb74d;
+        --accent-red: #ff3366;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
     }
-    @media (max-width:480px){
-        .cs-page{padding:14px 10px;}
-        .cs-hero h1{font-size:1.6rem;}
-        .cs-wallet{flex-direction:column;}
-        .cs-wallet-box{width:100%;}
+
+    /* Ambient Background Mesh */
+    .portal-ambient {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
+    }
+
+    .portal-container {
+        padding: 35px 40px 80px;
+        max-width: 1440px;
+        margin: 0 auto;
+        font-family: 'Outfit', sans-serif;
+        color: var(--text-main);
+    }
+
+    /* ======================================================== */
+    /* 🚀 DOWN-TO-UP SMOOTH ENTRANCE ANIMATIONS                */
+    /* ======================================================== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.18s; }
+    .delay-3 { animation-delay: 0.26s; }
+
+    /* Staggered card entrance */
+    .stagger-card {
+        animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .stagger-card:nth-child(1) { animation-delay: 0.12s; }
+    .stagger-card:nth-child(2) { animation-delay: 0.17s; }
+    .stagger-card:nth-child(3) { animation-delay: 0.22s; }
+    .stagger-card:nth-child(4) { animation-delay: 0.27s; }
+    .stagger-card:nth-child(5) { animation-delay: 0.32s; }
+    .stagger-card:nth-child(6) { animation-delay: 0.37s; }
+    .stagger-card:nth-child(7) { animation-delay: 0.42s; }
+    .stagger-card:nth-child(8) { animation-delay: 0.47s; }
+    .stagger-card:nth-child(9) { animation-delay: 0.52s; }
+
+    /* ======================================================== */
+    /* 1. HERO BANNER (NO LEFT-SIDE BLUE BAR)                   */
+    /* ======================================================== */
+    .portal-hero {
+        background: linear-gradient(135deg, rgba(20, 25, 42, 0.95), rgba(12, 15, 26, 0.98));
+        border: 1px solid var(--border-glass);
+        border-radius: 22px;
+        padding: 30px 38px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        margin-bottom: 26px;
+        position: relative;
+        overflow: hidden;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .portal-hero::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    .portal-badge-pill {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        color: var(--neon-cyan);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .portal-hero-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.1rem;
+        margin: 0 0 8px;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .portal-hero-title span {
+        background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .portal-hero-sub {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        line-height: 1.5;
+        max-width: 540px;
+    }
+
+    /* Mini Stats in Hero */
+    .mini-stats {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .mini-stat {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
+        padding: 12px 18px;
+        text-align: center;
+        min-width: 95px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .mini-stat:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .mini-stat-number {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+        font-weight: 700;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .mini-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
+    .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
+
+    /* ======================================================== */
+    /* 2. TOOLBAR / SEARCH / CHIPS / SORT                       */
+    /* ======================================================== */
+    .portal-toolbar {
+        background: rgba(14, 18, 30, 0.85);
+        border: 1px solid var(--border-glass);
+        border-radius: 18px;
+        padding: 16px 22px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    .portal-search {
+        position: relative;
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .portal-search input {
+        width: 100%;
+        padding: 11px 48px 11px 20px;
+        border-radius: 50px;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.92rem;
+        outline: none;
+        transition: all 0.25s ease;
+    }
+
+    .portal-search input:focus {
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 18px rgba(0, 243, 255, 0.25);
+        background: rgba(0, 0, 0, 0.65);
+    }
+
+    .portal-search button {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        background: rgba(0, 243, 255, 0.12);
+        color: var(--neon-cyan);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .portal-search button:hover {
+        background: var(--neon-cyan);
+        color: #060814;
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.45);
+    }
+
+    .portal-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .portal-chip {
+        padding: 9px 18px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        font-family: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .portal-chip:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .portal-chip.active {
+        background: rgba(0, 243, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.18);
+    }
+
+    .portal-select {
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.88rem;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.25s;
+    }
+    .portal-select:focus {
+        border-color: var(--neon-cyan);
+    }
+    .portal-select option {
+        background: #0d1222;
+        color: #fff;
+    }
+
+    .portal-count-strip {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: -10px 4px 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .portal-count-strip strong {
+        color: var(--neon-cyan);
+    }
+
+    /* ======================================================== */
+    /* 3. COURSE CARDS GRID (DASHBOARD-MATCHING AESTHETICS)    */
+    /* ======================================================== */
+    .portal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 26px;
+        padding-bottom: 40px;
+    }
+
+    .portal-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .portal-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--border-glass-glow);
+        box-shadow: 0 18px 45px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
+    }
+
+    .card-thumb-wrap {
+        height: 185px;
+        position: relative;
+        background: #070912;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+    }
+
+    .card-thumb-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.88;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .portal-card:hover .card-thumb-wrap img {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    .card-thumb-empty {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #242c44;
+        font-size: 3rem;
+        background: radial-gradient(circle at 30% 30%, rgba(0, 243, 255, 0.08), transparent 60%);
+    }
+
+    /* Badges */
+    .card-badge-diff {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.75);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+    }
+    .card-badge-diff.beginner, .card-badge-diff.easy { background: rgba(0, 230, 118, 0.18); color: var(--accent-green); border-color: rgba(0, 230, 118, 0.4); }
+    .card-badge-diff.intermediate, .card-badge-diff.medium { background: rgba(255, 183, 77, 0.18); color: var(--accent-amber); border-color: rgba(255, 183, 77, 0.4); }
+    .card-badge-diff.advanced, .card-badge-diff.hard { background: rgba(255, 51, 102, 0.18); color: var(--accent-red); border-color: rgba(255, 51, 102, 0.4); }
+
+    .card-ribbon {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, #ffd700, #ffaa00);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.35);
+    }
+    .card-ribbon.free {
+        background: linear-gradient(135deg, var(--neon-purple), #7a0cff);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(188, 19, 254, 0.35);
+    }
+
+    .card-body {
+        padding: 22px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .card-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 8px;
+        line-height: 1.35;
+    }
+
+    .card-rating {
+        color: #ffc107;
+        font-size: 0.82rem;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+    .card-rating span {
+        color: var(--text-muted);
+        margin-left: 6px;
+        font-size: 0.78rem;
+    }
+
+    .card-desc {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        flex-grow: 1;
+        margin-bottom: 16px;
+    }
+
+    .card-meta-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+    }
+    .card-meta-row i {
+        color: var(--neon-cyan);
+        margin-right: 5px;
+    }
+
+    /* Price & Action */
+    .card-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 12px;
+    }
+
+    .card-price {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+    }
+    .card-price.free {
+        color: var(--neon-purple);
+    }
+
+    .coin-badge {
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #ffd700;
+        background: rgba(255, 215, 0, 0.1);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        padding: 3px 10px;
+        border-radius: 12px;
+    }
+
+    .btn-buy {
+        padding: 11px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        color: #060814;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.25);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-buy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+        color: #000;
+    }
+
+    .btn-enrolled {
+        padding: 11px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        background: rgba(0, 230, 118, 0.12);
+        border: 1px solid rgba(0, 230, 118, 0.4);
+        color: var(--accent-green);
+        white-space: nowrap;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-enrolled:hover {
+        background: var(--accent-green);
+        color: #060814;
+        box-shadow: 0 6px 20px rgba(0, 230, 118, 0.35);
+        transform: translateY(-2px);
+    }
+
+    .card-payment-methods {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+    .card-payment-methods small {
+        color: #64748b;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-right: 4px;
+        font-weight: 600;
+    }
+    .pm-pill {
+        height: 24px;
+        min-width: 38px;
+        padding: 0 7px;
+        border-radius: 6px;
+        background: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .pm-pill img {
+        height: 13px;
+        max-width: 30px;
+        object-fit: contain;
+    }
+    .pm-pill.dark {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ccc;
+        font-size: 0.62rem;
+        font-weight: 700;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .pm-pill.coin {
+        background: rgba(255, 215, 0, 0.12);
+        color: #ffd700;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        font-size: 0.7rem;
+    }
+    .card-secure-tag {
+        margin-top: 10px;
+        font-size: 0.72rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .card-secure-tag i {
+        color: var(--accent-green);
+    }
+
+    /* Empty state */
+    .portal-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 70px 20px;
+        background: var(--card-bg);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+    }
+    .portal-empty i {
+        font-size: 3rem;
+        color: #334155;
+        margin-bottom: 16px;
+        display: block;
+    }
+    .portal-empty h3 {
+        color: #fff;
+        margin-bottom: 10px;
+        font-size: 1.25rem;
+    }
+    .portal-empty a {
+        color: var(--neon-cyan);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    /* Pagination */
+    .portal-pager {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding-bottom: 20px;
+    }
+    .portal-pager a, .portal-pager span {
+        padding: 9px 18px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+    .portal-pager a:hover, .portal-pager span.active {
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 14px rgba(0, 243, 255, 0.15);
+    }
+
+    @media (max-width: 768px) {
+        .portal-container { padding: 20px 14px 60px; }
+        .portal-hero { flex-direction: column; align-items: flex-start; padding: 22px 20px; }
+        .portal-grid { grid-template-columns: 1fr; }
+        .portal-toolbar { flex-direction: column; align-items: stretch; padding: 16px 14px; }
+        .portal-search { min-width: 100%; }
+        .portal-chips { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+        .portal-chip { white-space: nowrap; flex-shrink: 0; }
+        .portal-select { width: 100%; }
     }
 </style>
-{% endblock %}
 
-{% block content %}
-<div class="cs-page">
+<div class="portal-ambient"></div>
 
-    <div class="cs-glass cs-hero">
+<div class="portal-container">
+
+    <!-- 1. HERO BANNER (NO LEFT BLUE BAR) -->
+    <div class="portal-hero fade-in-up">
         <div>
-            <h1><i class="fas fa-layer-group"></i>Course Store</h1>
-            <p>Pay with Card, UPI, Net Banking, Wallets or LMS Coins.</p>
+            <div class="portal-badge-pill">
+                <i class="fas fa-layer-group"></i> Course Catalog
+            </div>
+            <h1 class="portal-hero-title">Course <span>Store</span></h1>
+            <p class="portal-hero-sub">Pay with Card, UPI, Net Banking, Wallets or LMS Coins. Instant access upon enrollment.</p>
         </div>
-        <div class="cs-wallet">
-            <div class="cs-wallet-box gold"><small>Your Coins</small><strong><i class="fas fa-coins"></i> {{ user_coins }}</strong></div>
-            <div class="cs-wallet-box green"><small>Secure Checkout</small><strong><i class="fas fa-shield-alt"></i> 256-bit</strong></div>
+        <div class="mini-stats">
+            <div class="mini-stat amber">
+                <div class="mini-stat-number"><i class="fas fa-coins"></i> {{ user_coins }}</div>
+                <div class="mini-stat-label">Your Coins</div>
+            </div>
+            <div class="mini-stat cyan">
+                <div class="mini-stat-number">{{ total_results }}</div>
+                <div class="mini-stat-label">Available</div>
+            </div>
+            <div class="mini-stat green">
+                <div class="mini-stat-number"><i class="fas fa-shield-alt"></i> 256-bit</div>
+                <div class="mini-stat-label">Checkout</div>
+            </div>
         </div>
     </div>
 
-    <div class="cs-glass cs-toolbar">
-        <form method="GET" class="cs-search" id="cs-search-form">
-            <input type="text" name="search" id="cs-search-input" placeholder="Search courses..." value="{{ search_query|default:'' }}">
+    <!-- 2. TOOLBAR / SEARCH / CHIPS -->
+    <div class="portal-toolbar fade-in-up delay-1">
+        <form method="GET" class="portal-search" id="cs-search-form">
+            <input type="text" name="search" id="cs-search-input" placeholder="Search courses by title, topic..." value="{{ search_query|default:'' }}">
             <input type="hidden" name="filter" value="{{ active_filter }}">
             <input type="hidden" name="sort" value="{{ active_sort }}">
             <button type="submit" title="Search"><i class="fas fa-search"></i></button>
         </form>
-        <div class="cs-chips">
-            <a class="cs-chip {% if active_filter == 'all' %}active{% endif %}" href="?filter=all&sort={{ active_sort }}&search={{ search_query|urlencode }}">All</a>
-            <a class="cs-chip {% if active_filter == 'paid' %}active{% endif %}" href="?filter=paid&sort={{ active_sort }}&search={{ search_query|urlencode }}">Paid</a>
-            <a class="cs-chip {% if active_filter == 'free' %}active{% endif %}" href="?filter=free&sort={{ active_sort }}&search={{ search_query|urlencode }}">Free</a>
-            <a class="cs-chip {% if active_filter == 'coin' %}active{% endif %}" href="?filter=coin&sort={{ active_sort }}&search={{ search_query|urlencode }}"><i class="fas fa-coins"></i> Coin Unlock</a>
+        <div class="portal-chips">
+            <a class="portal-chip {% if active_filter == 'all' %}active{% endif %}" href="?filter=all&sort={{ active_sort }}&search={{ search_query|urlencode }}">All Courses</a>
+            <a class="portal-chip {% if active_filter == 'paid' %}active{% endif %}" href="?filter=paid&sort={{ active_sort }}&search={{ search_query|urlencode }}">Paid</a>
+            <a class="portal-chip {% if active_filter == 'free' %}active{% endif %}" href="?filter=free&sort={{ active_sort }}&search={{ search_query|urlencode }}">Free</a>
+            <a class="portal-chip {% if active_filter == 'coin' %}active{% endif %}" href="?filter=coin&sort={{ active_sort }}&search={{ search_query|urlencode }}"><i class="fas fa-coins" style="color:var(--accent-amber)"></i> Coin Unlock</a>
         </div>
         <form method="GET" id="cs-sort-form">
             <input type="hidden" name="search" value="{{ search_query|default:'' }}">
             <input type="hidden" name="filter" value="{{ active_filter }}">
-            <select class="cs-select" name="sort" title="Sort courses" onchange="this.form.submit()">
+            <select class="portal-select" name="sort" title="Sort courses" onchange="this.form.submit()">
                 <option value="default" {% if active_sort == 'default' %}selected{% endif %}>Sort: Newest</option>
                 <option value="low" {% if active_sort == 'low' %}selected{% endif %}>Price: Low to High</option>
                 <option value="high" {% if active_sort == 'high' %}selected{% endif %}>Price: High to Low</option>
@@ -151,81 +736,105 @@
             </select>
         </form>
     </div>
-    <div class="cs-count">{{ total_results }} course{{ total_results|pluralize }} found</div>
 
-    <div class="cs-grid" id="cs-grid">
+    <div class="portal-count-strip fade-in-up delay-2">
+        <i class="fas fa-filter" style="color:var(--neon-cyan)"></i>
+        <span>Showing <strong>{{ total_results }}</strong> course{{ total_results|pluralize }}</span>
+    </div>
+
+    <!-- 3. COURSE CARDS GRID -->
+    <div class="portal-grid" id="cs-grid">
         {% for course in courses %}
-        <div class="cs-glass cs-card">
-            <div class="cs-thumb">
-                <span class="cs-badge">{{ course.difficulty_level }}</span>
-                {% if course.price > 0 %}{% if course.is_coin_purchasable %}<span class="cs-ribbon">COINS OK</span>{% endif %}{% else %}<span class="cs-ribbon free">FREE</span>{% endif %}
+        <div class="portal-card stagger-card">
+            <div class="card-thumb-wrap">
+                <span class="card-badge-diff {{ course.difficulty_level|lower }}">{{ course.difficulty_level }}</span>
+                {% if course.price > 0 %}
+                    {% if course.is_coin_purchasable %}
+                    <span class="card-ribbon"><i class="fas fa-coins"></i> COINS OK</span>
+                    {% endif %}
+                {% else %}
+                    <span class="card-ribbon free">FREE</span>
+                {% endif %}
+
                 {% if course.thumbnail %}
                     <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
                 {% else %}
-                    <div class="cs-thumb-empty"><i class="fas fa-code"></i></div>
+                    <div class="card-thumb-empty"><i class="fas fa-code"></i></div>
                 {% endif %}
             </div>
 
-            <div class="cs-body">
-                <div class="cs-title">{{ course.title }}</div>
-                <div class="cs-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>(4.8 Reviews)</span></div>
-                <div class="cs-desc">{{ course.description|truncatewords:20 }}</div>
+            <div class="card-body">
+                <div class="card-title">{{ course.title }}</div>
+                <div class="card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    <span>(4.8 Rating)</span>
+                </div>
+                <div class="card-desc">{{ course.description|truncatewords:20 }}</div>
 
-                <div class="cs-meta">
+                <div class="card-meta-row">
                     <span><i class="fas fa-cube"></i>{{ course.total_modules }} Modules</span>
                     <span><i class="fas fa-infinity"></i>Lifetime Access</span>
                     <span><i class="fas fa-certificate"></i>Certificate</span>
                 </div>
 
-                <div class="cs-price-row">
+                <div class="card-price-row">
                     <div>
                         {% if course.price > 0 %}
-                            <div class="cs-price">₹{{ course.price }}</div>
+                            <div class="card-price">₹{{ course.price }}</div>
                         {% else %}
-                            <div class="cs-price free">Free</div>
+                            <div class="card-price free">Free</div>
                         {% endif %}
                         {% if course.is_coin_purchasable %}
-                            <div class="cs-coin" title="Can be purchased with LMS Coins"><i class="fas fa-coins"></i> {{ course.coin_price }} Coins</div>
+                            <div class="coin-badge" title="Can be purchased with LMS Coins"><i class="fas fa-coins"></i> {{ course.coin_price }} Coins</div>
                         {% endif %}
                     </div>
                     {% if course.id in enrolled_ids %}
-                        <a href="{% url 'course_watch' course.id %}" class="cs-owned"><i class="fas fa-play"></i> Continue</a>
+                        <a href="{% url 'course_watch' course.id %}" class="btn-enrolled"><i class="fas fa-play"></i> Continue</a>
                     {% else %}
-                        <a href="{% url 'enroll_course' course.id %}" class="cs-buy">{% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i></a>
+                        <a href="{% url 'enroll_course' course.id %}" class="btn-buy">
+                            {% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i>
+                        </a>
                     {% endif %}
                 </div>
 
                 {% if course.price > 0 and course.id not in enrolled_ids %}
-                <div class="cs-accept">
+                <div class="card-payment-methods">
                     <small>Pay with</small>
-                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
-                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/mastercard/EB001B" alt="Mastercard"></span>
-                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="Google Pay"></span>
-                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></span>
-                    <span class="cs-pm"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></span>
-                    <span class="cs-pm dark">UPI</span>
-                    <span class="cs-pm dark"><i class="fas fa-university"></i>&nbsp;Net Banking</span>
-                    {% if course.is_coin_purchasable %}<span class="cs-pm coin"><i class="fas fa-coins"></i></span>{% endif %}
+                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
+                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/mastercard/EB001B" alt="Mastercard"></span>
+                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="Google Pay"></span>
+                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></span>
+                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></span>
+                    <span class="pm-pill dark">UPI</span>
+                    <span class="pm-pill dark"><i class="fas fa-university"></i>&nbsp;Net Banking</span>
+                    {% if course.is_coin_purchasable %}<span class="pm-pill coin"><i class="fas fa-coins"></i></span>{% endif %}
                 </div>
-                <div class="cs-secure"><i class="fas fa-lock"></i>Secure payment · Instant access after purchase</div>
+                <div class="card-secure-tag"><i class="fas fa-lock"></i>Secure transaction · Instant enrollment</div>
                 {% endif %}
             </div>
         </div>
         {% empty %}
-        <div class="cs-empty">
+        <div class="portal-empty stagger-card">
             <i class="fas fa-search"></i>
-            <h3>No courses found matching your search.</h3>
-            <a href="{% url 'all_courses' %}">View All Courses</a>
+            <h3>No courses found matching your criteria</h3>
+            <p style="color:var(--text-muted); margin-bottom: 16px;">Try adjusting your search terms or filter settings.</p>
+            <a href="{% url 'all_courses' %}"><i class="fas fa-redo"></i> View All Courses</a>
         </div>
         {% endfor %}
     </div>
 
+    <!-- 4. PAGINATION -->
     {% if courses.has_other_pages %}
-    <div class="cs-pager">
-        {% if courses.has_previous %}<a href="?page={{ courses.previous_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">&laquo; Prev</a>{% endif %}
+    <div class="portal-pager fade-in-up delay-3">
+        {% if courses.has_previous %}
+            <a href="?page={{ courses.previous_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">&laquo; Prev</a>
+        {% endif %}
         <span class="active">{{ courses.number }}</span>
-        {% if courses.has_next %}<a href="?page={{ courses.next_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">Next &raquo;</a>{% endif %}
+        {% if courses.has_next %}
+            <a href="?page={{ courses.next_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">Next &raquo;</a>
+        {% endif %}
     </div>
     {% endif %}
+
 </div>
 {% endblock %}

@@ -2,115 +2,574 @@
 {% load static %}
 
 {% block content %}
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
-    .ld { --panel:rgba(255,255,255,0.035); --panel2:rgba(255,255,255,0.06); --border:rgba(255,255,255,0.08);
-          --text:#e8ecf4; --muted:#8b93a7; --cyan:#22d3ee; --blue:#3b82f6; --purple:#a855f7; --green:#34d399; --amber:#fbbf24; --red:#f43f5e;
-          font-family:'Inter',sans-serif; color:var(--text); max-width:1200px; margin:0 auto; padding:36px 32px 60px; position:relative; }
-    .ld *, .ld *::before, .ld *::after { box-sizing:border-box; }
-    .ld::before { content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
-        background:radial-gradient(700px 360px at 8% 0%, rgba(59,130,246,.14), transparent 65%), radial-gradient(600px 360px at 95% 20%, rgba(168,85,247,.11), transparent 65%); }
-    .ld .glass { background:var(--panel); border:1px solid var(--border); border-radius:20px; backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-        box-shadow:0 10px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.07); }
-
-    .ld-hero { padding:34px 40px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; margin-bottom:24px; }
-    .ld-eyebrow { color:var(--cyan); font-size:.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
-    .ld-hero h1 { margin:0 0 8px; font-size:2.1rem; font-weight:800; letter-spacing:-.5px; color:#fff; }
-    .ld-hero p { margin:0; color:var(--muted); max-width:520px; line-height:1.6; }
-    .ld-stats { display:grid; grid-template-columns:repeat(3, minmax(120px,1fr)); gap:12px; }
-    .ld-stat { padding:16px 20px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--border); }
-    .ld-stat b { display:block; font:700 1.4rem 'JetBrains Mono',monospace; color:#fff; white-space:nowrap; }
-    .ld-stat small { color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:1px; }
-
-    .ld-tabs { display:inline-flex; padding:5px; gap:4px; border-radius:14px; background:var(--panel); border:1px solid var(--border); margin-bottom:24px; flex-wrap:wrap; }
-    .ld-tab { border:none; background:transparent; color:var(--muted); padding:10px 22px; border-radius:10px; cursor:pointer; font:600 .88rem 'Inter',sans-serif; transition:.2s; }
-    .ld-tab:hover { color:#fff; }
-    .ld-tab.active { background:linear-gradient(135deg,var(--blue),var(--purple)); color:#fff; box-shadow:0 6px 18px rgba(99,102,241,.35); }
-    .ld-tab .count { margin-left:8px; padding:1px 8px; border-radius:99px; background:rgba(255,255,255,.14); font-size:.72rem; }
-
-    .ld-list { display:flex; flex-direction:column; gap:18px; }
-    .cls { display:grid; grid-template-columns:minmax(0,1fr) 280px; overflow:hidden; transition:border-color .25s, transform .25s, box-shadow .25s; }
-    .cls:hover { border-color:rgba(59,130,246,.5); transform:translateY(-3px); box-shadow:0 16px 44px rgba(0,0,0,.5); }
-    .cls-main { padding:28px 32px; }
-    .cls-top { display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
-    .cls-course { color:var(--cyan); font-size:.76rem; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
-    .status { padding:4px 12px; border-radius:99px; font-size:.68rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; border:1px solid; }
-    .status.upcoming { color:var(--cyan); border-color:rgba(34,211,238,.35); background:rgba(34,211,238,.08); }
-    .status.soon { color:var(--amber); border-color:rgba(251,191,36,.4); background:rgba(251,191,36,.08); }
-    .status.live { color:var(--red); border-color:rgba(244,63,94,.45); background:rgba(244,63,94,.1); }
-    .status.ended { color:var(--muted); border-color:var(--border); background:rgba(255,255,255,.04); }
-    .cls-title { margin:0 0 10px; font-size:1.55rem; font-weight:800; color:#fff; letter-spacing:-.3px; }
-    .cls-desc { margin:0 0 22px; color:#b4bbcc; line-height:1.65; max-width:620px; }
-    .cls-meta { display:flex; gap:12px; flex-wrap:wrap; padding-top:20px; border-top:1px solid var(--border); }
-    .meta { display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid var(--border); }
-    .meta i { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:rgba(255,255,255,.06); font-size:.9rem; }
-    .meta small { display:block; color:var(--muted); font-size:.64rem; letter-spacing:1px; text-transform:uppercase; }
-    .meta b { font-size:.92rem; color:#fff; font-weight:600; }
-
-    .cls-side { padding:28px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; background:rgba(0,0,0,.22); border-left:1px solid var(--border); }
-    .cd-label { color:var(--muted); font-size:.68rem; letter-spacing:1.6px; text-transform:uppercase; }
-    .cd-time { font:700 1.7rem 'JetBrains Mono',monospace; color:#fff; }
-    .cd-time.live { color:var(--red); }
-    .btn-join { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:13px; border-radius:13px; text-decoration:none; color:#fff;
-        font:700 .88rem 'Inter',sans-serif; letter-spacing:.4px; background:linear-gradient(135deg,var(--blue),var(--purple)); box-shadow:0 8px 22px rgba(99,102,241,.3); transition:filter .2s; }
-    .btn-join:hover { filter:brightness(1.12); color:#fff; text-decoration:none; }
-    .btn-join.live { background:linear-gradient(135deg,#f43f5e,#be123c); box-shadow:0 8px 22px rgba(244,63,94,.35); }
-    .btn-join.ended { background:var(--panel2); box-shadow:none; color:var(--muted); pointer-events:none; }
-    .side-note { color:#5d6479; font-size:.72rem; }
-
-    .ld-empty { text-align:center; padding:70px 20px; }
-    .ld-empty i { font-size:2.4rem; color:#3a4054; margin-bottom:16px; }
-    .ld-empty h3 { color:#fff; margin:0 0 8px; }
-    .ld-empty p { color:var(--muted); margin:0 0 18px; }
-    .ld-empty a { color:var(--cyan); text-decoration:none; font-weight:600; }
-    .ld .hidden { display:none !important; }
-
-    @media (max-width:900px) {
-        .ld { padding:20px 14px 40px; }
-        .ld-hero { padding:24px; }
-        .ld-stats { width:100%; grid-template-columns:repeat(3,1fr); }
-        .cls { grid-template-columns:1fr; }
-        .cls-side { border-left:none; border-top:1px solid var(--border); }
-        .cls-main { padding:22px; }
+    /* ======================================================== */
+    /* 🌌 STUDENT PORTAL UNIFIED DESIGN SYSTEM (DASHBOARD-MATCH) */
+    /* ======================================================== */
+    :root {
+        --bg-dark: #070913;
+        --card-bg: rgba(14, 18, 30, 0.95);
+        --card-bg-hover: rgba(22, 28, 45, 0.95);
+        --border-glass: rgba(255, 255, 255, 0.08);
+        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --neon-cyan: #00f3ff;
+        --neon-purple: #bc13fe;
+        --neon-blue: #3b82f6;
+        --accent-green: #00e676;
+        --accent-amber: #ffb74d;
+        --accent-red: #ff3366;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
     }
 
-    @media (max-width:480px) {
-        .ld { padding:14px 10px 40px; }
-        .ld-hero { padding:18px 14px; }
-        .ld-hero h1 { font-size:1.6rem; }
-        .ld-stats { grid-template-columns:1fr; }
-        .cls-main { padding:18px 14px; }
-        .cls-title { font-size:1.2rem; }
-        .cls-side { padding:20px 16px; }
+    /* Ambient Mesh */
+    .portal-ambient {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: 
+            radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
+    }
+
+    .portal-container {
+        padding: 35px 40px 80px;
+        max-width: 1440px;
+        margin: 0 auto;
+        font-family: 'Outfit', sans-serif;
+        color: var(--text-main);
+    }
+
+    /* ======================================================== */
+    /* 🚀 DOWN-TO-UP SMOOTH ENTRANCE ANIMATIONS                */
+    /* ======================================================== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.18s; }
+    .delay-3 { animation-delay: 0.26s; }
+
+    /* Staggered cards entrance */
+    .stagger-card {
+        animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .stagger-card:nth-child(1) { animation-delay: 0.12s; }
+    .stagger-card:nth-child(2) { animation-delay: 0.17s; }
+    .stagger-card:nth-child(3) { animation-delay: 0.22s; }
+    .stagger-card:nth-child(4) { animation-delay: 0.27s; }
+    .stagger-card:nth-child(5) { animation-delay: 0.32s; }
+    .stagger-card:nth-child(6) { animation-delay: 0.37s; }
+
+    /* ======================================================== */
+    /* 1. HERO BANNER (NO LEFT-SIDE BLUE BAR)                   */
+    /* ======================================================== */
+    .portal-hero {
+        background: linear-gradient(135deg, rgba(20, 25, 42, 0.95), rgba(12, 15, 26, 0.98));
+        border: 1px solid var(--border-glass);
+        border-radius: 22px;
+        padding: 30px 38px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        margin-bottom: 26px;
+        position: relative;
+        overflow: hidden;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .portal-hero::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    .portal-badge-pill {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        color: var(--neon-cyan);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .portal-hero-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.1rem;
+        margin: 0 0 8px;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .portal-hero-title span {
+        background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .portal-hero-sub {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        line-height: 1.5;
+        max-width: 540px;
+    }
+
+    /* Mini Stats in Hero */
+    .mini-stats {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .mini-stat {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        border-radius: 14px;
+        padding: 12px 18px;
+        text-align: center;
+        min-width: 95px;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .mini-stat:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .mini-stat-number {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+        font-weight: 700;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+
+    .mini-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
+    .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
+
+    /* ======================================================== */
+    /* 2. TABS STRIP                                            */
+    /* ======================================================== */
+    .portal-tabs-bar {
+        display: inline-flex;
+        padding: 6px;
+        gap: 6px;
+        border-radius: 50px;
+        background: rgba(14, 18, 30, 0.85);
+        border: 1px solid var(--border-glass);
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    .ld-tab {
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-muted);
+        padding: 9px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.85rem 'Outfit', sans-serif;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ld-tab:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .ld-tab.active {
+        background: rgba(0, 243, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.18);
+    }
+
+    .ld-tab .count {
+        padding: 2px 8px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 0.72rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+    }
+    .ld-tab.active .count {
+        background: rgba(0, 243, 255, 0.25);
+        color: #fff;
+    }
+
+    /* ======================================================== */
+    /* 3. LIVE CLASS CARDS (CYBERPUNK GLASSMORPHISM)            */
+    /* ======================================================== */
+    .cls-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .cls {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 20px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        overflow: hidden;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        position: relative;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .cls:hover {
+        border-color: var(--border-glass-glow);
+        transform: translateY(-5px);
+        box-shadow: 0 18px 45px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
+    }
+
+    .cls-main {
+        padding: 28px 32px;
+    }
+
+    .cls-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .cls-course {
+        color: var(--neon-cyan);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Status Tags */
+    .status {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .status.upcoming {
+        color: var(--neon-cyan);
+        border-color: rgba(0, 243, 255, 0.35);
+        background: rgba(0, 243, 255, 0.08);
+    }
+    .status.soon {
+        color: var(--accent-amber);
+        border-color: rgba(255, 183, 77, 0.4);
+        background: rgba(255, 183, 77, 0.08);
+    }
+    .status.live {
+        color: #ff3366;
+        border-color: rgba(255, 51, 102, 0.5);
+        background: rgba(255, 51, 102, 0.12);
+        box-shadow: 0 0 12px rgba(255, 51, 102, 0.25);
+    }
+    .status.ended {
+        color: var(--text-muted);
+        border-color: var(--border-glass);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .cls-title {
+        font-family: 'Space Grotesk', sans-serif;
+        margin: 0 0 10px;
+        font-size: 1.55rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.3px;
+        line-height: 1.3;
+    }
+
+    .cls-desc {
+        margin: 0 0 22px;
+        color: #94a3b8;
+        line-height: 1.65;
+        max-width: 640px;
+        font-size: 0.92rem;
+    }
+
+    .cls-meta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .meta-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 15px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--border-glass);
+    }
+
+    .meta-box i {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 0.95rem;
+    }
+
+    .meta-box small {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .meta-box b {
+        font-size: 0.92rem;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    /* Side Panel */
+    .cls-side {
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.28);
+        border-left: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .cd-label {
+        color: var(--text-muted);
+        font-size: 0.7rem;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .cd-time {
+        font: 700 1.8rem 'JetBrains Mono', monospace;
+        color: #fff;
+        line-height: 1;
+    }
+    .cd-time.live {
+        color: var(--accent-red);
+        text-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+    }
+
+    .btn-join {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 13px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #060814;
+        font: 700 0.88rem 'Outfit', sans-serif;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.25);
+        transition: all 0.25s ease;
+    }
+
+    .btn-join:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+        color: #000;
+        text-decoration: none;
+    }
+
+    .btn-join.live {
+        background: linear-gradient(135deg, #ff3366, #e11d48);
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(255, 51, 102, 0.45);
+    }
+    .btn-join.live:hover {
+        color: #fff;
+        box-shadow: 0 12px 30px rgba(255, 51, 102, 0.65);
+    }
+
+    .btn-join.ended {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: none;
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+
+    .side-note {
+        color: #64748b;
+        font-size: 0.72rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Empty states */
+    .portal-empty {
+        text-align: center;
+        padding: 70px 20px;
+        background: var(--card-bg);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+    }
+    .portal-empty i {
+        font-size: 3rem;
+        color: #334155;
+        margin-bottom: 16px;
+        display: block;
+    }
+    .portal-empty h3 {
+        color: #fff;
+        margin: 0 0 8px;
+        font-size: 1.25rem;
+    }
+    .portal-empty p {
+        color: var(--text-muted);
+        margin: 0 0 18px;
+        font-size: 0.92rem;
+    }
+    .portal-empty a {
+        color: var(--neon-cyan);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    @media (max-width: 900px) {
+        .portal-container { padding: 20px 14px 60px; }
+        .portal-hero { padding: 22px 20px; }
+        .cls { grid-template-columns: 1fr; }
+        .cls-side { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+        .cls-main { padding: 22px; }
+    }
+
+    @media (max-width: 480px) {
+        .portal-hero { flex-direction: column; align-items: flex-start; }
+        .cls-main { padding: 18px 14px; }
+        .cls-title { font-size: 1.25rem; }
+        .cls-side { padding: 20px 16px; }
     }
 </style>
 
-<div class="ld">
+<div class="portal-ambient"></div>
 
-    <section class="glass ld-hero">
+<div class="portal-container">
+
+    <!-- 1. HERO BANNER (NO LEFT-SIDE BLUE BAR) -->
+    <div class="portal-hero fade-in-up">
         <div>
-            <div class="ld-eyebrow">Student Panel</div>
-            <h1>Live Classes</h1>
-            <p>Join interactive sessions with your instructors. Links unlock automatically when a class is about to begin.</p>
+            <div class="portal-badge-pill">
+                <i class="fas fa-satellite-dish"></i> Live Classroom
+            </div>
+            <h1 class="portal-hero-title">Live <span>Classes</span></h1>
+            <p class="portal-hero-sub">Join interactive sessions with your instructors. Links unlock automatically when class is about to begin.</p>
         </div>
-        <div class="ld-stats">
-            <div class="ld-stat"><b id="stTotal">0</b><small>Scheduled</small></div>
-            <div class="ld-stat"><b id="stToday">0</b><small>Today</small></div>
-            <div class="ld-stat"><b id="stNext">—</b><small>Next class in</small></div>
+        <div class="mini-stats">
+            <div class="mini-stat cyan">
+                <div class="mini-stat-number" id="stTotal">0</div>
+                <div class="mini-stat-label">Scheduled</div>
+            </div>
+            <div class="mini-stat green">
+                <div class="mini-stat-number" id="stToday">0</div>
+                <div class="mini-stat-label">Today</div>
+            </div>
+            <div class="mini-stat amber">
+                <div class="mini-stat-number" id="stNext">—</div>
+                <div class="mini-stat-label">Next Class</div>
+            </div>
         </div>
-    </section>
+    </div>
 
     {% if classes %}
-    <div class="ld-tabs" id="tabs">
-        <button class="ld-tab active" data-f="all">All <span class="count" id="cAll">0</span></button>
-        <button class="ld-tab" data-f="live">Live Now <span class="count" id="cLive">0</span></button>
+    <!-- 2. FILTER TABS -->
+    <div class="portal-tabs-bar fade-in-up delay-1" id="tabs">
+        <button class="ld-tab active" data-f="all">All Classes <span class="count" id="cAll">0</span></button>
+        <button class="ld-tab" data-f="live"><i class="fas fa-circle" style="color:var(--accent-red); font-size: 8px;"></i> Live Now <span class="count" id="cLive">0</span></button>
         <button class="ld-tab" data-f="today">Today <span class="count" id="cToday">0</span></button>
         <button class="ld-tab" data-f="week">This Week <span class="count" id="cWeek">0</span></button>
     </div>
 
-    <div class="ld-list" id="clsList">
+    <!-- 3. LIVE CLASSES LIST -->
+    <div class="cls-list" id="clsList">
         {% for class in classes %}
-        <article class="glass cls" data-start="{{ class.date_time|date:'c' }}">
+        <article class="cls stagger-card" data-start="{{ class.date_time|date:'c' }}">
             <div class="cls-main">
                 <div class="cls-top">
                     <div class="cls-course"><i class="fas fa-code-branch"></i> {{ class.course.title }}</div>
@@ -119,9 +578,9 @@
                 <h3 class="cls-title">{{ class.title }}</h3>
                 <p class="cls-desc">{{ class.description|default:"Join this interactive session to clear your doubts and learn advanced topics directly from the instructor." }}</p>
                 <div class="cls-meta">
-                    <div class="meta"><i class="far fa-calendar-alt" style="color:var(--cyan)"></i><div><small>Date</small><b>{{ class.date_time|date:"d M, Y" }}</b></div></div>
-                    <div class="meta"><i class="far fa-clock" style="color:var(--amber)"></i><div><small>Time</small><b>{{ class.date_time|date:"h:i A" }}</b></div></div>
-                    <div class="meta"><i class="fas fa-chalkboard-teacher" style="color:var(--green)"></i><div><small>Instructor</small><b>Expert Faculty</b></div></div>
+                    <div class="meta-box"><i class="far fa-calendar-alt" style="color:var(--neon-cyan)"></i><div><small>Date</small><b>{{ class.date_time|date:"d M, Y" }}</b></div></div>
+                    <div class="meta-box"><i class="far fa-clock" style="color:var(--accent-amber)"></i><div><small>Time</small><b>{{ class.date_time|date:"h:i A" }}</b></div></div>
+                    <div class="meta-box"><i class="fas fa-chalkboard-teacher" style="color:var(--accent-green)"></i><div><small>Instructor</small><b>Expert Faculty</b></div></div>
                 </div>
             </div>
             <div class="cls-side">
@@ -130,28 +589,33 @@
                 <a href="{{ class.meeting_link }}" target="_blank" rel="noopener" class="btn-join" data-join>
                     <span data-joinlabel>Join Class</span> <i class="fas fa-external-link-alt"></i>
                 </a>
-                <div class="side-note"><i class="fas fa-info-circle"></i> Opens in Zoom / Meet</div>
+                <div class="side-note"><i class="fas fa-info-circle"></i> Opens in Zoom / Google Meet</div>
             </div>
         </article>
         {% endfor %}
     </div>
-    <div class="glass ld-empty hidden" id="noMatch"><i class="fas fa-calendar-xmark"></i><h3>Nothing in this view</h3><p>Try a different filter.</p></div>
+    <div class="portal-empty hidden stagger-card" id="noMatch">
+        <i class="fas fa-calendar-xmark"></i>
+        <h3>Nothing in this view</h3>
+        <p>No classes scheduled for the selected filter.</p>
+    </div>
 
     {% else %}
-    <div class="glass ld-empty">
+    <div class="portal-empty stagger-card">
         <i class="fas fa-satellite-dish"></i>
         <h3>No Live Classes Scheduled</h3>
-        <p>Check back later for upcoming sessions.</p>
-        <a href="{% url 'all_courses' %}">Browse recorded sessions &rarr;</a>
+        <p>Check back later for upcoming instructor sessions.</p>
+        <a href="{% url 'all_courses' %}"><i class="fas fa-layer-group"></i> Browse recorded courses &rarr;</a>
     </div>
     {% endif %}
+
 </div>
 
 <script>
 (function () {
     const cards = Array.from(document.querySelectorAll('#clsList .cls'));
     if (!cards.length) return;
-    const LIVE_MIN = 60;           // a class is "live" for 60 minutes after its start time
+    const LIVE_MIN = 60; // a class is "live" for 60 minutes after its start time
     let filter = 'all';
 
     const pad = n => String(n).padStart(2, '0');
@@ -215,5 +679,4 @@
     render(); setInterval(render, 1000);
 })();
 </script>
-
 {% endblock %}
