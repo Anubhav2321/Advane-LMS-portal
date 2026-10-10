@@ -74,6 +74,9 @@ urlpatterns = [
     # Activity API
     path('admin-panel/api/activity-data/', views.admin_activity_api, name='admin_activity_api'),
     path('admin-panel/api/student-course-activity/<int:student_id>/<int:course_id>/', views.admin_student_course_activity, name='admin_student_course_activity'),
+    path('admin-panel/support-tickets/', views.admin_support_tickets, name='admin_support_tickets'),
+    path('admin-panel/support-tickets/<int:ticket_id>/reply/', views.admin_reply_support_ticket, name='admin_reply_support_ticket'),
+    path('admin-panel/support-tickets/<int:ticket_id>/delete/', views.admin_delete_support_ticket, name='admin_delete_support_ticket'),
 
     # Quiz APIs
     path('exams/generate-quiz/', views.generate_quiz_view, name='generate_quiz'),

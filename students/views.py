@@ -38,6 +38,8 @@ from .forms import (
     LessonCommentForm,
     AssignmentForm,
     AssignmentSubmissionForm,
+    StudentProfileUpdateForm,
+    SupportTicketForm,
 )
 
 # Import Models
@@ -66,6 +68,8 @@ from .models import (
     LiveClassAttendance,   #  NEW: Live Class Tracking
     process_and_clarify_avatar, #  NEW: Super-clear photo optimization
     AIVideoNote,           #  NEW: Smart AI Lesson Notes
+    SupportTicket,         #  NEW: Support Ticket & Mail
+    notify_admins_of_support_ticket, #  NEW: Dispatch helper for all 4 admins
 )
 
 User = get_user_model()
@@ -96,34 +100,174 @@ def home_view(request):
 
 def contact_developers_view(request):
     """
-    Renders Contact Page & Handles Form Submission.
+    Renders Contact Page & Handles Form Submission from Landing Page Help Center & Contact Us.
+    Dispatches notifications and support mail to ALL 4 system administrators.
     """
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        message = request.POST.get('message')
-        
-        # Here you would integrate SendGrid or SMTP logic
-        messages.success(request, f"Thank you {name}, we have received your message and will reply to {email} shortly.")
-        return redirect('contact_developers')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        name = request.POST.get('name', '').strip()
+        if not name:
+            name = f"{first_name} {last_name}".strip() or "Visitor"
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        category = request.POST.get('category', 'general_query').strip()
+        message = request.POST.get('message', '').strip()
+
+        if not subject:
+            category_title = category.replace('_', ' ').title()
+            subject = f"Support Inquiry ({category_title}) from {name}"
+
+        # Match existing student if registered
+        student = request.user if request.user.is_authenticated else None
+        if not student and email:
+            student = User.objects.filter(email__iexact=email).first()
+
+        ticket = SupportTicket.objects.create(
+            student=student,
+            name=name,
+            email=email,
+            phone=phone or (student.phone if student else ''),
+            student_id_code=student.student_id if (student and student.student_id) else '',
+            source='landing_help_center',
+            category=category if category in dict(SupportTicket.CATEGORY_CHOICES) else 'general_query',
+            priority='high' if category in ['password_reset', 'login_issue'] else 'normal',
+            subject=subject,
+            message=message or "Help request submitted from landing page.",
+            status='pending'
+        )
+
+        # Notify ALL 4 administrators
+        notify_admins_of_support_ticket(ticket)
+
+        success_msg = f"Thank you {name}! Your support message #{ticket.ticket_number} has been sent directly to all 4 system administrators. We will resolve your issue promptly at {email}."
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+            return JsonResponse({'status': 'success', 'message': success_msg, 'ticket_number': ticket.ticket_number})
+
+        messages.success(request, success_msg)
+        return redirect(f"{reverse('home')}#help-center")
         
     return render(request, 'contact.html')
 
 # 2. AUTHENTICATION (REGISTER, LOGIN, LOGOUT)
 
+def resolve_and_authenticate_user(request, identifier, password):
+    """
+    Advanced, professional multi-attribute authentication resolver.
+    Handles:
+    - Trimming leading/trailing whitespace
+    - Direct authenticate() with username or email
+    - Case-insensitive email lookup
+    - Case-insensitive username lookup
+    - Username prefix before '@' (e.g. 'munna2005' -> 'munna2005@gmail.com')
+    - Full Name matching (e.g. 'Munna bhaiya' or 'Munna Bhaiya')
+    - First Name matching (e.g. 'Munna')
+    - Distinguishes between inactive/blocked account vs wrong credentials
+    """
+    raw_ident = (identifier or '').strip()
+    raw_pwd = password or ''
+
+    if not raw_ident or not raw_pwd:
+        return None, 'empty'
+
+    # 1. Direct authentication attempt with exact inputs
+    user = authenticate(request, username=raw_ident, password=raw_pwd)
+    if user is not None:
+        return user, 'ok'
+
+    try:
+        user = authenticate(request, email=raw_ident, password=raw_pwd)
+        if user is not None:
+            return user, 'ok'
+    except Exception:
+        pass
+
+    # 2. Collect candidate users
+    candidates = []
+
+    def add_candidate(u):
+        if u and u not in candidates:
+            candidates.append(u)
+
+    clean_digits = re.sub(r'\D', '', raw_ident)
+
+    # 2a. Match by 6-digit Student ID
+    if clean_digits and len(clean_digits) == 6:
+        for u in User.objects.filter(student_id=clean_digits):
+            add_candidate(u)
+        for u in User.objects.filter(profile__student_id=clean_digits):
+            add_candidate(u)
+
+    # 2b. Match by Phone Number
+    if raw_ident:
+        for u in User.objects.filter(Q(phone=raw_ident) | Q(profile__phone=raw_ident)):
+            add_candidate(u)
+    if clean_digits and len(clean_digits) >= 7:
+        search_suffix = clean_digits[-10:] if len(clean_digits) >= 10 else clean_digits
+        for u in User.objects.filter(Q(phone__endswith=search_suffix) | Q(profile__phone__endswith=search_suffix)):
+            add_candidate(u)
+
+    # 2c. Match by email (case-insensitive)
+    for u in User.objects.filter(email__iexact=raw_ident):
+        add_candidate(u)
+
+    # 2d. Match by username (case-insensitive)
+    for u in User.objects.filter(username__iexact=raw_ident):
+        add_candidate(u)
+
+    # 2e. Non-email formats (usernames, prefixes, names)
+    if '@' not in raw_ident:
+        # Prefix of email before domain (e.g., 'munna2005' for 'munna2005@gmail.com')
+        for u in User.objects.filter(email__istartswith=f"{raw_ident}@"):
+            add_candidate(u)
+
+        # Full name search: "First Last"
+        name_parts = raw_ident.split()
+        if len(name_parts) >= 2:
+            first_n, last_n = name_parts[0], " ".join(name_parts[1:])
+            for u in User.objects.filter(first_name__iexact=first_n, last_name__iexact=last_n):
+                add_candidate(u)
+
+        # First name search: "First"
+        if len(name_parts) == 1:
+            for u in User.objects.filter(first_name__iexact=raw_ident):
+                add_candidate(u)
+
+    # 3. Authenticate candidate users
+    inactive_found = False
+    for cand in candidates:
+        auth_user = authenticate(request, username=cand.username, password=raw_pwd)
+        if auth_user is not None:
+            return auth_user, 'ok'
+        if cand.check_password(raw_pwd) and not cand.is_active:
+            inactive_found = True
+
+    if inactive_found:
+        return None, 'inactive'
+
+    return None, 'invalid'
+
+
 def register_view(request):
     """
-    Handles Student Registration.
+    Handles Student Registration cleanly and securely.
     """
     if request.user.is_authenticated:
-        messages.success(request, "You are already logged in.")
+        messages.info(request, "You are already logged in.")
         return redirect('dashboard')
         
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            messages.success(request, f"Account created successfully for {user.first_name}! Please login.")
+            log_student_activity(user, 'register', f'Account registered for {user.username} (ID: #{user.student_id})')
+            messages.success(
+                request, 
+                f"Welcome, {user.first_name}! Your account has been created successfully. "
+                f"Your Student ID is: #{user.student_id}. You can now login with your Email, Phone Number, or Student ID (#{user.student_id})."
+            )
             return redirect('login')
         else:
             for field, errors in form.errors.items():
@@ -137,13 +281,12 @@ def register_view(request):
 
 def login_view(request):
     """
-    Handles User Login.
+    Handles User Login with robust identification, session management, and role-based routing.
     """
     if request.user.is_authenticated:
-        messages.success(request, "You are already logged in.")
+        messages.info(request, "You are already logged in.")
         if request.user.is_staff or request.user.is_superuser:
             return redirect('admin_dashboard')
-        # ROUTING: Redirect Faculty to their dashboard
         elif getattr(request.user, 'is_faculty', False):
             return redirect('faculty_dashboard')
         return redirect('dashboard')
@@ -151,32 +294,40 @@ def login_view(request):
     if request.method == 'POST':
         identifier = request.POST.get('username')
         password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')
 
-        # Try authenticating as Username (Email in backend)
-        user = authenticate(request, username=identifier, password=password)
-        
-        # Fallback: try finding user by Email explicitly
-        if user is None:
-            try:
-                user_obj = User.objects.get(email=identifier)
-                user = authenticate(request, username=user_obj.username, password=password)
-            except User.DoesNotExist:
-                user = None
+        user, status = resolve_and_authenticate_user(request, identifier, password)
 
         if user is not None:
             login(request, user)
-            messages.success(request, f"Welcome back, {user.first_name}!")
+            
+            # Session expiration: 2 weeks if remember_me, otherwise browser session
+            if remember_me:
+                request.session.set_expiry(1209600)  # 14 days
+            else:
+                request.session.set_expiry(0)  # On browser close
+
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
             
             # Log student login activity
-            log_student_activity(user, 'login', f'{user.username} logged in')
-            
+            log_student_activity(user, 'login', f'{user.username} logged in successfully')
+
+            # Safe next redirection check
+            next_url = request.GET.get('next') or request.POST.get('next')
+            from django.utils.http import url_has_allowed_host_and_scheme
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+
             if user.is_staff or user.is_superuser:
                 return redirect('admin_dashboard')
-            # ROUTING: Redirect Faculty to their dashboard
             elif getattr(user, 'is_faculty', False):
                 return redirect('faculty_dashboard')
             else:
                 return redirect('dashboard')
+        elif status == 'inactive':
+            messages.error(request, "Your account has been deactivated or blocked by an administrator. Please contact support.")
+        elif status == 'empty':
+            messages.error(request, "Please enter both your email or username and password.")
         else:
             messages.error(request, "Invalid Credentials! Please check your email and password.")
 
@@ -184,8 +335,11 @@ def login_view(request):
 
 
 def logout_view(request):
+    """
+    Handles User Logout cleanly.
+    """
     logout(request)
-    messages.error(request, "You have been logged out successfully.")
+    messages.success(request, "You have been logged out successfully.")
     return redirect('login')
 
 # 3. STUDENT DASHBOARD & PROFILE FEATURES
@@ -219,47 +373,26 @@ def student_dashboard(request):
         enrollment.lessons_completed = progress_data['completed']
         enrollment.total_lessons = progress_data['total']
         enrollment.lessons_remaining = max(0, progress_data['total'] - progress_data['completed'])
-        enrollment.ring_offset = round(163.36 - (min(100.0, max(0.0, enrollment.real_progress)) / 100.0) * 163.36, 2)
+        enrollment.ring_offset = progress_data.get('ring_offset', round(163.36 - (min(100.0, max(0.0, enrollment.real_progress)) / 100.0) * 163.36, 2))
         
         # Sync the progress field with real data
-        if abs(enrollment.progress - progress_data['percent']) > 0.1:
+        if abs(enrollment.progress - progress_data['percent']) > 0.05 or (enrollment.progress >= 100.0 and not enrollment.is_completed):
             enrollment.progress = progress_data['percent']
             enrollment.is_completed = (progress_data['percent'] >= 100.0)
             enrollment.save(update_fields=['progress', 'is_completed'])
         
         # --- GRANULAR COMPLETED COUNTS (for clickable chips) ---
-        # Lessons: count completed LessonProgress records
-        enrollment.total_lessons_count = enrollment.course.lessons.count()
-        enrollment.completed_lessons_count = min(
-            enrollment.total_lessons_count,
-            LessonProgress.objects.filter(
-                student=user, lesson__course=enrollment.course, is_completed=True
-            ).count()
-        )
+        enrollment.total_lessons_count = progress_data['total_lessons']
+        enrollment.completed_lessons_count = progress_data['completed_lessons']
         
-        # Quizzes: total active quizzes vs passed quizzes (excluding failures & duplicates!)
-        enrollment.total_quizzes_count = Exam.objects.filter(
-            course=enrollment.course, is_active=True
-        ).count()
-        passed_ids = set()
-        for qr in QuizResult.objects.filter(student=user, exam__course=enrollment.course):
-            if qr.total_marks > 0:
-                if (qr.score / qr.total_marks) >= 0.5:
-                    passed_ids.add(qr.exam_id)
-            elif qr.score > 0:
-                passed_ids.add(qr.exam_id)
-        enrollment.completed_quizzes_count = min(enrollment.total_quizzes_count, len(passed_ids))
+        # Quizzes: total quizzes vs attempted quizzes!
+        enrollment.total_quizzes_count = progress_data['total_quizzes']
+        enrollment.completed_quizzes_count = progress_data['completed_quizzes']
         
         # Tasks (Assignments): total vs submitted (distinct)
-        enrollment.total_tasks_count = Assignment.objects.filter(
-            course=enrollment.course
-        ).count()
-        enrollment.completed_tasks_count = min(
-            enrollment.total_tasks_count,
-            AssignmentSubmission.objects.filter(
-                student=user, assignment__course=enrollment.course
-            ).values('assignment_id').distinct().count()
-        )
+        enrollment.total_tasks_count = progress_data['total_assignments']
+        enrollment.completed_tasks_count = progress_data['completed_assignments']
+        enrollment.on_time_tasks_count = progress_data.get('on_time_assignments', 0)
         enrollment.pending_tasks_count = max(0, enrollment.total_tasks_count - enrollment.completed_tasks_count)
 
         # Legacy fields (kept for backward compatibility)
@@ -284,7 +417,15 @@ def student_dashboard(request):
         enriched_enrollments.append(enrollment)
     
     # Overall progress across all courses
-    overall_progress = round((total_completed_lessons / max(total_all_lessons, 1)) * 100, 1)
+    if total_all_lessons > 0:
+        overall_progress = min(100.0, max(0.0, round((total_completed_lessons / total_all_lessons) * 100, 1)))
+    elif enriched_enrollments:
+        overall_progress = round(sum(e.real_progress for e in enriched_enrollments) / len(enriched_enrollments), 1)
+    else:
+        overall_progress = 0.0
+
+    # Overall Hero Progress Ring Offset (circumference = 2 * PI * 28 ≈ 175.93)
+    overall_ring_offset = round(175.93 - (min(100.0, max(0.0, overall_progress)) / 100.0) * 175.93, 2)
     
     # Fetch Notifications for student
     user_notifications = list(
@@ -300,9 +441,9 @@ def student_dashboard(request):
         Q(is_global=True) | Q(recipient=user)
     ).exclude(read_by=user).count()
     
-    # Calculate Stats
-    total_enrolled = enrollments.count()
-    completed_courses = enrollments.filter(progress__gte=100).count()
+    # Calculate Stats directly from enriched enrollments
+    total_enrolled = len(enriched_enrollments)
+    completed_courses = sum(1 for e in enriched_enrollments if e.real_progress >= 100.0)
     certificate_eligible = completed_courses
     
     #  GLOBAL LEADERBOARD LOGIC
@@ -408,6 +549,7 @@ def student_dashboard(request):
         'completed_courses': completed_courses,
         'certificate_eligible': certificate_eligible,
         'overall_progress': overall_progress,
+        'overall_ring_offset': overall_ring_offset,
         'total_all_lessons': total_all_lessons,
         'total_completed_lessons': total_completed_lessons,
         'top_students': top_students,
@@ -435,7 +577,12 @@ def student_dashboard(request):
 @login_required
 def profile_view(request):
     """
-    Student Profile View.
+    Student Profile View:
+    - View student identity, courses, stats, and activity heatmap.
+    - Update profile picture (camera click).
+    - Update personal details (Phone number, Email address, Bio, Name) with strong validation and uniqueness checks.
+    - Support & Help Desk: Compose and send support mail/tickets to ALL 4 administrators.
+    - View history of support messages and admin replies.
     """
     user = request.user
     
@@ -443,25 +590,71 @@ def profile_view(request):
     if not hasattr(user, 'profile'):
         Profile.objects.create(user=user)
     
-    # Handle Profile Picture Upload
+    # Handle POST actions
     if request.method == 'POST':
-        form = ProfilePictureForm(request.POST, request.FILES, instance=user.profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profile picture updated successfully!")
-            return redirect('profile')
-    else:
-        form = ProfilePictureForm(instance=user.profile)
+        action = request.POST.get('action')
+
+        if action == 'update_profile':
+            profile_form = StudentProfileUpdateForm(request.POST, request.FILES, user=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Your profile details (phone, email, bio) were updated successfully!")
+                return redirect('profile')
+            else:
+                for field, err_list in profile_form.errors.items():
+                    for err in err_list:
+                        messages.error(request, f"{field.replace('_', ' ').title()}: {err}")
+                return redirect('profile')
+
+        elif action == 'create_ticket':
+            ticket_form = SupportTicketForm(request.POST)
+            if ticket_form.is_valid():
+                ticket = ticket_form.save(commit=False)
+                ticket.student = user
+                ticket.name = user.full_name
+                ticket.email = user.email
+                ticket.phone = user.phone or (hasattr(user, 'profile') and user.profile.phone) or ''
+                ticket.student_id_code = user.student_id or str(user.id)
+                ticket.source = 'student_profile'
+                ticket.save()
+                
+                # Notify ALL 4 administrators
+                notify_admins_of_support_ticket(ticket)
+                messages.success(
+                    request, 
+                    f"Your support mail #{ticket.ticket_number} has been dispatched directly to all 4 system administrators! You will receive a resolution shortly."
+                )
+                return redirect('profile')
+            else:
+                messages.error(request, "Failed to submit support mail. Please verify the required fields.")
+                return redirect('profile')
+
+        else:
+            # Handle standard avatar upload form
+            avatar_form = ProfilePictureForm(request.POST, request.FILES, instance=user.profile)
+            if avatar_form.is_valid():
+                avatar_form.save()
+                messages.success(request, "Profile picture updated successfully!")
+                return redirect('profile')
+            else:
+                messages.error(request, "Failed to update profile picture. Please try another image.")
+                return redirect('profile')
+
+    form = ProfilePictureForm(instance=user.profile)
+    profile_form = StudentProfileUpdateForm(user=user)
+    ticket_form = SupportTicketForm()
+
+    # Fetch this student's support tickets
+    support_tickets = SupportTicket.objects.filter(student=user).order_by('-created_at')
 
     # Fetch Enrolled Courses for display
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-enrolled_at')
 
     # 🚀 SYNTAX SINGULARITY STATS & GITHUB HEATMAP GRAPH FETCHING
-
     successful_bounties = BountySubmission.objects.filter(
         student=user, 
         earned_coins__gt=0
-    ).select_related('problem').order_by('submitted_at') # ordered ascending for graph
+    ).select_related('problem').order_by('submitted_at')
     
     total_bounties_solved = successful_bounties.count()
     bounty_coins_earned = sum(sub.earned_coins for sub in successful_bounties)
@@ -481,7 +674,6 @@ def profile_view(request):
     today = timezone.now().date()
     
     # Calculate study streak (consecutive days with at least 1 activity)
-    # Allows active streak continuation from yesterday pending today's session
     study_streak = 0
     yesterday = today - datetime.timedelta(days=1)
     if StudentActivity.objects.filter(student=user, created_at__date=today).exists():
@@ -523,11 +715,14 @@ def profile_view(request):
     context = {
         'user': user,
         'form': form,
+        'profile_form': profile_form,
+        'ticket_form': ticket_form,
+        'support_tickets': support_tickets,
         'enrollments': enrollments,
         'total_bounties_solved': total_bounties_solved,
         'bounty_coins_earned': bounty_coins_earned,
         'recent_bounties': recent_bounties,
-        'contribution_json': json.dumps(contribution_data), # <-- Sent to Template for Heatmap Graph
+        'contribution_json': json.dumps(contribution_data),
         'study_streak': study_streak,
         'total_completed_lessons': total_completed_lessons,
         'avg_quiz_score': avg_quiz_score,
@@ -1867,13 +2062,21 @@ def submit_quiz_view(request, exam_id):
                 score=score
             )
         
-        # Log quiz activity
         log_student_activity(
             request.user, 'quiz_taken',
             f'Took quiz: {exam.title} - Score: {score}/{total_questions}',
             course=exam.course,
             metadata={'score': score, 'total': total_questions}
         )
+        
+        # Immediately sync course enrollment progress
+        if exam.course:
+            try:
+                enrollment = Enrollment.objects.filter(student=request.user, course=exam.course).first()
+                if enrollment:
+                    enrollment.sync_progress()
+            except Exception as sync_err:
+                print(f"[Warning] Failed syncing enrollment progress after quiz: {sync_err}")
         
         percentage = int((score / total_questions) * 100) if total_questions > 0 else 0
         
@@ -3143,9 +3346,8 @@ def syntax_singularity_view(request):
     })
 
 @login_required
-@csrf_exempt
 def generate_ai_challenge(request):
-    """ Calls Groq API to generate a dynamic coding problem based on User's typed topic. """
+    """ Calls Groq API to generate a dynamic coding problem based on User's typed topic with multi-model fallback. """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -3158,7 +3360,7 @@ def generate_ai_challenge(request):
             type_instructions = {
                 'solve': '',
                 'debug': 'CHALLENGE TYPE OVERRIDE: This is a DEBUGGING challenge. `base_code` MUST be a complete but BUGGY implementation (2-3 subtle bugs) that the student must find and fix. The problem statement must describe the expected behaviour, not the bugs.',
-                'fill': 'CHALLENGE TYPE OVERRIDE: This is a FILL-IN-THE-BLANKS challenge. `base_code` MUST be an almost complete solution where the key lines are replaced by `___` placeholders (3-5 blanks) that the student must complete.',
+                'fill': 'CHALLENGE TYPE OVERRIDE: This is a FILL-IN-THE-BLANKS challenge. `base_code` MUST be an almost complete solution where key lines are replaced by `___` placeholders (3-5 blanks) that the student must complete.',
                 'optimize': 'CHALLENGE TYPE OVERRIDE: This is an OPTIMIZATION challenge. `base_code` MUST be a correct but slow brute-force solution. The student must rewrite it to meet the stated time complexity in Constraints.',
             }
             type_note = type_instructions.get(challenge_type, '')
@@ -3180,7 +3382,7 @@ def generate_ai_challenge(request):
             CRITICAL INSTRUCTION FOR `description`:
             You MUST format the description exactly like a LeetCode problem. Use markdown.
             Include the following sections strictly:
-            1. **Problem Statement**: Clear explanation of the task.
+            1. **Problem Statement**: Clear explanation of the task. Keep it concise.
             2. **Example 1**: Input and Output format clearly shown.
             3. **Example 2**: Input and Output format clearly shown.
             4. **Constraints**: Time/Space limits or array size limits.
@@ -3189,7 +3391,7 @@ def generate_ai_challenge(request):
             You MUST NOT provide the solution. Provide ONLY the empty function signature/template for the student to start with. The function body MUST be empty (use `pass` in Python, or empty brackets `{{}}` in other languages). DO NOT write the actual logic.
             {type_note}
             
-            Return ONLY a valid JSON object without markdown tags:
+            Return ONLY a valid JSON object without markdown fences:
             {{
                 "title": "A short engaging title",
                 "description": "The full LeetCode style markdown string",
@@ -3197,37 +3399,61 @@ def generate_ai_challenge(request):
             }}
             """
             
-            payload = {
-                "model": "qwen/qwen3.8-27b", # Restore required model for this environment
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.5,
-                "response_format": {"type": "json_object"},
-                "max_tokens": 800
-            }
+            candidate_models = ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b"]
+            groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            problem_data = None
+            last_error = "Unknown error"
             
-            base_url = "https://"
-            endpoint = "api.groq.com/openai/v1/chat/completions"
-            groq_url = base_url + endpoint
-            
-            response = requests.post(groq_url, headers=headers, json=payload)
-            response_data = response.json()
-            
-            if 'choices' not in response_data:
-                error_msg = response_data.get('error', {}).get('message', str(response_data))
-                return JsonResponse({'status': 'error', 'message': f'Groq API Error: {error_msg}'}, status=500)
-            
-            content = response_data['choices'][0]['message']['content']
-            
-            # Extract JSON block using regex to avoid conversational text
-            import re
-            json_match = re.search(r'\{.*\}', content, re.DOTALL)
-            if json_match:
-                content = json_match.group(0)
+            for model_name in candidate_models:
+                payload = {
+                    "model": model_name,
+                    "messages": [
+                        {"role": "system", "content": "You are ARIS, an automated coding challenge generator. You output strictly valid JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.4,
+                    "response_format": {"type": "json_object"},
+                    "max_tokens": 1600
+                }
                 
-            try: 
-                problem_data = json.loads(content)
-            except json.JSONDecodeError as e: 
-                return JsonResponse({'status': 'error', 'message': f'AI generated invalid JSON: {str(e)}. Try again.'}, status=500)
+                try:
+                    response = requests.post(groq_url, headers=headers, json=payload, timeout=25)
+                    response_data = response.json()
+                    
+                    if 'choices' in response_data and response_data['choices']:
+                        content = response_data['choices'][0]['message']['content']
+                        import re
+                        json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                        if json_match:
+                            content = json_match.group(0)
+                        
+                        try:
+                            parsed = json.loads(content)
+                            if 'title' in parsed and 'description' in parsed:
+                                problem_data = parsed
+                                break
+                        except json.JSONDecodeError:
+                            continue
+                    else:
+                        last_error = response_data.get('error', {}).get('message', str(response_data))
+                except Exception as ex:
+                    last_error = str(ex)
+                    continue
+
+            # Fallback generator if all models experienced rate-limits or format issues
+            if not problem_data:
+                starter_signatures = {
+                    'python': f"# {topic} - {difficulty}\ndef solve(data):\n    # Write your logic here\n    pass",
+                    'javascript': f"// {topic} - {difficulty}\nfunction solve(data) {{\n    // Write your logic here\n}}",
+                    'cpp': f"// {topic} - {difficulty}\n#include <iostream>\n\nvoid solve() {{\n    // Write your logic here\n}}",
+                    'java': f"// {topic} - {difficulty}\nclass Solution {{\n    public static void solve() {{\n        // Write your logic here\n    }}\n}}"
+                }
+                code_template = starter_signatures.get(language.lower(), starter_signatures['python'])
+                problem_data = {
+                    "title": f"{topic.title()}: {difficulty} Challenge",
+                    "description": f"### Problem Statement\nImplement an efficient algorithm for **{topic}** in **{language.title()}**.\n\n### Example 1\n- **Input**: Sample test case\n- **Output**: Expected solution\n\n### Constraints\n- Optimal time and space complexity expected.",
+                    "base_code": code_template
+                }
             
             base_coins = 10 if difficulty == 'Easy' else (30 if difficulty == 'Medium' else 100)
             
@@ -3293,39 +3519,51 @@ def submit_bounty_code(request):
             }}
             """
             
-            payload = {
-                "model": "qwen/qwen3.8-27b", 
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.2,
-                "response_format": {"type": "json_object"}
-            }
+            candidate_models = ["openai/gpt-oss-120b", "qwen/qwen3.8-27b", "openai/gpt-oss-20b"]
+            groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            eval_result = None
+            last_eval_error = "Evaluation failed"
             
-            base_url = "https://"
-            endpoint = "api.groq.com/openai/v1/chat/completions"
-            groq_url = base_url + endpoint
-            
-            response = requests.post(groq_url, headers=headers, json=payload)
-            response_data = response.json()
-            
-            if 'choices' not in response_data:
-                error_msg = response_data.get('error', {}).get('message', str(response_data))
-                return JsonResponse({'status': 'error', 'message': f'AI failed to evaluate code: {error_msg}'}, status=500)
-            
-            content = response_data['choices'][0]['message']['content']
-            
-            # Extract JSON block using regex to avoid conversational text
-            import re
-            json_match = re.search(r'\{.*\}', content, re.DOTALL)
-            if json_match:
-                content = json_match.group(0)
+            for model_name in candidate_models:
+                payload = {
+                    "model": model_name,
+                    "messages": [
+                        {"role": "system", "content": "You are ARIS, an automated code evaluation assistant. You strictly output valid JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.2,
+                    "response_format": {"type": "json_object"},
+                    "max_tokens": 800
+                }
                 
-            try: 
-                eval_result = json.loads(content)
-            except json.JSONDecodeError as e: 
-                return JsonResponse({'status': 'error', 'message': f'AI response format error: {str(e)}'}, status=500)
+                try:
+                    response = requests.post(groq_url, headers=headers, json=payload, timeout=25)
+                    response_data = response.json()
+                    
+                    if 'choices' in response_data and response_data['choices']:
+                        content = response_data['choices'][0]['message']['content']
+                        import re
+                        json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                        if json_match:
+                            content = json_match.group(0)
+                        
+                        try:
+                            eval_result = json.loads(content)
+                            if 'is_correct' in eval_result:
+                                break
+                        except json.JSONDecodeError:
+                            continue
+                    else:
+                        last_eval_error = response_data.get('error', {}).get('message', str(response_data))
+                except Exception as ex:
+                    last_eval_error = str(ex)
+                    continue
             
-            is_correct = eval_result.get('is_correct', False)
-            feedback = eval_result.get('feedback', 'No feedback provided.')
+            if not eval_result:
+                return JsonResponse({'status': 'error', 'message': f'AI evaluation error: {last_eval_error}'}, status=500)
+            
+            is_correct = bool(eval_result.get('is_correct', False))
+            feedback = eval_result.get('feedback', 'Code evaluated.')
             
             earned_coins = 0
             
@@ -3471,9 +3709,7 @@ def track_progress(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
 
 
-# ==============================================================================
-# 🔔 REAL-TIME NOTIFICATION & SUITABLE TASK ACTION ENDPOINTS
-# ==============================================================================
+#  REAL-TIME NOTIFICATION & SUITABLE TASK ACTION ENDPOINTS
 
 @login_required
 def mark_notification_read(request, notif_id):
@@ -3572,4 +3808,144 @@ def get_student_notifications_api(request):
         'status': 'success',
         'unread_count': unread_count,
         'notifications': notifications_data,
-    })
+    })
+
+
+# ========================================================
+# 12. ADMIN SUPPORT TICKET & HELP DESK MANAGEMENT
+# ========================================================
+
+@staff_member_required
+def admin_support_tickets(request):
+    """
+    Admin Support Mailbox / Help Desk Dashboard:
+    Allows administrators to view all student/visitor support tickets,
+    filter by status (pending, in_progress, resolved, closed),
+    search by ticket number/student/issue, view details, and reply directly.
+    """
+    status_filter = request.GET.get('status', 'all').strip()
+    search_query = request.GET.get('search', '').strip()
+    category_filter = request.GET.get('category', 'all').strip()
+
+    tickets = SupportTicket.objects.all().select_related('student', 'replied_by')
+
+    if status_filter and status_filter != 'all':
+        tickets = tickets.filter(status=status_filter)
+
+    if category_filter and category_filter != 'all':
+        tickets = tickets.filter(category=category_filter)
+
+    if search_query:
+        tickets = tickets.filter(
+            Q(ticket_number__icontains=search_query) |
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone__icontains=search_query) |
+            Q(student_id_code__icontains=search_query) |
+            Q(subject__icontains=search_query) |
+            Q(message__icontains=search_query)
+        )
+
+    # Counts
+    pending_count = SupportTicket.objects.filter(status='pending').count()
+    in_progress_count = SupportTicket.objects.filter(status='in_progress').count()
+    resolved_count = SupportTicket.objects.filter(status='resolved').count()
+    total_count = SupportTicket.objects.count()
+
+    # Pagination
+    paginator = Paginator(tickets, 15)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'tickets': page_obj,
+        'page_obj': page_obj,
+        'pending_count': pending_count,
+        'in_progress_count': in_progress_count,
+        'resolved_count': resolved_count,
+        'total_count': total_count,
+        'current_status': status_filter,
+        'current_category': category_filter,
+        'search_query': search_query,
+        'categories': SupportTicket.CATEGORY_CHOICES,
+    }
+    return render(request, 'custom_admin/support_tickets.html', context)
+
+
+@staff_member_required
+def admin_reply_support_ticket(request, ticket_id):
+    """
+    Handles administrator replies to student support tickets.
+    Updates ticket status, saves admin reply, notifies student (in-app + email).
+    """
+    ticket = get_object_or_404(SupportTicket, id=ticket_id)
+    if request.method == 'POST':
+        admin_reply = request.POST.get('admin_reply', '').strip()
+        new_status = request.POST.get('status', 'resolved').strip()
+
+        if admin_reply:
+            ticket.admin_reply = admin_reply
+            ticket.status = new_status
+            ticket.replied_by = request.user
+            ticket.replied_at = timezone.now()
+            ticket.save()
+
+            # 1. Notify Student In-App (if registered user)
+            if ticket.student:
+                Notification.objects.create(
+                    title=f"📬 Support Reply #{ticket.ticket_number}",
+                    message=f"Administrator ({request.user.first_name or request.user.username}) replied to your request '{ticket.subject[:35]}': {admin_reply[:120]}...",
+                    notification_type='support',
+                    action_url=reverse('profile'),
+                    action_label="Open Support Desk",
+                    recipient=ticket.student,
+                    is_global=False
+                )
+
+            # 2. Email Notification to Student/Visitor
+            from django.core.mail import send_mail
+            try:
+                subject = f"[Learning-365 Support #{ticket.ticket_number}] Re: {ticket.subject}"
+                body = (
+                    f"Dear {ticket.name},\n\n"
+                    f"Our administrative team has addressed your ticket regarding: \"{ticket.subject}\".\n\n"
+                    f"--- Administrator Response ---\n"
+                    f"{admin_reply}\n\n"
+                    f"Status: {ticket.get_status_display()}\n"
+                    f"Resolved by: {request.user.full_name or request.user.username} (Learning-365 Administration)\n\n"
+                    f"If you have further questions, feel free to reply or submit another request in your Student Portal.\n\n"
+                    f"Best regards,\nLearning-365 Support Team"
+                )
+                send_mail(
+                    subject=subject,
+                    message=body,
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@learning365.com'),
+                    recipient_list=[ticket.email],
+                    fail_silently=True
+                )
+            except Exception as e:
+                print(f"[REPLY EMAIL ERROR]: {e}")
+
+            messages.success(request, f"Reply sent successfully to {ticket.name} ({ticket.email}) for Ticket #{ticket.ticket_number}!")
+        else:
+            # Just status update
+            ticket.status = new_status
+            ticket.save()
+            messages.success(request, f"Ticket #{ticket.ticket_number} status updated to {ticket.get_status_display()}.")
+
+        return redirect('admin_support_tickets')
+
+    return redirect('admin_support_tickets')
+
+
+@staff_member_required
+def admin_delete_support_ticket(request, ticket_id):
+    """
+    Deletes a support ticket.
+    """
+    ticket = get_object_or_404(SupportTicket, id=ticket_id)
+    tkt_num = ticket.ticket_number
+    ticket.delete()
+    messages.success(request, f"Ticket #{tkt_num} has been deleted.")
+    return redirect('admin_support_tickets')
+

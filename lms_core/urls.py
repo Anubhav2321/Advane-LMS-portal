@@ -93,6 +93,11 @@ from students.views import (
     admin_activity_api,
     admin_student_courses_api,
     admin_student_course_activity,
+    
+    # NEW: Admin Support Mailbox
+    admin_support_tickets,
+    admin_reply_support_ticket,
+    admin_delete_support_ticket,
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -248,6 +253,11 @@ urlpatterns = [
     
     #  F. Lesson Management 
     path('admin-panel/course/<int:course_id>/add-lesson/', admin_add_lesson, name='admin_add_lesson'),
+
+    #  H. Support Tickets & Mailbox
+    path('admin-panel/support-tickets/', admin_support_tickets, name='admin_support_tickets'),
+    path('admin-panel/support-tickets/<int:ticket_id>/reply/', admin_reply_support_ticket, name='admin_reply_support_ticket'),
+    path('admin-panel/support-tickets/<int:ticket_id>/delete/', admin_delete_support_ticket, name='admin_delete_support_ticket'),
 ]
 
 from django.urls import re_path

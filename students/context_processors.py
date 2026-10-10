@@ -37,8 +37,17 @@ def notifications_context(request):
             if notif.notification_type in task_types:
                 has_tasks = True
 
+    pending_support_count = 0
+    if user.is_staff or user.is_superuser:
+        try:
+            from .models import SupportTicket
+            pending_support_count = SupportTicket.objects.filter(status='pending').count()
+        except Exception:
+            pass
+
     return {
         'notifications_list': user_notifications,
         'unread_notifications_count': unread_count,
         'has_unread_tasks': has_tasks,
+        'pending_support_count': pending_support_count,
     }
