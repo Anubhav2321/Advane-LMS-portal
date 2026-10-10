@@ -1089,12 +1089,31 @@
                 <form action="{% url 'contact_developers' %}" method="POST">
                     {% csrf_token %}
                     <div class="form-row">
-                        <input type="text" name="first_name" placeholder="First Name" required>
-                        <input type="text" name="last_name" placeholder="Last Name" required>
+                        <input type="text" name="first_name" placeholder="First Name" value="{% if request.user.is_authenticated %}{{ request.user.first_name }}{% endif %}" required>
+                        <input type="text" name="last_name" placeholder="Last Name" value="{% if request.user.is_authenticated %}{{ request.user.last_name }}{% endif %}" required>
                     </div>
-                    <input type="email" name="email" placeholder="Email Address" required>
-                    <textarea name="message" rows="5" placeholder="How can we help you?" required></textarea>
-                    <button type="submit" class="contact-submit-btn">Submit Request</button>
+                    <div class="form-row">
+                        <input type="email" name="email" placeholder="Email Address" value="{% if request.user.is_authenticated %}{{ request.user.email }}{% endif %}" required>
+                        <input type="text" name="phone" placeholder="Phone Number (e.g. +91 98765 43210)" value="{% if request.user.is_authenticated %}{{ request.user.phone|default:request.user.profile.phone|default:'' }}{% endif %}">
+                    </div>
+                    <div class="form-row">
+                        <select name="category" style="width:100%; padding:14px 16px; margin-bottom:16px; background:rgba(0,0,0,0.5); border:1px solid var(--glass-border); color:var(--text-primary); border-radius:var(--radius-md); font-size:0.9rem; outline:none;">
+                            <option value="password_reset">🔑 Password Reset / Account Recovery</option>
+                            <option value="login_issue">🔐 Login / Authentication Problem</option>
+                            <option value="course_doubt">📚 Course & Content Doubts</option>
+                            <option value="payment_coins">🪙 LMS Coins & Payment Inquiries</option>
+                            <option value="technical_bug">🐛 Technical Glitch / Bug Report</option>
+                            <option value="general_query" selected>💬 General Inquiry & Guidance</option>
+                        </select>
+                        <input type="text" name="subject" placeholder="Subject / Summary of Issue">
+                    </div>
+                    <textarea name="message" rows="4" placeholder="How can our 4 system administrators help you? (Explain your problem in detail...)" required></textarea>
+                    
+                    <div style="font-size: 0.8rem; color: #00f3ff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-shield-alt"></i> Forwarded directly to all 4 system administrators
+                    </div>
+                    
+                    <button type="submit" class="contact-submit-btn">Send Message to Admins</button>
                 </form>
             </div>
 
@@ -1233,6 +1252,11 @@
 
                 <h4>3. Privacy & Data Security</h4>
                 <p>We respect your privacy. All your code executions in our IDE are handled securely inside isolated Docker containers. Your personal data is encrypted and never shared with third parties.</p>
+
+                <div style="margin: 18px 0; padding: 12px 16px; background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 0.85rem; color: #e2e8f0;"><i class="fas fa-headset" style="color: #00f3ff;"></i> Have questions about terms, account status, or password recovery?</span>
+                    <a href="#help-center" class="open-contact-btn" style="color: #00f3ff; font-weight: 700; font-size: 0.85rem; text-decoration: none; border-bottom: 1px dashed #00f3ff;" onclick="document.getElementById('termsModal').classList.remove('active');">Contact Admins in Help Center &rarr;</a>
+                </div>
 
                 <button class="terms-accept-btn" id="acceptTermsBtn">I Accept & Continue</button>
             </div>
