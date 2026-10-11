@@ -1224,7 +1224,7 @@
 
                 <!-- Embedded Resolution Console -->
                 <div class="resolution-console-card">
-                    <form method="POST" id="dW_ReplyForm">
+                    <form method="POST" id="dW_ReplyForm" onsubmit="if (!this.action || !this.action.includes('/reply/')) { alert('Please select a ticket to reply to.'); return false; }">
                         {% csrf_token %}
                         <div class="console-header-row">
                             <div class="console-title">

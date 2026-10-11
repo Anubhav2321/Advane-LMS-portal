@@ -1417,15 +1417,21 @@ def notify_admins_of_support_ticket(ticket):
                 f"Source: {ticket.source}\n\n"
                 f"Message:\n{ticket.message}\n\n"
                 f"Please review and solve this issue in the Admin Panel:\n"
-                f"http://127.0.0.1:8000/admin-panel/support-tickets/{ticket.id}/"
+                f"https://learning-365-ccs7.onrender.com/admin-panel/support-tickets/{ticket.id}/"
             )
-            send_mail(
-                subject=subject,
-                message=body,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@learning365.com'),
-                recipient_list=admin_emails,
-                fail_silently=True
-            )
+            import threading
+            def _async_send():
+                try:
+                    send_mail(
+                        subject=subject,
+                        message=body,
+                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@learning365.com'),
+                        recipient_list=admin_emails,
+                        fail_silently=True
+                    )
+                except Exception as ex:
+                    print(f"[ADMIN SUPPORT EMAIL DISPATCH ERROR]: {ex}")
+            threading.Thread(target=_async_send, daemon=True).start()
     except Exception as e:
         print(f"[ADMIN SUPPORT EMAIL DISPATCH ERROR]: {e}")
 

@@ -25,17 +25,28 @@ ALLOWED_HOSTS = ['*']
 
 # --- CSRF & Security for Render Deployment ---
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-CSRF_TRUSTED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = [
+    'https://learning-365-ccs7.onrender.com',
+    'http://learning-365-ccs7.onrender.com',
+    'https://*.onrender.com',
+    'http://*.onrender.com',
+]
 if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
-# Always trust the known live URL
-CSRF_TRUSTED_ORIGINS.append('https://learning-365-ccs7.onrender.com')
+    CSRF_TRUSTED_ORIGINS.extend([
+        f'https://{RENDER_EXTERNAL_HOSTNAME}',
+        f'http://{RENDER_EXTERNAL_HOSTNAME}',
+    ])
 
 # Render Reverse Proxy SSL Support (Ensures HTTPS forms & CSRF tokens submit reliably)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 if not DEBUG:
+    SECURE_SSL_REDIRECT = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False
 
 # Application definition
 INSTALLED_APPS = [
@@ -203,4 +214,5 @@ EMAIL_USE_TLS = True
 # Reads email credentials securely from .env file
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_TIMEOUT = 5
 

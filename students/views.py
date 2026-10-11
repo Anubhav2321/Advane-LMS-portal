@@ -16,7 +16,7 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.db.models import Q, Avg, Count, Sum, F
 from django.db.models.functions import TruncDate
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.utils import timezone
 from django.core.paginator import Paginator
 
@@ -76,6 +76,7 @@ User = get_user_model()
 
 # 1. PUBLIC VIEWS (LANDING, CONTACT)
 
+@ensure_csrf_cookie
 def home_view(request):
     """
     Renders the Landing Page with stats.
@@ -98,6 +99,7 @@ def home_view(request):
     }
     return render(request, 'landing.html', context)
 
+@ensure_csrf_cookie
 def contact_developers_view(request):
     """
     Renders Contact Page & Handles Form Submission from Landing Page Help Center & Contact Us.
@@ -149,7 +151,7 @@ def contact_developers_view(request):
         messages.success(request, success_msg)
         return redirect(f"{reverse('home')}#help-center")
         
-    return render(request, 'contact.html')
+    return redirect(f"{reverse('home')}#help-center")
 
 # 2. AUTHENTICATION (REGISTER, LOGIN, LOGOUT)
 
@@ -575,6 +577,7 @@ def student_dashboard(request):
 
 
 @login_required
+@ensure_csrf_cookie
 def profile_view(request):
     """
     Student Profile View:
@@ -3903,6 +3906,7 @@ def admin_reply_support_ticket(request, ticket_id):
                 )
 
             # 2. Email Notification to Student/Visitor
+            import threading
             from django.core.mail import send_mail
             try:
                 subject = f"[Learning-365 Support #{ticket.ticket_number}] Re: {ticket.subject}"
@@ -3916,13 +3920,18 @@ def admin_reply_support_ticket(request, ticket_id):
                     f"If you have further questions, feel free to reply or submit another request in your Student Portal.\n\n"
                     f"Best regards,\nLearning-365 Support Team"
                 )
-                send_mail(
-                    subject=subject,
-                    message=body,
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@learning365.com'),
-                    recipient_list=[ticket.email],
-                    fail_silently=True
-                )
+                def _async_send_reply():
+                    try:
+                        send_mail(
+                            subject=subject,
+                            message=body,
+                            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@learning365.com'),
+                            recipient_list=[ticket.email],
+                            fail_silently=True
+                        )
+                    except Exception as ex:
+                        print(f"[REPLY EMAIL ERROR]: {ex}")
+                threading.Thread(target=_async_send_reply, daemon=True).start()
             except Exception as e:
                 print(f"[REPLY EMAIL ERROR]: {e}")
 
