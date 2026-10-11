@@ -1041,20 +1041,21 @@ def fetch_google_profile_pic(request, user, **kwargs):
                 user.save(update_fields=['first_name', 'last_name'])
 
             # 2. FIX PROFILE PICTURE
-            if not user.profile.profile_pic:
+            profile, _ = Profile.objects.get_or_create(user=user)
+            if not profile.profile_pic:
                 picture_url = social_account.extra_data.get('picture')
                 if picture_url:
                     high_res_url = picture_url
-                    for low_res in ['=s96-c', '=s50-c', '=s64-c']:
+                    for low_res in ['=s96-c', '=s50-c', '=s64-c', '=s100']:
                         if low_res in high_res_url:
                             high_res_url = high_res_url.replace(low_res, '=s384-c')
                             break
-                    response = requests.get(high_res_url)
+                    response = requests.get(high_res_url, timeout=10)
                     if response.status_code != 200:
-                        response = requests.get(picture_url)
+                        response = requests.get(picture_url, timeout=10)
                     if response.status_code == 200:
                         file_name = f"{user.username}_google_pic.jpg"
-                        user.profile.profile_pic.save(file_name, ContentFile(response.content), save=True)
+                        profile.profile_pic.save(file_name, ContentFile(response.content), save=True)
                     
     except Exception as e:
         print(f"Could not save Google profile data: {e}")
