@@ -622,6 +622,23 @@ class Notification(models.Model):
         return f"[{self.notification_type}] {self.title}"
 
     @property
+    def clean_message(self):
+        if not self.message:
+            return ""
+        text = str(self.message)
+        for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+            text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+        return text.replace('\r\n', '\n').replace('\r', '\n')
+
+    def save(self, *args, **kwargs):
+        if self.message:
+            text = str(self.message)
+            for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+                text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+            self.message = text.replace('\r\n', '\n').replace('\r', '\n')
+        super().save(*args, **kwargs)
+
+    @property
     def icon_class(self):
         icon_map = {
             'course': 'fas fa-graduation-cap',
@@ -1368,6 +1385,37 @@ class SupportTicket(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    @property
+    def clean_admin_reply(self):
+        if not self.admin_reply:
+            return ""
+        text = str(self.admin_reply)
+        for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+            text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+        return text.replace('\r\n', '\n').replace('\r', '\n')
+
+    @property
+    def clean_message(self):
+        if not self.message:
+            return ""
+        text = str(self.message)
+        for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+            text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+        return text.replace('\r\n', '\n').replace('\r', '\n')
+
+    def save(self, *args, **kwargs):
+        if self.admin_reply:
+            text = str(self.admin_reply)
+            for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+                text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+            self.admin_reply = text.replace('\r\n', '\n').replace('\r', '\n')
+        if self.message:
+            text = str(self.message)
+            for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+                text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+            self.message = text.replace('\r\n', '\n').replace('\r', '\n')
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"[{self.ticket_number}] {self.subject} ({self.get_status_display()})"

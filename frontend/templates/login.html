@@ -367,20 +367,17 @@
             {% csrf_token %}
             
             <div class="form-group">
-                <label class="form-label">Email, Phone Number, or Student ID</label>
+                <label class="form-label">Email Address</label>
                 <input 
                     type="text" 
                     name="username" 
                     class="form-control" 
-                    placeholder="Enter Email, Phone (+91...), or 6-Digit Student ID" 
+                    placeholder="Enter your email" 
                     required 
                     autocomplete="username" 
                     autocapitalize="none" 
                     spellcheck="false"
                 >
-                <span class="input-hint">
-                    <i class="fas fa-id-card"></i> Login with your Email, Phone Number, or 6-digit Student ID
-                </span>
             </div>
 
             <div class="form-group">

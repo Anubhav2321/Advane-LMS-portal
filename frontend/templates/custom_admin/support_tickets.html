@@ -1080,8 +1080,8 @@
                          data-source="{{ t.get_source_display|escapejs }}"
                          data-status="{{ t.status }}"
                          data-subject="{{ t.subject|escapejs }}"
-                         data-message="{{ t.message|escapejs }}"
-                         data-reply="{{ t.admin_reply|default:''|escapejs }}"
+                         data-message="{{ t.clean_message|escapejs }}"
+                         data-reply="{{ t.clean_admin_reply|default:''|escapejs }}"
                          data-replied-by="{% if t.replied_by %}{{ t.replied_by.first_name|default:t.replied_by.username|escapejs }}{% endif %}"
                          data-replied-at="{% if t.replied_at %}{{ t.replied_at|date:'d M, Y • h:i A' }}{% endif %}"
                          data-date="{{ t.created_at|date:'d M, Y • h:i A' }}"
@@ -1108,7 +1108,7 @@
                         </div>
 
                         <div class="item-subject-line">{{ t.subject }}</div>
-                        <div class="item-snippet">{{ t.message }}</div>
+                        <div class="item-snippet">{{ t.clean_message }}</div>
 
                         <div class="item-bottom-meta">
                             <span class="badge-pill-cat">
@@ -1302,7 +1302,7 @@
                         </td>
                         <td>
                             <div style="font-weight:700; color:#fff; max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.subject }}</div>
-                            <div style="font-size:0.78rem; color:var(--text-muted); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.message }}</div>
+                            <div style="font-size:0.78rem; color:var(--text-muted); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.clean_message }}</div>
                         </td>
                         <td>
                             <span class="badge-pill-status {{ t.status }}">
@@ -1357,6 +1357,18 @@
 <script>
     // Global active ticket data store
     let currentActiveTicket = null;
+
+    // Helper to unescape newlines and strip raw unicode artifacts
+    function cleanUnescape(str) {
+        if (!str) return '';
+        return str
+            .replace(/\\u000D\\u000A/gi, '\n')
+            .replace(/\\u000a/gi, '\n')
+            .replace(/\\u000d/gi, '\n')
+            .replace(/\\r\\n/g, '\n')
+            .replace(/\\n/g, '\n')
+            .replace(/\\r/g, '');
+    }
 
     function selectTicket(id) {
         const item = document.getElementById('itemCard_' + id);
@@ -1422,7 +1434,7 @@
         }
 
         // Message Body
-        document.getElementById('dW_MessageBody').innerText = data.message;
+        document.getElementById('dW_MessageBody').innerText = cleanUnescape(data.message);
 
         // Previous Admin Reply
         const prevReplyBox = document.getElementById('dW_PrevReplyBox');
@@ -1430,14 +1442,14 @@
             prevReplyBox.style.display = 'block';
             document.getElementById('dW_RepliedByAdmin').innerText = 'Resolved by ' + (data.repliedBy || 'Admin');
             document.getElementById('dW_RepliedAtTime').innerText = data.repliedAt || 'Recently';
-            document.getElementById('dW_PrevReplyText').innerText = data.reply;
+            document.getElementById('dW_PrevReplyText').innerText = cleanUnescape(data.reply);
         } else {
             prevReplyBox.style.display = 'none';
         }
 
         // Resolution Form Setup
         document.getElementById('dW_ReplyForm').action = '/admin-panel/support-tickets/' + id + '/reply/';
-        document.getElementById('dW_ReplyTextarea').value = data.reply || '';
+        document.getElementById('dW_ReplyTextarea').value = cleanUnescape(data.reply) || '';
         document.getElementById('dW_StatusSelect').value = data.status === 'pending' ? 'resolved' : data.status;
     }
 

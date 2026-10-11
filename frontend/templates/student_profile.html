@@ -1305,14 +1305,14 @@
                     </div>
 
                     <div class="ticket-subject-text">{{ t.subject }}</div>
-                    <div class="ticket-msg-preview">{{ t.message }}</div>
+                    <div class="ticket-msg-preview">{{ t.clean_message }}</div>
 
                     {% if t.admin_reply %}
                         <div class="ticket-admin-reply-box">
                             <div class="ticket-admin-reply-header">
                                 <i class="fas fa-user-shield"></i> Official Resolution from Administrator ({{ t.replied_by.full_name|default:t.replied_by.username|default:"Admin" }}) · {{ t.replied_at|date:"d M, Y • h:i A" }}
                             </div>
-                            <div class="ticket-admin-reply-body">{{ t.admin_reply|linebreaks }}</div>
+                            <div class="ticket-admin-reply-body">{{ t.clean_admin_reply|linebreaks }}</div>
                         </div>
                     {% else %}
                         <div class="ticket-waiting-box">

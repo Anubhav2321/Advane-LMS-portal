@@ -3897,7 +3897,7 @@ def admin_reply_support_ticket(request, ticket_id):
             if ticket.student:
                 Notification.objects.create(
                     title=f"📬 Support Reply #{ticket.ticket_number}",
-                    message=f"Administrator ({request.user.first_name or request.user.username}) replied to your request '{ticket.subject[:35]}': {admin_reply[:120]}...",
+                    message=f"Administrator ({request.user.first_name or request.user.username}) replied to your request '{ticket.subject[:35]}': {ticket.clean_admin_reply[:120]}...",
                     notification_type='support',
                     action_url=reverse('profile'),
                     action_label="Open Support Desk",
@@ -3914,7 +3914,7 @@ def admin_reply_support_ticket(request, ticket_id):
                     f"Dear {ticket.name},\n\n"
                     f"Our administrative team has addressed your ticket regarding: \"{ticket.subject}\".\n\n"
                     f"--- Administrator Response ---\n"
-                    f"{admin_reply}\n\n"
+                    f"{ticket.clean_admin_reply}\n\n"
                     f"Status: {ticket.get_status_display()}\n"
                     f"Resolved by: {request.user.full_name or request.user.username} (Learning-365 Administration)\n\n"
                     f"If you have further questions, feel free to reply or submit another request in your Student Portal.\n\n"
