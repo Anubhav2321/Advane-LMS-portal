@@ -53,10 +53,11 @@
                 <div class="notif-item-card {% if not n.is_read_by_user %}is-unread{% endif %}" 
                      id="notif-card-{{ n.id }}"
                      data-id="{{ n.id }}" 
-                     data-type="{{ n.notification_type }}">
+                     data-type="{{ n.notification_type }}"
+                     style="--badge-bg: {{ n.badge_bg }}; --badge-color: {{ n.badge_color }};">
                     
                     <!-- Left Category Glow Icon -->
-                    <div class="notif-item-icon-box" style="background: {{ n.badge_bg }}; color: {{ n.badge_color }}; border-color: {{ n.badge_color }}40;">
+                    <div class="notif-item-icon-box">
                         <i class="{{ n.icon_class }}"></i>
                         {% if not n.is_read_by_user %}
                         <span class="notif-unread-dot" title="Unread notification"></span>
@@ -66,7 +67,7 @@
                     <!-- Center Content -->
                     <div class="notif-item-content">
                         <div class="notif-meta-row">
-                            <span class="notif-type-badge" style="background: {{ n.badge_bg }}; color: {{ n.badge_color }}; border: 1px solid {{ n.badge_color }}40;">
+                            <span class="notif-type-badge">
                                 <i class="{{ n.icon_class }}"></i> {{ n.badge_text }}
                             </span>
                             <span class="notif-time-text">
@@ -82,15 +83,15 @@
                             {% if n.action_url %}
                             <a href="{{ n.action_url }}" 
                                class="notif-action-btn" 
-                               style="background: linear-gradient(135deg, {{ n.badge_color }}22, {{ n.badge_color }}44); border-color: {{ n.badge_color }}; color: #fff;"
-                               onclick="handleNotifActionClick({{ n.id }}, event)">
+                               data-notif-id="{{ n.id }}"
+                               onclick="handleNotifActionClick(this.dataset.notifId, event)">
                                 <span>{{ n.action_label|default:"View Task" }}</span>
                                 <i class="fas fa-arrow-right"></i>
                             </a>
                             {% endif %}
 
                             {% if not n.is_read_by_user %}
-                            <button type="button" class="notif-mark-read-btn" onclick="markNotifRead({{ n.id }}, event)" title="Mark as read">
+                            <button type="button" class="notif-mark-read-btn" data-notif-id="{{ n.id }}" onclick="markNotifRead(this.dataset.notifId, event)" title="Mark as read">
                                 <i class="fas fa-check"></i> Mark read
                             </button>
                             {% endif %}
@@ -353,7 +354,9 @@
     width: 44px;
     height: 44px;
     border-radius: 13px;
-    border: 1px solid;
+    border: 1px solid var(--badge-color, rgba(0, 243, 255, 0.3));
+    background: var(--badge-bg, rgba(0, 243, 255, 0.08));
+    color: var(--badge-color, #00f3ff);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -396,6 +399,9 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    background: var(--badge-bg, rgba(0, 243, 255, 0.08));
+    color: var(--badge-color, #00f3ff);
+    border: 1px solid var(--badge-color, rgba(0, 243, 255, 0.3));
 }
 
 .notif-time-text {
@@ -436,7 +442,9 @@
     font-size: 0.82rem;
     font-weight: 700;
     text-decoration: none;
-    border: 1px solid;
+    border: 1px solid var(--badge-color, #00f3ff);
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 243, 255, 0.28));
+    color: #fff;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
