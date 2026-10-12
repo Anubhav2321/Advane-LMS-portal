@@ -138,6 +138,7 @@
     .portal-hero-title span {
         background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
@@ -147,6 +148,25 @@
         font-size: 0.92rem;
         line-height: 1.5;
         max-width: 540px;
+    }
+
+    .portal-alert-item {
+        padding: 14px 20px;
+        border-radius: 14px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(0, 243, 255, 0.12);
+        border: 1px solid rgba(0, 243, 255, 0.3);
+        color: var(--neon-cyan);
+    }
+    .portal-alert-item.alert-error {
+        background: rgba(255, 51, 102, 0.12);
+        border-color: rgba(255, 51, 102, 0.3);
+        color: var(--accent-red);
     }
 
     /* Mini Stats in Hero */
@@ -714,7 +734,7 @@
     {% if messages %}
     <div style="margin-bottom: 20px;" class="fade-in-up">
         {% for message in messages %}
-        <div style="padding: 14px 20px; border-radius: 14px; margin-bottom: 10px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; {% if message.tags == 'error' %}background: rgba(255,51,102,0.12); border: 1px solid rgba(255,51,102,0.3); color: var(--accent-red);{% else %}background: rgba(0,243,255,0.12); border: 1px solid rgba(0,243,255,0.3); color: var(--neon-cyan);{% endif %}">
+        <div class="portal-alert-item {% if message.tags == 'error' %}alert-error{% endif %}">
             <i class="fas {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
             <span>{{ message }}</span>
         </div>

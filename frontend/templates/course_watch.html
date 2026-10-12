@@ -510,6 +510,11 @@
         background: rgba(0, 243, 255, 0.2);
         color: var(--neon-cyan);
     }
+    .tab-badge.has-pending {
+        background: rgba(255, 183, 77, 0.2);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.4);
+    }
 
     .tab-pane {
         display: none;
@@ -1102,6 +1107,7 @@
         margin-bottom: 4px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         transition: color 0.2s;
@@ -2579,7 +2585,7 @@
                 </button>
                 <button class="tab-trigger" data-tab="assignments" onclick="switchWorkTab('assignments')">
                     <i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> Assignments
-                    <span class="tab-badge" id="assignmentsTabBadge" style="{% if pending_assignments_count > 0 %}background:rgba(255,183,77,0.2); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.4);{% endif %}">{{ course_assignments|length }}</span>
+                    <span class="tab-badge {% if pending_assignments_count > 0 %}has-pending{% endif %}" id="assignmentsTabBadge">{{ course_assignments|length }}</span>
                 </button>
                 <button class="tab-trigger" data-tab="ainotes" onclick="switchWorkTab('ainotes')">
                     <i class="fas fa-wand-magic-sparkles" style="color:var(--neon-purple);"></i> ✨ AI Notes
@@ -2598,13 +2604,13 @@
                 {% else %}
                 <button class="tab-trigger active" data-tab="assignments" onclick="switchWorkTab('assignments')">
                     <i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> Assignments & Deliverables
-                    <span class="tab-badge" id="assignmentsTabBadge" style="{% if pending_assignments_count > 0 %}background:rgba(255,183,77,0.2); color:var(--accent-amber); border:1px solid rgba(255,183,77,0.4);{% endif %}">{{ course_assignments|length }}</span>
+                    <span class="tab-badge {% if pending_assignments_count > 0 %}has-pending{% endif %}" id="assignmentsTabBadge">{{ course_assignments|length }}</span>
                 </button>
                 {% endif %}
             </div>
 
             <!-- TAB 1: OVERVIEW & INSTRUCTOR -->
-            <div id="pane-overview" class="tab-pane {% if current_lesson %}active{% endif %}" style="{% if not current_lesson %}display:none;{% endif %}">
+            <div id="pane-overview" class="tab-pane {% if current_lesson %}active{% endif %}">
                 <div class="glass-card">
                     <h3 style="color:#fff; font-family:'Space Grotesk',sans-serif; margin-top:0; margin-bottom:12px;">
                         Lesson Objectives & Curriculum Scope
@@ -2916,7 +2922,7 @@ solution()
             </div>
 
             <!-- TAB: COURSE ASSIGNMENTS & DELIVERABLES WORKSTATION -->
-            <div id="pane-assignments" class="tab-pane {% if not current_lesson %}active{% endif %}" style="{% if not current_lesson %}display:block;{% endif %}">
+            <div id="pane-assignments" class="tab-pane {% if not current_lesson %}active{% endif %}">
                 <div class="glass-card asgn-hub-card">
                     <!-- Header Banner -->
                     <div class="asgn-hub-header">
@@ -3837,7 +3843,7 @@ document.addEventListener('keydown', function(e) {
     let player;
     let watchTimer;
     let watchTimeSeconds = 0;
-    const lessonId = parseInt('{{ current_lesson.id }}', 10);
+    var lessonId = parseInt('{{ current_lesson.id }}', 10);
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('lesson-video', {
@@ -3918,7 +3924,7 @@ document.addEventListener('keydown', function(e) {
 <script>
     // HTML5 Video Listener
     const videoEl = document.getElementById('native-video-player');
-    const lessonId = parseInt('{{ current_lesson.id }}', 10);
+    var lessonId = parseInt('{{ current_lesson.id }}', 10);
     let html5WatchSeconds = 0;
 
     if (videoEl) {

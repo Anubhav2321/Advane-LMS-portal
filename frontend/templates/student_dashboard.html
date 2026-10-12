@@ -8,8 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
-    window.userHasProfileImg = {% if request.user.profile.profile_pic %}true{% else %}false{% endif %};
-    window.userProfileImgUrl = "{% if request.user.profile.profile_pic %}{{ request.user.profile.profile_pic.url|escapejs }}{% else %}{% endif %}";
+    window.userHasProfileImg = '{{ request.user.profile.profile_pic|yesno:"1,0" }}' === '1';
+    window.userProfileImgUrl = "{% if request.user.profile.profile_pic %}{{ request.user.profile.profile_pic.url|escapejs }}{% endif %}";
 </script>
 
 <style>
@@ -168,6 +168,7 @@
     .user-info h1 span {
         background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
@@ -343,7 +344,8 @@
     }
 
     .notif-bell {
-        /* Alias to preserve selector compatibility */
+        display: inline-flex;
+        position: relative;
     }
 
     /* ============================================= */
@@ -1868,7 +1870,8 @@
                         <circle class="progress-ring-bg" cx="34" cy="34" r="28" stroke-width="5" />
                         <circle class="progress-ring-fill js-set-offset {% if overall_progress >= 100 %}complete{% endif %}" 
                             cx="34" cy="34" r="28" stroke-width="5"
-                            style="stroke-dasharray: 175.93; stroke-dashoffset: {{ overall_ring_offset|default:'175.93' }};"
+                            stroke-dasharray="175.93"
+                            stroke-dashoffset="{{ overall_ring_offset|default:'175.93' }}"
                             data-offset="{{ overall_ring_offset|default:'175.93' }}"
                             data-progress="{{ overall_progress|default:0 }}" />
                     </svg>
@@ -1931,7 +1934,8 @@
                                     <circle class="progress-ring-bg" cx="30" cy="30" r="26" />
                                     <circle class="progress-ring-fill js-set-offset {% if enrollment.real_progress >= 100 %}complete{% endif %}" 
                                         cx="30" cy="30" r="26" 
-                                        style="stroke-dasharray: 163.36; stroke-dashoffset: {{ enrollment.ring_offset|default:'163.36' }};"
+                                        stroke-dasharray="163.36"
+                                        stroke-dashoffset="{{ enrollment.ring_offset|default:'163.36' }}"
                                         data-offset="{{ enrollment.ring_offset|default:'163.36' }}"
                                         data-progress="{{ enrollment.real_progress|default:0 }}" />
                                 </svg>
@@ -1959,7 +1963,7 @@
                         <!-- Progress Bar -->
                         <div class="progress-track-slim">
                             <div class="progress-fill-slim js-set-width {% if enrollment.real_progress >= 100 %}complete{% endif %}" 
-                                style="width: {{ enrollment.real_progress|default:0 }}%;" 
+                                style="--progress-width: {{ enrollment.real_progress|default:0 }}%; width: var(--progress-width);" 
                                 data-width="{{ enrollment.real_progress|default:0 }}%"></div>
                         </div>
 
@@ -2505,34 +2509,42 @@
     // =============================================
     // 3. 🚀 LMS AI PORTAL COPILOT & OPTIONS BOARD
     // =============================================
-    const STUDENT_PORTAL_CONTEXT = {
-        name: "{{ request.user.first_name|default:request.user.username|escapejs }}",
-        username: "{{ request.user.username|escapejs }}",
-        coins: {{ request.user.lms_coins|default:0 }},
-        totalEnrolled: {{ total_enrolled|default:0 }},
-        overallProgress: {{ overall_progress|default:0 }},
-        profilePicUrl: "{{ request.user.profile_pic_url|default:'' }}",
-        enrolledCourses: [
-            {% for e in enrollments %}
-            {
-                id: {{ e.course.id }},
-                title: "{{ e.course.title|escapejs }}",
-                slug: "{{ e.course.slug|escapejs }}",
-                progress: {{ e.real_progress|default:0 }}
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ],
-        activeExams: [
-            {% for ex in active_exams %}
-            {
-                id: {{ ex.id }},
-                title: "{{ ex.title|escapejs }}",
-                duration: {{ ex.duration_minutes|default:30 }}
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ],
-        recentDocsCount: {{ recent_documents|length|default:0 }}
-    };
+</script>
+
+<script id="studentPortalContextData" type="application/json">
+{
+    "name": "{{ request.user.first_name|default:request.user.username|escapejs }}",
+    "username": "{{ request.user.username|escapejs }}",
+    "coins": {{ request.user.lms_coins|default:0 }},
+    "totalEnrolled": {{ total_enrolled|default:0 }},
+    "overallProgress": {{ overall_progress|default:0 }},
+    "profilePicUrl": "{{ request.user.profile_pic_url|default:'' }}",
+    "enrolledCourses": [
+        {% for e in enrollments %}
+        {
+            "id": {{ e.course.id }},
+            "title": "{{ e.course.title|escapejs }}",
+            "slug": "{{ e.course.slug|escapejs }}",
+            "progress": {{ e.real_progress|default:0 }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "activeExams": [
+        {% for ex in active_exams %}
+        {
+            "id": {{ ex.id }},
+            "title": "{{ ex.title|escapejs }}",
+            "duration": {{ ex.duration_minutes|default:30 }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "recentDocsCount": {{ recent_documents|length|default:0 }}
+}
+</script>
+
+<script>
+    const portalContextEl = document.getElementById('studentPortalContextData');
+    const STUDENT_PORTAL_CONTEXT = portalContextEl ? JSON.parse(portalContextEl.textContent || '{}') : {};
 
     const portalUserProfileImgUrl = STUDENT_PORTAL_CONTEXT.profilePicUrl || (typeof window.userProfileImgUrl !== 'undefined' ? window.userProfileImgUrl : '');
     const portalUserHasProfileImg = Boolean(portalUserProfileImgUrl && portalUserProfileImgUrl.trim() !== '');
