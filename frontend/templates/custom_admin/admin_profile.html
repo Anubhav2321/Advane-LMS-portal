@@ -2540,7 +2540,11 @@
 
                         {% if admin_user.is_superuser %}
                         <button type="button" class="btn-reset-pass-trigger" 
-                            onclick="openAdminPasswordResetModal('{{ member.id }}', '{{ member.first_name|default:member.email|escapejs }} {{ member.last_name|default:''|escapejs }}', '{{ member.email|escapejs }}', '{% if member.is_superuser %}Super Administrator{% else %}Staff Administrator{% endif %}')" 
+                            data-admin-id="{{ member.id }}"
+                            data-admin-name="{{ member.first_name|default:member.email }} {{ member.last_name|default:'' }}"
+                            data-admin-email="{{ member.email }}"
+                            data-admin-role="{% if member.is_superuser %}Super Administrator{% else %}Staff Administrator{% endif %}"
+                            onclick="openAdminPasswordResetModal(this.dataset.adminId, this.dataset.adminName, this.dataset.adminEmail, this.dataset.adminRole)" 
                             title="Super Admin: Reset or Forgot Password Override for this Administrator">
                             <i class="fas fa-key"></i> Reset Pass
                         </button>
