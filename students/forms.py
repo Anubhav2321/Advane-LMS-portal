@@ -181,6 +181,11 @@ class CourseForm(forms.ModelForm):
 # 2.1. LESSON CREATION FORM
 
 class LessonForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'course' in self.fields:
+            self.fields['course'].required = False
+
     class Meta:
         model = Lesson
         fields = ['course', 'title', 'video_url', 'duration', 'order']
