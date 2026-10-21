@@ -390,6 +390,20 @@ class StudentProfileUpdateForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number (e.g. +91 98765 43210)', 'autocomplete': 'tel'})
     )
+    stream = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Science, Arts, Engineering, Computer Science'})
+    )
+    student_level = forms.ChoiceField(
+        choices=[
+            ('Beginner', 'Beginner'),
+            ('Intermediate', 'Intermediate'),
+            ('Advanced', 'Advanced')
+        ],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     bio = forms.CharField(
         max_length=500,
         required=False,
@@ -408,6 +422,8 @@ class StudentProfileUpdateForm(forms.Form):
             self.fields['last_name'].initial = self.user.last_name
             self.fields['email'].initial = self.user.email
             self.fields['phone'].initial = self.user.phone or (getattr(self.user, 'profile', None) and self.user.profile.phone) or ''
+            self.fields['stream'].initial = getattr(self.user, 'stream', '') or ''
+            self.fields['student_level'].initial = getattr(self.user, 'student_level', 'Beginner') or 'Beginner'
             if hasattr(self.user, 'profile') and self.user.profile:
                 self.fields['bio'].initial = self.user.profile.bio or ''
 
@@ -422,6 +438,20 @@ class StudentProfileUpdateForm(forms.Form):
             raise ValidationError("This email address is already registered with another account.")
         return email
 
+    def clean_phone(self):
+        phone = (self.cleaned_data.get('phone') or '').strip()
+        if phone:
+            digits = re.sub(r'\D', '', phone)
+            if len(digits) < 7:
+                raise ValidationError("Please enter a valid phone number with at least 7 digits.")
+            from django.db.models import Q
+            query = User.objects.filter(Q(phone=phone) | Q(profile__phone=phone))
+            if self.user:
+                query = query.exclude(pk=self.user.pk)
+            if query.exists():
+                raise ValidationError("This phone number is already registered with another account.")
+        return phone
+
     def save(self):
         if not self.user:
             return None
@@ -429,8 +459,13 @@ class StudentProfileUpdateForm(forms.Form):
         self.user.last_name = self.cleaned_data.get('last_name', self.user.last_name)
         self.user.email = self.cleaned_data.get('email')
         phone = self.cleaned_data.get('phone', '').strip()
+        stream = self.cleaned_data.get('stream', '').strip()
+        student_level = self.cleaned_data.get('student_level', 'Beginner') or 'Beginner'
+
         self.user.phone = phone
-        self.user.save(update_fields=['first_name', 'last_name', 'email', 'phone'])
+        self.user.stream = stream
+        self.user.student_level = student_level
+        self.user.save(update_fields=['first_name', 'last_name', 'email', 'phone', 'stream', 'student_level'])
 
         profile = getattr(self.user, 'profile', None)
         if not profile:
@@ -441,6 +476,97 @@ class StudentProfileUpdateForm(forms.Form):
         if pic:
             profile.profile_pic = pic
         profile.save()
+        return self.user
+
+
+# ========================================================
+# 12. STUDENT ONBOARDING / GOOGLE REGISTRATION COMPLETION FORM
+# ========================================================
+
+class StudentOnboardingForm(forms.Form):
+    phone = forms.CharField(
+        max_length=20,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '+91 98765 43210',
+            'autocomplete': 'tel',
+            'id': 'onboardingPhone'
+        }),
+        label="Phone Number"
+    )
+    stream = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. Computer Science, Science, Commerce, Arts, Engineering',
+            'id': 'onboardingStream'
+        }),
+        label="Stream / Department"
+    )
+    student_level = forms.ChoiceField(
+        choices=[
+            ('Beginner', 'Beginner'),
+            ('Intermediate', 'Intermediate'),
+            ('Advanced', 'Advanced')
+        ],
+        required=True,
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'onboardingLevel'
+        }),
+        initial='Beginner',
+        label="Student Level"
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.user:
+            if self.user.phone:
+                self.fields['phone'].initial = self.user.phone
+            if self.user.stream:
+                self.fields['stream'].initial = self.user.stream
+            if self.user.student_level:
+                self.fields['student_level'].initial = self.user.student_level
+
+    def clean_phone(self):
+        phone = (self.cleaned_data.get('phone') or '').strip()
+        if not phone:
+            raise ValidationError("Phone number is required so you can recover your account and receive updates.")
+        digits = re.sub(r'\D', '', phone)
+        if len(digits) < 7:
+            raise ValidationError("Please enter a valid phone number with at least 7 digits.")
+        from django.db.models import Q
+        query = User.objects.filter(Q(phone=phone) | Q(profile__phone=phone))
+        if self.user:
+            query = query.exclude(pk=self.user.pk)
+        if query.exists():
+            raise ValidationError("This phone number is already registered with another account. Please use your personal number.")
+        return phone
+
+    def clean_stream(self):
+        stream = (self.cleaned_data.get('stream') or '').strip()
+        if not stream or len(stream) < 2:
+            raise ValidationError("Please specify your Stream / Department (e.g., Computer Science, Engineering, Commerce).")
+        return stream
+
+    def save(self):
+        if not self.user:
+            return None
+        phone = self.cleaned_data.get('phone', '').strip()
+        stream = self.cleaned_data.get('stream', '').strip()
+        student_level = self.cleaned_data.get('student_level', 'Beginner') or 'Beginner'
+
+        self.user.phone = phone
+        self.user.stream = stream
+        self.user.student_level = student_level
+        self.user.save(update_fields=['phone', 'stream', 'student_level'])
+
+        profile, _ = Profile.objects.get_or_create(user=self.user)
+        profile.phone = phone
+        profile.save(update_fields=['phone'])
         return self.user
 
 
