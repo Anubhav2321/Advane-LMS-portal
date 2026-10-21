@@ -19,6 +19,7 @@ from django.db.models.functions import TruncDate
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 
 # Import AI Logic
 from .ai_utils import extract_text_from_file, generate_quiz_from_text
@@ -791,24 +792,128 @@ def profile_view(request):
 
 # 4. COURSE & LEARNING LOGIC
 
-@login_required
-def all_courses(request):
-    """
-    Course Store: server-side search, filter (paid/free/coin), sort and pagination.
-    Also tells the template which courses the student already owns.
-    """
-    query = request.GET.get('search', '').strip()
-    flt = request.GET.get('filter', 'all')
-    sort = request.GET.get('sort', 'default')
+COURSE_TECH_SYNONYMS = {
+    'javascript': ['java script', 'javascript', 'js'],
+    'js': ['java script', 'javascript'],
+    'react': ['react js', 'react'],
+    'reactjs': ['react js', 'react'],
+    'react.js': ['react js', 'react'],
+    'node': ['node js', 'node'],
+    'nodejs': ['node js', 'node'],
+    'node.js': ['node js', 'node'],
+    'mongodb': ['mongo db', 'mongodb'],
+    'mongo': ['mongo db', 'mongodb'],
+    'postgres': ['postgresql', 'postgres'],
+    'postgresql': ['postgresql', 'postgres'],
+    'psql': ['postgresql', 'postgres'],
+    'cpp': ['c++'],
+    'cplusplus': ['c++'],
+    'c plus plus': ['c++'],
+    'ecommerce': ['e commers', 'e-commerce', 'digital marketing'],
+    'e-commerce': ['e commers'],
+    'marketing': ['digital marketing', 'e commers'],
+    'cybersecurity': ['cyber security'],
+    'cyber': ['cyber security'],
+    'darkweb': ['dark web', 'basic dark web'],
+    'ml': ['machine learning'],
+    'machine learning': ['machine learning'],
+    'ai': ['generative ai', 'artificial intelligence'],
+    'genai': ['generative ai'],
+    'generative ai': ['generative ai'],
+    'dsa': ['dsa', 'data structures'],
+    'data structure': ['dsa'],
+    'data structures': ['dsa'],
+    'algorithm': ['dsa'],
+    'algorithms': ['dsa'],
+    'aws': ['cloud computing', 'aws'],
+    'azure': ['cloud computing', 'azure'],
+    'cloud': ['cloud computing'],
+    'fullstack': ['full stack web development', 'full stack'],
+    'full stack': ['full stack web development'],
+    'web dev': ['full stack web development', 'html', 'css', 'javascript'],
+    'web development': ['full stack web development'],
+    'tailwind': ['tailwind css'],
+    'tailwindcss': ['tailwind css'],
+    'excel': ['advanced excel', 'excel'],
+    'cv': ['computer vision'],
+    'computer vision': ['computer vision (cv) and image understanding'],
+    'git': ['git & github', 'git'],
+    'github': ['git & github', 'github'],
+    'dbms': ['dbms', 'database', 'sql', 'mysql', 'postgresql'],
+    'database': ['dbms', 'mysql', 'postgresql', 'mongo db'],
+    'sql': ['mysql', 'postgresql', 'dbms'],
+}
 
+COURSE_SEARCH_FILLER_WORDS = {
+    'course', 'courses', 'tutorial', 'tutorials', 'learn', 'learning',
+    'training', 'classes', 'class', 'with', 'and', 'for', 'the', 'in', 'of'
+}
+
+def get_filtered_courses(query='', flt='all', sort='default'):
+    """
+    Intelligent search and filter engine for published courses.
+    Supports multi-token search, technology aliases, acronyms, topic / lesson titles,
+    faculty name, difficulty levels, pricing intent, and sorting.
+    """
     courses_list = Course.objects.filter(is_published=True)
 
     if query:
-        courses_list = courses_list.filter(
-            Q(title__icontains=query) |
-            Q(description__icontains=query) |
-            Q(difficulty_level__icontains=query)
+        q_raw = query.strip()
+        q_lower = q_raw.lower()
+
+        raw_tokens = [t for t in re.split(r'[\s,&|/]+', q_lower) if t]
+        meaningful_tokens = [t for t in raw_tokens if t not in COURSE_SEARCH_FILLER_WORDS]
+        tokens_to_use = meaningful_tokens if meaningful_tokens else raw_tokens
+
+        phrase_q = (
+            Q(title__icontains=q_raw) |
+            Q(faculty_name__icontains=q_raw) |
+            Q(assigned_faculty__first_name__icontains=q_raw) |
+            Q(assigned_faculty__last_name__icontains=q_raw) |
+            Q(assigned_faculty__username__icontains=q_raw) |
+            Q(lessons__title__icontains=q_raw)
         )
+        if len(q_raw) > 2:
+            phrase_q |= Q(description__icontains=q_raw)
+
+        if q_lower in COURSE_TECH_SYNONYMS:
+            for syn in COURSE_TECH_SYNONYMS[q_lower]:
+                phrase_q |= Q(title__icontains=syn) | Q(lessons__title__icontains=syn)
+                if len(syn) > 2:
+                    phrase_q |= Q(description__icontains=syn)
+
+        token_q = Q()
+        for tok in tokens_to_use:
+            tok_sub_q = Q()
+            tok_synonyms = COURSE_TECH_SYNONYMS.get(tok, [tok])
+
+            for s in tok_synonyms:
+                tok_sub_q |= (
+                    Q(title__icontains=s) |
+                    Q(faculty_name__icontains=s) |
+                    Q(assigned_faculty__first_name__icontains=s) |
+                    Q(assigned_faculty__last_name__icontains=s) |
+                    Q(lessons__title__icontains=s)
+                )
+                if len(s) > 2:
+                    tok_sub_q |= Q(description__icontains=s)
+
+            if tok in ['beginner', 'easy']:
+                tok_sub_q |= Q(difficulty_level__iexact='Easy')
+            elif tok in ['intermediate', 'medium']:
+                tok_sub_q |= Q(difficulty_level__iexact='Medium')
+            elif tok in ['advanced', 'hard']:
+                tok_sub_q |= Q(difficulty_level__iexact='Hard')
+            elif tok == 'free':
+                tok_sub_q |= Q(price__lte=0)
+            elif tok == 'paid':
+                tok_sub_q |= Q(price__gt=0)
+            elif tok in ['coin', 'coins']:
+                tok_sub_q |= Q(is_coin_purchasable=True, coin_price__gt=0)
+
+            token_q &= tok_sub_q
+
+        courses_list = courses_list.filter(phrase_q | token_q).distinct()
 
     if flt == 'free':
         courses_list = courses_list.filter(price__lte=0)
@@ -816,20 +921,34 @@ def all_courses(request):
         courses_list = courses_list.filter(price__gt=0)
     elif flt == 'coin':
         courses_list = courses_list.filter(is_coin_purchasable=True, coin_price__gt=0)
-    else:
-        flt = 'all'
 
     sort_map = {
         'low': 'price',
         'high': '-price',
         'az': 'title',
+        'default': '-created_at',
     }
-    courses_list = courses_list.order_by(sort_map.get(sort, '-created_at'))
-    if sort not in sort_map:
-        sort = 'default'
+    order_by_field = sort_map.get(sort, '-created_at')
+    courses_list = courses_list.order_by(order_by_field)
+
+    return courses_list
+
+
+@login_required
+def all_courses(request):
+    """
+    Course Store: server-side search, filter (paid/free/coin), sort and pagination.
+    Also supports AJAX live search & dynamic filtering.
+    """
+    query = request.GET.get('search', '').strip()
+    flt = request.GET.get('filter', 'all')
+    sort = request.GET.get('sort', 'default')
+
+    courses_list = get_filtered_courses(query=query, flt=flt, sort=sort)
 
     paginator = Paginator(courses_list, 6)
-    courses = paginator.get_page(request.GET.get('page'))
+    page_number = request.GET.get('page', 1)
+    courses = paginator.get_page(page_number)
 
     enrolled_ids = set(
         Enrollment.objects.filter(student=request.user).values_list('course_id', flat=True)
@@ -842,8 +961,25 @@ def all_courses(request):
         'active_sort': sort,
         'enrolled_ids': enrolled_ids,
         'total_results': paginator.count,
-        'user_coins': request.user.lms_coins,
+        'user_coins': getattr(request.user, 'lms_coins', 0),
     }
+
+    if request.GET.get('ajax') == '1' or request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('course_cards_partial.html', context, request=request)
+        pager_html = render_to_string('course_pagination_partial.html', context, request=request)
+        return JsonResponse({
+            'status': 'success',
+            'html': html,
+            'pager_html': pager_html,
+            'total_results': paginator.count,
+            'has_other_pages': courses.has_other_pages(),
+            'current_page': courses.number,
+            'num_pages': paginator.num_pages,
+            'search_query': query,
+            'active_filter': flt,
+            'active_sort': sort,
+        })
+
     return render(request, 'student_courses.html', context)
 
 
