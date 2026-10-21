@@ -1832,6 +1832,24 @@
 
 <div class="dashboard-container">
 
+    <!-- Profile Completion Alert for Google Sign-Ins / Incomplete Profiles -->
+    {% if not request.user.phone or not request.user.stream %}
+    <div style="background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(188, 19, 254, 0.08)); border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 16px; padding: 14px 22px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;" class="fade-in-up">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 243, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--neon-cyan); flex-shrink: 0;">
+                <i class="fas fa-user-edit"></i>
+            </div>
+            <div>
+                <strong style="color: #fff; font-size: 0.95rem;">Complete your student profile</strong>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin: 2px 0 0 0;">Add your Phone Number & Stream / Department to receive alerts and personalize your learning journey.</p>
+            </div>
+        </div>
+        <a href="{% url 'complete_profile' %}" style="background: var(--neon-cyan); color: #07090e; font-weight: 700; font-size: 0.85rem; padding: 8px 18px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            Complete Profile <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    {% endif %}
+
     <!-- ============================================= -->
     <!-- 1. HERO WELCOME BANNER                        -->
     <!-- ============================================= -->

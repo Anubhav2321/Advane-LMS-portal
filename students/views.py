@@ -39,6 +39,7 @@ from .forms import (
     AssignmentForm,
     AssignmentSubmissionForm,
     StudentProfileUpdateForm,
+    StudentOnboardingForm,
     SupportTicketForm,
 )
 
@@ -344,6 +345,55 @@ def logout_view(request):
     messages.success(request, "You have been logged out successfully.")
     return redirect('login')
 
+
+@login_required
+def complete_profile_view(request):
+    """
+    Onboarding step for students (especially those registering/signing in with Google)
+    to fill in their Phone Number, Stream / Department, and Student Level.
+    """
+    user = request.user
+
+    # Staff / admin / faculty bypass onboarding
+    if user.is_staff or user.is_superuser:
+        return redirect('admin_dashboard')
+    if getattr(user, 'is_faculty', False):
+        return redirect('faculty_dashboard')
+
+    # Allow user to skip if they choose to do it later
+    if request.GET.get('skip') == '1':
+        request.session['skip_profile_setup'] = True
+        messages.info(request, "You can complete your phone number and stream anytime from your Profile page.")
+        return redirect('dashboard')
+
+    # If student already has both phone and stream configured and not explicitly editing
+    if user.phone and user.stream and not request.GET.get('edit'):
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = StudentOnboardingForm(request.POST, user=user)
+        if form.is_valid():
+            form.save()
+            request.session.pop('skip_profile_setup', None)
+            log_student_activity(user, 'profile_update', f'Student profile completed ({user.student_level}, {user.stream})')
+            messages.success(
+                request,
+                f"🎉 Welcome aboard, {user.first_name or user.username}! Your student profile has been completed. Your Student ID is #{user.student_id}."
+            )
+            return redirect('dashboard')
+        else:
+            for field, err_list in form.errors.items():
+                for err in err_list:
+                    messages.error(request, f"{err}")
+    else:
+        form = StudentOnboardingForm(user=user)
+
+    return render(request, 'complete_profile.html', {
+        'form': form,
+        'user': user,
+    })
+
+
 # 3. STUDENT DASHBOARD & PROFILE FEATURES
 
 @login_required
@@ -356,6 +406,11 @@ def student_dashboard(request):
         return redirect('admin_dashboard')
     elif getattr(user, 'is_faculty', False):
         return redirect('faculty_dashboard')
+
+    # Direct students with incomplete Google profiles (missing phone or stream) to complete profile
+    if not user.phone or not user.stream:
+        if not request.session.get('skip_profile_setup', False):
+            return redirect('complete_profile')
     
     # Fetch Enrollments
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-last_accessed')
@@ -790,6 +845,7 @@ def all_courses(request):
         'user_coins': request.user.lms_coins,
     }
     return render(request, 'student_courses.html', context)
+
 
 
 @login_required

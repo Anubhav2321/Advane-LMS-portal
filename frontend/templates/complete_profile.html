@@ -1,0 +1,618 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Student Profile | Learning-365</title>
+    
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: rgba(14, 18, 32, 0.88);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glass-glow: rgba(0, 243, 255, 0.4);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-blue: #3b82f6;
+            --accent-green: #00e676;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing background */
+        .ambient-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(0, 243, 255, 0.08), transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(188, 19, 254, 0.09), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05), transparent 55%),
+                #07090e;
+        }
+
+        .ambient-lines {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Card Container */
+        .onboarding-card {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 40px 44px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: relative;
+            animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Top Brand Header */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 243, 255, 0.08);
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .brand-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .brand-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Verified Google Account Banner */
+        .google-account-banner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .google-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+        }
+
+        .google-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .google-name {
+            font-weight: 700;
+            font-size: 1.02rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .google-email {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .student-id-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.08);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .form-label .required {
+            color: #ff3366;
+            margin-left: 4px;
+        }
+
+        .form-label .label-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: color 0.3s;
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(8, 12, 22, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 13px 16px 13px 44px;
+            color: #fff;
+            font-size: 0.98rem;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 16px rgba(0, 243, 255, 0.22);
+            background: rgba(10, 16, 30, 0.95);
+        }
+
+        .form-control:focus + .input-icon,
+        .input-wrapper:focus-within .input-icon {
+            color: var(--neon-cyan);
+        }
+
+        /* Stream Quick Suggestion Chips */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .stream-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            color: #cbd5e1;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+
+        .stream-chip:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .stream-chip.active {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);
+        }
+
+        /* Level Cards Grid */
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .level-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .level-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .level-card.selected {
+            border-color: var(--neon-cyan);
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(59, 130, 246, 0.08));
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.22);
+        }
+
+        .level-card .level-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .level-card.level-beginner .level-icon { color: var(--accent-green); }
+        .level-card.level-intermediate .level-icon { color: var(--neon-cyan); }
+        .level-card.level-advanced .level-icon { color: var(--neon-purple); }
+
+        .level-card .level-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .level-card .level-desc {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff, #0072ff);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(0, 114, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -5px rgba(0, 212, 255, 0.6);
+            background: linear-gradient(135deg, #00e5ff, #008cff);
+        }
+
+        /* Skip link */
+        .skip-wrapper {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .btn-skip {
+            color: #718096;
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.25s;
+        }
+
+        .btn-skip:hover {
+            color: #cbd5e1;
+            text-decoration: underline;
+        }
+
+        /* Alerts */
+        .alert-error {
+            background: rgba(255, 51, 102, 0.12);
+            border: 1px solid rgba(255, 51, 102, 0.4);
+            color: #ff6b8b;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .onboarding-card { padding: 30px 20px; border-radius: 18px; }
+            .brand-header h1 { font-size: 1.5rem; }
+            .level-grid { grid-template-columns: 1fr; gap: 10px; }
+            .level-card { display: flex; align-items: center; gap: 14px; text-align: left; padding: 12px 14px; }
+            .level-card .level-icon { margin-bottom: 0; font-size: 1.3rem; }
+            .google-account-banner { flex-direction: column; text-align: center; }
+            .google-name { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-mesh"></div>
+    <div class="ambient-lines"></div>
+
+    <div class="onboarding-card">
+        
+        <!-- Header -->
+        <div class="brand-header">
+            <div class="brand-badge">
+                <i class="fas fa-sparkles"></i> Final Setup Step
+            </div>
+            <h1>Complete Your Student Profile</h1>
+            <p>Tell us a bit about yourself to personalize your courses and unlock student features.</p>
+        </div>
+
+        <!-- Google Verified Account Banner -->
+        <div class="google-account-banner">
+            {% if user.profile_pic_url %}
+                <img src="{{ user.profile_pic_url }}" alt="{{ user.full_name }}" class="google-avatar">
+            {% else %}
+                <div class="google-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+            {% endif %}
+            
+            <div class="google-details">
+                <div class="google-name">
+                    {{ user.full_name }}
+                    <span class="verified-badge"><i class="fab fa-google"></i> Verified</span>
+                </div>
+                <div class="google-email">{{ user.email }}</div>
+            </div>
+
+            <div class="student-id-pill" title="Your permanent 6-digit Student ID">
+                ID: #{{ user.student_id|default:user.id }}
+            </div>
+        </div>
+
+        <!-- Form Errors (if any) -->
+        {% if form.errors %}
+            <div class="alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Onboarding Form -->
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+
+            <!-- 1. Phone Number -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span>Phone Number <span class="required">*</span></span>
+                    <span class="label-hint">For login recovery & alerts</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone-alt input-icon"></i>
+                    <input type="tel" name="phone" id="onboardingPhone" class="form-control" 
+                           placeholder="+91 98765 43210" 
+                           value="{{ form.phone.value|default:user.phone|default:'' }}" 
+                           required>
+                </div>
+            </div>
+
+            <!-- 2. Stream / Department -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span>Stream / Department <span class="required">*</span></span>
+                    <span class="label-hint">Your field of study</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-graduation-cap input-icon"></i>
+                    <input type="text" name="stream" id="onboardingStream" class="form-control" 
+                           placeholder="e.g. Computer Science, Engineering, Science" 
+                           value="{{ form.stream.value|default:user.stream|default:'' }}" 
+                           required>
+                </div>
+                
+                <!-- Quick Selection Chips -->
+                <div class="chips-container">
+                    <span class="stream-chip" onclick="selectStream('Computer Science')">Computer Science</span>
+                    <span class="stream-chip" onclick="selectStream('Information Technology')">IT / Software</span>
+                    <span class="stream-chip" onclick="selectStream('Engineering')">Engineering</span>
+                    <span class="stream-chip" onclick="selectStream('Science')">Science</span>
+                    <span class="stream-chip" onclick="selectStream('Commerce')">Commerce</span>
+                    <span class="stream-chip" onclick="selectStream('Arts & Humanities')">Arts</span>
+                </div>
+            </div>
+
+            <!-- 3. Student Level -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span>Current Coding Level <span class="required">*</span></span>
+                    <span class="label-hint">Helps tailor difficulty & bounties</span>
+                </label>
+
+                <!-- Hidden Native Input for Form Submission -->
+                <select name="student_level" id="onboardingLevel" style="display: none;">
+                    <option value="Beginner" {% if form.student_level.value == 'Beginner' or not form.student_level.value %}selected{% endif %}>Beginner</option>
+                    <option value="Intermediate" {% if form.student_level.value == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                    <option value="Advanced" {% if form.student_level.value == 'Advanced' %}selected{% endif %}>Advanced</option>
+                </select>
+
+                <!-- Interactive Cards -->
+                <div class="level-grid">
+                    <div class="level-card level-beginner {% if form.student_level.value == 'Beginner' or not form.student_level.value %}selected{% endif %}" onclick="selectLevel('Beginner', this)">
+                        <i class="fas fa-seedling level-icon"></i>
+                        <div>
+                            <div class="level-title">Beginner</div>
+                            <div class="level-desc">New to code & fundamentals</div>
+                        </div>
+                    </div>
+
+                    <div class="level-card level-intermediate {% if form.student_level.value == 'Intermediate' %}selected{% endif %}" onclick="selectLevel('Intermediate', this)">
+                        <i class="fas fa-layer-group level-icon"></i>
+                        <div>
+                            <div class="level-title">Intermediate</div>
+                            <div class="level-desc">Building apps & solving tasks</div>
+                        </div>
+                    </div>
+
+                    <div class="level-card level-advanced {% if form.student_level.value == 'Advanced' %}selected{% endif %}" onclick="selectLevel('Advanced', this)">
+                        <i class="fas fa-bolt level-icon"></i>
+                        <div>
+                            <div class="level-title">Advanced</div>
+                            <div class="level-desc">DSA, architecture & bounties</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">
+                <span>Save Profile & Enter Portal</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <!-- Skip Link -->
+        <div class="skip-wrapper">
+            <a href="{% url 'complete_profile' %}?skip=1" class="btn-skip">
+                Skip for now, I'll do this later →
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        function selectStream(name) {
+            const streamInput = document.getElementById('onboardingStream');
+            streamInput.value = name;
+            streamInput.focus();
+
+            // Highlight chip
+            document.querySelectorAll('.stream-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.textContent.trim() === name);
+            });
+        }
+
+        function selectLevel(level, cardElement) {
+            const selectEl = document.getElementById('onboardingLevel');
+            selectEl.value = level;
+
+            document.querySelectorAll('.level-card').forEach(c => c.classList.remove('selected'));
+            cardElement.classList.add('selected');
+        }
+
+        // Highlight matching stream chip on load if value already set
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentVal = document.getElementById('onboardingStream').value.trim();
+            if (currentVal) {
+                document.querySelectorAll('.stream-chip').forEach(chip => {
+                    if (chip.textContent.trim().toLowerCase() === currentVal.toLowerCase()) {
+                        chip.classList.add('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

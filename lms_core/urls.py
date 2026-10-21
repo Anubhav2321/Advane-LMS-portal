@@ -13,6 +13,7 @@ from students.views import (
     register_view, 
     login_view, 
     logout_view,
+    complete_profile_view,
 
     # 3. Student Features
     student_dashboard, 
@@ -127,6 +128,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
     path('logout/', logout_view, name='logout'),
+    path('complete-profile/', complete_profile_view, name='complete_profile'),
 
     # 4. Student Dashboard & Features
     path('dashboard/', student_dashboard, name='dashboard'),

@@ -1394,6 +1394,21 @@
                     <span class="modal-hint">Can be used to uniquely sign in to your student account.</span>
                 </div>
 
+                <div class="modal-form-row">
+                    <div class="modal-form-group">
+                        <label>Stream / Department</label>
+                        <input type="text" name="stream" class="modal-glass-input" value="{{ user.stream|default:'' }}" placeholder="e.g. Computer Science, Science, Engineering">
+                    </div>
+                    <div class="modal-form-group">
+                        <label>Student Level</label>
+                        <select name="student_level" class="modal-glass-select">
+                            <option value="Beginner" {% if user.student_level == 'Beginner' %}selected{% endif %}>Beginner</option>
+                            <option value="Intermediate" {% if user.student_level == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                            <option value="Advanced" {% if user.student_level == 'Advanced' %}selected{% endif %}>Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="modal-form-group">
                     <label>Bio / About Me</label>
                     <textarea name="bio" rows="3" maxlength="500" class="modal-glass-textarea" placeholder="Tell us about yourself, your coding goals, hobbies, and interests...">{{ user.profile.bio|default:'' }}</textarea>
