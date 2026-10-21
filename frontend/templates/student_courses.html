@@ -219,9 +219,24 @@
         min-width: 250px;
     }
 
+    .portal-search-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        pointer-events: none;
+        transition: color 0.25s ease;
+    }
+
+    .portal-search:focus-within .portal-search-icon {
+        color: var(--neon-cyan);
+    }
+
     .portal-search input {
         width: 100%;
-        padding: 11px 48px 11px 20px;
+        padding: 12px 86px 12px 46px;
         border-radius: 50px;
         background: rgba(0, 0, 0, 0.45);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -238,7 +253,44 @@
         background: rgba(0, 0, 0, 0.65);
     }
 
-    .portal-search button {
+    .portal-search-clear {
+        position: absolute;
+        right: 48px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        transition: all 0.2s ease;
+        z-index: 2;
+    }
+
+    .portal-search-clear:hover {
+        background: rgba(255, 51, 102, 0.35);
+        color: #ff3366;
+        transform: translateY(-50%) scale(1.08);
+    }
+
+    .portal-search-spinner {
+        position: absolute;
+        right: 48px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--neon-cyan);
+        font-size: 0.9rem;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .portal-search button.btn-search-submit {
         position: absolute;
         right: 5px;
         top: 50%;
@@ -254,12 +306,47 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 2;
     }
 
-    .portal-search button:hover {
+    .portal-search button.btn-search-submit:hover {
         background: var(--neon-cyan);
         color: #060814;
         box-shadow: 0 0 15px rgba(0, 243, 255, 0.45);
+    }
+
+    .badge-filter {
+        background: rgba(0, 243, 255, 0.12);
+        color: var(--neon-cyan);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        border: 1px solid rgba(0, 243, 255, 0.25);
+    }
+
+    .portal-btn-reset {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 243, 255, 0.12);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 10px 22px;
+        border-radius: 12px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        margin-top: 6px;
+    }
+
+    .portal-btn-reset:hover {
+        background: var(--neon-cyan);
+        color: #060814;
+        box-shadow: 0 0 16px rgba(0, 243, 255, 0.35);
+        transform: translateY(-2px);
     }
 
     .portal-chips {
@@ -712,130 +799,244 @@
         </div>
     </div>
 
-    <!-- 2. TOOLBAR / SEARCH / CHIPS -->
-    <div class="portal-toolbar fade-in-up delay-1">
-        <form method="GET" class="portal-search" id="cs-search-form">
-            <input type="text" name="search" id="cs-search-input" placeholder="Search courses by title, topic..." value="{{ search_query|default:'' }}">
-            <input type="hidden" name="filter" value="{{ active_filter }}">
-            <input type="hidden" name="sort" value="{{ active_sort }}">
-            <button type="submit" title="Search"><i class="fas fa-search"></i></button>
-        </form>
-        <div class="portal-chips">
-            <a class="portal-chip {% if active_filter == 'all' %}active{% endif %}" href="?filter=all&sort={{ active_sort }}&search={{ search_query|urlencode }}">All Courses</a>
-            <a class="portal-chip {% if active_filter == 'paid' %}active{% endif %}" href="?filter=paid&sort={{ active_sort }}&search={{ search_query|urlencode }}">Paid</a>
-            <a class="portal-chip {% if active_filter == 'free' %}active{% endif %}" href="?filter=free&sort={{ active_sort }}&search={{ search_query|urlencode }}">Free</a>
-            <a class="portal-chip {% if active_filter == 'coin' %}active{% endif %}" href="?filter=coin&sort={{ active_sort }}&search={{ search_query|urlencode }}"><i class="fas fa-coins" style="color:var(--accent-amber)"></i> Coin Unlock</a>
-        </div>
-        <form method="GET" id="cs-sort-form">
-            <input type="hidden" name="search" value="{{ search_query|default:'' }}">
-            <input type="hidden" name="filter" value="{{ active_filter }}">
-            <select class="portal-select" name="sort" title="Sort courses" onchange="this.form.submit()">
-                <option value="default" {% if active_sort == 'default' %}selected{% endif %}>Sort: Newest</option>
-                <option value="low" {% if active_sort == 'low' %}selected{% endif %}>Price: Low to High</option>
-                <option value="high" {% if active_sort == 'high' %}selected{% endif %}>Price: High to Low</option>
-                <option value="az" {% if active_sort == 'az' %}selected{% endif %}>Title: A–Z</option>
-            </select>
-        </form>
-    </div>
+    <!-- 2. TOOLBAR / SEARCH / CHIPS / SORT -->
+    <form method="GET" action="{% url 'all_courses' %}" class="portal-toolbar fade-in-up delay-1" id="cs-toolbar-form">
+        <input type="hidden" name="filter" id="cs-filter-input" value="{{ active_filter }}">
+        <input type="hidden" name="sort" id="cs-sort-input" value="{{ active_sort }}">
+        <input type="hidden" name="page" id="cs-page-input" value="1">
 
-    <div class="portal-count-strip fade-in-up delay-2">
+        <div class="portal-search">
+            <i class="fas fa-search portal-search-icon"></i>
+            <input type="text" name="search" id="cs-search-input" placeholder="Search courses by title, topic, faculty..." value="{{ search_query|default:'' }}" autocomplete="off" spellcheck="false">
+            <button type="button" class="portal-search-clear" id="cs-search-clear" title="Clear search" style="display: {% if search_query %}flex{% else %}none{% endif %};">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="portal-search-spinner" id="cs-search-spinner" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <button type="submit" class="btn-search-submit" title="Search"><i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <div class="portal-chips">
+            <a class="portal-chip {% if active_filter == 'all' %}active{% endif %}" href="?filter=all&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-filter="all">All Courses</a>
+            <a class="portal-chip {% if active_filter == 'paid' %}active{% endif %}" href="?filter=paid&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-filter="paid">Paid</a>
+            <a class="portal-chip {% if active_filter == 'free' %}active{% endif %}" href="?filter=free&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-filter="free">Free</a>
+            <a class="portal-chip {% if active_filter == 'coin' %}active{% endif %}" href="?filter=coin&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-filter="coin"><i class="fas fa-coins" style="color:var(--accent-amber)"></i> Coin Unlock</a>
+        </div>
+
+        <select class="portal-select" id="cs-sort-select" title="Sort courses">
+            <option value="default" {% if active_sort == 'default' %}selected{% endif %}>Sort: Newest</option>
+            <option value="low" {% if active_sort == 'low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="high" {% if active_sort == 'high' %}selected{% endif %}>Price: High to Low</option>
+            <option value="az" {% if active_sort == 'az' %}selected{% endif %}>Title: A–Z</option>
+        </select>
+    </form>
+
+    <div class="portal-count-strip fade-in-up delay-2" id="cs-count-strip">
         <i class="fas fa-filter" style="color:var(--neon-cyan)"></i>
-        <span>Showing <strong>{{ total_results }}</strong> course{{ total_results|pluralize }}</span>
+        <span id="cs-count-text">
+            Showing <strong>{{ total_results }}</strong> course{{ total_results|pluralize }}
+            {% if search_query %} for "<strong>{{ search_query }}</strong>"{% endif %}
+            {% if active_filter != 'all' %} · <span class="badge-filter">{{ active_filter|title }}</span>{% endif %}
+        </span>
     </div>
 
     <!-- 3. COURSE CARDS GRID -->
     <div class="portal-grid" id="cs-grid">
-        {% for course in courses %}
-        <div class="portal-card stagger-card">
-            <div class="card-thumb-wrap">
-                <span class="card-badge-diff {{ course.difficulty_level|lower }}">{{ course.difficulty_level }}</span>
-                {% if course.price > 0 %}
-                    {% if course.is_coin_purchasable %}
-                    <span class="card-ribbon"><i class="fas fa-coins"></i> COINS OK</span>
-                    {% endif %}
-                {% else %}
-                    <span class="card-ribbon free">FREE</span>
-                {% endif %}
-
-                {% if course.thumbnail %}
-                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
-                {% else %}
-                    <div class="card-thumb-empty"><i class="fas fa-code"></i></div>
-                {% endif %}
-            </div>
-
-            <div class="card-body">
-                <div class="card-title">{{ course.title }}</div>
-                <div class="card-rating">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                    <span>(4.8 Rating)</span>
-                </div>
-                <div class="card-desc">{{ course.description|truncatewords:20 }}</div>
-
-                <div class="card-meta-row">
-                    <span><i class="fas fa-cube"></i>{{ course.total_modules }} Modules</span>
-                    <span><i class="fas fa-infinity"></i>Lifetime Access</span>
-                    <span><i class="fas fa-certificate"></i>Certificate</span>
-                </div>
-
-                <div class="card-price-row">
-                    <div>
-                        {% if course.price > 0 %}
-                            <div class="card-price">₹{{ course.price }}</div>
-                        {% else %}
-                            <div class="card-price free">Free</div>
-                        {% endif %}
-                        {% if course.is_coin_purchasable %}
-                            <div class="coin-badge" title="Can be purchased with LMS Coins"><i class="fas fa-coins"></i> {{ course.coin_price }} Coins</div>
-                        {% endif %}
-                    </div>
-                    {% if course.id in enrolled_ids %}
-                        <a href="{% url 'course_watch' course.id %}" class="btn-enrolled"><i class="fas fa-play"></i> Continue</a>
-                    {% else %}
-                        <a href="{% url 'enroll_course' course.id %}" class="btn-buy">
-                            {% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i>
-                        </a>
-                    {% endif %}
-                </div>
-
-                {% if course.price > 0 and course.id not in enrolled_ids %}
-                <div class="card-payment-methods">
-                    <small>Pay with</small>
-                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
-                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/mastercard/EB001B" alt="Mastercard"></span>
-                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="Google Pay"></span>
-                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></span>
-                    <span class="pm-pill"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></span>
-                    <span class="pm-pill dark">UPI</span>
-                    <span class="pm-pill dark"><i class="fas fa-university"></i>&nbsp;Net Banking</span>
-                    {% if course.is_coin_purchasable %}<span class="pm-pill coin"><i class="fas fa-coins"></i></span>{% endif %}
-                </div>
-                <div class="card-secure-tag"><i class="fas fa-lock"></i>Secure transaction · Instant enrollment</div>
-                {% endif %}
-            </div>
-        </div>
-        {% empty %}
-        <div class="portal-empty stagger-card">
-            <i class="fas fa-search"></i>
-            <h3>No courses found matching your criteria</h3>
-            <p style="color:var(--text-muted); margin-bottom: 16px;">Try adjusting your search terms or filter settings.</p>
-            <a href="{% url 'all_courses' %}"><i class="fas fa-redo"></i> View All Courses</a>
-        </div>
-        {% endfor %}
+        {% include 'course_cards_partial.html' %}
     </div>
 
     <!-- 4. PAGINATION -->
-    {% if courses.has_other_pages %}
-    <div class="portal-pager fade-in-up delay-3">
-        {% if courses.has_previous %}
-            <a href="?page={{ courses.previous_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">&laquo; Prev</a>
-        {% endif %}
-        <span class="active">{{ courses.number }}</span>
-        {% if courses.has_next %}
-            <a href="?page={{ courses.next_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}&search={{ search_query|urlencode }}">Next &raquo;</a>
-        {% endif %}
+    <div id="cs-pager-container">
+        {% include 'course_pagination_partial.html' %}
     </div>
-    {% endif %}
+
+    <script>
+    (function() {
+        const form = document.getElementById('cs-toolbar-form');
+        const input = document.getElementById('cs-search-input');
+        const clearBtn = document.getElementById('cs-search-clear');
+        const spinner = document.getElementById('cs-search-spinner');
+        const filterInput = document.getElementById('cs-filter-input');
+        const sortInput = document.getElementById('cs-sort-input');
+        const sortSelect = document.getElementById('cs-sort-select');
+        const pageInput = document.getElementById('cs-page-input');
+        const grid = document.getElementById('cs-grid');
+        const pagerContainer = document.getElementById('cs-pager-container');
+        const countText = document.getElementById('cs-count-text');
+        const chips = document.querySelectorAll('.portal-chips .portal-chip');
+
+        let debounceTimer = null;
+        let currentAbortController = null;
+
+        function updateClearButton() {
+            if (input && clearBtn) {
+                clearBtn.style.display = input.value.trim().length > 0 ? 'flex' : 'none';
+            }
+        }
+
+        async function executeSearch(resetPage = true) {
+            if (resetPage) {
+                pageInput.value = '1';
+            }
+
+            const query = input.value.trim();
+            const filterVal = filterInput.value;
+            const sortVal = sortInput.value;
+            const pageVal = pageInput.value || '1';
+
+            updateClearButton();
+
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+            currentAbortController = new AbortController();
+
+            spinner.style.display = 'block';
+            grid.style.opacity = '0.5';
+            grid.style.transition = 'opacity 0.2s ease';
+
+            const params = new URLSearchParams({
+                search: query,
+                filter: filterVal,
+                sort: sortVal,
+                page: pageVal,
+                ajax: '1'
+            });
+
+            const fetchUrl = `${form.action || window.location.pathname}?${params.toString()}`;
+
+            try {
+                const res = await fetch(fetchUrl, {
+                    signal: currentAbortController.signal,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!res.ok) throw new Error('Search failed');
+                const data = await res.json();
+
+                grid.innerHTML = data.html;
+                pagerContainer.innerHTML = data.pager_html;
+
+                let countStr = `Showing <strong>${data.total_results}</strong> course${data.total_results === 1 ? '' : 's'}`;
+                if (query) {
+                    countStr += ` for "<strong>${escapeHtml(query)}</strong>"`;
+                }
+                if (filterVal && filterVal !== 'all') {
+                    const fName = filterVal.charAt(0).toUpperCase() + filterVal.slice(1);
+                    countStr += ` · <span class="badge-filter">${fName}</span>`;
+                }
+                countText.innerHTML = countStr;
+
+                // Sync chip hrefs to preserve current query
+                chips.forEach(c => {
+                    const cf = c.dataset.filter || 'all';
+                    let h = `?filter=${cf}&sort=${sortVal}`;
+                    if (query) h += `&search=${encodeURIComponent(query)}`;
+                    c.setAttribute('href', h);
+                });
+
+                const cleanParams = new URLSearchParams();
+                if (query) cleanParams.set('search', query);
+                if (filterVal && filterVal !== 'all') cleanParams.set('filter', filterVal);
+                if (sortVal && sortVal !== 'default') cleanParams.set('sort', sortVal);
+                if (parseInt(pageVal) > 1) cleanParams.set('page', pageVal);
+
+                const newUrl = `${window.location.pathname}${cleanParams.toString() ? '?' + cleanParams.toString() : ''}`;
+                window.history.replaceState({}, '', newUrl);
+
+                bindPaginationLinks();
+
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Search error:', err);
+                }
+            } finally {
+                spinner.style.display = 'none';
+                grid.style.opacity = '1';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        input.addEventListener('input', function() {
+            updateClearButton();
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                executeSearch(true);
+            }, 250);
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(debounceTimer);
+                executeSearch(true);
+            } else if (e.key === 'Escape') {
+                resetCourseSearch();
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            clearTimeout(debounceTimer);
+            executeSearch(true);
+        });
+
+        clearBtn.addEventListener('click', function() {
+            resetCourseSearch();
+        });
+
+        window.resetCourseSearch = function() {
+            input.value = '';
+            updateClearButton();
+            input.focus();
+            clearTimeout(debounceTimer);
+            executeSearch(true);
+        };
+
+        chips.forEach(chip => {
+            chip.addEventListener('click', function(e) {
+                e.preventDefault();
+                const fVal = this.dataset.filter || 'all';
+                filterInput.value = fVal;
+                chips.forEach(c => c.classList.toggle('active', c === chip));
+                clearTimeout(debounceTimer);
+                executeSearch(true);
+            });
+        });
+
+        sortSelect.addEventListener('change', function() {
+            sortInput.value = this.value;
+            clearTimeout(debounceTimer);
+            executeSearch(true);
+        });
+
+        function bindPaginationLinks() {
+            const pageLinks = pagerContainer.querySelectorAll('a[data-page]');
+            pageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const p = this.getAttribute('data-page');
+                    if (p) {
+                        pageInput.value = p;
+                        executeSearch(false);
+                        window.scrollTo({ top: form.offsetTop - 20, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+        bindPaginationLinks();
+        updateClearButton();
+    })();
+    </script>
 
 </div>
 {% endblock %}

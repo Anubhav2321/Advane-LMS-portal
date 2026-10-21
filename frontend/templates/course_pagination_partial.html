@@ -1,0 +1,19 @@
+{% if courses.has_other_pages %}
+<div class="portal-pager fade-in-up delay-3" id="cs-pager">
+    {% if courses.has_previous %}
+        <a href="?page={{ courses.previous_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-page="{{ courses.previous_page_number }}">&laquo; Prev</a>
+    {% endif %}
+
+    {% for p in courses.paginator.page_range %}
+        {% if p == courses.number %}
+            <span class="active">{{ p }}</span>
+        {% elif p >= courses.number|add:"-2" and p <= courses.number|add:"2" %}
+            <a href="?page={{ p }}&filter={{ active_filter }}&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-page="{{ p }}">{{ p }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if courses.has_next %}
+        <a href="?page={{ courses.next_page_number }}&filter={{ active_filter }}&sort={{ active_sort }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}" data-page="{{ courses.next_page_number }}">Next &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}

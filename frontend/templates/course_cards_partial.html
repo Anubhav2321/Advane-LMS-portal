@@ -1,0 +1,83 @@
+{% for course in courses %}
+<div class="portal-card stagger-card">
+    <div class="card-thumb-wrap">
+        <span class="card-badge-diff {{ course.difficulty_level|lower }}">{{ course.difficulty_level }}</span>
+        {% if course.price > 0 %}
+            {% if course.is_coin_purchasable %}
+            <span class="card-ribbon"><i class="fas fa-coins"></i> COINS OK</span>
+            {% endif %}
+        {% else %}
+            <span class="card-ribbon free">FREE</span>
+        {% endif %}
+
+        {% if course.thumbnail %}
+            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" loading="lazy">
+        {% else %}
+            <div class="card-thumb-empty"><i class="fas fa-code"></i></div>
+        {% endif %}
+    </div>
+
+    <div class="card-body">
+        <div class="card-title">{{ course.title }}</div>
+        <div class="card-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+            <span>(4.8 Rating)</span>
+        </div>
+        <div class="card-desc">{{ course.description|truncatewords:20 }}</div>
+
+        <div class="card-meta-row">
+            <span><i class="fas fa-cube"></i>{{ course.total_modules }} Modules</span>
+            <span><i class="fas fa-infinity"></i>Lifetime Access</span>
+            <span><i class="fas fa-certificate"></i>Certificate</span>
+        </div>
+
+        <div class="card-price-row">
+            <div>
+                {% if course.price > 0 %}
+                    <div class="card-price">₹{{ course.price }}</div>
+                {% else %}
+                    <div class="card-price free">Free</div>
+                {% endif %}
+                {% if course.is_coin_purchasable %}
+                    <div class="coin-badge" title="Can be purchased with LMS Coins"><i class="fas fa-coins"></i> {{ course.coin_price }} Coins</div>
+                {% endif %}
+            </div>
+            {% if course.id in enrolled_ids %}
+                <a href="{% url 'course_watch' course.id %}" class="btn-enrolled"><i class="fas fa-play"></i> Continue</a>
+            {% else %}
+                <a href="{% url 'enroll_course' course.id %}" class="btn-buy">
+                    {% if course.price > 0 %}Buy Now{% else %}Enroll Free{% endif %} <i class="fas fa-arrow-right"></i>
+                </a>
+            {% endif %}
+        </div>
+
+        {% if course.price > 0 and course.id not in enrolled_ids %}
+        <div class="card-payment-methods">
+            <small>Pay with</small>
+            <span class="pm-pill"><img src="https://cdn.simpleicons.org/visa/1A1F71" alt="Visa"></span>
+            <span class="pm-pill"><img src="https://cdn.simpleicons.org/mastercard/EB001B" alt="Mastercard"></span>
+            <span class="pm-pill"><img src="https://cdn.simpleicons.org/googlepay/5F6368" alt="Google Pay"></span>
+            <span class="pm-pill"><img src="https://cdn.simpleicons.org/phonepe/5F259F" alt="PhonePe"></span>
+            <span class="pm-pill"><img src="https://cdn.simpleicons.org/paytm/00BAF2" alt="Paytm"></span>
+            <span class="pm-pill dark">UPI</span>
+            <span class="pm-pill dark"><i class="fas fa-university"></i>&nbsp;Net Banking</span>
+            {% if course.is_coin_purchasable %}<span class="pm-pill coin"><i class="fas fa-coins"></i></span>{% endif %}
+        </div>
+        <div class="card-secure-tag"><i class="fas fa-lock"></i>Secure transaction · Instant enrollment</div>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="portal-empty stagger-card">
+    <i class="fas fa-search"></i>
+    <h3>No courses found matching your criteria</h3>
+    <p style="color:var(--text-muted); margin-bottom: 16px;">
+        {% if search_query %}
+            No courses found for "<strong>{{ search_query }}</strong>". Try searching for a different keyword or topic.
+        {% else %}
+            Try adjusting your search terms or filter settings.
+        {% endif %}
+    </p>
+    <button type="button" class="portal-btn-reset" onclick="resetCourseSearch()"><i class="fas fa-redo"></i> View All Courses</button>
+</div>
+{% endfor %}
