@@ -117,11 +117,11 @@
         50% { opacity: 0.35; transform: scale(0.85); }
     }
 
-    /* --- Four KPI Stat Cards --- */
+    /* --- KPI Stat Cards --- */
     .support-stats-row {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 18px;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
         margin-bottom: 24px;
     }
     .stat-kpi-card {
@@ -146,9 +146,11 @@
         width: 100%; height: 3px;
     }
     .stat-kpi-card.c-amber::before { background: linear-gradient(90deg, #ffb74d, transparent); }
+    .stat-kpi-card.c-red::before { background: linear-gradient(90deg, #f43f5e, transparent); }
     .stat-kpi-card.c-cyan::before { background: linear-gradient(90deg, #00d4ff, transparent); }
     .stat-kpi-card.c-green::before { background: linear-gradient(90deg, #00e676, transparent); }
     .stat-kpi-card.c-purple::before { background: linear-gradient(90deg, #a855f7, transparent); }
+    .stat-kpi-card.c-red .stat-kpi-icon { background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.22); }
 
     .stat-kpi-card:hover {
         transform: translateY(-3px);
@@ -510,6 +512,135 @@
     .badge-pill-status.in_progress { background: rgba(0, 212, 255, 0.12); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.3); }
     .badge-pill-status.resolved { background: rgba(0, 230, 118, 0.12); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3); }
     .badge-pill-status.closed { background: rgba(160, 160, 184, 0.12); color: #a0a0b8; border: 1px solid rgba(160, 160, 184, 0.3); }
+
+    /* Priority Badges */
+    .badge-pill-priority {
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 99px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .badge-pill-priority.urgent {
+        background: rgba(244, 63, 94, 0.12);
+        color: #fb7185;
+        border: 1px solid rgba(244, 63, 94, 0.28);
+        box-shadow: none;
+    }
+    .badge-pill-priority.high {
+        background: rgba(255, 183, 77, 0.14);
+        color: #ffb74d;
+        border: 1px solid rgba(255, 183, 77, 0.35);
+    }
+    .badge-pill-priority.normal {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Left Inbound Queue Card Priority Accent Borders */
+    .inbox-item-card.priority-urgent {
+        border-left: 3px solid #f43f5e !important;
+        background: rgba(244, 63, 94, 0.025);
+    }
+    .inbox-item-card.priority-urgent:hover, .inbox-item-card.priority-urgent.active {
+        background: rgba(244, 63, 94, 0.065) !important;
+        border-left: 3px solid #f43f5e !important;
+    }
+    .inbox-item-card.priority-high {
+        border-left: 3px solid #ffb74d !important;
+    }
+    .inbox-item-card.priority-high:hover, .inbox-item-card.priority-high.active {
+        border-left: 3px solid #ffb74d !important;
+    }
+
+    /* Urgent Alert Banner */
+    .urgent-broadcast-banner {
+        background: rgba(23, 17, 26, 0.75);
+        border: 1px solid rgba(244, 63, 94, 0.25);
+        border-left: 4px solid #f43f5e;
+        border-radius: var(--radius-lg);
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        color: #e2e8f0;
+        font-size: 0.88rem;
+        backdrop-filter: blur(12px);
+    }
+    .urgent-broadcast-banner a {
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: rgba(244, 63, 94, 0.15);
+        color: #fda4af;
+        border: 1px solid rgba(244, 63, 94, 0.35);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+    .urgent-broadcast-banner a:hover {
+        background: rgba(244, 63, 94, 0.28);
+        color: #fff;
+        border-color: rgba(244, 63, 94, 0.6);
+    }
+
+    /* Multi-turn conversation thread styles */
+    .conversation-thread-box {
+        margin-bottom: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .thread-msg-bubble {
+        border-radius: var(--radius-lg);
+        padding: 16px 20px;
+        position: relative;
+    }
+    .thread-msg-bubble.student {
+        background: rgba(0, 212, 255, 0.045);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+    }
+    .thread-msg-bubble.admin {
+        background: rgba(0, 230, 118, 0.045);
+        border: 1px solid rgba(0, 230, 118, 0.25);
+    }
+    .thread-bubble-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .thread-bubble-author {
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .thread-msg-bubble.student .thread-bubble-author { color: var(--secondary); }
+    .thread-msg-bubble.admin .thread-bubble-author { color: var(--accent-green); }
+    .thread-bubble-time {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+    }
+    .thread-bubble-text {
+        font-size: 0.92rem;
+        color: #e2e8f0;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
 
     .item-time-stamp {
         font-size: 0.72rem;
@@ -971,13 +1102,21 @@
         </div>
     </div>
 
-    <!-- 2. Four KPI Stat Overview Cards -->
+    <!-- 2. Five KPI Stat Overview Cards -->
     <div class="support-stats-row">
         <div class="stat-kpi-card c-amber">
             <div class="stat-kpi-icon"><i class="fas fa-clock"></i></div>
             <div>
                 <div class="stat-kpi-val">{{ pending_count }}</div>
                 <div class="stat-kpi-lbl">Pending Review</div>
+            </div>
+        </div>
+
+        <div class="stat-kpi-card c-red urgent-kpi-card" onclick="window.location.href='?priority=urgent'" style="cursor:pointer;" title="Click to filter Urgent inquiries">
+            <div class="stat-kpi-icon"><i class="fas fa-fire-flame-curved"></i></div>
+            <div>
+                <div class="stat-kpi-val" style="color:#fda4af;">{{ urgent_count }}</div>
+                <div class="stat-kpi-lbl" style="color:var(--text-muted);">Urgent Priority</div>
             </div>
         </div>
 
@@ -1006,28 +1145,55 @@
         </div>
     </div>
 
+    <!-- Critical / Urgent Broadcast Alert Banner (if any urgent ticket exists) -->
+    {% if urgent_count > 0 %}
+    <div class="urgent-broadcast-banner">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <i class="fas fa-circle-exclamation" style="font-size:1.15rem; color:#fb7185;"></i>
+            <span><strong>CRITICAL ATTENTION:</strong> There are <strong>{{ urgent_count }}</strong> urgent / critical support inquiries awaiting administrator action.</span>
+        </div>
+        <a href="?priority=urgent"><i class="fas fa-arrow-right"></i> Open Urgent Queue ({{ urgent_count }})</a>
+    </div>
+    {% endif %}
+
     <!-- 3. Filter Deck, View Toggle & Search -->
     <div class="control-deck-row">
         <div class="filter-tabs-group">
-            <a href="?status=all{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'all' or not current_status %}active{% endif %}">
+            <a href="?status=all{% if current_priority and current_priority != 'all' %}&priority={{ current_priority }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_priority != 'urgent' %}{% if current_status == 'all' or not current_status %}active{% endif %}{% endif %}">
                 <i class="fas fa-layer-group"></i> All Inbound
                 <span class="pill-counter">{{ total_count }}</span>
             </a>
-            <a href="?status=pending{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'pending' %}active{% endif %}">
+            <a href="?priority=urgent{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_priority == 'urgent' %}active{% endif %}" style="border-color:rgba(244,63,94,0.3); color:{% if current_priority == 'urgent' %}#fff{% else %}#fda4af{% endif %};">
+                <i class="fas fa-fire-flame-curved" style="color:#fb7185;"></i> Urgent Queue
+                <span class="pill-counter" style="color:#fda4af; background:rgba(244,63,94,0.12); border-color:rgba(244,63,94,0.28);">{{ urgent_count }}</span>
+            </a>
+            <a href="?status=pending{% if current_priority and current_priority != 'all' %}&priority={{ current_priority }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'pending' and current_priority != 'urgent' %}active{% endif %}">
                 <i class="fas fa-exclamation-circle" style="color:#ffb74d;"></i> Pending
                 <span class="pill-counter" style="color:#ffb74d;">{{ pending_count }}</span>
             </a>
-            <a href="?status=in_progress{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'in_progress' %}active{% endif %}">
+            <a href="?status=in_progress{% if current_priority and current_priority != 'all' %}&priority={{ current_priority }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'in_progress' and current_priority != 'urgent' %}active{% endif %}">
                 <i class="fas fa-spinner" style="color:#00d4ff;"></i> In Progress
                 <span class="pill-counter" style="color:#00d4ff;">{{ in_progress_count }}</span>
             </a>
-            <a href="?status=resolved{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'resolved' %}active{% endif %}">
+            <a href="?status=resolved{% if current_priority and current_priority != 'all' %}&priority={{ current_priority }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" class="filter-tab-pill {% if current_status == 'resolved' and current_priority != 'urgent' %}active{% endif %}">
                 <i class="fas fa-check-circle" style="color:#00e676;"></i> Resolved
                 <span class="pill-counter" style="color:#00e676;">{{ resolved_count }}</span>
             </a>
         </div>
 
         <div class="filter-tools-right">
+            <!-- Priority Filter Dropdown -->
+            <form method="GET" style="display:inline-flex; align-items:center;">
+                {% if current_status and current_status != 'all' %}<input type="hidden" name="status" value="{{ current_status }}">{% endif %}
+                {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+                <select name="priority" onchange="this.form.submit()" style="background:rgba(0,0,0,0.55); border:1px solid var(--glass-border); color:#fff; padding:7px 14px; border-radius:99px; font-size:0.8rem; font-weight:700; outline:none; cursor:pointer;">
+                    <option value="all" {% if current_priority == 'all' or not current_priority %}selected{% endif %}>All Priorities</option>
+                    <option value="urgent" {% if current_priority == 'urgent' %}selected{% endif %}>🔥 Urgent Only ({{ urgent_count }})</option>
+                    <option value="high" {% if current_priority == 'high' %}selected{% endif %}>⚡ High Only ({{ high_count }})</option>
+                    <option value="normal" {% if current_priority == 'normal' %}selected{% endif %}>Normal Only</option>
+                </select>
+            </form>
+
             <!-- View Mode Switcher -->
             <div class="view-toggle-wrap">
                 <button type="button" class="view-toggle-btn active" id="btnMailboxView" onclick="setSupportView('mailbox')">
@@ -1043,10 +1209,13 @@
                 {% if current_status and current_status != 'all' %}
                     <input type="hidden" name="status" value="{{ current_status }}">
                 {% endif %}
+                {% if current_priority and current_priority != 'all' %}
+                    <input type="hidden" name="priority" value="{{ current_priority }}">
+                {% endif %}
                 <i class="fas fa-search" style="color:var(--text-muted); font-size:0.85rem;"></i>
                 <input type="text" name="search" placeholder="Search ticket #, student, email, ID..." value="{{ search_query }}">
                 {% if search_query %}
-                    <a href="?status={{ current_status|default:'all' }}" style="color:var(--text-muted); text-decoration:none; padding:0 4px;" title="Clear Search"><i class="fas fa-times"></i></a>
+                    <a href="?status={{ current_status|default:'all' }}{% if current_priority %}&priority={{ current_priority }}{% endif %}" style="color:var(--text-muted); text-decoration:none; padding:0 4px;" title="Clear Search"><i class="fas fa-times"></i></a>
                 {% endif %}
                 <button type="submit" title="Search"><i class="fas fa-arrow-right"></i></button>
             </form>
@@ -1066,7 +1235,7 @@
             <div class="inbox-scroll-area" id="inboxItemsList">
                 {% if tickets %}
                     {% for t in tickets %}
-                    <div class="inbox-item-card status-{{ t.status }} {% if forloop.first %}active{% endif %}"
+                    <div class="inbox-item-card status-{{ t.status }} priority-{{ t.priority }} {% if forloop.first %}active{% endif %}"
                          id="itemCard_{{ t.id }}"
                          onclick="selectTicket(this.dataset.id)"
                          data-id="{{ t.id }}"
@@ -1078,6 +1247,7 @@
                          data-cat="{{ t.get_category_display|escapejs }}"
                          data-cat-code="{{ t.category }}"
                          data-priority="{{ t.priority }}"
+                         data-priority-display="{{ t.get_priority_display|escapejs }}"
                          data-source="{{ t.get_source_display|escapejs }}"
                          data-status="{{ t.status }}"
                          data-subject="{{ t.subject|escapejs }}"
@@ -1087,6 +1257,21 @@
                          data-replied-at="{% if t.replied_at %}{{ t.replied_at|date:'d M, Y • h:i A' }}{% endif %}"
                          data-date="{{ t.created_at|date:'d M, Y • h:i A' }}"
                          data-avatar="{% if t.student and t.student.profile_pic_url %}{{ t.student.profile_pic_url }}{% endif %}">
+
+                        <!-- Thread Messages JSON -->
+                        <script type="application/json" id="thread_json_{{ t.id }}">
+                        [
+                            {% for m in t.messages.all %}
+                            {
+                                "id": {{ m.id }},
+                                "sender": "{{ m.sender_name|escapejs }}",
+                                "is_admin": {% if m.is_admin %}true{% else %}false{% endif %},
+                                "message": "{{ m.clean_message|escapejs }}",
+                                "created_at": "{{ m.created_at|date:'d M, Y • h:i A' }}"
+                            }{% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ]
+                        </script>
 
                         <div class="item-top-row">
                             <div class="item-user-info">
@@ -1105,7 +1290,15 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <span class="item-ticket-number">#{{ t.ticket_number }}</span>
+
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:3px;">
+                                <span class="item-ticket-number">#{{ t.ticket_number }}</span>
+                                {% if t.priority == 'urgent' %}
+                                    <span class="badge-pill-priority urgent"><i class="fas fa-circle-exclamation"></i> URGENT</span>
+                                {% elif t.priority == 'high' %}
+                                    <span class="badge-pill-priority high"><i class="fas fa-bolt"></i> HIGH</span>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <div class="item-subject-line">{{ t.subject }}</div>
@@ -1123,6 +1316,14 @@
                                 {{ t.get_category_display }}
                             </span>
 
+                            {% if t.priority == 'urgent' %}
+                                <span class="badge-pill-priority urgent"><i class="fas fa-fire"></i> Urgent</span>
+                            {% elif t.priority == 'high' %}
+                                <span class="badge-pill-priority high"><i class="fas fa-bolt"></i> High</span>
+                            {% else %}
+                                <span class="badge-pill-priority normal">Normal</span>
+                            {% endif %}
+
                             <span class="badge-pill-status {{ t.status }}">
                                 {% if t.status == 'pending' %}Pending
                                 {% elif t.status == 'in_progress' %}In Progress
@@ -1130,7 +1331,7 @@
                                 {% else %}Closed{% endif %}
                             </span>
 
-                            <span class="item-time-stamp">{{ t.created_at|date:"d M" }}</span>
+                            <span class="item-time-stamp" title="{{ t.created_at|date:'d M, Y • h:i A' }}"><i class="far fa-clock" style="font-size:0.7rem; margin-right:3px; opacity:0.8;"></i>{{ t.created_at|date:"d M, h:i A" }}</span>
                         </div>
                     </div>
                     {% endfor %}
@@ -1154,6 +1355,7 @@
                         <div class="detail-title-block">
                             <div class="detail-tag-row">
                                 <span class="detail-tkt-id" id="dW_TicketNumber">#TKT-000000</span>
+                                <span class="badge-pill-priority" id="dW_PriorityBadge"><i class="fas fa-fire"></i> Priority</span>
                                 <span class="badge-pill-status" id="dW_StatusBadge">Pending</span>
                                 <span class="badge-pill-cat" id="dW_CategoryBadge"><i class="fas fa-tag"></i> Category</span>
                                 <span class="badge-pill-cat" id="dW_SourceBadge"><i class="fas fa-globe"></i> Portal</span>
@@ -1172,6 +1374,12 @@
                                 </button>
                             </form>
                         </div>
+                    </div>
+
+                    <!-- Urgent Priority Alert Banner -->
+                    <div id="dW_UrgentBanner" style="display:none; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.22); border-left:3px solid #f43f5e; border-radius:8px; padding:10px 16px; margin-bottom:18px; color:#fda4af; font-size:0.84rem; font-weight:600; align-items:center; gap:10px;">
+                        <i class="fas fa-circle-exclamation" style="font-size:1.05rem; color:#fb7185;"></i>
+                        <span><strong>Urgent Priority:</strong> Student flagged this inquiry as time-sensitive. Please prioritize prompt assistance.</span>
                     </div>
 
                     <!-- Sender Info Strip -->
@@ -1199,27 +1407,9 @@
                         </div>
                     </div>
 
-                    <!-- Customer Message Card -->
-                    <div class="inquiry-message-card">
-                        <div class="inquiry-label">
-                            <i class="fas fa-quote-left"></i> Student Problem Description
-                        </div>
-                        <div class="inquiry-body-text" id="dW_MessageBody">
-                            Detailed student message will be rendered here.
-                        </div>
-                    </div>
-
-                    <!-- Previous Admin Reply (Conditional) -->
-                    <div class="admin-prev-reply-card" id="dW_PrevReplyBox" style="display:none;">
-                        <div class="reply-card-head">
-                            <div class="reply-card-title">
-                                <i class="fas fa-user-shield"></i> <span id="dW_RepliedByAdmin">Resolved by Admin</span>
-                            </div>
-                            <div class="reply-card-time" id="dW_RepliedAtTime">10 Oct, 18:30</div>
-                        </div>
-                        <div class="reply-card-text" id="dW_PrevReplyText">
-                            Previous reply content.
-                        </div>
+                    <!-- Complete Multi-Turn Conversation Thread -->
+                    <div class="conversation-thread-box" id="dW_ConversationThread">
+                        <!-- Populated by JS: displays initial message & all student and admin replies -->
                     </div>
                 </div>
 
@@ -1248,18 +1438,29 @@
                         </div>
 
                         <div class="console-actions-row">
-                            <div class="status-dropdown-wrap">
-                                <label for="dW_StatusSelect">Ticket Status:</label>
-                                <select name="status" id="dW_StatusSelect">
-                                    <option value="resolved">Resolved ✓</option>
-                                    <option value="in_progress">Under Investigation ⚙</option>
-                                    <option value="pending">Pending ⏳</option>
-                                    <option value="closed">Closed ✕</option>
-                                </select>
+                            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                                <div class="status-dropdown-wrap">
+                                    <label for="dW_StatusSelect">Ticket Status:</label>
+                                    <select name="status" id="dW_StatusSelect">
+                                        <option value="resolved">Resolved ✓</option>
+                                        <option value="in_progress">Under Investigation ⚙</option>
+                                        <option value="pending">Pending ⏳</option>
+                                        <option value="closed">Closed ✕</option>
+                                    </select>
+                                </div>
+
+                                <div class="status-dropdown-wrap">
+                                    <label for="dW_PrioritySelect">Priority Level:</label>
+                                    <select name="priority" id="dW_PrioritySelect">
+                                        <option value="urgent">🔥 Urgent / Critical</option>
+                                        <option value="high">⚡ High Priority</option>
+                                        <option value="normal">Normal Priority</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn-dispatch-res">
-                                <i class="fas fa-check"></i> Dispatch Resolution to Student
+                                <i class="fas fa-paper-plane"></i> Dispatch Resolution to Student
                             </button>
                         </div>
                     </form>
@@ -1281,6 +1482,7 @@
                 <tr>
                     <th>Ticket ID</th>
                     <th>Student / Sender</th>
+                    <th>Priority</th>
                     <th>Category</th>
                     <th>Subject & Snippet</th>
                     <th>Status</th>
@@ -1299,6 +1501,15 @@
                             <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">{{ t.email }}</div>
                         </td>
                         <td>
+                            {% if t.priority == 'urgent' %}
+                                <span class="badge-pill-priority urgent"><i class="fas fa-circle-exclamation"></i> Urgent</span>
+                            {% elif t.priority == 'high' %}
+                                <span class="badge-pill-priority high"><i class="fas fa-bolt"></i> High</span>
+                            {% else %}
+                                <span class="badge-pill-priority normal">Normal</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             <span class="badge-pill-cat">{{ t.get_category_display }}</span>
                         </td>
                         <td>
@@ -1314,7 +1525,7 @@
                             </span>
                         </td>
                         <td>
-                            <div style="font-size:0.82rem; color:var(--text-secondary);">{{ t.created_at|date:"d M, Y" }}</div>
+                            <div style="font-size:0.82rem; color:var(--text-secondary);"><i class="far fa-clock" style="font-size:0.75rem; margin-right:4px; color:var(--text-muted);"></i>{{ t.created_at|date:"d M, Y • h:i A" }}</div>
                         </td>
                         <td style="text-align:right;">
                             <div style="display:inline-flex; align-items:center; gap:8px;">
@@ -1331,7 +1542,7 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">
+                        <td colspan="8" style="text-align:center; padding:40px; color:var(--text-muted);">
                             No support tickets found in this filter.
                         </td>
                     </tr>
@@ -1386,6 +1597,29 @@
         // Populate Right Pane Workspace
         document.getElementById('dW_TicketNumber').innerText = '#' + data.num;
         
+        // Priority Badge & Urgent Banner
+        const prioBadge = document.getElementById('dW_PriorityBadge');
+        const urgentBanner = document.getElementById('dW_UrgentBanner');
+        const prioSelect = document.getElementById('dW_PrioritySelect');
+
+        if (data.priority === 'urgent') {
+            prioBadge.className = 'badge-pill-priority urgent';
+            prioBadge.innerHTML = '<i class="fas fa-circle-exclamation"></i> Urgent';
+            urgentBanner.style.display = 'flex';
+        } else if (data.priority === 'high') {
+            prioBadge.className = 'badge-pill-priority high';
+            prioBadge.innerHTML = '<i class="fas fa-bolt"></i> High';
+            urgentBanner.style.display = 'none';
+        } else {
+            prioBadge.className = 'badge-pill-priority normal';
+            prioBadge.innerHTML = '<i class="far fa-flag"></i> Normal';
+            urgentBanner.style.display = 'none';
+        }
+
+        if (prioSelect) {
+            prioSelect.value = data.priority || 'normal';
+        }
+
         // Status Badge
         const statusBadge = document.getElementById('dW_StatusBadge');
         statusBadge.className = 'badge-pill-status ' + data.status;
@@ -1434,23 +1668,68 @@
             avatarWrap.innerHTML = `<span>${data.name.charAt(0).toUpperCase()}</span>`;
         }
 
-        // Message Body
-        document.getElementById('dW_MessageBody').innerText = cleanUnescape(data.message);
+        // Render Multi-Turn Conversation Thread
+        const threadContainer = document.getElementById('dW_ConversationThread');
+        threadContainer.innerHTML = '';
 
-        // Previous Admin Reply
-        const prevReplyBox = document.getElementById('dW_PrevReplyBox');
-        if (data.reply) {
-            prevReplyBox.style.display = 'block';
-            document.getElementById('dW_RepliedByAdmin').innerText = 'Resolved by ' + (data.repliedBy || 'Admin');
-            document.getElementById('dW_RepliedAtTime').innerText = data.repliedAt || 'Recently';
-            document.getElementById('dW_PrevReplyText').innerText = cleanUnescape(data.reply);
+        let messages = [];
+        const threadScript = document.getElementById('thread_json_' + id);
+        if (threadScript) {
+            try {
+                messages = JSON.parse(threadScript.textContent || '[]');
+            } catch (e) {
+                messages = [];
+            }
+        }
+
+        if (messages.length > 0) {
+            messages.forEach((msg, idx) => {
+                const bubble = document.createElement('div');
+                bubble.className = 'thread-msg-bubble ' + (msg.is_admin ? 'admin' : 'student');
+                const isFirstStudent = (!msg.is_admin && idx === 0);
+                const roleIcon = msg.is_admin 
+                    ? '<i class="fas fa-user-shield"></i> Administrator Resolution' 
+                    : (isFirstStudent ? '<i class="fas fa-user-circle"></i> Initial Student Inquiry' : '<i class="fas fa-reply"></i> Student Response / Follow-up');
+                const authorName = msg.sender || (msg.is_admin ? 'Admin' : data.name);
+                bubble.innerHTML = `
+                    <div class="thread-bubble-head">
+                        <div class="thread-bubble-author">${roleIcon} (${authorName})</div>
+                        <div class="thread-bubble-time">${msg.created_at}</div>
+                    </div>
+                    <div class="thread-bubble-text">${cleanUnescape(msg.message)}</div>
+                `;
+                threadContainer.appendChild(bubble);
+            });
         } else {
-            prevReplyBox.style.display = 'none';
+            // Fallback for initial message if messages list was empty
+            const initBubble = document.createElement('div');
+            initBubble.className = 'thread-msg-bubble student';
+            initBubble.innerHTML = `
+                <div class="thread-bubble-head">
+                    <div class="thread-bubble-author"><i class="fas fa-user-circle"></i> Initial Student Inquiry (${data.name})</div>
+                    <div class="thread-bubble-time">${data.date}</div>
+                </div>
+                <div class="thread-bubble-text">${cleanUnescape(data.message)}</div>
+            `;
+            threadContainer.appendChild(initBubble);
+
+            if (data.reply) {
+                const adminBubble = document.createElement('div');
+                adminBubble.className = 'thread-msg-bubble admin';
+                adminBubble.innerHTML = `
+                    <div class="thread-bubble-head">
+                        <div class="thread-bubble-author"><i class="fas fa-user-shield"></i> Administrator Resolution (${data.repliedBy || 'Admin'})</div>
+                        <div class="thread-bubble-time">${data.repliedAt || 'Recently'}</div>
+                    </div>
+                    <div class="thread-bubble-text">${cleanUnescape(data.reply)}</div>
+                `;
+                threadContainer.appendChild(adminBubble);
+            }
         }
 
         // Resolution Form Setup
         document.getElementById('dW_ReplyForm').action = '/admin-panel/support-tickets/' + id + '/reply/';
-        document.getElementById('dW_ReplyTextarea').value = cleanUnescape(data.reply) || '';
+        document.getElementById('dW_ReplyTextarea').value = '';
         document.getElementById('dW_StatusSelect').value = data.status === 'pending' ? 'resolved' : data.status;
     }
 
