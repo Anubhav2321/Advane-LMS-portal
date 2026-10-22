@@ -1421,6 +1421,43 @@ class SupportTicket(models.Model):
         return f"[{self.ticket_number}] {self.subject} ({self.get_status_display()})"
 
 
+class SupportTicketMessage(models.Model):
+    """
+    Chronological message thread for SupportTicket interactions between
+    students and administrators. Allows multi-turn conversations.
+    """
+    ticket = models.ForeignKey(SupportTicket, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ticket_messages')
+    sender_name = models.CharField(max_length=150)
+    is_admin = models.BooleanField(default=False)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    @property
+    def clean_message(self):
+        if not self.message:
+            return ""
+        text = str(self.message)
+        for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+            text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+        return text.replace('\r\n', '\n').replace('\r', '\n')
+
+    def save(self, *args, **kwargs):
+        if self.message:
+            text = str(self.message)
+            for esc in ['\\u000D\\u000A', '\\u000d\\u000a', '\\u000A', '\\u000a', '\\u000D', '\\u000d', '\\r\\n', '\\n', '\\r']:
+                text = text.replace(esc, '\n' if 'n' in esc.lower() or 'a' in esc.lower() else '')
+            self.message = text.replace('\r\n', '\n').replace('\r', '\n')
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        role = "Admin" if self.is_admin else "Student"
+        return f"[{role}] {self.sender_name} on #{self.ticket.ticket_number}"
+
+
 def notify_admins_of_support_ticket(ticket):
     """
     Dispatches notifications and internal messages to ALL 4 admins
@@ -1435,13 +1472,15 @@ def notify_admins_of_support_ticket(ticket):
     ticket_url = f"/admin-panel/support-tickets/{ticket.id}/"
     summary_msg = (
         f"From: {ticket.name} ({ticket.email}) | Phone: {ticket.phone or 'N/A'} | ID: #{ticket.student_id_code or 'N/A'}\n"
-        f"Category: {ticket.get_category_display()} | Priority: {ticket.get_priority_display()}\n\n"
+        f"Category: {ticket.get_category_display()} | Priority: {ticket.get_priority_display().upper()}\n\n"
         f"Issue: {ticket.message[:180]}..."
     )
 
+    prio_icon = "🔥 [URGENT] " if ticket.priority == 'urgent' else ("⚡ [HIGH] " if ticket.priority == 'high' else "📩 ")
+
     for admin in admins:
         Notification.objects.create(
-            title=f"📩 Support Mail #{ticket.ticket_number}: {ticket.subject[:45]}",
+            title=f"{prio_icon}Support Mail #{ticket.ticket_number}: {ticket.subject[:40]}",
             message=summary_msg,
             notification_type='support',
             action_url=ticket_url,
@@ -1454,14 +1493,14 @@ def notify_admins_of_support_ticket(ticket):
     try:
         admin_emails = [a.email for a in admins if a.email]
         if admin_emails:
-            subject = f"[Learning-365 Support] #{ticket.ticket_number}: {ticket.subject}"
+            subject = f"{prio_icon}[Learning-365 Support] #{ticket.ticket_number}: {ticket.subject}"
             body = (
                 f"New Support Mail received from {ticket.name}:\n\n"
                 f"Student Email: {ticket.email}\n"
                 f"Student Phone: {ticket.phone or 'Not Provided'}\n"
                 f"Student ID: {ticket.student_id_code or 'N/A'}\n"
                 f"Category: {ticket.get_category_display()}\n"
-                f"Priority: {ticket.get_priority_display()}\n"
+                f"Priority: {ticket.get_priority_display().upper()}\n"
                 f"Source: {ticket.source}\n\n"
                 f"Message:\n{ticket.message}\n\n"
                 f"Please review and solve this issue in the Admin Panel:\n"
@@ -1482,4 +1521,68 @@ def notify_admins_of_support_ticket(ticket):
             threading.Thread(target=_async_send, daemon=True).start()
     except Exception as e:
         print(f"[ADMIN SUPPORT EMAIL DISPATCH ERROR]: {e}")
+
+
+def notify_admins_of_ticket_reply(ticket, reply_message, student_user):
+    """
+    Dispatches alerts to ALL 4 administrators when a student sends a follow-up reply
+    on an existing support ticket.
+    """
+    from django.db.models import Q
+    from django.core.mail import send_mail
+    from django.conf import settings
+
+    admins = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True)).distinct()
+    ticket_url = f"/admin-panel/support-tickets/{ticket.id}/"
+    clean_snippet = str(reply_message).strip()[:180]
+
+    prio_icon = "🔥 [URGENT REPLY] " if ticket.priority == 'urgent' else ("⚡ [HIGH REPLY] " if ticket.priority == 'high' else "💬 [STUDENT REPLY] ")
+
+    summary_msg = (
+        f"Student {ticket.name} (ID: #{ticket.student_id_code or student_user.id}) replied to Ticket #{ticket.ticket_number}:\n\n"
+        f"\"{clean_snippet}...\"\n\n"
+        f"Priority: {ticket.get_priority_display().upper()} | Status: {ticket.get_status_display()}"
+    )
+
+    for admin in admins:
+        Notification.objects.create(
+            title=f"{prio_icon}#{ticket.ticket_number} from {ticket.name}",
+            message=summary_msg,
+            notification_type='support',
+            action_url=ticket_url,
+            action_label="Open Support Desk",
+            recipient=admin,
+            is_global=False
+        )
+
+    try:
+        admin_emails = [a.email for a in admins if a.email]
+        if admin_emails:
+            subject = f"{prio_icon}[Learning-365 Support] #{ticket.ticket_number}: Follow-up from {ticket.name}"
+            body = (
+                f"Student {ticket.name} has submitted a reply on Ticket #{ticket.ticket_number} ({ticket.subject}):\n\n"
+                f"Student Email: {ticket.email}\n"
+                f"Student Phone: {ticket.phone or 'Not Provided'}\n"
+                f"Student ID: #{ticket.student_id_code or student_user.id}\n"
+                f"Priority: {ticket.get_priority_display().upper()}\n\n"
+                f"--- Student Reply Message ---\n"
+                f"{reply_message}\n\n"
+                f"Please respond to the student via the Admin Panel:\n"
+                f"https://learning-365-ccs7.onrender.com/admin-panel/support-tickets/{ticket.id}/"
+            )
+            import threading
+            def _async_send_reply_notif():
+                try:
+                    send_mail(
+                        subject=subject,
+                        message=body,
+                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@learning365.com'),
+                        recipient_list=admin_emails,
+                        fail_silently=True
+                    )
+                except Exception as ex:
+                    print(f"[ADMIN SUPPORT REPLY EMAIL DISPATCH ERROR]: {ex}")
+            threading.Thread(target=_async_send_reply_notif, daemon=True).start()
+    except Exception as e:
+        print(f"[ADMIN SUPPORT REPLY EMAIL DISPATCH ERROR]: {e}")
 
