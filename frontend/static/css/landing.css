@@ -1945,13 +1945,13 @@ ul { list-style: none; }
    14. DEVELOPERS SECTION
    ============================================================ */
 .developers-section {
-    padding: var(--section-padding);
+    padding: 70px 5% 50px;
     position: relative;
     z-index: 1;
 }
 
 .developers-container {
-    max-width: var(--max-width);
+    max-width: 1240px;
     margin: 0 auto;
 }
 
@@ -1959,6 +1959,7 @@ ul { list-style: none; }
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
+    align-items: stretch;
 }
 
 .dev-card {
@@ -1966,11 +1967,16 @@ ul { list-style: none; }
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 32px 20px 28px;
-    border-radius: var(--radius-xl);
-    background: var(--bg-card);
-    border: 1px solid var(--glass-border);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 24px 22px 20px;
+    border-radius: var(--radius-lg);
+    background: rgba(13, 17, 28, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease, 
+                box-shadow 0.25s ease, 
+                border-color 0.25s ease;
     position: relative;
     overflow: hidden;
 }
@@ -1981,83 +1987,68 @@ ul { list-style: none; }
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.dev-card:hover::before {
-    opacity: 1;
+    height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    opacity: 0.8;
 }
 
 .dev-card:hover {
-    border-color: var(--glass-border-hover);
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-card);
+    border-color: rgba(255, 255, 255, 0.16);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Per-card accent colors */
+/* Per-card accent top edges & role colors (NO color hovering on images) */
 .dev-card--cyan::before {
-    background: linear-gradient(90deg, #22d3ee, #06b6d4);
+    background: #0ea5e9;
 }
-.dev-card--cyan:hover {
-    box-shadow: 0 12px 40px rgba(34, 211, 238, 0.12), 0 4px 20px rgba(34, 211, 238, 0.08);
+.dev-card--cyan .dev-role {
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.08);
+    border: 1px solid rgba(14, 165, 233, 0.2);
 }
-.dev-card--cyan .dev-role { color: #22d3ee; }
-.dev-card--cyan .dev-avatar-ring { background: linear-gradient(135deg, #22d3ee, #06b6d4); }
-.dev-card--cyan .dev-status-badge { background: linear-gradient(135deg, #22d3ee, #06b6d4); }
-.dev-card--cyan .dev-tech-pill { border-color: rgba(34, 211, 238, 0.2); color: #22d3ee; }
-.dev-card--cyan .dev-tech-pill:hover { background: rgba(34, 211, 238, 0.12); }
 
 .dev-card--purple::before {
-    background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+    background: #8b5cf6;
 }
-.dev-card--purple:hover {
-    box-shadow: 0 12px 40px rgba(167, 139, 250, 0.12), 0 4px 20px rgba(167, 139, 250, 0.08);
+.dev-card--purple .dev-role {
+    color: #c084fc;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.2);
 }
-.dev-card--purple .dev-role { color: #a78bfa; }
-.dev-card--purple .dev-avatar-ring { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
-.dev-card--purple .dev-status-badge { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
-.dev-card--purple .dev-tech-pill { border-color: rgba(167, 139, 250, 0.2); color: #a78bfa; }
-.dev-card--purple .dev-tech-pill:hover { background: rgba(167, 139, 250, 0.12); }
 
 .dev-card--green::before {
-    background: linear-gradient(90deg, #34d399, #10b981);
+    background: #10b981;
 }
-.dev-card--green:hover {
-    box-shadow: 0 12px 40px rgba(52, 211, 153, 0.12), 0 4px 20px rgba(52, 211, 153, 0.08);
+.dev-card--green .dev-role {
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
-.dev-card--green .dev-role { color: #34d399; }
-.dev-card--green .dev-avatar-ring { background: linear-gradient(135deg, #34d399, #10b981); }
-.dev-card--green .dev-status-badge { background: linear-gradient(135deg, #34d399, #10b981); }
-.dev-card--green .dev-tech-pill { border-color: rgba(52, 211, 153, 0.2); color: #34d399; }
-.dev-card--green .dev-tech-pill:hover { background: rgba(52, 211, 153, 0.12); }
 
 .dev-card--amber::before {
-    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    background: #f59e0b;
 }
-.dev-card--amber:hover {
-    box-shadow: 0 12px 40px rgba(251, 191, 36, 0.12), 0 4px 20px rgba(251, 191, 36, 0.08);
+.dev-card--amber .dev-role {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
-.dev-card--amber .dev-role { color: #fbbf24; }
-.dev-card--amber .dev-avatar-ring { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-.dev-card--amber .dev-status-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-.dev-card--amber .dev-tech-pill { border-color: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-.dev-card--amber .dev-tech-pill:hover { background: rgba(251, 191, 36, 0.12); }
 
-/* Avatar */
+/* Avatar - Fixed Compact Professional Size with NO Color Hovering */
 .dev-avatar-wrap {
     position: relative;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
 }
 
 .dev-avatar-ring {
-    width: 110px;
-    height: 110px;
+    width: 124px;
+    height: 124px;
     border-radius: 50%;
     padding: 3px;
-    background: var(--gradient-hero);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
 
 .dev-avatar-img {
@@ -2066,154 +2057,84 @@ ul { list-style: none; }
     border-radius: 50%;
     background-size: cover;
     background-position: center top;
-    border: 3px solid var(--bg-card-solid);
-}
-
-/* Status badge on avatar */
-.dev-status-badge {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 0.7rem;
+    background-repeat: no-repeat;
+    background-color: #ffffff;
     border: 2px solid var(--bg-card-solid);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    z-index: 2;
 }
 
 .dev-card h3 {
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     font-weight: 700;
-    margin-bottom: 3px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    margin-bottom: 5px;
 }
 
 .dev-role {
-    font-size: 0.8rem;
-    color: var(--accent-cyan);
+    font-size: 0.68rem;
     font-weight: 600;
-    margin-bottom: 10px;
-}
-
-/* Bio */
-.dev-bio {
-    font-size: 0.78rem;
-    line-height: 1.55;
-    color: var(--text-secondary);
-    max-width: 280px;
-    margin-bottom: 12px;
-}
-
-/* Tech stack pills */
-.dev-tech-stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
-    margin-bottom: 14px;
-}
-
-.dev-tech-pill {
-    font-size: 0.65rem;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text-secondary);
-    letter-spacing: 0.3px;
-    transition: all var(--transition-base);
-}
-
-/* Stats row */
-.dev-stats-row {
-    display: flex;
-    gap: 4px;
-    width: 100%;
-    max-width: 280px;
-    margin-bottom: 14px;
-    padding: 10px 0;
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.dev-stat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-}
-
-.dev-stat i {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    margin-bottom: 1px;
-}
-
-.dev-stat span {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.dev-stat small {
-    font-size: 0.65rem;
-    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.4px;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.25;
+    max-width: 100%;
 }
 
-/* Socials */
+.dev-role i {
+    font-size: 0.72rem;
+}
+
+/* Strong Professional Bio - Compact 2-Line Layout */
+.dev-bio {
+    font-size: 0.81rem;
+    line-height: 1.54;
+    color: #94a3b8;
+    margin-bottom: 16px;
+    max-width: 260px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+/* Socials - Clean, Compact & Professional */
 .dev-socials {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: auto;
 }
 
 .dev-socials a {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    transition: all var(--transition-base);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .dev-socials a:hover {
-    background: var(--accent-cyan);
-    border-color: var(--accent-cyan);
-    color: var(--bg-deep);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
-}
-
-/* Per-card social hover colors */
-.dev-card--purple .dev-socials a:hover {
-    background: #a78bfa;
-    border-color: #a78bfa;
-    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
-}
-
-.dev-card--green .dev-socials a:hover {
-    background: #34d399;
-    border-color: #34d399;
-    box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
-}
-
-.dev-card--amber .dev-socials a:hover {
-    background: #fbbf24;
-    border-color: #fbbf24;
-    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+    color: #ffffff;
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* ============================================================
@@ -2784,18 +2705,19 @@ ul { list-style: none; }
 
     .developers-grid {
         grid-template-columns: 1fr;
-        max-width: 420px;
+        max-width: 320px;
         margin-left: auto;
         margin-right: auto;
+        gap: 14px;
     }
 
     .dev-avatar-ring {
-        width: 130px;
-        height: 130px;
+        width: 110px;
+        height: 110px;
     }
 
     .dev-card {
-        padding: 30px 20px 26px;
+        padding: 20px 14px 16px;
     }
 
     .gamification-flow {
