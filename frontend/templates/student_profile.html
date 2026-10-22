@@ -954,6 +954,153 @@
         gap: 8px;
     }
 
+    /* Conversation Thread & Replies */
+    .ticket-thread-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 14px;
+    }
+    .ticket-student-reply-box {
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: rgba(0, 243, 255, 0.05);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+    }
+    .ticket-student-reply-header {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+    .ticket-student-reply-body {
+        font-size: 0.9rem;
+        color: #e2e8f0;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    /* Reply Form on Ticket Card */
+    .ticket-reply-form-wrap {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .ticket-reply-toggle-btn {
+        background: rgba(0, 243, 255, 0.08);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+        color: var(--neon-cyan);
+        padding: 8px 18px;
+        border-radius: 9px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+    .ticket-reply-toggle-btn:hover {
+        background: rgba(0, 243, 255, 0.2);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+    }
+    .ticket-reply-box-open {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin-top: 10px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    .ticket-reply-header-text {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ticket-reply-header-hint {
+        font-size: 0.77rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+    .ticket-reply-textarea {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.88rem;
+        padding: 12px 14px;
+        resize: vertical;
+        min-height: 85px;
+        box-sizing: border-box;
+        margin-bottom: 12px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ticket-reply-textarea:focus {
+        border-color: var(--neon-cyan);
+        outline: none;
+        box-shadow: 0 0 14px rgba(0, 243, 255, 0.25);
+    }
+    .ticket-reply-actions-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .ticket-reply-prio-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ticket-reply-prio-wrap label {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+    .ticket-reply-prio-select {
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        outline: none;
+    }
+    .btn-send-ticket-reply {
+        padding: 9px 20px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, var(--neon-cyan), #00e676);
+        color: #030014;
+        font-weight: 800;
+        font-size: 0.84rem;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+        transition: all 0.2s;
+    }
+    .btn-send-ticket-reply:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.5);
+    }
+
     /* Modals */
     .portal-modal-overlay {
         position: fixed;
@@ -1282,15 +1429,23 @@
         {% if support_tickets %}
             <div class="tickets-stack">
                 {% for t in support_tickets %}
-                <div class="ticket-card-box">
+                <div class="ticket-card-box" id="ticket-{{ t.id }}">
                     <div class="ticket-top-row">
                         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                             <span class="ticket-id-tag">#{{ t.ticket_number }}</span>
                             <span class="ticket-category-pill"><i class="fas fa-tag"></i> {{ t.get_category_display }}</span>
                             {% if t.priority == 'urgent' %}
-                                <span style="font-size:0.72rem; color:var(--accent-red); font-weight:700;"><i class="fas fa-fire"></i> Urgent</span>
+                                <span style="font-size:0.75rem; color:#fda4af; background:rgba(244,63,94,0.12); border:1px solid rgba(244,63,94,0.28); padding:3px 10px; border-radius:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
+                                    <i class="fas fa-circle-exclamation" style="color:#fb7185;"></i> Urgent Priority
+                                </span>
                             {% elif t.priority == 'high' %}
-                                <span style="font-size:0.72rem; color:var(--accent-amber); font-weight:700;"><i class="fas fa-exclamation-triangle"></i> High</span>
+                                <span style="font-size:0.75rem; color:#ffb74d; background:rgba(255,183,77,0.14); border:1px solid rgba(255,183,77,0.35); padding:3px 10px; border-radius:6px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">
+                                    <i class="fas fa-bolt"></i> High Priority
+                                </span>
+                            {% else %}
+                                <span style="font-size:0.75rem; color:#94a3b8; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:3px 8px; border-radius:6px; font-weight:600;">
+                                    <i class="far fa-flag"></i> Normal Priority
+                                </span>
                             {% endif %}
                         </div>
                         <div style="display:flex; align-items:center; gap:12px;">
@@ -1306,9 +1461,40 @@
                     </div>
 
                     <div class="ticket-subject-text">{{ t.subject }}</div>
-                    <div class="ticket-msg-preview">{{ t.clean_message }}</div>
 
-                    {% if t.admin_reply %}
+                    <!-- Initial Problem Description Box -->
+                    <div style="background:rgba(0,0,0,0.22); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:12px 16px; margin-bottom:12px;">
+                        <div style="font-size:0.74rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                            <i class="fas fa-user-edit" style="color:var(--neon-cyan);"></i> Your Initial Problem Description
+                        </div>
+                        <div class="ticket-msg-preview" style="margin-bottom:0;">{{ t.clean_message }}</div>
+                    </div>
+
+                    <!-- Conversation Thread / Message History -->
+                    {% if t.messages.all %}
+                        <div class="ticket-thread-container">
+                            {% for m in t.messages.all %}
+                                {% if not forloop.first or m.is_admin %}
+                                    {% if m.is_admin %}
+                                        <div class="ticket-admin-reply-box">
+                                            <div class="ticket-admin-reply-header">
+                                                <i class="fas fa-user-shield"></i> Administrator Resolution ({{ m.sender_name|default:"Administration Team" }}) · {{ m.created_at|date:"d M, Y • h:i A" }}
+                                            </div>
+                                            <div class="ticket-admin-reply-body">{{ m.clean_message|linebreaks }}</div>
+                                        </div>
+                                    {% else %}
+                                        <div class="ticket-student-reply-box">
+                                            <div class="ticket-student-reply-header">
+                                                <i class="fas fa-reply"></i> Your Follow-up Response ({{ m.sender_name }}) · {{ m.created_at|date:"d M, Y • h:i A" }}
+                                            </div>
+                                            <div class="ticket-student-reply-body">{{ m.clean_message|linebreaks }}</div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% elif t.admin_reply %}
+                        <!-- Fallback for legacy admin reply -->
                         <div class="ticket-admin-reply-box">
                             <div class="ticket-admin-reply-header">
                                 <i class="fas fa-user-shield"></i> Official Resolution from Administrator ({{ t.replied_by.full_name|default:t.replied_by.username|default:"Admin" }}) · {{ t.replied_at|date:"d M, Y • h:i A" }}
@@ -1320,6 +1506,45 @@
                             <i class="fas fa-satellite-dish fa-spin"></i> In queue with all 4 system administrators. An admin will review and solve your issue shortly.
                         </div>
                     {% endif %}
+
+                    <!-- Reply Form: Student can reply back anytime -->
+                    <div class="ticket-reply-form-wrap">
+                        <button type="button" class="ticket-reply-toggle-btn" onclick="toggleReplyBox('replyBox_{{ t.id }}')">
+                            <i class="fas fa-reply"></i> Reply to Administration Team
+                        </button>
+                        
+                        <div class="ticket-reply-box-open" id="replyBox_{{ t.id }}" style="{% if t.admin_reply and t.status != 'closed' %}display:block;{% else %}display:none;{% endif %}">
+                            <div class="ticket-reply-header-text">
+                                <i class="fas fa-comment-dots" style="color:var(--neon-cyan);"></i> Follow-up Response to Administration Team
+                            </div>
+                            <div class="ticket-reply-header-hint">
+                                Provide your 6-digit Student ID, phone number, verification details, or any additional context requested by administrators.
+                            </div>
+
+                            <form method="POST" action="{% url 'student_reply_support_ticket' t.id %}">
+                                {% csrf_token %}
+                                <textarea name="reply_message" rows="3" class="ticket-reply-textarea" placeholder="Type your reply here (e.g. Hello Admin, my 6-digit Student ID is 123456 and registered phone is +91 98765 43210. Please proceed.)..." required></textarea>
+
+                                <div class="ticket-reply-actions-row">
+                                    <div class="ticket-reply-prio-wrap">
+                                        <label><i class="fas fa-flag"></i> Priority:</label>
+                                        <select name="priority" class="ticket-reply-prio-select">
+                                            <option value="normal" {% if t.priority == 'normal' %}selected{% endif %}>Normal Priority</option>
+                                            <option value="high" {% if t.priority == 'high' %}selected{% endif %}>⚡ High Priority</option>
+                                            <option value="urgent" {% if t.priority == 'urgent' %}selected{% endif %}>🔥 Urgent / Critical</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display:flex; gap:8px;">
+                                        <button type="button" class="ticket-reply-toggle-btn" style="background:rgba(255,255,255,0.05); color:#94a3b8; border-color:rgba(255,255,255,0.1);" onclick="toggleReplyBox('replyBox_{{ t.id }}')">Hide</button>
+                                        <button type="submit" class="btn-send-ticket-reply">
+                                            <i class="fas fa-paper-plane"></i> Send Reply to Admins
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -1519,6 +1744,17 @@
     }
     function closeSupportModal() {
         document.getElementById('composeSupportModal').classList.remove('active');
+    }
+
+    function toggleReplyBox(boxId) {
+        const el = document.getElementById(boxId);
+        if (!el) return;
+        const isHidden = (el.style.display === 'none' || !el.style.display);
+        el.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+            const textarea = el.querySelector('textarea');
+            if (textarea) textarea.focus();
+        }
     }
 
     // Close on background click
