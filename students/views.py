@@ -71,7 +71,9 @@ from .models import (
     process_and_clarify_avatar, #  NEW: Super-clear photo optimization
     AIVideoNote,           #  NEW: Smart AI Lesson Notes
     SupportTicket,         #  NEW: Support Ticket & Mail
+    SupportTicketMessage,  #  NEW: Support Ticket Message Thread
     notify_admins_of_support_ticket, #  NEW: Dispatch helper for all 4 admins
+    notify_admins_of_ticket_reply,   #  NEW: Dispatch helper for student replies
 )
 
 User = get_user_model()
@@ -140,6 +142,14 @@ def contact_developers_view(request):
             subject=subject,
             message=message or "Help request submitted from landing page.",
             status='pending'
+        )
+
+        SupportTicketMessage.objects.create(
+            ticket=ticket,
+            sender=student,
+            sender_name=name,
+            is_admin=False,
+            message=ticket.message
         )
 
         # Notify ALL 4 administrators
@@ -677,6 +687,14 @@ def profile_view(request):
                 ticket.source = 'student_profile'
                 ticket.save()
                 
+                SupportTicketMessage.objects.create(
+                    ticket=ticket,
+                    sender=user,
+                    sender_name=user.full_name or user.username,
+                    is_admin=False,
+                    message=ticket.message
+                )
+
                 # Notify ALL 4 administrators
                 notify_admins_of_support_ticket(ticket)
                 messages.success(
@@ -687,6 +705,38 @@ def profile_view(request):
             else:
                 messages.error(request, "Failed to submit support mail. Please verify the required fields.")
                 return redirect('profile')
+
+        elif action == 'reply_ticket':
+            ticket_id = request.POST.get('ticket_id')
+            ticket = get_object_or_404(SupportTicket, id=ticket_id, student=user)
+            reply_message = request.POST.get('reply_message', '').strip()
+            new_priority = request.POST.get('priority', '').strip()
+
+            if reply_message:
+                if new_priority in dict(SupportTicket.PRIORITY_CHOICES):
+                    ticket.priority = new_priority
+                ticket.status = 'pending'
+                ticket.updated_at = timezone.now()
+                ticket.save()
+
+                SupportTicketMessage.objects.create(
+                    ticket=ticket,
+                    sender=user,
+                    sender_name=user.full_name or user.username,
+                    is_admin=False,
+                    message=reply_message
+                )
+
+                # Notify ALL 4 administrators
+                notify_admins_of_ticket_reply(ticket, reply_message, user)
+
+                messages.success(
+                    request, 
+                    f"Your reply on Ticket #{ticket.ticket_number} has been delivered to all 4 administrators! They will respond shortly."
+                )
+            else:
+                messages.error(request, "Please enter your reply message before sending.")
+            return redirect(f"{reverse('profile')}#ticket-{ticket.id}")
 
         else:
             # Handle standard avatar upload form
@@ -703,8 +753,8 @@ def profile_view(request):
     profile_form = StudentProfileUpdateForm(user=user)
     ticket_form = SupportTicketForm()
 
-    # Fetch this student's support tickets
-    support_tickets = SupportTicket.objects.filter(student=user).order_by('-created_at')
+    # Fetch this student's support tickets with messages preloaded
+    support_tickets = SupportTicket.objects.filter(student=user).prefetch_related('messages', 'messages__sender').order_by('-created_at')
 
     # Fetch Enrolled Courses for display
     enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-enrolled_at')
@@ -4015,17 +4065,24 @@ def admin_support_tickets(request):
     """
     Admin Support Mailbox / Help Desk Dashboard:
     Allows administrators to view all student/visitor support tickets,
-    filter by status (pending, in_progress, resolved, closed),
-    search by ticket number/student/issue, view details, and reply directly.
+    filter by status and priority, search by keyword, view complete conversation threads,
+    and dispatch resolutions.
+    Urgent and High priority tickets are visibly highlighted and prioritized at the top.
     """
+    from django.db.models import Case, When, Value, IntegerField
+
     status_filter = request.GET.get('status', 'all').strip()
+    priority_filter = request.GET.get('priority', 'all').strip()
     search_query = request.GET.get('search', '').strip()
     category_filter = request.GET.get('category', 'all').strip()
 
-    tickets = SupportTicket.objects.all().select_related('student', 'replied_by')
+    tickets = SupportTicket.objects.all().select_related('student', 'replied_by').prefetch_related('messages', 'messages__sender')
 
     if status_filter and status_filter != 'all':
         tickets = tickets.filter(status=status_filter)
+
+    if priority_filter and priority_filter != 'all':
+        tickets = tickets.filter(priority=priority_filter)
 
     if category_filter and category_filter != 'all':
         tickets = tickets.filter(category=category_filter)
@@ -4041,14 +4098,26 @@ def admin_support_tickets(request):
             Q(message__icontains=search_query)
         )
 
+    # Sort tickets: Urgent first (rank 1), High second (rank 2), Normal third (rank 3), then most recently updated
+    tickets = tickets.annotate(
+        priority_rank=Case(
+            When(priority='urgent', then=Value(1)),
+            When(priority='high', then=Value(2)),
+            default=Value(3),
+            output_field=IntegerField()
+        )
+    ).order_by('priority_rank', '-updated_at', '-created_at')
+
     # Counts
     pending_count = SupportTicket.objects.filter(status='pending').count()
     in_progress_count = SupportTicket.objects.filter(status='in_progress').count()
     resolved_count = SupportTicket.objects.filter(status='resolved').count()
+    urgent_count = SupportTicket.objects.filter(priority='urgent').exclude(status='closed').count()
+    high_count = SupportTicket.objects.filter(priority='high').exclude(status='closed').count()
     total_count = SupportTicket.objects.count()
 
     # Pagination
-    paginator = Paginator(tickets, 15)
+    paginator = Paginator(tickets, 20)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
@@ -4058,11 +4127,15 @@ def admin_support_tickets(request):
         'pending_count': pending_count,
         'in_progress_count': in_progress_count,
         'resolved_count': resolved_count,
+        'urgent_count': urgent_count,
+        'high_count': high_count,
         'total_count': total_count,
         'current_status': status_filter,
+        'current_priority': priority_filter,
         'current_category': category_filter,
         'search_query': search_query,
         'categories': SupportTicket.CATEGORY_CHOICES,
+        'priorities': SupportTicket.PRIORITY_CHOICES,
     }
     return render(request, 'custom_admin/support_tickets.html', context)
 
@@ -4071,12 +4144,17 @@ def admin_support_tickets(request):
 def admin_reply_support_ticket(request, ticket_id):
     """
     Handles administrator replies to student support tickets.
-    Updates ticket status, saves admin reply, notifies student (in-app + email).
+    Updates ticket status, saves admin reply in the message thread,
+    updates priority if requested, and notifies student (in-app + email).
     """
     ticket = get_object_or_404(SupportTicket, id=ticket_id)
     if request.method == 'POST':
         admin_reply = request.POST.get('admin_reply', '').strip()
         new_status = request.POST.get('status', 'resolved').strip()
+        new_priority = request.POST.get('priority', '').strip()
+
+        if new_priority in dict(SupportTicket.PRIORITY_CHOICES):
+            ticket.priority = new_priority
 
         if admin_reply:
             ticket.admin_reply = admin_reply
@@ -4085,13 +4163,22 @@ def admin_reply_support_ticket(request, ticket_id):
             ticket.replied_at = timezone.now()
             ticket.save()
 
+            # Record in multi-turn conversation thread
+            SupportTicketMessage.objects.create(
+                ticket=ticket,
+                sender=request.user,
+                sender_name=request.user.full_name or request.user.username,
+                is_admin=True,
+                message=admin_reply
+            )
+
             # 1. Notify Student In-App (if registered user)
             if ticket.student:
                 Notification.objects.create(
                     title=f"📬 Support Reply #{ticket.ticket_number}",
                     message=f"Administrator ({request.user.first_name or request.user.username}) replied to your request '{ticket.subject[:35]}': {ticket.clean_admin_reply[:120]}...",
                     notification_type='support',
-                    action_url=reverse('profile'),
+                    action_url=f"{reverse('profile')}#ticket-{ticket.id}",
                     action_label="Open Support Desk",
                     recipient=ticket.student,
                     is_global=False
@@ -4108,8 +4195,10 @@ def admin_reply_support_ticket(request, ticket_id):
                     f"--- Administrator Response ---\n"
                     f"{ticket.clean_admin_reply}\n\n"
                     f"Status: {ticket.get_status_display()}\n"
+                    f"Priority: {ticket.get_priority_display().upper()}\n"
                     f"Resolved by: {request.user.full_name or request.user.username} (Learning-365 Administration)\n\n"
-                    f"If you have further questions, feel free to reply or submit another request in your Student Portal.\n\n"
+                    f"If you need to provide additional details or reply, please visit your Student Portal:\n"
+                    f"https://learning-365-ccs7.onrender.com/profile/#ticket-{ticket.id}\n\n"
                     f"Best regards,\nLearning-365 Support Team"
                 )
                 def _async_send_reply():
@@ -4127,16 +4216,58 @@ def admin_reply_support_ticket(request, ticket_id):
             except Exception as e:
                 print(f"[REPLY EMAIL ERROR]: {e}")
 
-            messages.success(request, f"Reply sent successfully to {ticket.name} ({ticket.email}) for Ticket #{ticket.ticket_number}!")
+            messages.success(request, f"Reply dispatched to {ticket.name} ({ticket.email}) for Ticket #{ticket.ticket_number}!")
         else:
-            # Just status update
+            # Just status or priority update
             ticket.status = new_status
             ticket.save()
-            messages.success(request, f"Ticket #{ticket.ticket_number} status updated to {ticket.get_status_display()}.")
+            messages.success(request, f"Ticket #{ticket.ticket_number} updated to {ticket.get_status_display()} ({ticket.get_priority_display()}).")
 
         return redirect('admin_support_tickets')
 
     return redirect('admin_support_tickets')
+
+
+@login_required
+def student_reply_support_ticket(request, ticket_id):
+    """
+    Allows a student to reply to their own support ticket.
+    Appends a new message to the thread, updates ticket status to pending (so admins are alerted),
+    updates priority if desired, and dispatches notifications to all 4 system administrators.
+    """
+    ticket = get_object_or_404(SupportTicket, id=ticket_id, student=request.user)
+    if request.method == 'POST':
+        reply_message = request.POST.get('reply_message', '').strip()
+        new_priority = request.POST.get('priority', '').strip()
+
+        if reply_message:
+            if new_priority in dict(SupportTicket.PRIORITY_CHOICES):
+                ticket.priority = new_priority
+            ticket.status = 'pending'
+            ticket.updated_at = timezone.now()
+            ticket.save()
+
+            SupportTicketMessage.objects.create(
+                ticket=ticket,
+                sender=request.user,
+                sender_name=request.user.full_name or request.user.username,
+                is_admin=False,
+                message=reply_message
+            )
+
+            # Alert all 4 administrators immediately
+            notify_admins_of_ticket_reply(ticket, reply_message, request.user)
+
+            messages.success(
+                request, 
+                f"Your reply for Ticket #{ticket.ticket_number} has been delivered to all 4 administrators. They will review your response shortly!"
+            )
+        else:
+            messages.error(request, "Please enter your reply message before sending.")
+
+        return redirect(f"{reverse('profile')}#ticket-{ticket.id}")
+
+    return redirect(f"{reverse('profile')}#support-section")
 
 
 @staff_member_required

@@ -99,6 +99,7 @@ from students.views import (
     admin_support_tickets,
     admin_reply_support_ticket,
     admin_delete_support_ticket,
+    student_reply_support_ticket,
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -260,6 +261,7 @@ urlpatterns = [
     path('admin-panel/support-tickets/', admin_support_tickets, name='admin_support_tickets'),
     path('admin-panel/support-tickets/<int:ticket_id>/reply/', admin_reply_support_ticket, name='admin_reply_support_ticket'),
     path('admin-panel/support-tickets/<int:ticket_id>/delete/', admin_delete_support_ticket, name='admin_delete_support_ticket'),
+    path('support-tickets/<int:ticket_id>/reply/', student_reply_support_ticket, name='student_reply_support_ticket'),
 ]
 
 from django.urls import re_path
