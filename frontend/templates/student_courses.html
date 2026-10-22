@@ -949,6 +949,10 @@
 
                 bindPaginationLinks();
 
+                if (!resetPage) {
+                    scrollCoursesToTop();
+                }
+
             } catch (err) {
                 if (err.name !== 'AbortError') {
                     console.error('Search error:', err);
@@ -1018,6 +1022,26 @@
             executeSearch(true);
         });
 
+        function scrollCoursesToTop() {
+            const mainContent = document.querySelector('.main-content');
+            const target = document.getElementById('cs-toolbar-form') || document.getElementById('cs-grid');
+            if (mainContent && target) {
+                const containerRect = mainContent.getBoundingClientRect();
+                const targetRect = target.getBoundingClientRect();
+                const targetScrollTop = mainContent.scrollTop + (targetRect.top - containerRect.top) - 20;
+                mainContent.scrollTo({
+                    top: Math.max(0, targetScrollTop),
+                    behavior: 'smooth'
+                });
+            } else if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else if (mainContent) {
+                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
         function bindPaginationLinks() {
             const pageLinks = pagerContainer.querySelectorAll('a[data-page]');
             pageLinks.forEach(link => {
@@ -1026,8 +1050,8 @@
                     const p = this.getAttribute('data-page');
                     if (p) {
                         pageInput.value = p;
+                        scrollCoursesToTop();
                         executeSearch(false);
-                        window.scrollTo({ top: form.offsetTop - 20, behavior: 'smooth' });
                     }
                 });
             });
@@ -1035,6 +1059,12 @@
 
         bindPaginationLinks();
         updateClearButton();
+
+        // If direct visit or reload with page > 1, smoothly scroll to courses
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('page') && parseInt(urlParams.get('page')) > 1) {
+            setTimeout(scrollCoursesToTop, 150);
+        }
     })();
     </script>
 
