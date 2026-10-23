@@ -229,8 +229,8 @@ JSON Response to Browser (Output, Memory, Status, Execution Time)
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/AdvancedLMS.git
-cd AdvancedLMS
+git clone https://github.com/Anubhav2321/Advane-LMS-portal.git
+cd Advane-LMS-portal
 
 # 2. Create and activate a Python virtual environment
 python -m venv .venv
