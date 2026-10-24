@@ -1354,7 +1354,7 @@
 
         <div class="info-card">
             <div class="card-header"><i class="fas fa-graduation-cap"></i><h3>Academic Status</h3></div>
-            <div class="data-row"><span class="label">Student ID</span><span class="value highlight">#{{ user.student_id|default:user.id }}</span></div>
+            <div class="data-row"><span class="label">Student ID</span><span class="value highlight">#{{ user.student_id|default:user.profile.student_id|default:user.id }}</span></div>
             <div class="data-row"><span class="label">Stream</span><span class="value">{{ user.stream|default:"General" }}</span></div>
             <div class="data-row"><span class="label">Level</span><span class="value">{{ user.student_level }}</span></div>
             <div class="data-row"><span class="label">Status</span><span class="value status-active">● Active</span></div>
@@ -1710,7 +1710,7 @@
                     <span><strong style="color:#fff;">Sender:</strong> {{ user.full_name }}</span>
                     <span><strong style="color:#fff;">Email:</strong> {{ user.email }}</span>
                     <span><strong style="color:#fff;">Phone:</strong> {{ user.phone|default:user.profile.phone|default:'Not Set' }}</span>
-                    <span><strong style="color:var(--neon-cyan);">ID:</strong> #{{ user.student_id|default:user.id }}</span>
+                    <span><strong style="color:var(--neon-cyan);">ID:</strong> #{{ user.student_id|default:user.profile.student_id|default:user.id }}</span>
                 </div>
 
                 <div class="modal-actions-bar">

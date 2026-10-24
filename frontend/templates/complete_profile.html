@@ -462,7 +462,7 @@
             </div>
 
             <div class="student-id-pill" title="Your permanent 6-digit Student ID">
-                ID: #{{ user.student_id|default:user.id }}
+                ID: #{{ user.student_id|default:user.profile.student_id|default:user.id }}
             </div>
         </div>
 
