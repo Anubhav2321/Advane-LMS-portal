@@ -6,6 +6,7 @@ import datetime
 import time
 import re  
 import requests 
+from collections import defaultdict
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model, update_session_auth_hash
@@ -65,6 +66,8 @@ from .models import (
     AssignmentSubmission,  #  NEW: Added Assignment Submission Model
     StudentActivity,       #  NEW: Student Activity Tracking
     log_student_activity,  #  NEW: Activity Logging Helper
+    record_daily_learning_activity, # NEW: Daily Streak Activity Recorder
+    calculate_study_streak,         # NEW: Precision Local Streak Calculator
     LessonProgress,        #  NEW: Per-Student Lesson Tracking
     DocumentView,          #  NEW: Document Tracking
     LiveClassAttendance,   #  NEW: Live Class Tracking
@@ -315,6 +318,11 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
+            # Guarantee 6-digit Student ID and record daily learning streak activity
+            if hasattr(user, 'ensure_student_id'):
+                user.ensure_student_id()
+            record_daily_learning_activity(user)
+
             # Session expiration: 2 weeks if remember_me, otherwise browser session
             if remember_me:
                 request.session.set_expiry(1209600)  # 14 days
@@ -364,6 +372,8 @@ def complete_profile_view(request):
     to fill in their Phone Number, Stream / Department, and Student Level.
     """
     user = request.user
+    if hasattr(user, 'ensure_student_id'):
+        user.ensure_student_id()
 
     # Staff / admin / faculty bypass onboarding
     if user.is_staff or user.is_superuser:
@@ -407,12 +417,157 @@ def complete_profile_view(request):
 
 # 3. STUDENT DASHBOARD & PROFILE FEATURES
 
+def batch_calculate_enrollment_progress(student, enrollments_list):
+    """
+    High-performance batch progress calculator for student enrollments.
+    Replaces N*11 queries with 10 bulk queries regardless of enrollment count.
+    Guarantees exact parity with Enrollment.get_real_progress().
+    """
+    if not enrollments_list:
+        return {}
+    course_ids = [e.course_id for e in enrollments_list]
+
+    # Batch Query 1: Lessons
+    lessons_by_course = defaultdict(list)
+    for l in Lesson.objects.filter(course_id__in=course_ids):
+        lessons_by_course[l.course_id].append(l)
+
+    # Batch Query 2: LessonProgress
+    lp_by_course = defaultdict(list)
+    for lp in LessonProgress.objects.filter(student=student, lesson__course_id__in=course_ids).select_related('lesson'):
+        lp_by_course[lp.lesson.course_id].append(lp)
+
+    # Batch Query 3: Quiz Attempts
+    quiz_attempts_by_course = defaultdict(set)
+    for exam_id, c_id in QuizResult.objects.filter(student=student, exam__course_id__in=course_ids).values_list('exam_id', 'exam__course_id'):
+        quiz_attempts_by_course[c_id].add(exam_id)
+
+    # Batch Query 4: Active Exams Count
+    exam_counts = defaultdict(int)
+    for r in Exam.objects.filter(course_id__in=course_ids, is_active=True).values('course_id').annotate(cnt=Count('id')):
+        exam_counts[r['course_id']] = r['cnt']
+
+    # Batch Query 5: Submissions
+    submissions_by_course = defaultdict(list)
+    for sub in AssignmentSubmission.objects.filter(student=student, assignment__course_id__in=course_ids).select_related('assignment'):
+        submissions_by_course[sub.assignment.course_id].append(sub)
+
+    # Batch Query 6: Assignments Count
+    assignment_counts = defaultdict(int)
+    for r in Assignment.objects.filter(course_id__in=course_ids).values('course_id').annotate(cnt=Count('id')):
+        assignment_counts[r['course_id']] = r['cnt']
+
+    # Batch Query 7: Live Class Attendance
+    attended_classes_by_course = defaultdict(set)
+    for lc_id, c_id in LiveClassAttendance.objects.filter(student=student, live_class__course_id__in=course_ids).values_list('live_class_id', 'live_class__course_id'):
+        attended_classes_by_course[c_id].add(lc_id)
+
+    # Batch Query 8: Live Classes Count
+    class_counts = defaultdict(int)
+    for r in LiveClass.objects.filter(course_id__in=course_ids).values('course_id').annotate(cnt=Count('id')):
+        class_counts[r['course_id']] = r['cnt']
+
+    # Batch Query 9: Document Views
+    doc_views_by_course = defaultdict(set)
+    for doc_id, c_id in DocumentView.objects.filter(student=student, document__course_id__in=course_ids).values_list('document_id', 'document__course_id'):
+        doc_views_by_course[c_id].add(doc_id)
+
+    # Batch Query 10: Library Documents Count
+    doc_counts = defaultdict(int)
+    for r in LibraryDocument.objects.filter(course_id__in=course_ids).values('course_id').annotate(cnt=Count('id')):
+        doc_counts[r['course_id']] = r['cnt']
+
+    results = {}
+    for e in enrollments_list:
+        cid = e.course_id
+
+        # 1. Lessons
+        c_lessons = lessons_by_course[cid]
+        total_lessons = len(c_lessons)
+        c_lps = lp_by_course[cid]
+        completed_lessons_count = 0
+        lesson_continuous_units = 0.0
+        for lp in c_lps:
+            duration = lp.lesson.duration_in_seconds or 0
+            watch_time = lp.watch_time_seconds or 0
+            required_time = duration * 0.8
+            if lp.is_completed or (required_time > 0 and watch_time >= required_time) or (duration == 0 and watch_time > 0):
+                completed_lessons_count += 1
+                lesson_continuous_units += 1.0
+            elif duration > 0 and watch_time > 0:
+                fraction = min(0.95, watch_time / max(duration, 1))
+                lesson_continuous_units += fraction
+        completed_lessons = min(total_lessons, completed_lessons_count)
+
+        # 2. Quizzes
+        attempted_exam_ids = quiz_attempts_by_course[cid]
+        total_quizzes = max(exam_counts[cid], len(attempted_exam_ids))
+        completed_quizzes = min(total_quizzes, len(attempted_exam_ids))
+
+        # 3. Assignments
+        c_subs = submissions_by_course[cid]
+        submitted_assignment_ids = set(sub.assignment_id for sub in c_subs)
+        total_assignments = max(assignment_counts[cid], len(submitted_assignment_ids))
+        completed_assignments = min(total_assignments, len(submitted_assignment_ids))
+        on_time_assignments = sum(1 for sub in c_subs if not sub.is_late)
+
+        # 4. Live Classes
+        attended_classes_set = attended_classes_by_course[cid]
+        total_classes = max(class_counts[cid], len(attended_classes_set))
+        attended_classes = min(total_classes, len(attended_classes_set))
+
+        # 5. Documents
+        read_docs_set = doc_views_by_course[cid]
+        total_docs = max(doc_counts[cid], len(read_docs_set))
+        read_docs = min(total_docs, len(read_docs_set))
+
+        # Total Aggregations
+        total_tasks = total_lessons + total_quizzes + total_assignments + total_classes + total_docs
+        discrete_completed = completed_lessons + completed_quizzes + completed_assignments + attended_classes + read_docs
+        continuous_completed = min(
+            float(total_tasks),
+            lesson_continuous_units + completed_quizzes + completed_assignments + attended_classes + read_docs
+        )
+
+        if total_tasks == 0:
+            percent = 0.0
+        else:
+            percent = min(100.0, max(0.0, round((continuous_completed / total_tasks) * 100, 1)))
+            if discrete_completed >= total_tasks and total_tasks > 0:
+                percent = 100.0
+
+        ring_offset = round(163.36 - (percent / 100.0) * 163.36, 2)
+
+        results[e.id] = {
+            'percent': percent,
+            'completed': min(total_tasks, discrete_completed),
+            'total': total_tasks,
+            'completed_lessons': completed_lessons,
+            'total_lessons': total_lessons,
+            'completed_quizzes': completed_quizzes,
+            'total_quizzes': total_quizzes,
+            'completed_assignments': completed_assignments,
+            'total_assignments': total_assignments,
+            'on_time_assignments': on_time_assignments,
+            'attended_classes': attended_classes,
+            'total_classes': total_classes,
+            'read_docs': read_docs,
+            'total_docs': total_docs,
+            'ring_offset': ring_offset,
+        }
+    return results
+
+
 @login_required
 def student_dashboard(request):
     """
     Main Student Dashboard with 3-Panel Sync Logic + Real Progress Tracking.
     """
     user = request.user
+    if hasattr(user, 'ensure_student_id'):
+        user.ensure_student_id()
+    record_daily_learning_activity(user)
+
     if user.is_staff or user.is_superuser:
         return redirect('admin_dashboard')
     elif getattr(user, 'is_faculty', False):
@@ -423,66 +578,66 @@ def student_dashboard(request):
         if not request.session.get('skip_profile_setup', False):
             return redirect('complete_profile')
     
-    # Fetch Enrollments
-    enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-last_accessed')
+    # Fetch Enrollments with pre-fetched course & assigned faculty
+    enrollments = list(Enrollment.objects.filter(student=user).select_related('course', 'course__assigned_faculty').order_by('-last_accessed'))
     
-    #  NEW: Get IDs of courses the student is enrolled in
-    enrolled_course_ids = enrollments.values_list('course_id', flat=True)
+    # Get IDs of courses the student is enrolled in
+    enrolled_course_ids = [e.course_id for e in enrollments]
     
-    # --- REAL PROGRESS CALCULATIONS ---
-    # Attach real progress data to each enrollment for the template
+    # --- REAL PROGRESS CALCULATIONS (Batch Optimized: 10 queries vs 120+) ---
+    batch_progress = batch_calculate_enrollment_progress(user, enrollments)
     enriched_enrollments = []
     total_all_lessons = 0
     total_completed_lessons = 0
+    dirty_enrollments = []
     
     for enrollment in enrollments:
-        progress_data = enrollment.get_real_progress()
-        enrollment.real_progress = progress_data['percent']
-        enrollment.lessons_completed = progress_data['completed']
-        enrollment.total_lessons = progress_data['total']
-        enrollment.lessons_remaining = max(0, progress_data['total'] - progress_data['completed'])
-        enrollment.ring_offset = progress_data.get('ring_offset', round(163.36 - (min(100.0, max(0.0, enrollment.real_progress)) / 100.0) * 163.36, 2))
+        progress_data = batch_progress.get(enrollment.id, {})
+        percent = progress_data.get('percent', 0.0)
+        completed = progress_data.get('completed', 0)
+        total = progress_data.get('total', 0)
+
+        enrollment.real_progress = percent
+        enrollment.lessons_completed = completed
+        enrollment.total_lessons = total
+        enrollment.lessons_remaining = max(0, total - completed)
+        enrollment.ring_offset = progress_data.get('ring_offset', round(163.36 - (min(100.0, max(0.0, percent)) / 100.0) * 163.36, 2))
         
-        # Sync the progress field with real data
-        if abs(enrollment.progress - progress_data['percent']) > 0.05 or (enrollment.progress >= 100.0 and not enrollment.is_completed):
-            enrollment.progress = progress_data['percent']
-            enrollment.is_completed = (progress_data['percent'] >= 100.0)
-            enrollment.save(update_fields=['progress', 'is_completed'])
+        # Sync progress field if changed significantly
+        if abs(enrollment.progress - percent) > 0.05 or (percent >= 100.0 and not enrollment.is_completed):
+            enrollment.progress = percent
+            enrollment.is_completed = (percent >= 100.0)
+            dirty_enrollments.append(enrollment)
         
-        # --- GRANULAR COMPLETED COUNTS (for clickable chips) ---
-        enrollment.total_lessons_count = progress_data['total_lessons']
-        enrollment.completed_lessons_count = progress_data['completed_lessons']
+        # Granular completed counts
+        enrollment.total_lessons_count = progress_data.get('total_lessons', 0)
+        enrollment.completed_lessons_count = progress_data.get('completed_lessons', 0)
+        enrollment.total_quizzes_count = progress_data.get('total_quizzes', 0)
+        enrollment.completed_quizzes_count = progress_data.get('completed_quizzes', 0)
         
-        # Quizzes: total quizzes vs attempted quizzes!
-        enrollment.total_quizzes_count = progress_data['total_quizzes']
-        enrollment.completed_quizzes_count = progress_data['completed_quizzes']
-        
-        # Tasks (Assignments): total vs submitted (distinct)
-        enrollment.total_tasks_count = progress_data['total_assignments']
-        enrollment.completed_tasks_count = progress_data['completed_assignments']
+        enrollment.total_tasks_count = progress_data.get('total_assignments', 0)
+        enrollment.completed_tasks_count = progress_data.get('completed_assignments', 0)
         enrollment.on_time_tasks_count = progress_data.get('on_time_assignments', 0)
         enrollment.pending_tasks_count = max(0, enrollment.total_tasks_count - enrollment.completed_tasks_count)
 
-        # Legacy fields (kept for backward compatibility)
+        # Legacy fields
         enrollment.quiz_count = enrollment.completed_quizzes_count
         enrollment.assignment_count = enrollment.completed_tasks_count
         
-        # Course slug for navigation links
+        # Course slug & faculty user
         enrollment.course_slug = enrollment.course.slug
+        enrollment.faculty_user = getattr(enrollment.course, 'assigned_faculty', None)
         
-        # Faculty profile data for display
-        if enrollment.course.assigned_faculty:
-            try:
-                enrollment.faculty_user = enrollment.course.assigned_faculty
-            except Exception:
-                enrollment.faculty_user = None
-        else:
-            enrollment.faculty_user = None
-        
-        total_all_lessons += progress_data['total']
-        total_completed_lessons += progress_data['completed']
-        
+        total_all_lessons += total
+        total_completed_lessons += completed
         enriched_enrollments.append(enrollment)
+
+    # Bulk update any enrollments whose progress changed in DB
+    if dirty_enrollments:
+        try:
+            Enrollment.objects.bulk_update(dirty_enrollments, ['progress', 'is_completed'])
+        except Exception:
+            pass
     
     # Overall progress across all courses
     if total_all_lessons > 0:
@@ -546,18 +701,19 @@ def student_dashboard(request):
     ).order_by('-uploaded_at')[:5]
     
     # --- LEARNING ANALYTICS DATA ---
-    today = timezone.now().date()
+    today = timezone.localdate()
     fourteen_days_ago = today - datetime.timedelta(days=14)
+    start_14 = timezone.make_aware(datetime.datetime.combine(fourteen_days_ago, datetime.time.min))
     
     # Weekly activity data (continuous 14-day telemetry)
-    weekly_activity = (
-        StudentActivity.objects.filter(student=user, created_at__date__gte=fourteen_days_ago)
-        .annotate(date=TruncDate('created_at'))
-        .values('date')
-        .annotate(count=Count('id'))
-        .order_by('date')
-    )
-    activity_map = {entry['date']: entry['count'] for entry in weekly_activity}
+    weekly_activities = StudentActivity.objects.filter(
+        student=user, created_at__gte=start_14
+    ).values_list('created_at', flat=True)
+    activity_map = {}
+    for dt in weekly_activities:
+        d = timezone.localtime(dt).date()
+        activity_map[d] = activity_map.get(d, 0) + 1
+        
     activity_labels = []
     activity_data = []
     for i in range(13, -1, -1):
@@ -585,29 +741,8 @@ def student_dashboard(request):
     avg_quiz_score = QuizResult.objects.filter(student=user).aggregate(avg=Avg('score'))['avg']
     avg_quiz_score = round(avg_quiz_score, 1) if avg_quiz_score else 0
     
-    # Study streak (consecutive days with at least 1 activity)
-    # Allows active streak continuation from yesterday pending today's session
-    study_streak = 0
-    yesterday = today - datetime.timedelta(days=1)
-    if StudentActivity.objects.filter(student=user, created_at__date=today).exists():
-        check_date = today
-    elif StudentActivity.objects.filter(student=user, created_at__date=yesterday).exists():
-        check_date = yesterday
-    else:
-        check_date = None
-
-    if check_date:
-        while True:
-            has_activity = StudentActivity.objects.filter(
-                student=user, created_at__date=check_date
-            ).exists()
-            if has_activity:
-                study_streak += 1
-                check_date -= datetime.timedelta(days=1)
-            else:
-                break
-            if study_streak > 365:
-                break
+    # Precision Study Streak (continuous consecutive days calculated cleanly)
+    study_streak = calculate_study_streak(user)
     
     context = {
         'enrollments': enriched_enrollments,
@@ -654,6 +789,9 @@ def profile_view(request):
     - View history of support messages and admin replies.
     """
     user = request.user
+    if hasattr(user, 'ensure_student_id'):
+        user.ensure_student_id()
+    record_daily_learning_activity(user)
     
     # Ensure profile object exists
     if not hasattr(user, 'profile'):
@@ -756,22 +894,21 @@ def profile_view(request):
     # Fetch this student's support tickets with messages preloaded
     support_tickets = SupportTicket.objects.filter(student=user).prefetch_related('messages', 'messages__sender').order_by('-created_at')
 
-    # Fetch Enrolled Courses for display
-    enrollments = Enrollment.objects.filter(student=user).select_related('course').order_by('-enrolled_at')
+    # Fetch Enrolled Courses for display with prefetched faculty
+    enrollments = list(Enrollment.objects.filter(student=user).select_related('course', 'course__assigned_faculty').order_by('-enrolled_at'))
 
     # 🚀 SYNTAX SINGULARITY STATS & GITHUB HEATMAP GRAPH FETCHING
-    successful_bounties = BountySubmission.objects.filter(
+    successful_bounties = list(BountySubmission.objects.filter(
         student=user, 
         earned_coins__gt=0
-    ).select_related('problem').order_by('submitted_at')
+    ).select_related('problem').order_by('submitted_at'))
     
-    total_bounties_solved = successful_bounties.count()
+    total_bounties_solved = len(successful_bounties)
     bounty_coins_earned = sum(sub.earned_coins for sub in successful_bounties)
     
     # For recent list (descending)
-    recent_bounties = BountySubmission.objects.filter(
-        student=user, earned_coins__gt=0
-    ).select_related('problem').order_by('-submitted_at')[:5]
+    recent_bounties = successful_bounties[-5:]
+    recent_bounties.reverse()
 
     # 📊 GRAPH DATA LOGIC (Dictionary of date -> count)
     contribution_data = {}
@@ -780,38 +917,19 @@ def profile_view(request):
         contribution_data[date_str] = contribution_data.get(date_str, 0) + 1
 
     # --- TOP STATS LOGIC FOR PROFILE ---
-    today = timezone.now().date()
+    today = timezone.localdate()
     
-    # Calculate study streak (consecutive days with at least 1 activity)
-    study_streak = 0
-    yesterday = today - datetime.timedelta(days=1)
-    if StudentActivity.objects.filter(student=user, created_at__date=today).exists():
-        check_date = today
-    elif StudentActivity.objects.filter(student=user, created_at__date=yesterday).exists():
-        check_date = yesterday
-    else:
-        check_date = None
+    # Calculate study streak (precision calculation with local timezone)
+    study_streak = calculate_study_streak(user)
 
-    if check_date:
-        while True:
-            has_activity = StudentActivity.objects.filter(
-                student=user, created_at__date=check_date
-            ).exists()
-            if has_activity:
-                study_streak += 1
-                check_date -= datetime.timedelta(days=1)
-            else:
-                break
-            if study_streak > 365:
-                break
-
-    # Calculate lessons done & overall progress
+    # Calculate lessons done & overall progress via batch calculator (10 queries vs N*11)
+    batch_progress = batch_calculate_enrollment_progress(user, enrollments)
     total_all_lessons = 0
     total_completed_lessons = 0
     for enrollment in enrollments:
-        progress_data = enrollment.get_real_progress()
-        total_all_lessons += progress_data['total']
-        total_completed_lessons += progress_data['completed']
+        p_data = batch_progress.get(enrollment.id, {})
+        total_all_lessons += p_data.get('total', 0)
+        total_completed_lessons += p_data.get('completed', 0)
         
     overall_progress = round((total_completed_lessons / max(total_all_lessons, 1)) * 100, 1)
     
@@ -819,7 +937,7 @@ def profile_view(request):
     avg_quiz_score = QuizResult.objects.filter(student=user).aggregate(avg=Avg('score'))['avg']
     avg_quiz_score = round(avg_quiz_score, 1) if avg_quiz_score else 0
 
-    total_enrolled = enrollments.count()
+    total_enrolled = len(enrollments)
 
     context = {
         'user': user,
@@ -905,7 +1023,7 @@ def get_filtered_courses(query='', flt='all', sort='default'):
     Supports multi-token search, technology aliases, acronyms, topic / lesson titles,
     faculty name, difficulty levels, pricing intent, and sorting.
     """
-    courses_list = Course.objects.filter(is_published=True)
+    courses_list = Course.objects.filter(is_published=True).select_related('assigned_faculty')
 
     if query:
         q_raw = query.strip()
@@ -3904,6 +4022,7 @@ def track_progress(request):
             elif track_type == 'pdf':
                 doc = get_object_or_404(LibraryDocument, id=item_id)
                 DocumentView.objects.get_or_create(student=request.user, document=doc)
+                log_student_activity(request.user, 'lesson_watch', f'Viewed resource "{doc.title}"', course=doc.course)
                 if doc.course:
                     enrollment = get_object_or_404(Enrollment, student=request.user, course=doc.course)
                     enrollment.sync_progress()
@@ -3913,6 +4032,7 @@ def track_progress(request):
             elif track_type == 'liveclass':
                 live_class = get_object_or_404(LiveClass, id=item_id)
                 LiveClassAttendance.objects.get_or_create(student=request.user, live_class=live_class)
+                log_student_activity(request.user, 'lesson_watch', f'Attended live class "{live_class.title}"', course=live_class.course)
                 if live_class.course:
                     enrollment = get_object_or_404(Enrollment, student=request.user, course=live_class.course)
                     enrollment.sync_progress()
@@ -4280,4 +4400,5 @@ def admin_delete_support_ticket(request, ticket_id):
     ticket.delete()
     messages.success(request, f"Ticket #{tkt_num} has been deleted.")
     return redirect('admin_support_tickets')
+
 
