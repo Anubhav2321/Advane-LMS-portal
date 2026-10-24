@@ -1,8 +1,7 @@
 <!-- ======================================================= -->
 <!-- 🚀 ULTRA-PREMIUM LIVE CLOUD CODE EDITOR / COMPILER IDE 🚀 -->
 <!-- ======================================================= -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js"></script>
+
 
 <style>
     /* IDE Modal Overlay */
@@ -583,15 +582,43 @@ Output and compilation diagnostics will appear here in real-time...</pre>
         if (titleSpan) titleSpan.innerText = titleMap[lang] || 'code - Cloud Engine';
     }
 
-    // Initialize Ace Editor
-    let vsAceRetries = 0;
-    function initAceEditor() {
-        if (typeof ace === 'undefined') {
-            if (vsAceRetries++ < 20) {
-                setTimeout(initAceEditor, 250);
-            }
+    // Lazy Script Loader for Ace Editor
+    let aceLoading = false;
+    let aceLoaded = false;
+    const aceCallbacks = [];
+
+    function loadAceScripts(callback) {
+        if (typeof ace !== 'undefined' && ace.require) {
+            aceLoaded = true;
+            if (callback) callback();
             return;
         }
+        if (callback) aceCallbacks.push(callback);
+        if (aceLoading) return;
+        aceLoading = true;
+
+        const s1 = document.createElement('script');
+        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js';
+        s1.onload = function() {
+            const s2 = document.createElement('script');
+            s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.min.js';
+            s2.onload = function() {
+                aceLoaded = true;
+                aceLoading = false;
+                while (aceCallbacks.length > 0) {
+                    const cb = aceCallbacks.shift();
+                    try { cb(); } catch (e) { console.error(e); }
+                }
+            };
+            document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
+    }
+
+    // Initialize Ace Editor
+    function initAceEditor() {
+        if (typeof ace === 'undefined') return;
+        if (vsEditor) return;
 
         ace.require("ace/ext/language_tools");
         vsEditor = ace.edit("vsAceEditor");
@@ -631,22 +658,22 @@ Output and compilation diagnostics will appear here in real-time...</pre>
         });
     }
 
-    document.addEventListener("DOMContentLoaded", initAceEditor);
-
-    // Global Launcher function
+    // Global Launcher function (Lazy Loads Ace on demand)
     window.openLiveIDE = function(initialLang, initialCode) {
-        if (!vsEditor) initAceEditor();
         vsModal.classList.add('show');
-        if (initialLang && boilerplates[initialLang]) {
-            vsLanguage.value = initialLang;
-            const mode = initialLang === 'cpp' ? 'c_cpp' : initialLang;
-            vsEditor.session.setMode("ace/mode/" + mode);
-            updateLanguageMeta(initialLang);
-        }
-        if (initialCode) {
-            vsEditor.setValue(initialCode, 1);
-        }
-        setTimeout(() => { if (vsEditor) vsEditor.resize(); }, 150);
+        loadAceScripts(function() {
+            if (!vsEditor) initAceEditor();
+            if (initialLang && boilerplates[initialLang]) {
+                vsLanguage.value = initialLang;
+                const mode = initialLang === 'cpp' ? 'c_cpp' : initialLang;
+                vsEditor.session.setMode("ace/mode/" + mode);
+                updateLanguageMeta(initialLang);
+            }
+            if (initialCode) {
+                vsEditor.setValue(initialCode, 1);
+            }
+            setTimeout(() => { if (vsEditor) vsEditor.resize(); }, 150);
+        });
     };
 
     // Close actions
