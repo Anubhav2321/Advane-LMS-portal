@@ -465,12 +465,16 @@ class StudentProfileUpdateForm(forms.Form):
         self.user.phone = phone
         self.user.stream = stream
         self.user.student_level = student_level
-        self.user.save(update_fields=['first_name', 'last_name', 'email', 'phone', 'stream', 'student_level'])
+        if hasattr(self.user, 'ensure_student_id'):
+            self.user.ensure_student_id()
+        self.user.save(update_fields=['first_name', 'last_name', 'email', 'phone', 'stream', 'student_level', 'student_id'])
 
         profile = getattr(self.user, 'profile', None)
         if not profile:
             profile = Profile.objects.create(user=self.user)
         profile.phone = phone
+        if self.user.student_id:
+            profile.student_id = self.user.student_id
         profile.bio = self.cleaned_data.get('bio', '').strip()
         pic = self.cleaned_data.get('profile_pic')
         if pic:
@@ -562,11 +566,15 @@ class StudentOnboardingForm(forms.Form):
         self.user.phone = phone
         self.user.stream = stream
         self.user.student_level = student_level
-        self.user.save(update_fields=['phone', 'stream', 'student_level'])
+        if hasattr(self.user, 'ensure_student_id'):
+            self.user.ensure_student_id()
+        self.user.save(update_fields=['phone', 'stream', 'student_level', 'student_id'])
 
         profile, _ = Profile.objects.get_or_create(user=self.user)
         profile.phone = phone
-        profile.save(update_fields=['phone'])
+        if self.user.student_id:
+            profile.student_id = self.user.student_id
+        profile.save(update_fields=['phone', 'student_id'])
         return self.user
 
 
