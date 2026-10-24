@@ -3,9 +3,8 @@
 
 {% block content %}
 
-<!-- Fonts & Chart.js -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Chart.js (Deferred for instant dashboard paint) -->
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
     window.userHasProfileImg = '{{ request.user.profile.profile_pic|yesno:"1,0" }}' === '1';
@@ -45,12 +44,14 @@
         margin: 0 auto;
     }
 
-    /* Ambient Background Mesh */
+    /* Ambient Background Mesh (Hardware-Accelerated Layer) */
     .dashboard-ambient {
         position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
+        transform: translateZ(0);
+        will-change: transform;
         background: 
             radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
             radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
@@ -1201,7 +1202,8 @@
     /* ============================================= */
     /* 🚀 ADVANCED LMS AI PORTAL COPILOT & BOAR    /* ============================================= */
     /* ============================================= */
-    /* 🚀 LEARNING-365 COPILOT (ULTRA-PREMIUM DARK)  */
+    /* ============================================= */
+    /* 🚀 LEARNING-365 AI COPILOT (ULTRA-PREMIUM)    */
     /* ============================================= */
     #ai-chat-toggle {
         position: fixed; bottom: 28px; right: 28px; width: 62px; height: 62px;
@@ -1223,6 +1225,8 @@
         border: 2px solid rgba(0, 243, 255, 0.65);
         animation: launcherRadar 2.4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
         pointer-events: none;
+        transform: translateZ(0);
+        will-change: transform, opacity;
     }
     @keyframes launcherRadar {
         0% { transform: scale(0.95); opacity: 1; }
@@ -1230,7 +1234,8 @@
     }
     .ai-launcher-pill {
         position: absolute; right: 76px; white-space: nowrap;
-        background: rgba(9, 13, 25, 0.96); backdrop-filter: blur(14px);
+        background: rgba(9, 13, 25, 0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        transform: translateZ(0);
         border: 1px solid rgba(0, 243, 255, 0.35);
         color: #f8fafc; font-size: 0.82rem; font-weight: 600;
         padding: 7px 16px; border-radius: 20px;
@@ -1247,56 +1252,115 @@
         background: #00f3ff; box-shadow: 0 0 10px #00f3ff;
     }
 
-    /* Main Floating Chat Window */
+    /* Main Floating Chat Window with User-Customizable Sizing */
     #ai-chat-container {
-        position: fixed; bottom: 100px; right: 28px; width: 425px; height: 645px;
-        max-width: calc(100vw - 32px); max-height: calc(100vh - 120px);
-        background: rgba(8, 12, 22, 0.96); backdrop-filter: blur(32px);
-        -webkit-backdrop-filter: blur(32px);
+        position: fixed; bottom: 28px; right: 28px;
+        width: 480px; height: 650px;
+        min-width: 340px; min-height: 460px;
+        max-width: calc(100vw - 32px); max-height: calc(100vh - 40px);
+        background: rgba(9, 13, 26, 0.96);
+        backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
         border: 1px solid rgba(0, 243, 255, 0.28);
         border-top: 3px solid #00f3ff;
-        border-radius: 22px; display: flex; flex-direction: column; overflow: hidden;
+        border-radius: 20px; display: flex; flex-direction: column; overflow: hidden;
         z-index: 99999;
+        container-type: inline-size; container-name: aibot;
         box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 243, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1), height 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
         transform-origin: bottom right;
+    }
+    #ai-chat-container.resizing {
+        transition: none !important;
+        user-select: none !important;
     }
     #ai-chat-container.closed {
         opacity: 0; pointer-events: none; transform: scale(0.9) translateY(24px);
     }
+    #ai-chat-container.is-maximized {
+        width: calc(100vw - 48px) !important;
+        height: calc(100vh - 48px) !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        border-radius: 18px !important;
+    }
+
+    /* Drag-to-Resize Handles (Corner + Top + Left Edges) */
+    .ai-resize-grip {
+        position: absolute; top: 0; left: 0;
+        width: 24px; height: 24px; cursor: nwse-resize;
+        z-index: 100; display: flex; align-items: center; justify-content: center;
+        color: rgba(0, 243, 255, 0.4); font-size: 10px;
+        transition: all 0.2s; border-top-left-radius: 20px;
+    }
+    .ai-resize-grip:hover, #ai-chat-container.resizing .ai-resize-grip {
+        color: #00f3ff; background: rgba(0, 243, 255, 0.16);
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.45);
+    }
+    .ai-resize-edge-top {
+        position: absolute; top: 0; left: 24px; right: 0; height: 6px;
+        cursor: ns-resize; z-index: 99;
+    }
+    .ai-resize-edge-left {
+        position: absolute; top: 24px; left: 0; bottom: 0; width: 6px;
+        cursor: ew-resize; z-index: 99;
+    }
+    .ai-size-badge {
+        position: absolute; top: 8px; left: 28px;
+        background: rgba(9, 14, 28, 0.94); border: 1px solid #00f3ff;
+        color: #00f3ff; font-family: 'Space Grotesk', monospace; font-size: 0.7rem; font-weight: 700;
+        padding: 3px 8px; border-radius: 6px; pointer-events: none;
+        opacity: 0; transform: translateY(-4px); transition: opacity 0.15s, transform 0.15s;
+        z-index: 101; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 243, 255, 0.3);
+    }
+    .ai-size-badge.visible { opacity: 1; transform: translateY(0); }
+
+    /* Live Toast Notification for Size Changes */
+    .ai-size-toast {
+        position: absolute; top: 58px; left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+        background: rgba(9, 14, 28, 0.96); border: 1px solid #00f3ff;
+        color: #00f3ff; padding: 4px 12px; border-radius: 20px;
+        font-family: 'Space Grotesk', sans-serif; font-size: 0.74rem; font-weight: 700;
+        pointer-events: none; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 102; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 243, 255, 0.3);
+        display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .ai-size-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* Header */
     .chat-header {
-        padding: 14px 18px;
+        padding: 10px 14px;
         background: linear-gradient(135deg, rgba(14, 20, 42, 0.98) 0%, rgba(22, 30, 60, 0.98) 100%);
-        border-bottom: 1px solid rgba(0, 243, 255, 0.22);
+        border-bottom: 1px solid rgba(0, 243, 255, 0.2);
         display: flex; justify-content: space-between; align-items: center;
-        flex-shrink: 0; color: #ffffff;
+        flex-shrink: 0; color: #ffffff; gap: 6px;
     }
-    .header-identity { display: flex; align-items: center; gap: 12px; }
+    .header-identity { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; overflow: hidden; }
     .header-avatar {
-        width: 44px; height: 44px; border-radius: 50%;
+        width: 34px; height: 34px; border-radius: 50%;
         background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(188, 19, 254, 0.2));
         border: 2px solid #00f3ff; display: flex; align-items: center; justify-content: center;
-        color: #00f3ff; font-size: 20px; box-shadow: 0 0 16px rgba(0, 243, 255, 0.4);
+        color: #00f3ff; font-size: 15px; box-shadow: 0 0 12px rgba(0, 243, 255, 0.35);
         flex-shrink: 0;
     }
-    .header-title-box { display: flex; flex-direction: column; }
+    .header-title-box { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
     .header-title {
         font-family: 'Space Grotesk', -apple-system, sans-serif; font-weight: 700; color: #ffffff;
-        font-size: 1.05rem; line-height: 1.25; display: flex; align-items: center; gap: 8px;
+        font-size: 0.92rem; line-height: 1.2; display: flex; align-items: center; gap: 6px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .header-version-pill {
-        font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 8px;
-        background: rgba(0, 243, 255, 0.15); color: #00f3ff; border: 1px solid rgba(0, 243, 255, 0.35);
-        text-transform: uppercase; letter-spacing: 0.5px;
+        font-size: 0.6rem; font-weight: 700; padding: 1px 5px; border-radius: 6px;
+        background: rgba(0, 243, 255, 0.15); color: #00f3ff; border: 1px solid rgba(0, 243, 255, 0.3);
+        text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0;
     }
     .header-subtitle {
-        font-size: 0.74rem; color: #94a3b8;
-        display: flex; align-items: center; gap: 6px; margin-top: 3px; font-weight: 500;
+        font-size: 0.68rem; color: #94a3b8;
+        display: flex; align-items: center; gap: 5px; margin-top: 1px; font-weight: 500;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .pulse-indicator {
-        width: 7px; height: 7px; border-radius: 50%;
+        width: 6px; height: 6px; border-radius: 50%;
         background: #00e676; box-shadow: 0 0 10px #00e676;
         animation: pulseSubDot 1.8s infinite;
     }
@@ -1304,21 +1368,53 @@
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.4; transform: scale(0.85); }
     }
-    .header-controls { display: flex; align-items: center; gap: 8px; }
+
+    /* Header Controls & Size Button Group */
+    .header-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .ai-size-pill-bar {
+        display: flex; align-items: center;
+        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.2);
+        border-radius: 20px; padding: 1px 2px; gap: 1px; flex-shrink: 0;
+    }
+    .ai-size-btn {
+        background: transparent; border: none; color: #94a3b8;
+        width: 25px; height: 25px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; font-size: 10px; transition: all 0.2s ease;
+    }
+    .ai-size-btn:hover {
+        color: #00f3ff; background: rgba(0, 243, 255, 0.15);
+    }
+    .ai-size-btn.active {
+        color: #070913; background: #00f3ff; font-weight: 700;
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    }
+
     .chat-hdr-btn {
         background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
-        color: #cbd5e1; width: 34px; height: 34px; border-radius: 50%;
+        color: #cbd5e1; width: 28px; height: 28px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center; cursor: pointer;
-        font-size: 13px; transition: all 0.2s ease;
+        font-size: 11px; transition: all 0.2s ease;
     }
     .chat-hdr-btn:hover {
         background: rgba(0, 243, 255, 0.15); border-color: #00f3ff;
-        color: #00f3ff; transform: scale(1.08); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+        color: #00f3ff; transform: scale(1.06); box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+    }
+    .chat-hdr-btn.close-btn:hover {
+        background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #f87171;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Container query for compact mode */
+    @container aibot (max-width: 420px) {
+        .header-version-pill { display: none !important; }
+        .header-subtitle { display: none !important; }
+        .ai-size-btn.btn-adjust { display: none !important; }
     }
 
     /* Message Body Scroll Area */
     #chat-box {
-        flex: 1; padding: 16px; overflow-y: auto;
+        flex: 1; padding: 14px 16px; overflow-y: auto;
         display: flex; flex-direction: column; gap: 14px;
         background: #070913;
     }
@@ -1326,7 +1422,7 @@
     #chat-box::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.22); border-radius: 10px; }
 
     /* Messages & Bubbles */
-    .message { display: flex; gap: 10px; max-width: 95%; animation: msgSlide 0.25s ease-out; }
+    .message { display: flex; gap: 10px; max-width: 96%; animation: msgSlide 0.22s ease-out; }
     @keyframes msgSlide {
         from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
@@ -1341,83 +1437,108 @@
     }
     .bot-msg .msg-avatar {
         background: rgba(0, 243, 255, 0.15); border: 1.5px solid #00f3ff; color: #00f3ff;
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        box-shadow: 0 0 10px rgba(0, 243, 255, 0.35);
     }
     .user-msg .msg-avatar {
-        background: rgba(188, 19, 254, 0.15); border: 1.5px solid #bc13fe; color: #bc13fe;
-        box-shadow: 0 0 10px rgba(188, 19, 254, 0.3);
+        background: linear-gradient(135deg, #0284c7, #6366f1); border: 1.5px solid rgba(255, 255, 255, 0.25);
+        color: #ffffff; box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
     }
     .msg-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
     .msg-text {
-        padding: 13px 16px; border-radius: 16px; font-size: 0.89rem;
-        line-height: 1.55; word-break: break-word;
+        padding: 12px 16px; border-radius: 16px; font-size: 0.88rem;
+        line-height: 1.6; word-break: break-word;
     }
     .bot-msg .msg-text {
-        background: rgba(14, 20, 38, 0.92); color: #f1f5f9;
-        border: 1px solid rgba(0, 243, 255, 0.22);
+        background: rgba(14, 20, 38, 0.94); color: #f1f5f9;
+        border: 1px solid rgba(0, 243, 255, 0.2);
         border-left: 3px solid #00f3ff;
         border-top-left-radius: 4px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
     }
     .user-msg .msg-text {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.22) 0%, rgba(188, 19, 254, 0.22) 100%);
-        border: 1px solid rgba(0, 243, 255, 0.45); color: #ffffff; font-weight: 500;
-        border-top-right-radius: 4px; box-shadow: 0 4px 18px rgba(0, 243, 255, 0.18);
+        background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+        border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-weight: 500;
+        border-top-right-radius: 4px; box-shadow: 0 4px 18px rgba(2, 132, 199, 0.3);
     }
 
-    /* Telemetry HUD inside Welcome Card */
-    .lms-telemetry-hud {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-        margin: 10px 0 12px; padding: 10px;
-        background: rgba(255, 255, 255, 0.035); border: 1px solid rgba(0, 243, 255, 0.18);
-        border-radius: 12px;
+    /* Elegant Welcome Card & Clean Layout */
+    .ai-welcome-card { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .ai-welcome-hero {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+        border: 1px solid rgba(0, 243, 255, 0.2); border-radius: 14px;
+        padding: 12px 14px; position: relative; overflow: hidden;
     }
-    .hud-stat {
-        display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px;
+    .ai-hero-greet {
+        font-family: 'Space Grotesk', sans-serif; font-size: 1.02rem; font-weight: 700;
+        color: #ffffff; display: flex; align-items: center; gap: 6px;
     }
-    .hud-stat span {
-        font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .hud-stat b {
-        font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; color: #ffffff;
+    .ai-hero-sub {
+        font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin-top: 4px;
     }
 
-    /* Category 2-Column Grid (Learning-365 Cyber Design) */
-    .lms-category-grid {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; width: 100%;
+    /* Clean Streamlined Telemetry Row */
+    .ai-telemetry-row {
+        display: flex; gap: 6px; margin-top: 8px; width: 100%;
     }
-    .lms-cat-card {
-        background: rgba(17, 24, 46, 0.75); border: 1px solid rgba(0, 243, 255, 0.16);
-        border-radius: 12px; padding: 10px 10px; cursor: pointer;
-        display: flex; flex-direction: column; gap: 6px;
+    .ai-telemetry-chip {
+        flex: 1; background: rgba(10, 15, 30, 0.7); border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 9px; padding: 6px 6px; display: flex; align-items: center; justify-content: center;
+        gap: 6px; transition: border-color 0.2s; min-width: 0;
+    }
+    .ai-telemetry-chip:hover { border-color: rgba(0, 243, 255, 0.35); }
+    .ai-telem-icon {
+        font-size: 12px; flex-shrink: 0;
+    }
+    .ai-telem-data { display: flex; align-items: baseline; gap: 4px; min-width: 0; white-space: nowrap; }
+    .ai-telem-value {
+        font-family: 'Space Grotesk', sans-serif; font-size: 0.86rem; font-weight: 700; color: #ffffff;
+    }
+    .ai-telem-label {
+        font-size: 0.62rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+
+    /* Clean Auto-Fit Knowledge Modules Grid */
+    .ai-modules-section-title {
+        font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.6px; color: #64748b; display: flex;
+        align-items: center; justify-content: space-between; margin-top: 4px;
+    }
+    .ai-modules-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px; width: 100%;
+    }
+    .ai-module-card {
+        background: rgba(14, 20, 38, 0.75); border: 1px solid rgba(0, 243, 255, 0.15);
+        border-radius: 12px; padding: 9px 10px; cursor: pointer;
+        display: flex; align-items: center; gap: 8px;
         transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        text-align: left; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        text-align: left; position: relative; overflow: hidden;
     }
-    .lms-cat-card:hover {
+    .ai-module-card:hover {
         border-color: #00f3ff; background: rgba(0, 243, 255, 0.1);
         transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 243, 255, 0.22);
     }
-    .lms-cat-hdr {
-        display: flex; align-items: center; justify-content: space-between;
-    }
-    .lms-cat-icon {
+    .ai-module-icon {
         width: 28px; height: 28px; border-radius: 8px;
         display: flex; align-items: center; justify-content: center;
         font-size: 13px; flex-shrink: 0;
     }
-    .lms-cat-title {
-        color: #f1f5f9; font-size: 0.8rem; font-weight: 700;
-        font-family: 'Space Grotesk', sans-serif; line-height: 1.25;
+    .ai-module-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+    .ai-module-title {
+        color: #f1f5f9; font-size: 0.78rem; font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .lms-cat-card:hover .lms-cat-title { color: #00f3ff; }
-    .lms-cat-badge {
-        font-size: 0.65rem; color: #94a3b8; line-height: 1.2;
+    .ai-module-card:hover .ai-module-title { color: #00f3ff; }
+    .ai-module-sub {
+        font-size: 0.65rem; color: #94a3b8;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;
     }
 
     /* Detail Cards inside Bot Messages */
     .lms-detail-card {
         background: rgba(14, 20, 38, 0.95); border: 1px solid rgba(0, 243, 255, 0.25);
-        border-radius: 14px; padding: 14px; margin-top: 8px; display: flex;
+        border-radius: 14px; padding: 14px; margin-top: 6px; display: flex;
         flex-direction: column; gap: 10px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
     }
     .lms-detail-title {
@@ -1456,7 +1577,7 @@
     }
 
     .lms-back-btn {
-        margin-top: 8px; background: rgba(0, 243, 255, 0.05);
+        margin-top: 6px; background: rgba(0, 243, 255, 0.05);
         border: 1px dashed rgba(0, 243, 255, 0.3); color: #00f3ff;
         padding: 7px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
         cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
@@ -1487,7 +1608,7 @@
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     }
     .code-block-header {
-        background: #0f1629; padding: 6px 12px; display: flex;
+        background: #0f1629; padding: 7px 12px; display: flex;
         justify-content: space-between; align-items: center;
         border-bottom: 1px solid rgba(0, 243, 255, 0.18);
     }
@@ -1496,16 +1617,16 @@
         color: #00f3ff; text-transform: uppercase; letter-spacing: 0.5px;
     }
     .copy-code-btn {
-        background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
-        color: #cbd5e1; font-size: 0.7rem; font-weight: 600; padding: 3px 8px;
-        border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px;
+        background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #cbd5e1; font-size: 0.7rem; font-weight: 600; padding: 4px 10px;
+        border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;
         transition: all 0.2s ease;
     }
-    .copy-code-btn:hover { background: #00f3ff; color: #070913; border-color: #00f3ff; }
+    .copy-code-btn:hover { background: #00f3ff; color: #070913; border-color: #00f3ff; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
     pre.code-content {
         margin: 0; padding: 12px 14px; overflow-x: auto;
         font-family: 'Fira Code', 'Consolas', 'Monaco', monospace; font-size: 0.82rem;
-        color: #e2e8f0; line-height: 1.5;
+        color: #e2e8f0; line-height: 1.55;
     }
     pre.code-content::-webkit-scrollbar { height: 4px; }
     pre.code-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -1519,26 +1640,27 @@
 
     /* Quick Actions Strip */
     .chat-quick-actions-strip {
-        display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 6px;
-        scrollbar-width: none; -ms-overflow-style: none;
+        display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 8px;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
     }
-    .chat-quick-actions-strip::-webkit-scrollbar { display: none; }
+    .chat-quick-actions-strip::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
     .quick-chip {
         background: rgba(18, 25, 48, 0.85); border: 1px solid rgba(0, 243, 255, 0.2);
-        color: #cbd5e1; font-size: 0.74rem; font-weight: 600; padding: 4px 10px;
+        color: #cbd5e1; font-size: 0.74rem; font-weight: 600; padding: 4px 11px;
         border-radius: 12px; cursor: pointer; white-space: nowrap;
         transition: all 0.2s ease; font-family: 'Space Grotesk', sans-serif;
-        display: inline-flex; align-items: center; gap: 5px;
+        display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
     }
     .quick-chip:hover {
-        background: rgba(0, 243, 255, 0.14); border-color: #00f3ff;
+        background: rgba(0, 243, 255, 0.15); border-color: #00f3ff;
         color: #00f3ff; transform: translateY(-1px);
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.28);
     }
 
     /* Footer Input Area */
     .chat-footer-area {
-        padding: 10px 16px 10px; background: rgba(10, 14, 26, 0.98);
+        padding: 10px 14px 10px; background: rgba(10, 14, 26, 0.98);
         border-top: 1px solid rgba(0, 243, 255, 0.15); display: flex;
         flex-direction: column; gap: 6px; flex-shrink: 0;
     }
@@ -1552,6 +1674,7 @@
     #user-input::placeholder { color: #64748b; }
     #user-input:focus {
         border-color: #00f3ff; box-shadow: 0 0 16px rgba(0, 243, 255, 0.28);
+        background: rgba(22, 30, 58, 0.95);
     }
     #send-btn {
         width: 40px; height: 40px; border-radius: 50%;
@@ -1711,14 +1834,17 @@
             gap: 6px !important;
             flex-shrink: 0 !important;
         }
+        .ai-size-pill-bar, .ai-resize-grip, .ai-resize-edge-top, .ai-resize-edge-left, .ai-size-badge, #ai-maximize-btn {
+            display: none !important;
+        }
         .chat-hdr-btn {
-            width: 36px !important;
-            height: 36px !important;
-            font-size: 14px !important;
+            width: 34px !important;
+            height: 34px !important;
+            font-size: 13px !important;
         }
 
         #chat-box {
-            padding: 14px 12px !important;
+            padding: 12px 10px !important;
             gap: 12px !important;
             -webkit-overflow-scrolling: touch !important;
             overscroll-behavior: contain !important;
@@ -1740,46 +1866,34 @@
             line-height: 1.5 !important;
         }
 
-        .lms-category-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
-            margin-top: 8px !important;
+        .ai-modules-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 6px !important;
         }
-        .lms-cat-card {
-            padding: 10px 12px !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 12px !important;
+        .ai-module-card {
+            padding: 8px 8px !important;
+            gap: 7px !important;
         }
-        .lms-cat-hdr {
-            flex-shrink: 0 !important;
+        .ai-module-title {
+            font-size: 0.74rem !important;
         }
-        .lms-cat-hdr i.fa-arrow-right {
-            display: none !important;
-        }
-        .lms-cat-details-col {
-            flex: 1 !important;
-            min-width: 0 !important;
-        }
-        .lms-cat-title {
-            font-size: 0.84rem !important;
-            margin-bottom: 2px !important;
-        }
-        .lms-cat-badge {
-            font-size: 0.68rem !important;
+        .ai-module-sub {
+            font-size: 0.62rem !important;
         }
 
-        .lms-telemetry-hud {
+        .ai-telemetry-row {
             grid-template-columns: repeat(3, 1fr) !important;
             gap: 4px !important;
-            padding: 8px 6px !important;
-            margin: 8px 0 10px !important;
         }
-        .hud-stat span {
+        .ai-telemetry-chip {
+            padding: 5px 6px !important;
+            gap: 5px !important;
+        }
+        .ai-telem-label {
             font-size: 0.58rem !important;
         }
-        .hud-stat b {
-            font-size: 0.82rem !important;
+        .ai-telem-value {
+            font-size: 0.78rem !important;
         }
 
         .chat-footer-area {
@@ -1857,8 +1971,8 @@
         <div class="user-info">
             <h1>Welcome, <span>{{ request.user.first_name|default:request.user.username }}</span></h1>
             <div class="badge-pill-row">
-                {% if request.user.student_id %}
-                <span class="level-badge" style="border-color: rgba(0, 243, 255, 0.4);"><i class="fas fa-id-card"></i> ID: #{{ request.user.student_id }}</span>
+                {% if request.user.student_id or request.user.profile.student_id %}
+                <span class="level-badge" style="border-color: rgba(0, 243, 255, 0.4);"><i class="fas fa-id-card"></i> ID: #{{ request.user.student_id|default:request.user.profile.student_id }}</span>
                 {% endif %}
                 <span class="level-badge"><i class="fas fa-shield-alt"></i> LEVEL: {{ request.user.student_level }}</span>
                 <span class="streak-badge"><i class="fas fa-fire"></i> {{ study_streak|default:0 }} Day{{ study_streak|default:0|pluralize }} Streak</span>
@@ -2370,7 +2484,16 @@
 </div>
 
 <div id="ai-chat-container" class="closed">
-    <!-- Header: Learning-365 Copilot -->
+    <!-- Interactive Drag-to-Resize Corner & Edge Handles -->
+    <div class="ai-resize-grip" id="ai-resize-grip" title="Drag corner to customize bot width & height">
+        <i class="fas fa-arrows-alt"></i>
+    </div>
+    <div class="ai-resize-edge-top" id="ai-resize-edge-top" title="Drag to resize height"></div>
+    <div class="ai-resize-edge-left" id="ai-resize-edge-left" title="Drag to resize width"></div>
+    <div class="ai-size-badge" id="ai-size-badge">480 × 650</div>
+    <div class="ai-size-toast" id="ai-size-toast"><i class="fas fa-expand-arrows-alt"></i> <span>Size</span></div>
+
+    <!-- Header: Learning-365 Copilot with Size Controls -->
     <div class="chat-header">
         <div class="header-identity">
             <div class="header-avatar">
@@ -2378,8 +2501,8 @@
             </div>
             <div class="header-title-box">
                 <div class="header-title">
-                    <span>Learning-365 Copilot</span>
-                    <span class="header-version-pill">v3.0 Pro</span>
+                    <span>Learning-365 AI</span>
+                    <span class="header-version-pill">v3.2 Pro</span>
                 </div>
                 <div class="header-subtitle">
                     <span class="pulse-indicator"></span> Academic Intelligence Core • Online
@@ -2387,10 +2510,31 @@
             </div>
         </div>
         <div class="header-controls">
+            <!-- User Bot Sizing Customization Controls -->
+            <div class="ai-size-pill-bar" title="Resize Bot Window">
+                <button class="ai-size-btn btn-adjust" onclick="adjustChatSize('decrease')" title="Decrease Size (-50px)">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="ai-size-btn" id="btn-size-compact" onclick="changeChatSizePreset('compact')" title="Compact View (375px)">
+                    <i class="fas fa-compress-alt"></i>
+                </button>
+                <button class="ai-size-btn active" id="btn-size-standard" onclick="changeChatSizePreset('standard')" title="Standard View (480px)">
+                    <i class="fas fa-columns"></i>
+                </button>
+                <button class="ai-size-btn" id="btn-size-wide" onclick="changeChatSizePreset('wide')" title="Wide View (680px)">
+                    <i class="fas fa-expand-alt"></i>
+                </button>
+                <button class="ai-size-btn btn-adjust" onclick="adjustChatSize('increase')" title="Increase Size (+50px)">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <button class="chat-hdr-btn" id="ai-maximize-btn" onclick="toggleMaximizeChat()" title="Maximize / Restore">
+                <i class="fas fa-up-right-and-down-left-from-center" id="maximize-icon"></i>
+            </button>
             <button class="chat-hdr-btn" onclick="resetChat()" title="Restart Session">
                 <i class="fas fa-redo-alt"></i>
             </button>
-            <button class="chat-hdr-btn" onclick="toggleChat()" title="Minimize Copilot">
+            <button class="chat-hdr-btn close-btn" onclick="toggleChat()" title="Minimize Copilot">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -2427,7 +2571,7 @@
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
-        <div class="chat-helper-caption">Press Enter to send • Learning-365 Intelligence Core</div>
+        <div class="chat-helper-caption">Press Enter to send • Drag corner to resize • Learning-365 AI</div>
     </div>
 </div>
 
@@ -2581,7 +2725,7 @@
             icon: 'fa-graduation-cap',
             color: '#00f3ff',
             iconBg: 'rgba(0, 243, 255, 0.15)',
-            title: 'Courses & Video Roadmap',
+            title: 'Courses & Roadmap',
             subtitle: '80% Watch = +20 Coins',
             getContent: function(ctx) {
                 let coursesList = '';
@@ -2634,8 +2778,8 @@
             icon: 'fa-clipboard-check',
             color: '#ffd700',
             iconBg: 'rgba(255, 215, 0, 0.15)',
-            title: 'Exams & Proctoring',
-            subtitle: 'Pass 60% • +50/+25 Coins',
+            title: 'Exams & Quizzes',
+            subtitle: 'Pass 60% = +50 Coins',
             getContent: function(ctx) {
                 let examsList = '';
                 if (ctx.activeExams && ctx.activeExams.length > 0) {
@@ -2723,7 +2867,7 @@
             icon: 'fa-laptop-code',
             color: '#00e676',
             iconBg: 'rgba(0, 230, 118, 0.15)',
-            title: 'Cloud Code Studio (IDE)',
+            title: 'Cloud Studio IDE',
             subtitle: 'Python, C++, Java, JS',
             getContent: function() {
                 return `
@@ -2864,7 +3008,7 @@
             icon: 'fa-award',
             color: '#f43f5e',
             iconBg: 'rgba(244, 63, 94, 0.15)',
-            title: 'Cadet Certification',
+            title: 'Certificates & Badges',
             subtitle: 'QR-Verified Badges',
             getContent: function(ctx) {
                 return `
@@ -2906,21 +3050,252 @@
     // Maintain conversation history for multi-turn contextual intelligence
     let lmsChatHistory = [];
 
-    // Build categories 2-column grid HTML
+    // =============================================
+    // 🎛️ AI BOT SIZE CUSTOMIZATION & RESIZING SYSTEM
+    // =============================================
+    const AI_SIZE_PRESETS = {
+        compact: { width: 375, height: 530, name: 'Compact' },
+        standard: { width: 480, height: 650, name: 'Standard' },
+        wide: { width: 680, height: 740, name: 'Wide' }
+    };
+
+    let currentChatPreset = 'standard';
+    let isChatMaximized = false;
+    let preMaximizeDims = { width: 480, height: 650 };
+
+    function showSizeFeedbackToast(text) {
+        const toast = document.getElementById('ai-size-toast');
+        if (!toast) return;
+        toast.innerHTML = `<i class="fas fa-expand-arrows-alt"></i> <span>${text}</span>`;
+        toast.classList.add('show');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1600);
+    }
+
+    function updateActiveSizeButton() {
+        ['compact', 'standard', 'wide'].forEach(p => {
+            const btn = document.getElementById(`btn-size-${p}`);
+            if (btn) {
+                if (!isChatMaximized && currentChatPreset === p) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        });
+        const maxIcon = document.getElementById('maximize-icon');
+        if (maxIcon) {
+            maxIcon.className = isChatMaximized ? 'fas fa-down-left-and-up-right-to-center' : 'fas fa-up-right-and-down-left-from-center';
+        }
+    }
+
+    function applyChatDimensions(width, height, save = true) {
+        const c = document.getElementById('ai-chat-container');
+        if (!c) return;
+
+        const maxW = Math.min(window.innerWidth - 32, 1200);
+        const maxH = Math.min(window.innerHeight - 36, 960);
+        const minW = 340;
+        const minH = 460;
+
+        const finalW = Math.max(minW, Math.min(width, maxW));
+        const finalH = Math.max(minH, Math.min(height, maxH));
+
+        c.style.width = finalW + 'px';
+        c.style.height = finalH + 'px';
+        c.classList.remove('is-maximized');
+        isChatMaximized = false;
+
+        updateActiveSizeButton();
+
+        if (save) {
+            localStorage.setItem('lms_ai_chat_dims', JSON.stringify({
+                width: finalW,
+                height: finalH,
+                preset: currentChatPreset
+            }));
+        }
+    }
+    window.applyChatDimensions = applyChatDimensions;
+
+    function changeChatSizePreset(presetKey) {
+        if (!AI_SIZE_PRESETS[presetKey]) return;
+        currentChatPreset = presetKey;
+        const preset = AI_SIZE_PRESETS[presetKey];
+        applyChatDimensions(preset.width, preset.height, true);
+        showSizeFeedbackToast(`${preset.name} (${preset.width} × ${preset.height}px)`);
+    }
+    window.changeChatSizePreset = changeChatSizePreset;
+
+    function adjustChatSize(direction) {
+        const c = document.getElementById('ai-chat-container');
+        if (!c) return;
+        if (isChatMaximized) {
+            toggleMaximizeChat(false);
+        }
+        const curW = c.offsetWidth || 480;
+        const curH = c.offsetHeight || 650;
+        const delta = direction === 'increase' ? 60 : -60;
+        currentChatPreset = 'custom';
+        const newW = curW + delta;
+        const newH = curH + Math.round(delta * 1.05);
+        applyChatDimensions(newW, newH, true);
+        showSizeFeedbackToast(`${c.offsetWidth} × ${c.offsetHeight}px`);
+    }
+    window.adjustChatSize = adjustChatSize;
+
+    function toggleMaximizeChat(forceState) {
+        const c = document.getElementById('ai-chat-container');
+        if (!c) return;
+        const targetState = forceState !== undefined ? forceState : !isChatMaximized;
+
+        if (targetState) {
+            preMaximizeDims = {
+                width: c.offsetWidth || 480,
+                height: c.offsetHeight || 650
+            };
+            c.classList.add('is-maximized');
+            isChatMaximized = true;
+            showSizeFeedbackToast('Maximized View');
+        } else {
+            c.classList.remove('is-maximized');
+            isChatMaximized = false;
+            applyChatDimensions(preMaximizeDims.width, preMaximizeDims.height, false);
+            showSizeFeedbackToast('Restored View');
+        }
+        updateActiveSizeButton();
+        localStorage.setItem('lms_ai_chat_is_max', isChatMaximized ? '1' : '0');
+    }
+    window.toggleMaximizeChat = toggleMaximizeChat;
+
+    // Restore saved user customization on load
+    function restoreSavedChatDimensions() {
+        try {
+            if (window.innerWidth <= 768) return; // Fullscreen handles mobile
+            const isMax = localStorage.getItem('lms_ai_chat_is_max') === '1';
+            if (isMax) {
+                toggleMaximizeChat(true);
+                return;
+            }
+            const saved = localStorage.getItem('lms_ai_chat_dims');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.preset && AI_SIZE_PRESETS[parsed.preset]) {
+                    currentChatPreset = parsed.preset;
+                } else {
+                    currentChatPreset = 'custom';
+                }
+                if (parsed.width && parsed.height) {
+                    applyChatDimensions(parsed.width, parsed.height, false);
+                }
+            }
+        } catch(e) {
+            console.warn('Could not restore AI chat dimensions', e);
+        }
+    }
+    window.restoreSavedChatDimensions = restoreSavedChatDimensions;
+
+    // Freehand Corner & Edge Drag-to-Resize Handler
+    function initChatDragResizer() {
+        const c = document.getElementById('ai-chat-container');
+        const grip = document.getElementById('ai-resize-grip');
+        const edgeTop = document.getElementById('ai-resize-edge-top');
+        const edgeLeft = document.getElementById('ai-resize-edge-left');
+        const sizeBadge = document.getElementById('ai-size-badge');
+        if (!c || !grip) return;
+
+        let isDragging = false;
+        let resizeType = null;
+        let startX = 0, startY = 0, startW = 0, startH = 0;
+
+        function startResize(e, type) {
+            if (isChatMaximized) return;
+            if (window.innerWidth <= 768) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            isDragging = true;
+            resizeType = type;
+            startX = e.clientX;
+            startY = e.clientY;
+            startW = c.offsetWidth;
+            startH = c.offsetHeight;
+
+            c.classList.add('resizing');
+            document.body.style.cursor = type === 'both' ? 'nwse-resize' : (type === 'top' ? 'ns-resize' : 'ew-resize');
+            if (sizeBadge) {
+                sizeBadge.textContent = `${startW} × ${startH}px`;
+                sizeBadge.classList.add('visible');
+            }
+
+            window.addEventListener('mousemove', onResize);
+            window.addEventListener('mouseup', stopResize);
+        }
+
+        function onResize(e) {
+            if (!isDragging) return;
+            let newW = startW;
+            let newH = startH;
+
+            const maxW = Math.min(window.innerWidth - 32, 1200);
+            const maxH = Math.min(window.innerHeight - 36, 960);
+            const minW = 340;
+            const minH = 460;
+
+            if (resizeType === 'both' || resizeType === 'left') {
+                newW = Math.max(minW, Math.min(startW + (startX - e.clientX), maxW));
+                c.style.width = newW + 'px';
+            }
+            if (resizeType === 'both' || resizeType === 'top') {
+                newH = Math.max(minH, Math.min(startH + (startY - e.clientY), maxH));
+                c.style.height = newH + 'px';
+            }
+
+            currentChatPreset = 'custom';
+            updateActiveSizeButton();
+
+            if (sizeBadge) {
+                sizeBadge.textContent = `${Math.round(newW)} × ${Math.round(newH)}px`;
+            }
+        }
+
+        function stopResize() {
+            if (!isDragging) return;
+            isDragging = false;
+            c.classList.remove('resizing');
+            document.body.style.cursor = '';
+            if (sizeBadge) sizeBadge.classList.remove('visible');
+
+            window.removeEventListener('mousemove', onResize);
+            window.removeEventListener('mouseup', stopResize);
+
+            const curW = c.offsetWidth;
+            const curH = c.offsetHeight;
+            localStorage.setItem('lms_ai_chat_dims', JSON.stringify({
+                width: curW,
+                height: curH,
+                preset: currentChatPreset
+            }));
+            showSizeFeedbackToast(`${curW} × ${curH}px`);
+        }
+
+        grip.addEventListener('mousedown', (e) => startResize(e, 'both'));
+        if (edgeTop) edgeTop.addEventListener('mousedown', (e) => startResize(e, 'top'));
+        if (edgeLeft) edgeLeft.addEventListener('mousedown', (e) => startResize(e, 'left'));
+    }
+    window.initChatDragResizer = initChatDragResizer;
+
+    // Build categories auto-fitting responsive grid HTML
     function buildCategoriesHtml() {
         return `
-            <div class="lms-category-grid">
+            <div class="ai-modules-grid">
                 ${LMS_PORTAL_CATEGORIES.map(cat => `
-                    <div class="lms-cat-card" onclick="handleCategorySelect('${cat.id}')">
-                        <div class="lms-cat-hdr">
-                            <div class="lms-cat-icon" style="background:${cat.iconBg}; color:${cat.color};">
-                                <i class="fas ${cat.icon}"></i>
-                            </div>
-                            <i class="fas fa-arrow-right" style="font-size:10px; color:#64748b;"></i>
+                    <div class="ai-module-card" onclick="handleCategorySelect('${cat.id}')" title="${cat.title} • ${cat.subtitle}">
+                        <div class="ai-module-icon" style="background:${cat.iconBg}; color:${cat.color};">
+                            <i class="fas ${cat.icon}"></i>
                         </div>
-                        <div class="lms-cat-details-col">
-                            <div class="lms-cat-title">${cat.title}</div>
-                            <div class="lms-cat-badge">${cat.subtitle || 'Platform Feature'}</div>
+                        <div class="ai-module-text">
+                            <div class="ai-module-title">${cat.title}</div>
+                            <div class="ai-module-sub">${cat.subtitle || 'Platform Feature'}</div>
                         </div>
                     </div>
                 `).join('')}
@@ -2928,7 +3303,7 @@
         `;
     }
 
-    // Initialize welcome greeting matching Learning-365 design
+    // Initialize clean, uncluttered welcome greeting matching Learning-365 cyber aesthetics
     function initWelcomeMessage() {
         if (!chatBox) return;
         const cadetName = STUDENT_PORTAL_CONTEXT.name || 'Cadet';
@@ -2940,30 +3315,46 @@
             <div class="message bot-msg">
                 <div class="msg-avatar"><i class="fas fa-brain"></i></div>
                 <div class="msg-text">
-                    <div style="font-size:1.02rem; font-weight:700; color:#fff; font-family:'Space Grotesk',sans-serif;">
-                        Greetings, <b>${cadetName}</b>! 🚀
-                    </div>
-                    <div style="font-size:0.83rem; color:#94a3b8; margin-top:4px; line-height:1.5;">
-                        I am your official <b>Learning-365 Copilot</b>. I am directly synchronized with your courses, evaluations, coding arena, and coin treasury.
-                    </div>
-                    <div class="lms-telemetry-hud">
-                        <div class="hud-stat">
-                            <span>Coins</span>
-                            <b style="color:#ffd700;"><i class="fas fa-coins" style="font-size:11px;"></i> ${coinsCount}</b>
+                    <div class="ai-welcome-card">
+                        <div class="ai-welcome-hero">
+                            <div class="ai-hero-greet">
+                                <span>Greetings, <b>${cadetName}</b>!</span>
+                                <span style="font-size:1.1rem;">🚀</span>
+                            </div>
+                            <div class="ai-hero-sub">
+                                I am your official <b>Learning-365 AI Copilot</b>. Synchronized in real-time with your course enrollments, evaluation deadlines, code studio, and treasury wallet.
+                            </div>
+                            <div class="ai-telemetry-row">
+                                <div class="ai-telemetry-chip" title="${coinsCount} LMS Coins">
+                                    <i class="fas fa-coins ai-telem-icon" style="color:#ffd700;"></i>
+                                    <div class="ai-telem-data">
+                                        <span class="ai-telem-value" style="color:#ffd700;">${coinsCount}</span>
+                                        <span class="ai-telem-label">Coins</span>
+                                    </div>
+                                </div>
+                                <div class="ai-telemetry-chip" title="${enrolledCount} Enrolled Courses">
+                                    <i class="fas fa-graduation-cap ai-telem-icon" style="color:#00f3ff;"></i>
+                                    <div class="ai-telem-data">
+                                        <span class="ai-telem-value" style="color:#00f3ff;">${enrolledCount}</span>
+                                        <span class="ai-telem-label">Courses</span>
+                                    </div>
+                                </div>
+                                <div class="ai-telemetry-chip" title="${examsCount} Active Exams">
+                                    <i class="fas fa-clipboard-check ai-telem-icon" style="color:#00e676;"></i>
+                                    <div class="ai-telem-data">
+                                        <span class="ai-telem-value" style="color:#00e676;">${examsCount}</span>
+                                        <span class="ai-telem-label">Exams</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="hud-stat">
-                            <span>Enrolled</span>
-                            <b style="color:#00f3ff;"><i class="fas fa-graduation-cap" style="font-size:11px;"></i> ${enrolledCount}</b>
+
+                        <div class="ai-modules-section-title">
+                            <span>Platform Intelligence Modules</span>
+                            <i class="fas fa-th-large" style="color:#00f3ff; font-size:10px;"></i>
                         </div>
-                        <div class="hud-stat">
-                            <span>Active Exams</span>
-                            <b style="color:#00e676;"><i class="fas fa-clipboard-check" style="font-size:11px;"></i> ${examsCount}</b>
-                        </div>
+                        ${buildCategoriesHtml()}
                     </div>
-                    <div style="font-size:0.8rem; font-weight:600; color:#cbd5e1; margin-top:6px;">
-                        Select a platform intelligence module or ask any technical query:
-                    </div>
-                    ${buildCategoriesHtml()}
                 </div>
             </div>
         `;
@@ -2977,11 +3368,11 @@
         msgDiv.innerHTML = `
             <div class="msg-avatar"><i class="fas fa-brain"></i></div>
             <div class="msg-text">
-                <div style="font-size:0.92rem; font-weight:700; color:#fff; font-family:'Space Grotesk',sans-serif; margin-bottom:4px;">
-                    <i class="fas fa-th-large" style="color:#00f3ff;"></i> Learning-365 Portal Menu:
+                <div style="font-size:0.92rem; font-weight:700; color:#fff; font-family:'Space Grotesk',sans-serif; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                    <i class="fas fa-th-large" style="color:#00f3ff;"></i> Learning-365 Portal Menu
                 </div>
-                <div style="font-size:0.82rem; color:#94a3b8; margin-bottom:8px;">
-                    Select an intelligence module below or ask any technical query:
+                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:10px;">
+                    Select an intelligence module below or type your technical query:
                 </div>
                 ${buildCategoriesHtml()}
             </div>
@@ -3034,6 +3425,7 @@
         const toggleBtn = document.getElementById('ai-chat-toggle');
         if (!c.classList.contains('closed')) {
             document.body.classList.add('ai-chat-active');
+            restoreSavedChatDimensions();
             if (toggleBtn) toggleBtn.style.display = 'none';
             if (icon) icon.className = 'fas fa-times';
             if (userInput) setTimeout(() => userInput.focus(), 250);
@@ -3235,8 +3627,10 @@
     }
     window.toggleVoiceSearch = toggleVoiceSearch;
 
-    // Initialize Learning-365 Copilot on load
+    // Initialize Learning-365 AI Copilot on load
     initWelcomeMessage();
+    restoreSavedChatDimensions();
+    initChatDragResizer();
 
     // 4. Learning Analytics Chart.js Robust Initialization
     function initAnalyticsCharts() {
@@ -3374,10 +3768,18 @@
         }
     }
 
+    function scheduleChartInit() {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => initAnalyticsCharts(), { timeout: 1000 });
+        } else {
+            setTimeout(initAnalyticsCharts, 60);
+        }
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initAnalyticsCharts);
+        document.addEventListener('DOMContentLoaded', scheduleChartInit);
     } else {
-        initAnalyticsCharts();
+        scheduleChartInit();
     }
 
     // 5. Dynamic attributes
