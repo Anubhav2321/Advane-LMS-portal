@@ -1,6 +1,7 @@
 import os
 import re  # CRITICAL IMPORT: Video fix er jonno eta must lagbe
 import requests #  NEW: Google profile picture download er jonno
+import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
@@ -17,12 +18,12 @@ from allauth.socialaccount.models import SocialAccount # NEW: Google data fetch 
 def generate_unique_student_id():
     """
     Generates a secure, cryptographically-random unique 6-digit student ID (100000 - 999999).
-    Guarantees absolute global uniqueness across all users.
+    Guarantees absolute global uniqueness across all users and profiles.
     """
     import random
     for _ in range(10000):
         candidate = str(random.randint(100000, 999999))
-        if not User.objects.filter(student_id=candidate).exists():
+        if not User.objects.filter(student_id=candidate).exists() and not Profile.objects.filter(student_id=candidate).exists():
             return candidate
     import time
     return str(int(time.time()))[-6:]
@@ -54,6 +55,22 @@ class User(AbstractUser):
     class Meta:
         ordering = ['-date_joined']
 
+    def ensure_student_id(self):
+        """
+        Guarantees that a student user always has a valid, unique 6-digit student ID.
+        If missing, generates, persists, and synchronizes it immediately.
+        """
+        if (self.is_student or (not self.is_staff and not self.is_superuser)) and not self.student_id:
+            profile_id = getattr(getattr(self, 'profile', None), 'student_id', None)
+            if profile_id:
+                self.student_id = profile_id
+            else:
+                self.student_id = generate_unique_student_id()
+            User.objects.filter(pk=self.pk).update(student_id=self.student_id)
+            if hasattr(self, 'profile') and self.profile:
+                Profile.objects.filter(user=self).update(student_id=self.student_id)
+        return self.student_id
+
     def save(self, *args, **kwargs):
         if self.is_staff or self.is_superuser:
             self.is_student = False
@@ -61,6 +78,9 @@ class User(AbstractUser):
             # Auto-generate unique 6-digit ID for students
             if self.is_student or (not self.is_staff and not self.is_superuser):
                 self.student_id = generate_unique_student_id()
+                update_fields = kwargs.get('update_fields')
+                if update_fields is not None:
+                    kwargs['update_fields'] = list(set(update_fields) | {'student_id'})
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -188,6 +208,15 @@ class Profile(models.Model):
         if hasattr(self, 'user') and self.user:
             if not self.student_id and self.user.student_id:
                 self.student_id = self.user.student_id
+            elif self.student_id and not self.user.student_id:
+                self.user.student_id = self.student_id
+                User.objects.filter(pk=self.user.pk).update(student_id=self.student_id)
+            elif not self.student_id and not self.user.student_id and (self.user.is_student or (not self.user.is_staff and not self.user.is_superuser)):
+                new_id = generate_unique_student_id()
+                self.student_id = new_id
+                self.user.student_id = new_id
+                User.objects.filter(pk=self.user.pk).update(student_id=new_id)
+
             if self.phone and not self.user.phone:
                 self.user.phone = self.phone
                 self.user.save(update_fields=['phone'])
@@ -892,6 +921,9 @@ def create_user_profile(sender, instance, created, **kwargs):
     if kwargs.get('raw', False):
         return
     if created:
+        if (instance.is_student or (not instance.is_staff and not instance.is_superuser)) and not instance.student_id:
+            instance.student_id = generate_unique_student_id()
+            User.objects.filter(pk=instance.pk).update(student_id=instance.student_id)
         Profile.objects.get_or_create(
             user=instance,
             defaults={
@@ -1033,6 +1065,10 @@ def notify_on_assignment_created(sender, instance, created, **kwargs):
 @receiver(user_logged_in)
 def fetch_google_profile_pic(request, user, **kwargs):
     try:
+        # Guarantee student ID is created & persisted for all students on login
+        if hasattr(user, 'ensure_student_id'):
+            user.ensure_student_id()
+
         # Find the Google social account linked to this user
         social_account = SocialAccount.objects.filter(user=user, provider='google').first()
         
@@ -1055,10 +1091,14 @@ def fetch_google_profile_pic(request, user, **kwargs):
 
             # Save the user if name was updated
             if name_updated:
-                user.save(update_fields=['first_name', 'last_name'])
+                user.save(update_fields=['first_name', 'last_name', 'student_id'])
 
-            # 2. FIX PROFILE PICTURE
+            # 2. FIX PROFILE PICTURE & SYNC ID
             profile, _ = Profile.objects.get_or_create(user=user)
+            if user.student_id and not profile.student_id:
+                profile.student_id = user.student_id
+                profile.save(update_fields=['student_id'])
+
             if not profile.profile_pic:
                 picture_url = social_account.extra_data.get('picture')
                 if picture_url:
@@ -1073,6 +1113,9 @@ def fetch_google_profile_pic(request, user, **kwargs):
                     if response.status_code == 200:
                         file_name = f"{user.username}_google_pic.jpg"
                         profile.profile_pic.save(file_name, ContentFile(response.content), save=True)
+
+            # 3. Log Google login activity so Google users build streaks
+            log_student_activity(user, 'login', f'{user.username} logged in via Google OAuth')
                     
     except Exception as e:
         print(f"Could not save Google profile data: {e}")
@@ -1250,6 +1293,81 @@ def log_student_activity(user, activity_type, description='', course=None, metad
             course=course,
             metadata=metadata or {}
         )
+
+
+def record_daily_learning_activity(user):
+    """
+    Ensures that an authenticated student has at least one activity recorded
+    for today's local date so daily visits/logins count towards their learning streak.
+    """
+    if not (user and user.is_authenticated and getattr(user, 'is_student', True) and not user.is_staff and not user.is_superuser):
+        return
+    today = timezone.localdate()
+    start_of_day = timezone.make_aware(datetime.datetime.combine(today, datetime.time.min))
+    if not StudentActivity.objects.filter(student=user, created_at__gte=start_of_day).exists():
+        StudentActivity.objects.create(
+            student=user,
+            activity_type='login',
+            description='Daily learning session active',
+            metadata={'auto_daily_session': True}
+        )
+
+
+def calculate_study_streak(user):
+    """
+    Calculates consecutive active days with at least 1 learning action or visit.
+    Guarantees seamless continuation across days, correctly handling local timezones
+    and preventing streaks from resetting on already-active sessions.
+    """
+    if not (user and user.is_authenticated and getattr(user, 'is_student', True) and not user.is_staff and not user.is_superuser):
+        return 0
+
+    # Guarantee today's session is counted
+    record_daily_learning_activity(user)
+
+    today = timezone.localdate()
+    cutoff = today - datetime.timedelta(days=400)
+    cutoff_dt = timezone.make_aware(datetime.datetime.combine(cutoff, datetime.time.min))
+
+    # Collect distinct local calendar dates of all student activities
+    activity_dates = set()
+
+    for dt in StudentActivity.objects.filter(student=user, created_at__gte=cutoff_dt).values_list('created_at', flat=True):
+        activity_dates.add(timezone.localtime(dt).date())
+
+    for dt in LessonProgress.objects.filter(student=user, completed_at__gte=cutoff_dt).values_list('completed_at', flat=True):
+        if dt:
+            activity_dates.add(timezone.localtime(dt).date())
+
+    for dt in QuizResult.objects.filter(student=user, taken_at__gte=cutoff_dt).values_list('taken_at', flat=True):
+        if dt:
+            activity_dates.add(timezone.localtime(dt).date())
+
+    for dt in BountySubmission.objects.filter(student=user, earned_coins__gt=0, submitted_at__gte=cutoff_dt).values_list('submitted_at', flat=True):
+        if dt:
+            activity_dates.add(timezone.localtime(dt).date())
+
+    for dt in AssignmentSubmission.objects.filter(student=user, submitted_at__gte=cutoff_dt).values_list('submitted_at', flat=True):
+        if dt:
+            activity_dates.add(timezone.localtime(dt).date())
+
+    # Calculate consecutive days ending at today or yesterday
+    yesterday = today - datetime.timedelta(days=1)
+    if today in activity_dates:
+        check_date = today
+    elif yesterday in activity_dates:
+        check_date = yesterday
+    else:
+        return 0
+
+    streak = 0
+    while check_date in activity_dates:
+        streak += 1
+        check_date -= datetime.timedelta(days=1)
+        if streak > 365:
+            break
+
+    return streak
 
 
 # 11. PAYMENT SYSTEM (Coupons + Transaction Ledger)
