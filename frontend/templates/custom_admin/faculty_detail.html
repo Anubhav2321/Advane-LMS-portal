@@ -1,0 +1,882 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ============================================= */
+    /* FACULTY DETAIL — PREMIUM CYBER-GLASS DESIGN   */
+    /* ============================================= */
+
+    .detail-container {
+        padding: 28px 32px;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    /* Back Link */
+    .link-back {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+        background: var(--glass-bg);
+    }
+    .link-back:hover {
+        color: #10b981;
+        border-color: #10b981;
+        background: rgba(16, 185, 129, 0.08);
+        transform: translateX(-4px);
+    }
+
+    /* ============================================= */
+    /* PROFILE HERO CARD                             */
+    /* ============================================= */
+
+    .profile-hero {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .profile-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 4px;
+        background: linear-gradient(90deg, #10b981, #00d4ff, #6c63ff);
+    }
+
+    .hero-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        object-fit: cover;
+        border: 3px solid #10b981;
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+        flex-shrink: 0;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-avatar-fallback {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 2.2rem;
+        font-family: var(--font-mono);
+        border: 3px solid #10b981;
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+        flex-shrink: 0;
+    }
+
+    .hero-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .hero-info h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+        background: linear-gradient(135deg, #fff, #c0c0d0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-info .hero-email {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .hero-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .hero-badge {
+        font-size: 0.78rem;
+        padding: 5px 14px;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .hero-badge i { font-size: 0.75rem; }
+
+    /* Faculty Badge Header Top Right */
+    .role-header-badge {
+        position: absolute;
+        top: 32px; right: 32px;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        padding: 10px 22px;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .role-header-badge i { color: #10b981; font-size: 1.25rem; }
+    .role-header-badge .badge-text {
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #34d399;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    /* ============================================= */
+    /* QUICK STATS ROW                               */
+    /* ============================================= */
+
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .qs-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        text-align: center;
+        transition: var(--transition-smooth);
+        box-sizing: border-box;
+    }
+
+    .qs-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(52, 211, 153, 0.4);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .qs-icon {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .qs-number {
+        font-family: var(--font-mono);
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .qs-label {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 600;
+    }
+
+    /* ============================================= */
+    /* DETAIL GRID (2 COLUMNS)                       */
+    /* ============================================= */
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.05fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .section-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 26px;
+        margin-bottom: 24px;
+        box-sizing: border-box;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #fff;
+    }
+
+    .section-title i { color: #10b981; }
+
+    /* Info Items */
+    .info-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    .info-item {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .info-val {
+        font-size: 0.95rem;
+        color: #f1f5f9;
+        font-weight: 600;
+    }
+
+    /* Course Mini-Cards */
+    .course-item-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: var(--radius-md);
+        margin-bottom: 12px;
+        transition: var(--transition-fast);
+        gap: 16px;
+    }
+
+    .course-item-card:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(52, 211, 153, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .course-item-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .course-icon-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #10b981;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .course-title-text {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #fff;
+    }
+
+    .course-sub-info {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    /* Action Sidebar Buttons (Identical structure to Student Detail) */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 14px 18px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        font-family: var(--font-body);
+        transition: var(--transition-smooth);
+        box-sizing: border-box;
+    }
+
+    .btn-block {
+        background: rgba(255, 183, 77, 0.1);
+        color: var(--accent-amber);
+        border: 1px solid rgba(255, 183, 77, 0.25);
+    }
+    .btn-block:hover { 
+        background: var(--accent-amber); 
+        color: #000; 
+        box-shadow: 0 0 15px rgba(255, 183, 77, 0.35); 
+    }
+
+    .btn-delete {
+        background: rgba(255, 51, 102, 0.1);
+        color: var(--accent-red);
+        border: 1px solid rgba(255, 51, 102, 0.25);
+    }
+    .btn-delete:hover { 
+        background: var(--accent-red); 
+        color: #fff; 
+        box-shadow: 0 0 15px rgba(255, 51, 102, 0.35); 
+    }
+
+    .btn-password {
+        background: rgba(0, 212, 255, 0.1);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .btn-password:hover { 
+        background: #0284c7; 
+        color: #fff; 
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); 
+    }
+
+    .btn-edit {
+        background: rgba(16, 185, 129, 0.1);
+        color: #34d399;
+        border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+    .btn-edit:hover {
+        background: #10b981;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .input-dark {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        border-radius: var(--radius-sm);
+        margin-bottom: 10px;
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+        box-sizing: border-box;
+    }
+
+    .input-dark:focus { 
+        border-color: #38bdf8; 
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25); 
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 7, 15, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        z-index: 99999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .modal-card {
+        background: rgba(13, 17, 28, 0.95);
+        border: 1px solid rgba(52, 211, 153, 0.35);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 680px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(16, 185, 129, 0.2);
+        position: relative;
+        animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        box-sizing: border-box;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .detail-container { padding: 20px 16px; }
+        .detail-grid { grid-template-columns: 1fr; }
+        .role-header-badge { position: static; margin-top: 14px; }
+    }
+
+    @media (max-width: 768px) {
+        .profile-hero { flex-direction: column; text-align: center; padding: 24px 20px; }
+        .hero-badges { justify-content: center; }
+        .hero-info .hero-email { justify-content: center; }
+        .quick-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    
+    <a href="{% url 'admin_faculty_list' %}" class="link-back">
+        <i class="fas fa-arrow-left"></i> Back to Faculty Directory
+    </a>
+
+    <!-- ============================================= -->
+    <!-- PROFILE HERO                                  -->
+    <!-- ============================================= -->
+
+    <div class="profile-hero">
+        {% if faculty.profile.profile_pic and faculty.profile.profile_pic.name != 'profile_pics/default.png' %}
+            <img src="{{ faculty.profile.profile_pic.url }}" class="hero-avatar" alt="Faculty Avatar">
+        {% else %}
+            <div class="hero-avatar-fallback">
+                {{ faculty.first_name.0|default:faculty.username.0|upper }}
+            </div>
+        {% endif %}
+        
+        <div class="hero-info">
+            <h2>{{ faculty.get_full_name|default:faculty.username }}</h2>
+            <p class="hero-email"><i class="fas fa-envelope" style="color: #64748b;"></i> {{ faculty.email }}</p>
+            <div class="hero-badges">
+                <span class="hero-badge"><i class="fas fa-hashtag"></i> ID: #{{ faculty.id }}</span>
+                <span class="hero-badge"><i class="fas fa-calendar-alt"></i> Joined: {{ faculty.date_joined|date:"d M, Y" }}</span>
+                <span class="hero-badge" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.35);">
+                    <i class="fas fa-building"></i> {{ faculty_profile.department|default:"General Dept" }}
+                </span>
+                <span class="hero-badge" style="color: #34d399; border-color: rgba(52, 211, 153, 0.35);">
+                    <i class="fas fa-id-badge"></i> {{ faculty_profile.job_role|default:"Instructor" }}
+                </span>
+                <span class="hero-badge" style="color: #f59e0b; border-color: rgba(245, 158, 11, 0.35);">
+                    <i class="fas fa-award"></i> {{ faculty_profile.experience_years|default:0 }} Yrs Experience
+                </span>
+                {% if not faculty.is_active %}
+                    <span class="hero-badge" style="color: #ef4444; border-color: #ef4444;"><i class="fas fa-ban"></i> Blocked</span>
+                {% else %}
+                    <span class="hero-badge" style="color: #10b981; border-color: rgba(16, 185, 129, 0.4);"><i class="fas fa-check-circle"></i> Active Faculty</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="role-header-badge" title="Faculty Role">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span class="badge-text">Faculty Member</span>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- QUICK STATS ROW                               -->
+    <!-- ============================================= -->
+
+    <div class="quick-stats">
+        <div class="qs-card">
+            <div class="qs-icon" style="color: #60a5fa;"><i class="fas fa-book-open"></i></div>
+            <div class="qs-number">{{ total_courses }}</div>
+            <div class="qs-label">Courses Assigned</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: #10b981;"><i class="fas fa-user-graduate"></i></div>
+            <div class="qs-number">{{ total_students_enrolled }}</div>
+            <div class="qs-label">Active Students</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: #f59e0b;"><i class="fas fa-video"></i></div>
+            <div class="qs-number">{{ total_live_classes }}</div>
+            <div class="qs-label">Live Classes</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: #06b6d4;"><i class="fas fa-clipboard-check"></i></div>
+            <div class="qs-number">{{ total_exams }}</div>
+            <div class="qs-label">Quizzes & Exams</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: #a855f7;"><i class="fas fa-file-pdf"></i></div>
+            <div class="qs-number">{{ total_docs }}</div>
+            <div class="qs-label">PDF Notes</div>
+        </div>
+        <div class="qs-card">
+            <div class="qs-icon" style="color: #ec4899;"><i class="fas fa-tasks"></i></div>
+            <div class="qs-number">{{ total_assignments }}</div>
+            <div class="qs-label">Assignments</div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- DETAIL GRID                                   -->
+    <!-- ============================================= -->
+
+    <div class="detail-grid">
+        
+        <!-- LEFT COLUMN: Content & Academic Info -->
+        <div class="content-column">
+            
+            <!-- Professional Profile -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-id-card"></i> Professional & Contact Information</h3>
+                
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-val">{{ faculty_profile.department|default:"Not Assigned" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Designation / Role</div>
+                        <div class="info-val">{{ faculty_profile.job_role|default:"Professor" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Teaching Experience</div>
+                        <div class="info-val">{{ faculty_profile.experience_years|default:0 }} Years</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Specialization</div>
+                        <div class="info-val">{{ faculty_profile.specialization|default:"Computer Science / Engineering" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Contact Phone</div>
+                        <div class="info-val">{{ faculty.profile.phone|default:faculty.phone|default:"Not Provided" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Official Email</div>
+                        <div class="info-val">{{ faculty.email }}</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                    <div class="info-label" style="margin-bottom: 6px;">Biography / Overview</div>
+                    <p style="color: #94a3b8; font-size: 0.92rem; line-height: 1.6; margin: 0;">
+                        {{ faculty.profile.bio|default:"No personal biography provided yet. Faculty member can update their bio from their dashboard." }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Assigned Courses -->
+            <div class="section-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--glass-border);">
+                    <h3 class="section-title" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+                        <i class="fas fa-book-reader"></i> Assigned Courses ({{ total_courses }})
+                    </h3>
+                    <button type="button" onclick="openEditFacultyModal()" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(52, 211, 153, 0.35); color: #34d399; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; cursor: pointer;">
+                        <i class="fas fa-cog"></i> Manage Assignments
+                    </button>
+                </div>
+
+                {% for course in assigned_courses %}
+                <div class="course-item-card">
+                    <div class="course-item-left">
+                        <div class="course-icon-badge">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <div class="course-title-text">{{ course.title }}</div>
+                            <div class="course-sub-info">
+                                <span><i class="fas fa-users" style="color: #60a5fa;"></i> {{ course.enrollments.count }} Enrolled</span> · 
+                                <span><i class="fas fa-layer-group" style="color: #a855f7;"></i> {{ course.difficulty_level }}</span> · 
+                                <span><i class="fas fa-tag" style="color: #10b981;"></i> ₹{{ course.price }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{% url 'admin_edit_course' course.id %}" style="color: #38bdf8; text-decoration: none; font-size: 0.85rem; font-weight: 600; padding: 6px 12px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                            View Course <i class="fas fa-external-link-alt" style="font-size: 0.72rem;"></i>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                    <i class="fas fa-book-open" style="font-size: 2.2rem; opacity: 0.3; margin-bottom: 12px; display: block;"></i>
+                    <p style="margin: 0 0 12px 0;">No courses currently assigned to this faculty member.</p>
+                    <button type="button" onclick="openEditFacultyModal()" class="btn-edit" style="width: auto; display: inline-flex; padding: 8px 18px;">
+                        <i class="fas fa-plus"></i> Assign Courses Now
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Recent Live Classes -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-broadcast-tower"></i> Live Classroom Sessions</h3>
+                {% for lc in live_classes %}
+                <div class="course-item-card">
+                    <div class="course-item-left">
+                        <div class="course-icon-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div>
+                            <div class="course-title-text">{{ lc.title }}</div>
+                            <div class="course-sub-info">
+                                <span><i class="fas fa-calendar-alt"></i> {{ lc.date_time|date:"d M Y, h:i A" }}</span> · 
+                                <span><i class="fas fa-clock"></i> {{ lc.duration_minutes }} mins</span> · 
+                                <span style="color: #38bdf8;"><i class="fas fa-desktop"></i> {{ lc.platform }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        {% if lc.is_live %}
+                            <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.35); padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">LIVE NOW</span>
+                        {% elif lc.is_past %}
+                            <span style="background: rgba(148, 163, 184, 0.1); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.2); padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600;">Ended</span>
+                        {% else %}
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35); padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600;">Scheduled</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted); text-align: center; padding: 25px 0; margin: 0;">No live sessions hosted yet.</p>
+                {% endfor %}
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Admin Security & Actions (Identical to Student Detail) -->
+        <div class="action-column">
+            
+            <div class="section-card">
+                <h3 class="section-title" style="color: var(--accent-red);"><i class="fas fa-shield-alt"></i> Security & Admin Controls</h3>
+                
+                <!-- Toggle Block / Unblock -->
+                <a href="{% url 'admin_toggle_block' faculty.id %}" class="action-btn btn-block">
+                    {% if faculty.is_active %}
+                        <span><i class="fas fa-ban"></i> Block Faculty Access</span>
+                    {% else %}
+                        <span><i class="fas fa-check-circle"></i> Unblock Faculty Access</span>
+                    {% endif %}
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <!-- Password Reset Form (EXACTLY MATCHING STUDENT DETAIL) -->
+                <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px;">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-key"></i> Direct Password Reset
+                    </div>
+                    <form action="{% url 'admin_reset_faculty_password' faculty.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="text" name="new_password" placeholder="Enter New Password..." required class="input-dark">
+                        <button type="submit" class="action-btn btn-password" style="margin-bottom: 0;">
+                            <span><i class="fas fa-lock"></i> Update & Set Password</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Edit Profile Button -->
+                <button type="button" onclick="openEditFacultyModal()" class="action-btn btn-edit">
+                    <span><i class="fas fa-user-edit"></i> Edit Profile & Courses</span>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <!-- Delete Faculty Account Button -->
+                <a href="{% url 'admin_delete_faculty' faculty.id %}" class="action-btn btn-delete" onclick="return confirm('Are you sure? This will delete faculty member {{ faculty.get_full_name|default:faculty.username }} and unassign all courses permanently!');">
+                    <span><i class="fas fa-trash-alt"></i> Delete Account</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <!-- Quick Summary Card -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-chart-pie"></i> Teaching Impact</h3>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.9rem;">
+                    <span>Total Students Enrolled</span>
+                    <strong style="color: #fff; font-family: var(--font-mono);">{{ total_students_enrolled }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.9rem;">
+                    <span>Total Course Enrollments</span>
+                    <strong style="color: #38bdf8; font-family: var(--font-mono);">{{ total_enrollments }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.9rem;">
+                    <span>Live Classes Held</span>
+                    <strong style="color: #10b981; font-family: var(--font-mono);">{{ total_live_classes }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; color: var(--text-secondary); font-size: 0.9rem;">
+                    <span>Assignments Published</span>
+                    <strong style="color: #ec4899; font-family: var(--font-mono);">{{ total_assignments }}</strong>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ============================================= -->
+<!-- EDIT FACULTY PROFILE & COURSES MODAL           -->
+<!-- ============================================= -->
+<div id="editFacultyModalOverlay" class="modal-overlay">
+    <div class="modal-card">
+        
+        <!-- Modal Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 22px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.25rem;">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">Edit Faculty Profile</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Update credentials, department, and course assignments</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeEditFacultyModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #94a3b8; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; display: grid; place-items: center; font-size: 1rem; transition: var(--transition-fast);">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <form action="{% url 'admin_update_faculty_info' faculty.id %}" method="POST" style="padding: 24px 28px;">
+            {% csrf_token %}
+            <input type="hidden" name="courses_submitted" value="1">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">First Name</label>
+                    <input type="text" name="first_name" value="{{ faculty.first_name }}" class="input-dark" style="margin-bottom: 0;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Last Name</label>
+                    <input type="text" name="last_name" value="{{ faculty.last_name }}" class="input-dark" style="margin-bottom: 0;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Email Address</label>
+                    <input type="email" name="email" value="{{ faculty.email }}" class="input-dark" style="margin-bottom: 0;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Contact Phone</label>
+                    <input type="text" name="phone" value="{{ faculty.profile.phone|default:faculty.phone }}" class="input-dark" style="margin-bottom: 0;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Department</label>
+                    <input type="text" name="department" value="{{ faculty_profile.department|default:'' }}" placeholder="e.g. Computer Science, AI, Mathematics" class="input-dark" style="margin-bottom: 0;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Designation / Job Role</label>
+                    <input type="text" name="job_role" value="{{ faculty_profile.job_role|default:'Professor' }}" class="input-dark" style="margin-bottom: 0;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Experience (Years)</label>
+                    <input type="number" name="experience_years" value="{{ faculty_profile.experience_years|default:0 }}" min="0" max="60" class="input-dark" style="margin-bottom: 0;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Specialization</label>
+                    <input type="text" name="specialization" value="{{ faculty_profile.specialization|default:'' }}" placeholder="e.g. Machine Learning, Web Dev" class="input-dark" style="margin-bottom: 0;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Assigned Courses (Select courses taught by this faculty)</label>
+                <div style="max-height: 180px; overflow-y: auto; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 12px;">
+                    {% for c in all_courses %}
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; cursor: pointer; color: #e2e8f0; font-size: 0.88rem;">
+                        <input type="checkbox" name="assigned_courses" value="{{ c.id }}" {% if c in assigned_courses %}checked{% endif %} style="accent-color: #10b981; width: 16px; height: 16px;">
+                        <span>{{ c.title }}</span>
+                        {% if c.assigned_faculty and c.assigned_faculty != faculty %}
+                            <span style="font-size: 0.72rem; color: #f59e0b; margin-left: auto;">(currently: {{ c.assigned_faculty.get_full_name|default:c.assigned_faculty.username }})</span>
+                        {% endif %}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Biography</label>
+                <textarea name="bio" rows="3" class="input-dark" style="resize: vertical; margin-bottom: 0;">{{ faculty.profile.bio|default:'' }}</textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" onclick="closeEditFacultyModal()" style="padding: 10px 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #94a3b8; border-radius: 50px; font-weight: 600; font-size: 0.88rem; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-edit" style="width: auto; padding: 10px 24px; border-radius: 50px; font-weight: 700;">
+                    <i class="fas fa-check"></i> Save Changes
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    function openEditFacultyModal() {
+        var modal = document.getElementById('editFacultyModalOverlay');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeEditFacultyModal() {
+        var modal = document.getElementById('editFacultyModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeEditFacultyModal();
+        }
+    });
+
+    document.getElementById('editFacultyModalOverlay')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditFacultyModal();
+        }
+    });
+</script>
+{% endblock %}
