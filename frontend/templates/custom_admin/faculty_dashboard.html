@@ -1,0 +1,1320 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ============================================= */
+    /* FACULTY DASHBOARD — CYBER-GLASS DESIGN        */
+    /* ============================================= */
+    .fac-container {
+        padding: 28px 32px;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    /* --- Faculty Hero Banner --- */
+    .fac-hero-card {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.85));
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        border-radius: var(--radius-xl);
+        padding: 30px;
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .fac-hero-card::after {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 220px; height: 220px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .fac-hero-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .fac-hero-left {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .fac-avatar-box {
+        position: relative;
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+        border: 2px solid rgba(52, 211, 153, 0.5);
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .fac-avatar-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .fac-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        font-size: 2.2rem;
+        font-weight: 800;
+        font-family: var(--font-mono);
+    }
+
+    .fac-online-dot {
+        position: absolute;
+        bottom: 5px; right: 5px;
+        width: 14px; height: 14px;
+        background: #10b981;
+        border: 2px solid #0d111c;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #10b981;
+    }
+
+    .fac-title-area h1 {
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .fac-role-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 99px;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        color: #34d399;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .fac-dept-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 99px;
+        background: rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(96, 165, 250, 0.4);
+        color: #60a5fa;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .fac-meta-line {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .fac-meta-line span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .fac-meta-line i {
+        color: #10b981;
+    }
+
+    .fac-hero-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-edit-profile {
+        padding: 11px 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-md);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-smooth);
+    }
+
+    .btn-edit-profile:hover {
+        background: rgba(255, 255, 255, 0.16);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    /* --- Stat Grid --- */
+    .fac-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 20px;
+        margin-bottom: 36px;
+    }
+
+    .fac-stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition-smooth);
+    }
+
+    .fac-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+    }
+
+    .fac-stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--glass-border-hover);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .fac-stat-emerald::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .fac-stat-cyan::before { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+    .fac-stat-pink::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+    .fac-stat-purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+    .fac-stat-amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .fac-stat-blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+
+    .fac-stat-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 14px;
+    }
+
+    .fac-stat-emerald .fac-stat-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .fac-stat-cyan .fac-stat-icon { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+    .fac-stat-pink .fac-stat-icon { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+    .fac-stat-purple .fac-stat-icon { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+    .fac-stat-amber .fac-stat-icon { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .fac-stat-blue .fac-stat-icon { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+
+    .fac-stat-number {
+        font-family: var(--font-mono);
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .fac-stat-label {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* --- Section Card --- */
+    .fac-section {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px;
+        margin-bottom: 36px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .fac-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .fac-section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #fff;
+    }
+
+    .fac-section-title i {
+        color: #10b981;
+    }
+
+    /* --- Student Details Table --- */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .fac-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .fac-table th {
+        padding: 14px 18px;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(0, 0, 0, 0.25);
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .fac-table td {
+        padding: 16px 18px;
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        vertical-align: middle;
+    }
+
+    .fac-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .student-cell {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .student-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .student-avatar-initial {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .student-id-badge {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+        background: rgba(0, 212, 255, 0.12);
+        color: #00d4ff;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        padding: 3px 8px;
+        border-radius: 6px;
+    }
+
+    .course-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: rgba(168, 85, 247, 0.12);
+        color: #c084fc;
+        border: 1px solid rgba(168, 85, 247, 0.3);
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .progress-bar-wrap {
+        width: 140px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 99px;
+        overflow: hidden;
+        margin-bottom: 4px;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #34d399);
+        border-radius: 99px;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    /* --- Status Badges (Cyber-Glass, No-Wrap) --- */
+    .status-col-cell {
+        white-space: nowrap !important;
+        min-width: 140px;
+    }
+
+    .badge-status-completed {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        white-space: nowrap !important;
+        padding: 6px 14px !important;
+        border-radius: 99px !important;
+        font-weight: 700 !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 0.3px !important;
+        background: rgba(16, 185, 129, 0.14) !important;
+        color: #10b981 !important;
+        border: 1px solid rgba(52, 211, 153, 0.4) !important;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+    }
+
+    .badge-status-inprogress {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        white-space: nowrap !important;
+        padding: 6px 14px !important;
+        border-radius: 99px !important;
+        font-weight: 700 !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 0.3px !important;
+        background: rgba(0, 212, 255, 0.12) !important;
+        color: #00d4ff !important;
+        border: 1px solid rgba(0, 212, 255, 0.4) !important;
+        box-shadow: 0 0 14px rgba(0, 212, 255, 0.25) !important;
+    }
+
+    .badge-status-started {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        white-space: nowrap !important;
+        padding: 6px 14px !important;
+        border-radius: 99px !important;
+        font-weight: 700 !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 0.3px !important;
+        background: rgba(245, 158, 11, 0.12) !important;
+        color: #fbbf24 !important;
+        border: 1px solid rgba(245, 158, 11, 0.35) !important;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    .badge-dot-cyan {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #00d4ff;
+        box-shadow: 0 0 8px #00d4ff;
+        display: inline-block;
+        animation: pulseCyanDot 1.8s infinite ease-in-out;
+    }
+
+    .badge-dot-amber {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #fbbf24;
+        box-shadow: 0 0 8px #fbbf24;
+        display: inline-block;
+        animation: pulseCyanDot 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulseCyanDot {
+        0%, 100% { transform: scale(0.85); opacity: 0.7; }
+        50% { transform: scale(1.25); opacity: 1; }
+    }
+
+    /* --- Action Hub Tabs --- */
+    .fac-tabs-nav {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 14px;
+    }
+
+    .fac-tab-btn {
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+    }
+
+    .fac-tab-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
+
+    .fac-tab-btn.active {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(52, 211, 153, 0.5);
+        color: #34d399;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .fac-tab-pane {
+        display: none;
+    }
+
+    .fac-tab-pane.active {
+        display: block;
+        animation: fadeInTab 0.25s ease-out;
+    }
+
+    @keyframes fadeInTab {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Two-column layout for Action form + List */
+    .fac-action-grid {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 28px;
+    }
+
+    @media (max-width: 1024px) {
+        .fac-action-grid { grid-template-columns: 1fr; }
+        .fac-container { padding: 18px 14px; }
+        .fac-hero-content { flex-direction: column; align-items: flex-start; }
+    }
+
+    .fac-form-box {
+        background: rgba(0, 0, 0, 0.28);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+    }
+
+    .fac-form-box h3 {
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 18px 0;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .fac-form-box label {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+    }
+
+    .fac-form-box input,
+    .fac-form-box textarea,
+    .fac-form-box select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 14px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        margin-bottom: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .fac-form-box input:focus,
+    .fac-form-box textarea:focus,
+    .fac-form-box select:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    .fac-submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: var(--transition-fast);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+    }
+
+    .fac-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    }
+
+    .fac-list-box {
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+    }
+
+    .fac-item-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition-fast);
+    }
+
+    .fac-item-card:hover {
+        border-color: rgba(52, 211, 153, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .fac-del-btn {
+        padding: 6px 12px;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+
+    .fac-del-btn:hover {
+        background: #ef4444;
+        color: #fff;
+    }
+</style>
+
+<div class="fac-container">
+
+    <!-- ============================================= -->
+    <!-- 1. FACULTY HERO BANNER                        -->
+    <!-- ============================================= -->
+    <div class="fac-hero-card" id="profile-section">
+        <div class="fac-hero-content">
+            <div class="fac-hero-left">
+                <div class="fac-avatar-box">
+                    {% if user_profile.profile_pic and user_profile.profile_pic.name != 'profile_pics/default.png' %}
+                        <img src="{{ user_profile.profile_pic.url }}" alt="{{ faculty_user.username }}">
+                    {% else %}
+                        <div class="fac-avatar-fallback">{{ faculty_user.first_name.0|default:faculty_user.username.0|upper }}</div>
+                    {% endif %}
+                    <span class="fac-online-dot" title="Active Instructor"></span>
+                </div>
+
+                <div class="fac-title-area">
+                    <h1>
+                        {{ faculty_user.get_full_name|default:faculty_user.username }}
+                        <span class="fac-role-pill"><i class="fas fa-chalkboard-teacher"></i> {{ faculty_profile.job_role|default:"Professor" }}</span>
+                        {% if faculty_profile.department %}
+                        <span class="fac-dept-pill"><i class="fas fa-building"></i> {{ faculty_profile.department }}</span>
+                        {% endif %}
+                    </h1>
+
+                    <div class="fac-meta-line">
+                        <span><i class="fas fa-envelope"></i> {{ faculty_user.email }}</span>
+                        {% if faculty_user.phone or user_profile.phone %}
+                        <span><i class="fas fa-phone-alt"></i> {{ user_profile.phone|default:faculty_user.phone }}</span>
+                        {% endif %}
+                        <span><i class="fas fa-award"></i> {{ faculty_profile.experience_years|default:0 }} Yrs Experience</span>
+                        {% if faculty_profile.specialization %}
+                        <span><i class="fas fa-brain"></i> {{ faculty_profile.specialization }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if user_profile.bio %}
+                    <div style="margin-top: 10px; color: #94a3b8; font-size: 0.88rem; max-width: 800px; line-height: 1.5;">
+                        <i class="fas fa-quote-left" style="color: #10b981; font-size: 0.75rem; margin-right: 4px;"></i>
+                        {{ user_profile.bio }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="fac-hero-actions">
+                <button type="button" class="btn-edit-profile" onclick="openFacultyProfileModal()">
+                    <i class="fas fa-user-edit"></i> Edit Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 2. QUICK STATS CARDS                          -->
+    <!-- ============================================= -->
+    <div class="fac-stats-grid">
+        <div class="fac-stat-card fac-stat-emerald">
+            <div class="fac-stat-icon"><i class="fas fa-book-open"></i></div>
+            <div class="fac-stat-number">{{ total_assigned_courses }}</div>
+            <div class="fac-stat-label">Assigned Courses</div>
+        </div>
+
+        <div class="fac-stat-card fac-stat-cyan">
+            <div class="fac-stat-icon"><i class="fas fa-users"></i></div>
+            <div class="fac-stat-number">{{ total_enrolled_students }}</div>
+            <div class="fac-stat-label">Enrolled Students</div>
+        </div>
+
+        <div class="fac-stat-card fac-stat-pink">
+            <div class="fac-stat-icon"><i class="fas fa-video"></i></div>
+            <div class="fac-stat-number">{{ live_classes_count }}</div>
+            <div class="fac-stat-label">Live Classes</div>
+        </div>
+
+        <div class="fac-stat-card fac-stat-purple">
+            <div class="fac-stat-icon"><i class="fas fa-file-pdf"></i></div>
+            <div class="fac-stat-number">{{ documents_count }}</div>
+            <div class="fac-stat-label">PDF Notes / Docs</div>
+        </div>
+
+        <div class="fac-stat-card fac-stat-amber">
+            <div class="fac-stat-icon"><i class="fas fa-feather-alt"></i></div>
+            <div class="fac-stat-number">{{ exams_count }}</div>
+            <div class="fac-stat-label">Exams / Quizzes</div>
+        </div>
+
+        <div class="fac-stat-card fac-stat-blue">
+            <div class="fac-stat-icon"><i class="fas fa-tasks"></i></div>
+            <div class="fac-stat-number">{{ assignments_count }}</div>
+            <div class="fac-stat-label">Assignments</div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 3. ENROLLED STUDENTS DETAILS TABLE (SCOPED)   -->
+    <!-- ============================================= -->
+    <div class="fac-section" id="students-section">
+        <div class="fac-section-header">
+            <div class="fac-section-title">
+                <i class="fas fa-user-graduate"></i> Enrolled Students
+                <span style="font-size: 0.82rem; font-weight: 600; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 3px 10px; border-radius: 99px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    {{ enrollments.count }} Student{{ enrollments.count|pluralize }} in your Courses
+                </span>
+            </div>
+
+            <!-- Instant Student Filter Search -->
+            <form method="GET" action="#students-section" style="display: flex; gap: 8px;">
+                <div style="position: relative; width: 280px;">
+                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.85rem;"></i>
+                    <input type="text" name="student_search" value="{{ student_search }}" placeholder="Search by name, ID, or course..." style="width: 100%; box-sizing: border-box; padding: 9px 12px 9px 34px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+                <button type="submit" style="padding: 9px 16px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer;">
+                    Filter
+                </button>
+                {% if student_search %}
+                <a href="{% url 'faculty_dashboard' %}#students-section" style="padding: 9px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; border-radius: 8px; font-size: 0.88rem; text-decoration: none; display: flex; align-items: center;">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="fac-table">
+                <thead>
+                    <tr>
+                        <th>Student Profile</th>
+                        <th>Student ID</th>
+                        <th>Course Enrolled</th>
+                        <th>Contact / Email</th>
+                        <th>Enrolled Date</th>
+                        <th>Course Progress</th>
+                        <th class="status-col-cell">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enroll in enrollments %}
+                    <tr>
+                        <td>
+                            <div class="student-cell">
+                                {% if enroll.student.profile.profile_pic and enroll.student.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                    <img src="{{ enroll.student.profile.profile_pic.url }}" alt="{{ enroll.student.username }}" class="student-avatar">
+                                {% else %}
+                                    <div class="student-avatar-initial">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
+                                {% endif %}
+                                <div>
+                                    <div style="font-weight: 700; color: #fff;">{{ enroll.student.get_full_name|default:enroll.student.username }}</div>
+                                    <div style="color: #64748b; font-size: 0.8rem;">@{{ enroll.student.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="student-id-badge">{{ enroll.student.student_id|default:"100001" }}</span>
+                        </td>
+                        <td>
+                            <span class="course-pill"><i class="fas fa-book"></i> {{ enroll.course.title }}</span>
+                        </td>
+                        <td>
+                            <div style="color: #cbd5e1; font-size: 0.85rem;"><i class="fas fa-envelope" style="color: #64748b; margin-right: 4px;"></i> {{ enroll.student.email }}</div>
+                            {% if enroll.student.phone or enroll.student.profile.phone %}
+                            <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;"><i class="fas fa-phone-alt" style="margin-right: 4px;"></i> {{ enroll.student.profile.phone|default:enroll.student.phone }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span style="color: #94a3b8; font-size: 0.85rem;">{{ enroll.enrolled_at|date:"d M Y" }}</span>
+                        </td>
+                        <td>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width: {{ enroll.progress|default:0 }}%;"></div>
+                            </div>
+                            <div style="font-size: 0.78rem; font-weight: 700; color: #34d399;">{{ enroll.progress|default:0 }}% Completed</div>
+                        </td>
+                        <td class="status-col-cell">
+                            {% if enroll.is_completed or enroll.progress >= 100 %}
+                                <span class="badge-status-completed">
+                                    <i class="fas fa-check-circle"></i> Completed
+                                </span>
+                            {% else %}
+                                <span class="badge-status-inprogress">
+                                    <span class="badge-dot-cyan"></span> In Progress
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">
+                            <i class="fas fa-users-slash" style="font-size: 2.2rem; color: #475569; margin-bottom: 12px; display: block;"></i>
+                            No students currently enrolled in your assigned courses.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 4. FACULTY ACTION HUB (SCOPED CREATION)       -->
+    <!-- ============================================= -->
+    <div class="fac-section" id="actions-section">
+        <div class="fac-section-header">
+            <div class="fac-section-title">
+                <i class="fas fa-tools"></i> Faculty Management Hub
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="fac-tabs-nav">
+            <button type="button" class="fac-tab-btn active" onclick="switchFacultyTab('tab-classes', this)">
+                <i class="fas fa-video"></i> Live Classes
+            </button>
+            <button type="button" class="fac-tab-btn" onclick="switchFacultyTab('tab-notices', this)">
+                <i class="fas fa-bullhorn"></i> Notice Board
+            </button>
+            <button type="button" class="fac-tab-btn" onclick="switchFacultyTab('tab-library', this)">
+                <i class="fas fa-file-pdf"></i> Study PDFs & Docs
+            </button>
+            <button type="button" class="fac-tab-btn" onclick="switchFacultyTab('tab-exams', this)">
+                <i class="fas fa-feather-alt"></i> Exams & Quizzes
+            </button>
+            <button type="button" class="fac-tab-btn" onclick="switchFacultyTab('tab-assignments', this)">
+                <i class="fas fa-tasks"></i> Assignments
+            </button>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- TAB 1: LIVE CLASSES                           -->
+        <!-- ============================================= -->
+        <div id="tab-classes" class="fac-tab-pane active">
+            <div class="fac-action-grid" id="live-class-section">
+                <!-- Schedule Form -->
+                <div class="fac-form-box">
+                    <h3><i class="fas fa-calendar-plus" style="color: #ff3366;"></i> Schedule Live Class</h3>
+                    <form method="POST" action="{% url 'faculty_create_live_class' %}">
+                        {% csrf_token %}
+                        <label>Assigned Course</label>
+                        {{ live_class_form.course }}
+
+                        <label>Topic / Title</label>
+                        {{ live_class_form.title }}
+
+                        <label>Meeting Platform</label>
+                        {{ live_class_form.platform }}
+
+                        <label>Date & Time</label>
+                        {{ live_class_form.date_time }}
+
+                        <label>Duration (Minutes)</label>
+                        {{ live_class_form.duration_minutes }}
+
+                        <label>Meeting URL / Link</label>
+                        {{ live_class_form.meeting_link }}
+
+                        <button type="submit" class="fac-submit-btn">
+                            <i class="fas fa-satellite-dish"></i> Schedule & Broadcast
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Classes List -->
+                <div class="fac-list-box">
+                    <h3 style="color: #fff; font-size: 1.1rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-video" style="color: #ff3366;"></i> Scheduled Live Classes</span>
+                        <span style="font-size: 0.85rem; color: #94a3b8;">{{ live_classes.count }} total</span>
+                    </h3>
+                    {% for lc in live_classes %}
+                    <div class="fac-item-card">
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ lc.title }}</div>
+                            <div style="color: #60a5fa; font-size: 0.8rem; margin: 2px 0;">{{ lc.course.title }}</div>
+                            <div style="color: #94a3b8; font-size: 0.78rem;">
+                                <i class="fas fa-clock" style="color: #10b981;"></i> {{ lc.date_time|date:"d M Y, h:i A" }} ({{ lc.duration_minutes }} mins) • 
+                                <span style="color: #ffaa00; font-weight: 600;">{{ lc.get_platform_display|default:lc.platform }}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <a href="{{ lc.meeting_link }}" target="_blank" style="padding: 6px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                Join <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                            </a>
+                            <a href="{% url 'faculty_delete_live_class' lc.id %}" onclick="return confirm('Delete this live class?');" class="fac-del-btn">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="text-align: center; padding: 30px; color: #64748b;">
+                        <i class="fas fa-calendar-times" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                        No live classes scheduled yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- TAB 2: NOTICE BOARD                           -->
+        <!-- ============================================= -->
+        <div id="tab-notices" class="fac-tab-pane">
+            <div class="fac-action-grid" id="notices-section">
+                <!-- Notice Form -->
+                <div class="fac-form-box">
+                    <h3><i class="fas fa-bullhorn" style="color: #ffaa00;"></i> Broadcast Notice</h3>
+                    <form method="POST" action="{% url 'faculty_create_notice' %}">
+                        {% csrf_token %}
+                        <label>Notice Title</label>
+                        {{ notice_form.title }}
+
+                        <label>Target Recipient</label>
+                        {{ notice_form.recipient }}
+
+                        <label>Notification Type</label>
+                        {{ notice_form.notification_type }}
+
+                        <label>Notice Message</label>
+                        {{ notice_form.message }}
+
+                        <label>Action URL (Optional)</label>
+                        {{ notice_form.action_url }}
+
+                        <button type="submit" class="fac-submit-btn">
+                            <i class="fas fa-paper-plane"></i> Send Notification
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Info Box -->
+                <div class="fac-list-box">
+                    <h3 style="color: #fff; font-size: 1.1rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px;">
+                        <i class="fas fa-info-circle" style="color: #ffaa00;"></i> Notice Broadcast Guidelines
+                    </h3>
+                    <div style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+                        <p>📢 <strong>Course Broadcast:</strong> Leaving "Target Recipient" blank will automatically dispatch this notification in real-time to every student enrolled in any of your assigned subjects.</p>
+                        <p>🎯 <strong>Individual Target:</strong> Select any student from the dropdown to deliver a private direct alert.</p>
+                        <p>⚡ <strong>Real-time Delivery:</strong> All notices immediately appear in the student portal top notification drawer and in their dashboard alert stream.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- TAB 3: STUDY PDFS & DOCUMENTS                 -->
+        <!-- ============================================= -->
+        <div id="tab-library" class="fac-tab-pane">
+            <div class="fac-action-grid" id="library-section">
+                <!-- Upload Form -->
+                <div class="fac-form-box">
+                    <h3><i class="fas fa-file-upload" style="color: #a855f7;"></i> Upload Study Material</h3>
+                    <form method="POST" action="{% url 'faculty_add_library' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label>Course</label>
+                        {{ library_form.course }}
+
+                        <label>Document Title</label>
+                        {{ library_form.title }}
+
+                        <label>Category (e.g. Lecture Notes, Cheatsheet)</label>
+                        {{ library_form.category }}
+
+                        <label>Attach PDF / Office File</label>
+                        {{ library_form.file }}
+
+                        <button type="submit" class="fac-submit-btn">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload to Digital Library
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Docs List -->
+                <div class="fac-list-box">
+                    <h3 style="color: #fff; font-size: 1.1rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-folder-open" style="color: #a855f7;"></i> Uploaded Documents</span>
+                        <span style="font-size: 0.85rem; color: #94a3b8;">{{ documents.count }} files</span>
+                    </h3>
+                    {% for doc in documents %}
+                    <div class="fac-item-card">
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ doc.title }}</div>
+                            <div style="color: #60a5fa; font-size: 0.8rem;">{{ doc.course.title }}</div>
+                            <div style="color: #94a3b8; font-size: 0.78rem;">
+                                <span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 2px 6px; border-radius: 4px;">{{ doc.category }}</span>
+                                • {{ doc.uploaded_at|date:"d M Y" }}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            {% if doc.file %}
+                            <a href="{{ doc.file.url }}" target="_blank" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                <i class="fas fa-download"></i> View
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'faculty_delete_library' doc.id %}" onclick="return confirm('Delete this study document?');" class="fac-del-btn">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="text-align: center; padding: 30px; color: #64748b;">
+                        <i class="fas fa-file-excel" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                        No study materials uploaded yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- TAB 4: EXAMS & QUIZZES                        -->
+        <!-- ============================================= -->
+        <div id="tab-exams" class="fac-tab-pane">
+            <div class="fac-action-grid" id="exams-section">
+                <!-- Exam Form -->
+                <div class="fac-form-box">
+                    <h3><i class="fas fa-plus-circle" style="color: #06b6d4;"></i> Create Exam / Assessment</h3>
+                    <form method="POST" action="{% url 'faculty_create_exam' %}">
+                        {% csrf_token %}
+                        <label>Course</label>
+                        {{ exam_form.course }}
+
+                        <label>Exam Title</label>
+                        {{ exam_form.title }}
+
+                        <label>External Exam / Form Link</label>
+                        {{ exam_form.exam_link }}
+
+                        <label>Description & Instructions</label>
+                        {{ exam_form.description }}
+
+                        <label>Submission Deadline</label>
+                        {{ exam_form.deadline }}
+
+                        <label>Duration (Minutes)</label>
+                        {{ exam_form.duration_minutes }}
+
+                        <div style="margin: 10px 0 16px 0; display: flex; align-items: center; gap: 8px;">
+                            {{ exam_form.is_active }}
+                            <label style="margin: 0; text-transform: none; font-size: 0.88rem; color: #fff;">Activate this exam for students immediately</label>
+                        </div>
+
+                        <button type="submit" class="fac-submit-btn">
+                            <i class="fas fa-check-double"></i> Publish Exam
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Exams List -->
+                <div class="fac-list-box">
+                    <h3 style="color: #fff; font-size: 1.1rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-feather-alt" style="color: #06b6d4;"></i> Published Exams</span>
+                        <span style="font-size: 0.85rem; color: #94a3b8;">{{ exams.count }} exams</span>
+                    </h3>
+                    {% for exam in exams %}
+                    <div class="fac-item-card">
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ exam.title }}</div>
+                            <div style="color: #60a5fa; font-size: 0.8rem;">{{ exam.course.title }}</div>
+                            <div style="color: #94a3b8; font-size: 0.78rem;">
+                                Duration: {{ exam.duration_minutes }}m • Deadline: {{ exam.deadline|date:"d M Y, h:i A"|default:"Open" }} •
+                                {% if exam.is_active %}
+                                    <span style="color: #10b981; font-weight: 600;">Active</span>
+                                {% else %}
+                                    <span style="color: #ef4444; font-weight: 600;">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            {% if exam.exam_link %}
+                            <a href="{{ exam.exam_link }}" target="_blank" style="padding: 6px 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: #22d3ee; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                <i class="fas fa-external-link-alt"></i> Link
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'faculty_delete_exam' exam.id %}" onclick="return confirm('Delete this exam?');" class="fac-del-btn">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="text-align: center; padding: 30px; color: #64748b;">
+                        <i class="fas fa-clipboard-check" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                        No exams or quizzes published yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- TAB 5: ASSIGNMENTS                            -->
+        <!-- ============================================= -->
+        <div id="tab-assignments" class="fac-tab-pane">
+            <div class="fac-action-grid" id="assignments-section">
+                <!-- Assignment Form -->
+                <div class="fac-form-box">
+                    <h3><i class="fas fa-tasks" style="color: #3b82f6;"></i> Create Course Assignment</h3>
+                    <form method="POST" action="{% url 'faculty_create_assignment' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label>Course</label>
+                        {{ assignment_form.course }}
+
+                        <label>Assignment Title</label>
+                        {{ assignment_form.title }}
+
+                        <label>Description & Task Details</label>
+                        {{ assignment_form.description }}
+
+                        <label>Due Date & Time</label>
+                        {{ assignment_form.due_date }}
+
+                        <label>Total Marks</label>
+                        {{ assignment_form.total_marks }}
+
+                        <label>Attach Specification / Brief (Optional)</label>
+                        {{ assignment_form.file }}
+
+                        <button type="submit" class="fac-submit-btn">
+                            <i class="fas fa-check"></i> Create Assignment
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Assignments List -->
+                <div class="fac-list-box">
+                    <h3 style="color: #fff; font-size: 1.1rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-clipboard-list" style="color: #3b82f6;"></i> Active Assignments</span>
+                        <span style="font-size: 0.85rem; color: #94a3b8;">{{ assignments.count }} tasks</span>
+                    </h3>
+                    {% for asgn in assignments %}
+                    <div class="fac-item-card">
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ asgn.title }}</div>
+                            <div style="color: #60a5fa; font-size: 0.8rem;">{{ asgn.course.title }}</div>
+                            <div style="color: #94a3b8; font-size: 0.78rem;">
+                                Due: {{ asgn.due_date|date:"d M Y, h:i A" }} • Marks: {{ asgn.total_marks }} •
+                                <span style="color: #34d399; font-weight: 600;">{{ asgn.submissions.count }} Submissions</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <a href="{% url 'faculty_delete_assignment' asgn.id %}" onclick="return confirm('Delete this assignment?');" class="fac-del-btn">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="text-align: center; padding: 30px; color: #64748b;">
+                        <i class="fas fa-folder" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                        No assignments created yet.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ============================================= -->
+<!-- EDIT FACULTY PROFILE MODAL                    -->
+<!-- ============================================= -->
+<div id="facProfileModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(5, 7, 15, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: rgba(13, 17, 28, 0.95); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 20px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(16, 185, 129, 0.2); position: relative; animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        
+        <!-- Modal Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 22px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.25rem;">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff;">Update Faculty Profile</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Modify your photo, bio, contact, and specialization</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeFacultyProfileModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.color='#ef4444';" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#94a3b8';">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form method="POST" action="{% url 'faculty_update_profile' %}" enctype="multipart/form-data" style="padding: 24px 28px;">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Profile Photo</label>
+                <input type="file" name="profile_pic" accept="image/*" style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff;">
+                <div style="font-size: 0.78rem; color: #64748b; margin-top: 4px;">Square photo recommended. Facial features will be automatically centered and enhanced.</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Contact Phone</label>
+                    <input type="text" name="phone" value="{{ user_profile.phone|default:faculty_user.phone|default:'' }}" placeholder="+91 98765 43210" style="width: 100%; box-sizing: border-box; padding: 11px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Department</label>
+                    <input type="text" name="department" value="{{ faculty_profile.department|default:'' }}" placeholder="e.g. Computer Science" style="width: 100%; box-sizing: border-box; padding: 11px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Job Role / Title</label>
+                    <input type="text" name="job_role" value="{{ faculty_profile.job_role|default:'Professor' }}" placeholder="e.g. Lead Instructor" style="width: 100%; box-sizing: border-box; padding: 11px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Specialization</label>
+                    <input type="text" name="specialization" value="{{ faculty_profile.specialization|default:'' }}" placeholder="e.g. AI & Machine Learning" style="width: 100%; box-sizing: border-box; padding: 11px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Bio / Professional Summary</label>
+                <textarea name="bio" rows="3" placeholder="Share your academic background, research interests, and teaching philosophy..." style="width: 100%; box-sizing: border-box; padding: 11px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none; resize: vertical;">{{ user_profile.bio|default:'' }}</textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 18px;">
+                <button type="button" onclick="closeFacultyProfileModal()" style="padding: 10px 18px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(52, 211, 153, 0.4); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);">
+                    <i class="fas fa-check-circle"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchFacultyTab(tabId, btn) {
+        document.querySelectorAll('.fac-tab-pane').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.fac-tab-btn').forEach(el => el.classList.remove('active'));
+        
+        const target = document.getElementById(tabId);
+        if (target) target.classList.add('active');
+        if (btn) btn.classList.add('active');
+    }
+
+    function openFacultyProfileModal() {
+        const modal = document.getElementById('facProfileModalOverlay');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeFacultyProfileModal() {
+        const modal = document.getElementById('facProfileModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeFacultyProfileModal();
+    });
+</script>
+{% endblock %}
