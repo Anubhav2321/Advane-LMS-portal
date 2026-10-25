@@ -30,6 +30,8 @@ urlpatterns = [
     path('courses/enroll/<int:course_id>/', views.enroll_course, name='enroll_course'),
     
     path('live-classes/', views.live_classes, name='live_classes'),
+    path('live-classes/<int:class_id>/join/', views.join_live_class, name='join_live_class'),
+    path('api/live-classes/<int:class_id>/details/', views.live_class_details_api, name='live_class_details_api'),
     path('library/', views.library_view, name='library'),
     path('exams/', views.exams_view, name='exams'),
     path('profile/', views.profile_view, name='profile'),
@@ -52,7 +54,26 @@ urlpatterns = [
     path('admin-panel/create-live-class/', views.admin_create_live_class, name='admin_create_live_class'),
     path('admin-panel/create-exam/', views.admin_create_exam, name='admin_create_exam'),
     path('admin-panel/add-library/', views.add_library_view, name='add_library'),
+    path('admin-panel/create-faculty/', views.admin_create_faculty, name='admin_create_faculty'),
+    path('admin-panel/faculties/', views.admin_faculty_list, name='admin_faculty_list'),
+    path('admin-panel/faculties/<int:faculty_id>/', views.admin_faculty_detail, name='admin_faculty_detail'),
+    path('admin-panel/faculties/<int:faculty_id>/reset-pass/', views.admin_reset_faculty_password, name='admin_reset_faculty_password'),
+    path('admin-panel/faculties/<int:faculty_id>/update/', views.admin_update_faculty_info, name='admin_update_faculty_info'),
+    path('admin-panel/faculties/<int:faculty_id>/delete/', views.admin_delete_faculty, name='admin_delete_faculty'),
     path('admin-panel/course/<int:course_id>/add-lesson/', views.admin_add_lesson, name='admin_add_lesson'),
+
+    # Faculty Panel Endpoints
+    path('faculty/dashboard/', views.faculty_dashboard, name='faculty_dashboard'),
+    path('faculty/create-live-class/', views.faculty_create_live_class, name='faculty_create_live_class'),
+    path('faculty/delete-live-class/<int:class_id>/', views.faculty_delete_live_class, name='faculty_delete_live_class'),
+    path('faculty/create-notice/', views.faculty_create_notice, name='faculty_create_notice'),
+    path('faculty/add-library/', views.faculty_add_library, name='faculty_add_library'),
+    path('faculty/delete-library/<int:doc_id>/', views.faculty_delete_library, name='faculty_delete_library'),
+    path('faculty/create-exam/', views.faculty_create_exam, name='faculty_create_exam'),
+    path('faculty/delete-exam/<int:exam_id>/', views.faculty_delete_exam, name='faculty_delete_exam'),
+    path('faculty/create-assignment/', views.faculty_create_assignment, name='faculty_create_assignment'),
+    path('faculty/delete-assignment/<int:assignment_id>/', views.faculty_delete_assignment, name='faculty_delete_assignment'),
+    path('faculty/update-profile/', views.faculty_update_profile, name='faculty_update_profile'),
     
     # Student Management List & Actions
     path('admin-panel/students/', views.admin_student_list, name='admin_student_list'),

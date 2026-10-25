@@ -449,11 +449,15 @@
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            max-width: calc(100% - var(--sidebar-width));
+            min-width: 0;
             padding: 0;
             background: transparent;
             position: relative;
             z-index: 1;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         /* ============================================= */
@@ -832,6 +836,75 @@
         </div>
 
         <ul class="nav-links">
+            {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}
+            <!-- FACULTY-SPECIFIC NAVIGATION -->
+            <li>
+                <a href="{% url 'faculty_dashboard' %}" class="{% if request.resolver_match.url_name == 'faculty_dashboard' %}active{% endif %}">
+                    <i class="fas fa-chart-pie" style="color: #10b981;"></i>
+                    <span>Faculty Console</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#students-section">
+                    <i class="fas fa-user-graduate" style="color: #00d4ff;"></i>
+                    <span>Enrolled Students</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#live-class-section">
+                    <i class="fas fa-video" style="color: #ff3366;"></i>
+                    <span>Live Classes</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#notices-section">
+                    <i class="fas fa-bullhorn" style="color: #ffaa00;"></i>
+                    <span>Notice Board</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#library-section">
+                    <i class="fas fa-file-pdf" style="color: #a855f7;"></i>
+                    <span>PDF Library</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#exams-section">
+                    <i class="fas fa-feather-alt" style="color: #06b6d4;"></i>
+                    <span>Exams & Quizzes</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#assignments-section">
+                    <i class="fas fa-tasks" style="color: #3b82f6;"></i>
+                    <span>Assignments</span>
+                </a>
+            </li>
+
+            <div class="nav-divider"></div>
+
+            <li>
+                <a href="{% url 'home' %}" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Portal</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'dashboard' %}" style="color: #00d4ff;">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Switch to Student</span>
+                </a>
+            </li>
+
+            {% else %}
+            <!-- STANDARD ADMIN NAVIGATION -->
             <li>
                 <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
                     <i class="fas fa-chart-pie"></i>
@@ -846,6 +919,12 @@
                 </a>
             </li>
 
+            <li>
+                <a href="{% url 'admin_faculty_list' %}" class="{% if 'faculty' in request.resolver_match.url_name and 'dashboard' not in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-chalkboard-teacher" style="color: #10b981;"></i>
+                    <span>Faculty</span>
+                </a>
+            </li>
 
             <li>
                 <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name and 'assignment' not in request.resolver_match.url_name %}active{% endif %}">
@@ -893,7 +972,7 @@
             </li>
             
             <div class="nav-divider"></div>
-            
+
             <li>
                 <a href="{% url 'home' %}" target="_blank">
                     <i class="fas fa-external-link-alt"></i>
@@ -907,18 +986,29 @@
                     <span>Switch to Student</span>
                 </a>
             </li>
-
-            {% if request.user.is_teacher or request.user.is_faculty %}
-            <li>
-                <a href="{% url 'faculty_dashboard' %}" style="color: #ffaa00;">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Switch to Faculty</span>
-                </a>
-            </li>
             {% endif %}
         </ul>
 
         <div class="sidebar-footer">
+            {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}
+            <!-- Faculty Profile Mini-Card -->
+            <a href="{% url 'faculty_dashboard' %}#profile-section" class="admin-sidebar-profile-card active-card" title="Faculty Profile">
+                <div class="admin-profile-avatar-wrapper">
+                    {% if request.user.profile.profile_pic and request.user.profile.profile_pic.name != 'profile_pics/default.png' %}
+                        <img src="{{ request.user.profile.profile_pic.url }}" alt="{{ request.user.username }}" class="admin-avatar-img">
+                    {% else %}
+                        <div class="admin-avatar-initial" style="background: linear-gradient(135deg, #10b981, #059669);">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
+                    {% endif %}
+                    <span class="admin-status-indicator" style="background: #10b981; box-shadow: 0 0 10px #10b981;" title="Active Faculty"></span>
+                </div>
+                <div class="admin-sidebar-info">
+                    <span class="admin-sidebar-name">{{ request.user.get_full_name|default:request.user.username }}</span>
+                    <span class="admin-sidebar-role" style="color: #10b981;">
+                        {{ request.user.faculty_profile.job_role|default:"Instructor" }}
+                    </span>
+                </div>
+            </a>
+            {% else %}
             <!-- Admin Profile Mini-Card -->
             <a href="{% url 'admin_profile' %}" class="admin-sidebar-profile-card {% if request.resolver_match.url_name == 'admin_profile' %}active-card{% endif %}" title="Manage Admin Profile">
                 <div class="admin-profile-avatar-wrapper">
@@ -941,6 +1031,7 @@
                 </div>
                 <i class="fas fa-chevron-right admin-profile-chevron"></i>
             </a>
+            {% endif %}
 
             <a href="{% url 'logout' %}" class="logout-btn">
                 <i class="fas fa-power-off"></i> <span>Sign Out</span>

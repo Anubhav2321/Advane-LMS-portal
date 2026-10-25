@@ -29,6 +29,8 @@ from students.views import (
     admin_grade_submission,
     admin_delete_assignment,
     live_classes, 
+    join_live_class,
+    live_class_details_api,
     library_view, 
     profile_view,       #  Profile View
     track_progress,     # 🚀 NEW: Progress Tracking API
@@ -100,6 +102,25 @@ from students.views import (
     admin_reply_support_ticket,
     admin_delete_support_ticket,
     student_reply_support_ticket,
+
+    # Faculty Panel Views
+    admin_create_faculty,
+    admin_faculty_list,
+    admin_faculty_detail,
+    admin_reset_faculty_password,
+    admin_update_faculty_info,
+    admin_delete_faculty,
+    faculty_dashboard,
+    faculty_create_live_class,
+    faculty_delete_live_class,
+    faculty_create_notice,
+    faculty_add_library,
+    faculty_delete_library,
+    faculty_create_exam,
+    faculty_delete_exam,
+    faculty_create_assignment,
+    faculty_delete_assignment,
+    faculty_update_profile,
 )
 
 #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -162,6 +183,8 @@ urlpatterns = [
 
     # Core Features
     path('live-classes/', live_classes, name='live_classes'),
+    path('live-classes/<int:class_id>/join/', join_live_class, name='join_live_class'),
+    path('api/live-classes/<int:class_id>/details/', live_class_details_api, name='live_class_details_api'),
     path('library/', library_view, name='library'),
     
     #  9. ADVANCED COMMUNITY CHAT URLs 
@@ -212,8 +235,26 @@ urlpatterns = [
 
     # 6. Admin Panel System
     path('admin-panel/', admin_dashboard, name='admin_dashboard'),
-    path('faculty/dashboard/', admin_dashboard, name='faculty_dashboard'),
+    path('admin-panel/create-faculty/', admin_create_faculty, name='admin_create_faculty'),
+    path('admin-panel/faculties/', admin_faculty_list, name='admin_faculty_list'),
+    path('admin-panel/faculties/<int:faculty_id>/', admin_faculty_detail, name='admin_faculty_detail'),
+    path('admin-panel/faculties/<int:faculty_id>/reset-pass/', admin_reset_faculty_password, name='admin_reset_faculty_password'),
+    path('admin-panel/faculties/<int:faculty_id>/update/', admin_update_faculty_info, name='admin_update_faculty_info'),
+    path('admin-panel/faculties/<int:faculty_id>/delete/', admin_delete_faculty, name='admin_delete_faculty'),
     path('admin-panel/profile/', admin_profile, name='admin_profile'),
+
+    # 6.5 Dedicated Faculty Panel System
+    path('faculty/dashboard/', faculty_dashboard, name='faculty_dashboard'),
+    path('faculty/create-live-class/', faculty_create_live_class, name='faculty_create_live_class'),
+    path('faculty/delete-live-class/<int:class_id>/', faculty_delete_live_class, name='faculty_delete_live_class'),
+    path('faculty/create-notice/', faculty_create_notice, name='faculty_create_notice'),
+    path('faculty/add-library/', faculty_add_library, name='faculty_add_library'),
+    path('faculty/delete-library/<int:doc_id>/', faculty_delete_library, name='faculty_delete_library'),
+    path('faculty/create-exam/', faculty_create_exam, name='faculty_create_exam'),
+    path('faculty/delete-exam/<int:exam_id>/', faculty_delete_exam, name='faculty_delete_exam'),
+    path('faculty/create-assignment/', faculty_create_assignment, name='faculty_create_assignment'),
+    path('faculty/delete-assignment/<int:assignment_id>/', faculty_delete_assignment, name='faculty_delete_assignment'),
+    path('faculty/update-profile/', faculty_update_profile, name='faculty_update_profile'),
     
     #  A. Student Management 
     path('admin-panel/students/', admin_student_list, name='admin_student_list'),
