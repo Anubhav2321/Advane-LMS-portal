@@ -224,19 +224,19 @@ class NotificationForm(forms.ModelForm):
 class LiveClassForm(forms.ModelForm):
     class Meta:
         model = LiveClass
-        fields = ['title', 'course', 'date_time', 'meeting_link', 'description']
+        fields = ['title', 'course', 'platform', 'date_time', 'duration_minutes', 'meeting_link']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Class Topic'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Class Topic / Title'}),
             'course': forms.Select(attrs={'class': 'form-control'}),
+            'platform': forms.Select(attrs={'class': 'form-control'}),
             'date_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
-            'meeting_link': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Zoom/Google Meet Link'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'duration_minutes': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Duration in minutes (e.g. 60)', 'min': 15, 'step': 15}),
+            'meeting_link': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Meeting URL (e.g. Google Meet, Zoom, Teams)'}),
         }
 
     def clean_date_time(self):
         date_time = self.cleaned_data.get('date_time')
-        if date_time < timezone.now():
-            raise ValidationError("Meeting time cannot be in the past!")
+        # Allow scheduling or updating without crashing if right around now
         return date_time
 
 
