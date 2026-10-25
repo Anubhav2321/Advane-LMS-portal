@@ -247,10 +247,11 @@ class FacultyProfile(models.Model):
     salary = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     specialization = models.CharField(max_length=200, blank=True, null=True, help_text="e.g., Data Science, AI, Backend")
     background = models.CharField(max_length=100, blank=True, null=True, help_text="e.g., Science, Arts")
+    job_role = models.CharField(max_length=150, blank=True, null=True, default="Professor / Instructor")
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Faculty Profile: {self.user.full_name}"
+        return f"Faculty Profile: {self.user.username}"
 
 # 3. COURSE MODEL
 
@@ -295,6 +296,15 @@ class Course(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def instructor(self):
+        if self.assigned_faculty:
+            name = self.assigned_faculty.get_full_name()
+            return name if name else self.assigned_faculty.username
+        if self.faculty_name:
+            return self.faculty_name
+        return "Expert Faculty"
 
 # 4. LESSON MODEL (CRITICAL UPDATE HERE)
 
@@ -720,11 +730,28 @@ class Notification(models.Model):
         return type_names.get(self.notification_type, 'Notice')
 
 class LiveClass(models.Model):
+    PLATFORM_CHOICES = [
+        ('Google Meet', 'Google Meet'),
+        ('Zoom', 'Zoom'),
+        ('YouTube Live', 'YouTube Live'),
+        ('Microsoft Teams', 'Microsoft Teams'),
+        ('Custom Stream', 'Custom Stream'),
+    ]
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='live_classes', null=True, blank=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     meeting_link = models.URLField()
     date_time = models.DateTimeField()
+    duration_minutes = models.PositiveIntegerField(default=60, help_text="Duration in minutes")
+    platform = models.CharField(max_length=50, default='Google Meet', choices=PLATFORM_CHOICES)
+    instructor_name = models.CharField(max_length=150, blank=True, null=True, help_text="Faculty / Speaker Name")
+    meeting_id = models.CharField(max_length=100, blank=True, null=True, help_text="Room / Meeting ID")
+    passcode = models.CharField(max_length=50, blank=True, null=True, help_text="Room Passcode (optional)")
+    recording_url = models.URLField(blank=True, null=True, help_text="Recording/Replay URL (optional)")
+    resources_link = models.URLField(blank=True, null=True, help_text="Study resources, slides, or repo link")
+    agenda = models.TextField(blank=True, null=True, help_text="Bullet points of topics covered in class")
+    is_cancelled = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -732,6 +759,92 @@ class LiveClass(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def end_time(self):
+        return self.date_time + datetime.timedelta(minutes=self.duration_minutes or 60)
+
+    @property
+    def can_join(self):
+        """Pin-time window: Join button unlocks 15 mins before start until session ends"""
+        if self.is_cancelled:
+            return False
+        now = timezone.now()
+        start_pin = self.date_time - datetime.timedelta(minutes=15)
+        return start_pin <= now <= self.end_time
+
+    @property
+    def is_live(self):
+        """Class is actively live: from 5 mins before start time until session ends"""
+        if self.is_cancelled:
+            return False
+        now = timezone.now()
+        start_live = self.date_time - datetime.timedelta(minutes=5)
+        return start_live <= now <= self.end_time
+
+    @property
+    def is_starting_soon(self):
+        """Starting within 15 minutes but not yet reached live countdown"""
+        if self.is_cancelled:
+            return False
+        now = timezone.now()
+        return self.date_time > now and (self.date_time - now).total_seconds() <= 900
+
+    @property
+    def is_ended(self):
+        return timezone.now() > self.end_time
+
+    @property
+    def is_today(self):
+        local_date = timezone.localtime(self.date_time).date()
+        return local_date == timezone.localdate()
+
+    @property
+    def is_this_week(self):
+        today = timezone.localdate()
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        end_of_week = start_of_week + datetime.timedelta(days=6)
+        local_date = timezone.localtime(self.date_time).date()
+        return start_of_week <= local_date <= end_of_week
+
+    @property
+    def status_code(self):
+        if self.is_cancelled:
+            return 'cancelled'
+        if self.is_live:
+            return 'live'
+        if self.is_starting_soon:
+            return 'soon'
+        if self.date_time > timezone.now():
+            return 'upcoming'
+        return 'ended'
+
+    @property
+    def effective_instructor(self):
+        if self.course:
+            if self.course.assigned_faculty:
+                full_name = self.course.assigned_faculty.get_full_name()
+                if full_name:
+                    return full_name
+                return self.course.assigned_faculty.username
+            if self.course.faculty_name:
+                return self.course.faculty_name
+        return "Expert Faculty"
+
+    @property
+    def agenda_items(self):
+        if not self.agenda:
+            return []
+        return [line.strip().lstrip('•-*0123456789. ') for line in self.agenda.splitlines() if line.strip()][:5]
+
+    def get_google_calendar_url(self):
+        import urllib.parse
+        title = urllib.parse.quote(f"Live Class: {self.title}")
+        desc = urllib.parse.quote(f"Join Link: {self.meeting_link}\nCourse: {self.course.title if self.course else 'LMS'}\n{self.description or ''}")
+        start_utc = self.date_time.strftime("%Y%m%dT%H%M%SZ")
+        end_utc = self.end_time.strftime("%Y%m%dT%H%M%SZ")
+        loc = urllib.parse.quote(self.meeting_link)
+        return f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={title}&dates={start_utc}/{end_utc}&details={desc}&location={loc}"
 
 class LibraryDocument(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='documents', null=True, blank=True)
