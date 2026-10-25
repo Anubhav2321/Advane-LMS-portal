@@ -862,10 +862,20 @@
 
 <div class="dash-container">
     
-    <!-- Page Title -->
-    <div class="page-title">
-        <h1><i class="fas fa-chart-pie"></i> Admin Dashboard</h1>
-        <p>Real-time overview of your learning platform</p>
+    <!-- Page Title & Quick Actions -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 36px;">
+        <div class="page-title" style="margin-bottom: 0;">
+            <h1><i class="fas fa-chart-pie"></i> Admin Dashboard</h1>
+            <p>Real-time overview of your learning platform</p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <a href="{% url 'admin_faculty_list' %}" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(52, 211, 153, 0.35); color: #34d399; border-radius: var(--radius-md); font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: var(--transition-smooth);">
+                <i class="fas fa-chalkboard-teacher"></i> Faculty Directory
+            </a>
+            <button type="button" onclick="openAddFacultyModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(52, 211, 153, 0.4); color: #ffffff; border-radius: var(--radius-md); font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35); cursor: pointer; transition: var(--transition-smooth);">
+                <i class="fas fa-user-plus"></i> Add Faculty
+            </button>
+        </div>
     </div>
 
     <!-- ============================================= -->
@@ -878,10 +888,10 @@
             <div class="stat-number" data-count="{{ total_students }}">0</div>
             <div class="stat-label">Students</div>
         </a>
-        <a href="#" class="stat-card stat-green">
+        <a href="{% url 'admin_faculty_list' %}" class="stat-card stat-green" title="View Full Faculty Directory">
             <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
             <div class="stat-number" data-count="{{ total_faculties }}">0</div>
-            <div class="stat-label">Faculty</div>
+            <div class="stat-label">Faculty Directory</div>
         </a>
         <a href="{% url 'admin_course_list' %}" class="stat-card stat-pink">
             <div class="stat-icon"><i class="fas fa-book-open"></i></div>
@@ -2158,5 +2168,215 @@
     document.querySelectorAll('.activity-item').forEach((item, i) => {
         item.style.animationDelay = `${i * 80}ms`;
     });
+
+    // =============================================
+    // ADD FACULTY MODAL LOGIC
+    // =============================================
+    function openAddFacultyModal() {
+        const modal = document.getElementById('addFacultyModalOverlay');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                const nameInput = document.getElementById('fac_name');
+                if (nameInput) nameInput.focus();
+            }, 100);
+        }
+    }
+
+    function closeAddFacultyModal() {
+        const modal = document.getElementById('addFacultyModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function toggleFacultyPass() {
+        const passInput = document.getElementById('fac_password');
+        const eyeIcon = document.getElementById('facPassToggleIcon');
+        if (passInput) {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                if (eyeIcon) eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                if (eyeIcon) eyeIcon.className = 'fas fa-eye';
+            }
+        }
+    }
+
+    function copyFacultyPass() {
+        const passInput = document.getElementById('fac_password');
+        if (passInput && passInput.value) {
+            navigator.clipboard.writeText(passInput.value).then(() => {
+                const copyBtn = document.getElementById('facPassCopyBtn');
+                if (copyBtn) {
+                    const orig = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check" style="color: #10b981;"></i> Copied!';
+                    setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+                }
+            }).catch(err => {
+                console.error("Clipboard copy failed: ", err);
+            });
+        }
+    }
+
+    // Close on escape key
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAddFacultyModal();
+    });
 </script>
+
+<!-- ============================================= -->
+<!-- ADD FACULTY MODAL (PREMIUM CYBER-GLASS DESIGN) -->
+<!-- ============================================= -->
+<div id="addFacultyModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(5, 7, 15, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: rgba(13, 17, 28, 0.95); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 20px; width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(16, 185, 129, 0.2); position: relative; animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        
+        <!-- Modal Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 22px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.25rem;">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: -0.3px;">Add Faculty Account</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Create instructor credentials with course assignment</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeAddFacultyModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.color='#ef4444';" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#94a3b8';">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body Form -->
+        <form method="POST" action="{% url 'admin_create_faculty' %}" style="padding: 26px 28px;">
+            {% csrf_token %}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <!-- Full Name -->
+                <div style="grid-column: span 2;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Full Name <span style="color: #ef4444;">*</span>
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-user" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="text" id="fac_name" name="name" required placeholder="e.g. Dr. Arindam Mukherjee" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    </div>
+                </div>
+
+                <!-- Email Address -->
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Email Address (Login ID) <span style="color: #ef4444;">*</span>
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-envelope" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="email" name="email" required placeholder="faculty@learning365.edu" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    </div>
+                </div>
+
+                <!-- Contact Number -->
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Contact Number
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-phone-alt" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="text" name="phone" placeholder="+91 98765 43210" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    </div>
+                </div>
+
+                <!-- Department -->
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Department
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-building" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="text" name="department" placeholder="e.g. Computer Science" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    </div>
+                </div>
+
+                <!-- Job Role -->
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Job Role / Designation
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-briefcase" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="text" name="job_role" value="Professor / Lead Instructor" placeholder="e.g. Lead Instructor" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    </div>
+                </div>
+
+                <!-- Work Experience -->
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Work Experience (Years)
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-history" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="number" name="experience_years" value="5" min="0" max="60" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    </div>
+                </div>
+
+                <!-- Assigned Course / Subject -->
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 6px;">
+                        Assign Course / Subject
+                    </label>
+                    <div style="position: relative;">
+                        <i class="fas fa-book-open" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <select name="course_id" style="width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #fff; font-size: 0.92rem; outline: none; cursor: pointer; transition: border-color 0.2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                            <option value="" style="background: #0d111c; color: #94a3b8;">-- Select Course to Assign --</option>
+                            {% for c in courses %}
+                            <option value="{{ c.id }}" style="background: #0d111c; color: #fff;">{{ c.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ready-made Password -->
+                <div style="grid-column: span 2;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin: 0;">
+                            Ready-made Password <span style="color: #ef4444;">*</span>
+                        </label>
+                        <button type="button" id="facPassCopyBtn" onclick="copyFacultyPass()" style="background: none; border: none; color: #10b981; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
+                            <i class="fas fa-copy"></i> Copy Password
+                        </button>
+                    </div>
+                    <div style="position: relative;">
+                        <i class="fas fa-key" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.9rem;"></i>
+                        <input type="text" id="fac_password" name="password" value="Faculty@123" required style="width: 100%; box-sizing: border-box; padding: 12px 85px 12px 40px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; color: #34d399; font-family: monospace; font-size: 1rem; font-weight: 600; outline: none; letter-spacing: 0.5px;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                        <button type="button" onclick="toggleFacultyPass()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <i id="facPassToggleIcon" class="fas fa-eye"></i> Hide
+                        </button>
+                    </div>
+                    <div style="margin-top: 6px; font-size: 0.78rem; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-info-circle" style="color: #10b981;"></i> The faculty can directly log in using their email and this password, and update their bio/picture upon login.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer Buttons -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <button type="button" onclick="closeAddFacultyModal()" style="padding: 11px 20px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.06)'">
+                    Cancel
+                </button>
+                <button type="submit" style="padding: 11px 26px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(52, 211, 153, 0.4); color: #fff; border-radius: 10px; font-size: 0.92rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.4)';">
+                    <i class="fas fa-check-circle"></i> Create Faculty Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+</style>
 {% endblock %}
