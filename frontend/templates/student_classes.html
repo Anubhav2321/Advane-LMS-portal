@@ -3,29 +3,29 @@
 
 {% block content %}
 <!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
     /* ======================================================== */
-    /* 🌌 STUDENT PORTAL UNIFIED DESIGN SYSTEM (DASHBOARD-MATCH) */
+    /* 🌌 CLEAN GLASSMORPHISM LIVE CLASSROOM DESIGN SYSTEM      */
     /* ======================================================== */
     :root {
-        --bg-dark: #070913;
-        --card-bg: rgba(14, 18, 30, 0.95);
-        --card-bg-hover: rgba(22, 28, 45, 0.95);
+        --bg-dark: #07090e;
+        --card-bg: rgba(14, 18, 30, 0.92);
+        --card-bg-hover: rgba(20, 26, 44, 0.95);
         --border-glass: rgba(255, 255, 255, 0.08);
-        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --border-glow-cyan: rgba(0, 243, 255, 0.35);
         --neon-cyan: #00f3ff;
         --neon-purple: #bc13fe;
-        --neon-blue: #3b82f6;
+        --neon-rose: #ff3366;
         --accent-green: #00e676;
         --accent-amber: #ffb74d;
-        --accent-red: #ff3366;
-        --text-main: #e2e8f0;
+        --accent-blue: #3b82f6;
+        --text-main: #f1f5f9;
         --text-muted: #94a3b8;
     }
 
-    /* Ambient Mesh */
+    /* Ambient Background Mesh */
     .portal-ambient {
         position: fixed;
         inset: 0;
@@ -33,104 +33,91 @@
         pointer-events: none;
         background: 
             radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
-            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
-            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
+            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.05), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(255, 51, 102, 0.04), transparent 55%);
     }
 
     .portal-container {
-        padding: 35px 40px 80px;
-        max-width: 1440px;
+        padding: 30px 38px 80px;
+        max-width: 1400px;
         margin: 0 auto;
         font-family: 'Outfit', sans-serif;
         color: var(--text-main);
     }
 
-    /* ======================================================== */
-    /* 🚀 DOWN-TO-UP SMOOTH ENTRANCE ANIMATIONS                */
-    /* ======================================================== */
+    /* Smooth Entrance */
     @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(28px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-
     .fade-in-up {
-        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.18s; }
-    .delay-3 { animation-delay: 0.26s; }
 
-    /* Staggered cards entrance */
-    .stagger-card {
-        animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    /* Pulsing Live Beacon */
+    @keyframes liveBeaconRing {
+        0% { transform: scale(0.9); opacity: 1; }
+        100% { transform: scale(2.2); opacity: 0; }
     }
-    .stagger-card:nth-child(1) { animation-delay: 0.12s; }
-    .stagger-card:nth-child(2) { animation-delay: 0.17s; }
-    .stagger-card:nth-child(3) { animation-delay: 0.22s; }
-    .stagger-card:nth-child(4) { animation-delay: 0.27s; }
-    .stagger-card:nth-child(5) { animation-delay: 0.32s; }
-    .stagger-card:nth-child(6) { animation-delay: 0.37s; }
+    .beacon-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--neon-rose);
+        display: inline-block;
+        position: relative;
+    }
+    .beacon-dot::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 2px solid var(--neon-rose);
+        animation: liveBeaconRing 1.6s infinite ease-out;
+    }
 
     /* ======================================================== */
-    /* 1. HERO BANNER (NO LEFT-SIDE BLUE BAR)                   */
+    /* 1. FRESH HERO BANNER                                     */
     /* ======================================================== */
     .portal-hero {
-        background: linear-gradient(135deg, rgba(20, 25, 42, 0.95), rgba(12, 15, 26, 0.98));
+        background: linear-gradient(135deg, rgba(18, 23, 38, 0.95), rgba(11, 14, 24, 0.98));
         border: 1px solid var(--border-glass);
-        border-radius: 22px;
-        padding: 30px 38px;
+        border-radius: 20px;
+        padding: 26px 34px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        margin-bottom: 26px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+        margin-bottom: 24px;
         position: relative;
         overflow: hidden;
-        gap: 24px;
+        gap: 20px;
         flex-wrap: wrap;
     }
 
-    .portal-hero::after {
-        content: '';
-        position: absolute;
-        top: 0; right: 0;
-        width: 380px; height: 100%;
-        background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
-        pointer-events: none;
-    }
-
     .portal-badge-pill {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        background: rgba(0, 243, 255, 0.1);
         color: var(--neon-cyan);
-        padding: 5px 14px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 700;
-        font-size: 0.78rem;
-        border: 1px solid rgba(0, 243, 255, 0.3);
+        font-size: 0.74rem;
+        border: 1px solid rgba(0, 243, 255, 0.25);
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.8px;
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .portal-hero-title {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 2.1rem;
-        margin: 0 0 8px;
+        font-size: 2rem;
+        margin: 0 0 6px;
         color: #fff;
         font-weight: 700;
         letter-spacing: -0.5px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
     }
 
     .portal-hero-title span {
@@ -143,81 +130,79 @@
     .portal-hero-sub {
         margin: 0;
         color: var(--text-muted);
-        font-size: 0.92rem;
+        font-size: 0.9rem;
         line-height: 1.5;
-        max-width: 540px;
+        max-width: 520px;
     }
 
-    /* Mini Stats in Hero */
+    /* Clean Hero Stats */
     .mini-stats {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
     .mini-stat {
-        background: rgba(255, 255, 255, 0.035);
+        background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--border-glass);
-        border-radius: 14px;
-        padding: 12px 18px;
+        border-radius: 12px;
+        padding: 10px 16px;
         text-align: center;
-        min-width: 95px;
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        min-width: 90px;
+        transition: transform 0.25s ease, border-color 0.25s ease;
     }
-
     .mini-stat:hover {
         transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.18);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        border-color: rgba(255, 255, 255, 0.16);
     }
 
     .mini-stat-number {
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.45rem;
+        font-size: 1.35rem;
         font-weight: 700;
         line-height: 1.1;
-        white-space: nowrap;
     }
 
     .mini-stat-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 5px;
+        letter-spacing: 0.8px;
+        margin-top: 4px;
         font-weight: 600;
     }
 
+    .mini-stat.live .mini-stat-number { color: var(--neon-rose); }
     .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
-    .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+    .mini-stat.purple .mini-stat-number { color: var(--neon-purple); }
     .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
 
     /* ======================================================== */
-    /* 2. TABS STRIP                                            */
+    /* 2. FILTER TABS STRIP                                     */
     /* ======================================================== */
     .portal-tabs-bar {
         display: inline-flex;
-        padding: 6px;
-        gap: 6px;
+        padding: 5px;
+        gap: 5px;
         border-radius: 50px;
-        background: rgba(14, 18, 30, 0.85);
+        background: rgba(14, 18, 30, 0.88);
         border: 1px solid var(--border-glass);
         margin-bottom: 24px;
-        flex-wrap: wrap;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+        flex-wrap: wrap;
     }
 
     .ld-tab {
         border: 1px solid transparent;
         background: transparent;
         color: var(--text-muted);
-        padding: 9px 20px;
+        padding: 8px 18px;
         border-radius: 50px;
         cursor: pointer;
-        font: 600 0.85rem 'Outfit', sans-serif;
-        transition: all 0.25s ease;
+        font: 600 0.84rem 'Outfit', sans-serif;
+        transition: all 0.22s ease;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -225,23 +210,30 @@
 
     .ld-tab:hover {
         color: #fff;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.04);
     }
 
     .ld-tab.active {
         background: rgba(0, 243, 255, 0.12);
         border-color: var(--neon-cyan);
         color: var(--neon-cyan);
-        box-shadow: 0 0 16px rgba(0, 243, 255, 0.18);
+        box-shadow: 0 0 14px rgba(0, 243, 255, 0.2);
+    }
+
+    .ld-tab.live-tab.active {
+        background: rgba(255, 51, 102, 0.14);
+        border-color: var(--neon-rose);
+        color: var(--neon-rose);
+        box-shadow: 0 0 14px rgba(255, 51, 102, 0.3);
     }
 
     .ld-tab .count {
-        padding: 2px 8px;
+        padding: 1px 7px;
         border-radius: 99px;
         background: rgba(255, 255, 255, 0.1);
-        font-size: 0.72rem;
-        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.7rem;
         font-weight: 700;
+        color: #fff;
     }
     .ld-tab.active .count {
         background: rgba(0, 243, 255, 0.25);
@@ -249,282 +241,387 @@
     }
 
     /* ======================================================== */
-    /* 3. LIVE CLASS CARDS (CYBERPUNK GLASSMORPHISM)            */
+    /* 3. SUBJECT-WISE GROUPINGS (SUBJECT-WISE VAG)             */
     /* ======================================================== */
-    .cls-list {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .cls {
-        background: var(--card-bg);
+    .subject-section {
+        background: rgba(14, 18, 30, 0.7);
         border: 1px solid var(--border-glass);
         border-radius: 20px;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 290px;
-        overflow: hidden;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-        position: relative;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: border-color 0.3s ease;
     }
 
-    .cls:hover {
-        border-color: var(--border-glass-glow);
-        transform: translateY(-5px);
-        box-shadow: 0 18px 45px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
+    .subject-section.has-live {
+        border-color: rgba(255, 51, 102, 0.35);
+        box-shadow: 0 10px 30px rgba(255, 51, 102, 0.08);
     }
 
-    .cls-main {
-        padding: 28px 32px;
+    .subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
+        gap: 12px;
     }
 
-    .cls-top {
+    .subject-title-wrap {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 14px;
+    }
+
+    .subject-icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(0, 243, 255, 0.1);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+        display: grid;
+        place-items: center;
+        color: var(--neon-cyan);
+        font-size: 1.1rem;
+    }
+    .subject-section.has-live .subject-icon-box {
+        background: rgba(255, 51, 102, 0.12);
+        border-color: rgba(255, 51, 102, 0.35);
+        color: var(--neon-rose);
+    }
+
+    .subject-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Faculty Name pulled from Subject */
+    .subject-faculty-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+    .subject-faculty-badge i {
+        color: var(--accent-green);
+    }
+    .subject-faculty-badge b {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    .subject-count-chip {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+
+    /* ======================================================== */
+    /* 4. CLEAN & FRESH LIVE CLASS CARDS                        */
+    /* ======================================================== */
+    .classes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 16px;
+    }
+
+    .class-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s, box-shadow 0.25s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .class-card:hover {
+        border-color: var(--border-glow-cyan);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .class-card.is-live {
+        border-color: rgba(255, 51, 102, 0.45);
+        box-shadow: 0 10px 28px rgba(255, 51, 102, 0.15);
+    }
+
+    .card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
         flex-wrap: wrap;
     }
 
-    .cls-course {
-        color: var(--neon-cyan);
-        font-size: 0.76rem;
+    /* Status Pill */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
         font-weight: 700;
-        letter-spacing: 1.2px;
         text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+    }
+    .status-pill.live {
+        color: var(--neon-rose);
+        background: rgba(255, 51, 102, 0.12);
+        border-color: rgba(255, 51, 102, 0.4);
+    }
+    .status-pill.soon {
+        color: var(--accent-amber);
+        background: rgba(255, 183, 77, 0.12);
+        border-color: rgba(255, 183, 77, 0.35);
+    }
+    .status-pill.upcoming {
+        color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.08);
+        border-color: rgba(0, 243, 255, 0.25);
+    }
+    .status-pill.ended {
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--border-glass);
+    }
+
+    /* Platform & Duration Chips */
+    .badges-row {
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-    /* Status Tags */
-    .status {
-        padding: 4px 12px;
-        border-radius: 99px;
-        font-size: 0.7rem;
+    .platform-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-glass);
+        color: #cbd5e1;
+    }
+    .platform-chip.gmeet i { color: #34a853; }
+    .platform-chip.zoom i { color: #2d8cff; }
+    .platform-chip.teams i { color: #6264a7; }
+    .platform-chip.youtube i { color: #ff0000; }
+    .platform-chip.custom i { color: var(--neon-cyan); }
+
+    .duration-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-glass);
+        color: var(--text-muted);
+    }
+
+    .class-name {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
         font-weight: 700;
-        letter-spacing: 0.8px;
-        text-transform: uppercase;
-        border: 1px solid transparent;
+        color: #fff;
+        margin: 10px 0 0;
+        line-height: 1.35;
+    }
+
+    /* Meta items */
+    .card-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    .card-meta-row span {
         display: inline-flex;
         align-items: center;
         gap: 6px;
     }
-    .status.upcoming {
+    .card-meta-row i {
         color: var(--neon-cyan);
-        border-color: rgba(0, 243, 255, 0.35);
-        background: rgba(0, 243, 255, 0.08);
-    }
-    .status.soon {
-        color: var(--accent-amber);
-        border-color: rgba(255, 183, 77, 0.4);
-        background: rgba(255, 183, 77, 0.08);
-    }
-    .status.live {
-        color: #ff3366;
-        border-color: rgba(255, 51, 102, 0.5);
-        background: rgba(255, 51, 102, 0.12);
-        box-shadow: 0 0 12px rgba(255, 51, 102, 0.25);
-    }
-    .status.ended {
-        color: var(--text-muted);
-        border-color: var(--border-glass);
-        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.82rem;
     }
 
-    .cls-title {
-        font-family: 'Space Grotesk', sans-serif;
-        margin: 0 0 10px;
-        font-size: 1.55rem;
-        font-weight: 700;
-        color: #fff;
-        letter-spacing: -0.3px;
-        line-height: 1.3;
-    }
-
-    .cls-desc {
-        margin: 0 0 22px;
-        color: #94a3b8;
-        line-height: 1.65;
-        max-width: 640px;
-        font-size: 0.92rem;
-    }
-
-    .cls-meta {
+    /* ======================================================== */
+    /* 5. AESTHETIC PIN-TIME BUTTON (HOVER ACTIVE VS FROSTED LOCKED) */
+    /* ======================================================== */
+    .card-bottom {
         display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 12px;
-        flex-wrap: wrap;
-        padding-top: 18px;
+        padding-top: 14px;
         border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .meta-box {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 9px 15px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.025);
-        border: 1px solid var(--border-glass);
-    }
-
-    .meta-box i {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        display: grid;
-        place-items: center;
-        background: rgba(255, 255, 255, 0.05);
-        font-size: 0.95rem;
-    }
-
-    .meta-box small {
-        display: block;
+    .countdown-text {
+        font: 600 0.86rem 'JetBrains Mono', monospace;
         color: var(--text-muted);
-        font-size: 0.65rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-
-    .meta-box b {
-        font-size: 0.92rem;
-        color: #fff;
-        font-weight: 600;
-    }
-
-    /* Side Panel */
-    .cls-side {
-        padding: 28px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 14px;
-        text-align: center;
-        background: rgba(0, 0, 0, 0.28);
-        border-left: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .cd-label {
-        color: var(--text-muted);
-        font-size: 0.7rem;
-        letter-spacing: 1.6px;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-
-    .cd-time {
-        font: 700 1.8rem 'JetBrains Mono', monospace;
-        color: #fff;
-        line-height: 1;
-    }
-    .cd-time.live {
-        color: var(--accent-red);
-        text-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
-    }
-
-    .btn-join {
-        width: 100%;
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 13px;
+        gap: 6px;
+    }
+    .countdown-text.live {
+        color: var(--neon-rose);
+        font-weight: 700;
+    }
+    .countdown-text.soon {
+        color: var(--accent-amber);
+        font-weight: 700;
+    }
+
+    /* 🎯 1. PIN-TIME ACTIVE JOIN BUTTON (HOVERABLE, GLOWING) */
+    .btn-join-pin {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
         border-radius: 12px;
-        text-decoration: none;
-        color: #060814;
-        font: 700 0.88rem 'Outfit', sans-serif;
+        font: 700 0.82rem 'Outfit', sans-serif;
+        text-transform: uppercase;
         letter-spacing: 0.5px;
-        text-transform: uppercase;
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.25);
-        transition: all 0.25s ease;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .btn-join:hover {
+    .btn-join-pin.live-now {
+        background: linear-gradient(135deg, var(--neon-rose), #e11d48);
+        color: #fff;
+        box-shadow: 0 4px 18px rgba(255, 51, 102, 0.45);
+        pointer-events: auto;
+        opacity: 1;
+    }
+    .btn-join-pin.live-now:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+        box-shadow: 0 8px 28px rgba(255, 51, 102, 0.7);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn-join-pin.active-hover {
+        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
+        color: #060914;
+        box-shadow: 0 4px 16px rgba(0, 243, 255, 0.35);
+        pointer-events: auto;
+        opacity: 1;
+    }
+    .btn-join-pin.active-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 243, 255, 0.55);
         color: #000;
         text-decoration: none;
     }
 
-    .btn-join.live {
-        background: linear-gradient(135deg, #ff3366, #e11d48);
-        color: #fff;
-        box-shadow: 0 8px 24px rgba(255, 51, 102, 0.45);
-    }
-    .btn-join.live:hover {
-        color: #fff;
-        box-shadow: 0 12px 30px rgba(255, 51, 102, 0.65);
-    }
-
-    .btn-join.ended {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: none;
-        color: var(--text-muted);
-        pointer-events: none;
-    }
-
-    .side-note {
-        color: #64748b;
-        font-size: 0.72rem;
-        display: flex;
+    /* 🔒 2. AESTHETIC FROSTED GLASS LOCKED PILL (CLEAN & ELEGANT, NOT UGLY SMEAR) */
+    .btn-locked-glass {
+        display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 7px;
+        padding: 8px 16px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        color: #94a3b8;
+        font: 600 0.8rem 'Outfit', sans-serif;
+        letter-spacing: 0.4px;
+        cursor: not-allowed;
+        user-select: none;
+        transition: all 0.22s ease;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .btn-locked-glass i {
+        color: var(--accent-amber);
+        font-size: 0.82rem;
+    }
+    .btn-locked-glass:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 183, 77, 0.35);
+        color: #cbd5e1;
     }
 
-    /* Empty states */
+    .btn-join-pin.is-ended {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-glass);
+        color: var(--text-muted);
+        cursor: default;
+        pointer-events: none;
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 0.78rem;
+    }
+
+    /* Empty state */
     .portal-empty {
         text-align: center;
-        padding: 70px 20px;
+        padding: 50px 20px;
         background: var(--card-bg);
-        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border: 1px dashed rgba(255, 255, 255, 0.14);
         border-radius: 20px;
     }
     .portal-empty i {
-        font-size: 3rem;
+        font-size: 2.8rem;
         color: #334155;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         display: block;
     }
     .portal-empty h3 {
         color: #fff;
-        margin: 0 0 8px;
-        font-size: 1.25rem;
+        margin: 0 0 6px;
+        font-size: 1.2rem;
     }
     .portal-empty p {
         color: var(--text-muted);
-        margin: 0 0 18px;
-        font-size: 0.92rem;
-    }
-    .portal-empty a {
-        color: var(--neon-cyan);
-        text-decoration: none;
-        font-weight: 700;
+        margin: 0 0 16px;
+        font-size: 0.88rem;
     }
 
     .hidden {
         display: none !important;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
         .portal-container { padding: 20px 14px 60px; }
-        .portal-hero { padding: 22px 20px; }
-        .cls { grid-template-columns: 1fr; }
-        .cls-side { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.06); }
-        .cls-main { padding: 22px; }
-    }
-
-    @media (max-width: 480px) {
-        .portal-hero { flex-direction: column; align-items: flex-start; }
-        .cls-main { padding: 18px 14px; }
-        .cls-title { font-size: 1.25rem; }
-        .cls-side { padding: 20px 16px; }
+        .portal-hero { padding: 20px; flex-direction: column; align-items: flex-start; }
+        .classes-grid { grid-template-columns: 1fr; }
+        .subject-section { padding: 18px 16px; }
     }
 </style>
 
@@ -532,80 +629,194 @@
 
 <div class="portal-container">
 
-    <!-- 1. HERO BANNER (NO LEFT-SIDE BLUE BAR) -->
+    <!-- 1. FRESH HERO BANNER -->
     <div class="portal-hero fade-in-up">
         <div>
             <div class="portal-badge-pill">
-                <i class="fas fa-satellite-dish"></i> Live Classroom
+                <i class="fas fa-satellite-dish"></i> Live Sessions
             </div>
             <h1 class="portal-hero-title">Live <span>Classes</span></h1>
-            <p class="portal-hero-sub">Join interactive sessions with your instructors. Links unlock automatically when class is about to begin.</p>
+            <p class="portal-hero-sub">
+                Subject-wise interactive lectures. At class pin-time, the join button becomes active with hover glow; other times it remains locked.
+            </p>
         </div>
         <div class="mini-stats">
             <div class="mini-stat cyan">
-                <div class="mini-stat-number" id="stTotal">0</div>
+                <div class="mini-stat-number" id="stTotal">{{ total_classes_count }}</div>
                 <div class="mini-stat-label">Scheduled</div>
             </div>
-            <div class="mini-stat green">
-                <div class="mini-stat-number" id="stToday">0</div>
-                <div class="mini-stat-label">Today</div>
+            <div class="mini-stat live">
+                <div class="mini-stat-number" id="stLive">{{ live_now_count }}</div>
+                <div class="mini-stat-label">Live Now</div>
             </div>
             <div class="mini-stat amber">
-                <div class="mini-stat-number" id="stNext">—</div>
-                <div class="mini-stat-label">Next Class</div>
+                <div class="mini-stat-number" id="stToday">{{ today_count }}</div>
+                <div class="mini-stat-label">Today</div>
+            </div>
+            <div class="mini-stat purple">
+                <div class="mini-stat-number" id="stWeek">{{ this_week_count }}</div>
+                <div class="mini-stat-label">This Week</div>
             </div>
         </div>
     </div>
 
-    {% if classes %}
-    <!-- 2. FILTER TABS -->
-    <div class="portal-tabs-bar fade-in-up delay-1" id="tabs">
-        <button class="ld-tab active" data-f="all">All Classes <span class="count" id="cAll">0</span></button>
-        <button class="ld-tab" data-f="live"><i class="fas fa-circle" style="color:var(--accent-red); font-size: 8px;"></i> Live Now <span class="count" id="cLive">0</span></button>
-        <button class="ld-tab" data-f="today">Today <span class="count" id="cToday">0</span></button>
-        <button class="ld-tab" data-f="week">This Week <span class="count" id="cWeek">0</span></button>
+    <!-- 2. FILTER TABS (All Classes, Live Now, Today, This Week) -->
+    <div class="portal-tabs-bar fade-in-up" id="tabs">
+        <button class="ld-tab {% if current_tab == 'all' %}active{% endif %}" data-f="all">
+            All Classes <span class="count" id="cAll">{{ total_classes_count }}</span>
+        </button>
+        <button class="ld-tab live-tab {% if current_tab == 'live' %}active{% endif %}" data-f="live">
+            <i class="fas fa-circle" style="color:var(--neon-rose); font-size: 8px;"></i> Live Now 
+            <span class="count" id="cLive">{{ live_now_count }}</span>
+        </button>
+        <button class="ld-tab {% if current_tab == 'today' %}active{% endif %}" data-f="today">
+            Today <span class="count" id="cToday">{{ today_count }}</span>
+        </button>
+        <button class="ld-tab {% if current_tab == 'week' %}active{% endif %}" data-f="week">
+            This Week <span class="count" id="cWeek">{{ this_week_count }}</span>
+        </button>
     </div>
 
-    <!-- 3. LIVE CLASSES LIST -->
-    <div class="cls-list" id="clsList">
-        {% for class in classes %}
-        <article class="cls stagger-card" data-start="{{ class.date_time|date:'c' }}">
-            <div class="cls-main">
-                <div class="cls-top">
-                    <div class="cls-course"><i class="fas fa-code-branch"></i> {{ class.course.title }}</div>
-                    <span class="status upcoming" data-status>Upcoming</span>
+    {% if subject_groups %}
+    <!-- 3. SUBJECT-WISE LIVE CLASSES LIST -->
+    <div id="subjectContainer">
+        {% for item in subject_groups %}
+        <div class="subject-section fade-in-up {% if item.has_live %}has-live{% endif %}" data-subject-box>
+            
+            <!-- Subject Header: Course Title & Faculty Name (from Subject) -->
+            <div class="subject-header">
+                <div class="subject-title-wrap">
+                    <div class="subject-icon-box">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="subject-title">
+                            {{ item.course.title|default:"General Live Classes" }}
+                        </h2>
+                    </div>
                 </div>
-                <h3 class="cls-title">{{ class.title }}</h3>
-                <p class="cls-desc">{{ class.description|default:"Join this interactive session to clear your doubts and learn advanced topics directly from the instructor." }}</p>
-                <div class="cls-meta">
-                    <div class="meta-box"><i class="far fa-calendar-alt" style="color:var(--neon-cyan)"></i><div><small>Date</small><b>{{ class.date_time|date:"d M, Y" }}</b></div></div>
-                    <div class="meta-box"><i class="far fa-clock" style="color:var(--accent-amber)"></i><div><small>Time</small><b>{{ class.date_time|date:"h:i A" }}</b></div></div>
-                    <div class="meta-box"><i class="fas fa-chalkboard-teacher" style="color:var(--accent-green)"></i><div><small>Instructor</small><b>Expert Faculty</b></div></div>
+
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <!-- Faculty pulled directly from the subject/course -->
+                    <div class="subject-faculty-badge">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Faculty: <b>{{ item.faculty }}</b></span>
+                    </div>
+                    <span class="subject-count-chip">
+                        <span data-sub-count>{{ item.classes|length }}</span> Classes
+                    </span>
                 </div>
             </div>
-            <div class="cls-side">
-                <div class="cd-label" data-cdlabel>Starts in</div>
-                <div class="cd-time" data-cd>--:--:--</div>
-                <a href="{{ class.meeting_link }}" target="_blank" rel="noopener" class="btn-join" data-join>
-                    <span data-joinlabel>Join Class</span> <i class="fas fa-external-link-alt"></i>
-                </a>
-                <div class="side-note"><i class="fas fa-info-circle"></i> Opens in Zoom / Google Meet</div>
+
+            <!-- Subject's Classes Grid -->
+            <div class="classes-grid">
+                {% for class in item.classes %}
+                <div class="class-card {% if class.is_live %}is-live{% endif %}" 
+                     data-card 
+                     data-start="{{ class.date_time|date:'c' }}"
+                     data-duration="{{ class.duration_minutes|default:'60' }}"
+                     data-id="{{ class.id }}">
+                    
+                    <div>
+                        <div class="card-top">
+                            <span class="status-pill {{ class.status_code }}" data-pill>
+                                {% if class.is_live %}
+                                    <span class="beacon-dot" style="width:6px; height:6px;"></span> Live Now
+                                {% elif class.is_starting_soon %}
+                                    Starting Soon
+                                {% elif class.is_ended %}
+                                    Completed
+                                {% else %}
+                                    Upcoming
+                                {% endif %}
+                            </span>
+
+                            <div class="badges-row">
+                                <!-- Platform Badge (Google Meet, Zoom, Teams, YouTube) -->
+                                {% if class.platform == 'Google Meet' %}
+                                    <span class="platform-chip gmeet"><i class="fab fa-google"></i> Google Meet</span>
+                                {% elif class.platform == 'Zoom' %}
+                                    <span class="platform-chip zoom"><i class="fas fa-video"></i> Zoom</span>
+                                {% elif class.platform == 'Microsoft Teams' %}
+                                    <span class="platform-chip teams"><i class="fab fa-microsoft"></i> MS Teams</span>
+                                {% elif class.platform == 'YouTube Live' %}
+                                    <span class="platform-chip youtube"><i class="fab fa-youtube"></i> YouTube</span>
+                                {% else %}
+                                    <span class="platform-chip custom"><i class="fas fa-broadcast-tower"></i> {{ class.platform|default:"Live Room" }}</span>
+                                {% endif %}
+
+                                <!-- Duration Badge -->
+                                <span class="duration-chip"><i class="far fa-clock"></i> {{ class.duration_minutes|default:'60' }}m</span>
+                            </div>
+                        </div>
+
+                        <h3 class="class-name">{{ class.title }}</h3>
+                    </div>
+
+                    <div class="card-meta-row">
+                        <span><i class="far fa-calendar-alt"></i> {{ class.date_time|date:"d M, Y" }}</span>
+                        <span><i class="far fa-clock"></i> {{ class.date_time|date:"h:i A" }}</span>
+                        <span><i class="fas fa-chalkboard-teacher"></i> {{ item.faculty }}</span>
+                    </div>
+
+                    <!-- Bottom Action Area: PIN TIME HOVER ACTIVE VS FROSTED LOCKED BUTTON -->
+                    <div class="card-bottom">
+                        <div class="countdown-text {% if class.is_live %}live{% elif class.is_starting_soon %}soon{% endif %}" data-cd>
+                            {% if class.is_live %}
+                                <i class="fas fa-broadcast-tower"></i> LIVE NOW
+                            {% elif class.is_ended %}
+                                <i class="fas fa-check-circle"></i> ENDED
+                            {% else %}
+                                <i class="far fa-clock"></i> --:--:--
+                            {% endif %}
+                        </div>
+
+                        <div data-action-slot>
+                            {% if class.is_live %}
+                                <!-- AT PIN TIME: ACTIVE, HOVERABLE & GLOWING -->
+                                <button type="button" 
+                                        class="btn-join-pin live-now" 
+                                        onclick="joinClass({{ class.id }})">
+                                    <i class="fas fa-video"></i> Join Live
+                                </button>
+                            {% elif class.is_starting_soon %}
+                                <button type="button" 
+                                        class="btn-join-pin active-hover" 
+                                        onclick="joinClass({{ class.id }})">
+                                    <i class="fas fa-video"></i> Join Now
+                                </button>
+                            {% elif class.is_ended %}
+                                <span class="btn-join-pin is-ended">Ended</span>
+                            {% else %}
+                                <!-- OTHER TIME: AESTHETIC FROSTED GLASS LOCKED PILL -->
+                                <div class="btn-locked-glass" title="Live room unlocks 15 minutes before scheduled start time">
+                                    <i class="fas fa-lock"></i> Locked • Pin-Time
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
             </div>
-        </article>
+
+        </div>
         {% endfor %}
     </div>
-    <div class="portal-empty hidden stagger-card" id="noMatch">
-        <i class="fas fa-calendar-xmark"></i>
-        <h3>Nothing in this view</h3>
-        <p>No classes scheduled for the selected filter.</p>
+
+    <!-- Empty filtered view -->
+    <div class="portal-empty hidden" id="noMatch">
+        <i class="fas fa-calendar-times"></i>
+        <h3>No classes in this filter</h3>
+        <p>No live sessions match the selected tab.</p>
     </div>
 
     {% else %}
-    <div class="portal-empty stagger-card">
+    <!-- Global Empty View -->
+    <div class="portal-empty fade-in-up">
         <i class="fas fa-satellite-dish"></i>
         <h3>No Live Classes Scheduled</h3>
-        <p>Check back later for upcoming instructor sessions.</p>
-        <a href="{% url 'all_courses' %}"><i class="fas fa-layer-group"></i> Browse recorded courses &rarr;</a>
+        <p>Your faculties have not scheduled any live lectures for your enrolled courses yet.</p>
     </div>
     {% endif %}
 
@@ -613,70 +824,175 @@
 
 <script>
 (function () {
-    const cards = Array.from(document.querySelectorAll('#clsList .cls'));
+    const cards = Array.from(document.querySelectorAll('[data-card]'));
+    const subjectBoxes = Array.from(document.querySelectorAll('[data-subject-box]'));
     if (!cards.length) return;
-    const LIVE_MIN = 60; // a class is "live" for 60 minutes after its start time
-    let filter = 'all';
+
+    let activeFilter = '{{ current_tab|default:"all" }}';
 
     const pad = n => String(n).padStart(2, '0');
-    const fmt = ms => {
-        const s = Math.max(0, Math.floor(ms / 1000));
-        const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
-        return d > 0 ? d + 'd ' + pad(h) + 'h ' + pad(m) + 'm' : pad(h) + ':' + pad(m) + ':' + pad(s % 60);
-    };
-    const sameDay = (a, b) => a.toDateString() === b.toDateString();
-
-    function state(c, now) {
-        const start = new Date(c.dataset.start).getTime();
-        const diff = start - now;
-        if (diff > 15 * 60000) return 'upcoming';
-        if (diff > 0) return 'soon';
-        if (-diff <= LIVE_MIN * 60000) return 'live';
-        return 'ended';
+    function formatTime(ms) {
+        if (ms <= 0) return '00:00:00';
+        const s = Math.floor(ms / 1000);
+        const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+        return d > 0 ? `${d}d ${pad(h)}h ${pad(m)}m` : `${pad(h)}:${pad(m)}:${pad(sec)}`;
     }
 
-    function render() {
-        const now = Date.now(), today = new Date();
-        const weekEnd = now + 7 * 86400000;
-        let live = 0, todayN = 0, week = 0, nextMs = null, shown = 0;
+    function checkState(startMs, durationMin, nowMs) {
+        const endMs = startMs + (durationMin * 60000);
+        // PIN TIME: 15 mins before start until end
+        if (nowMs >= (startMs - 5 * 60000) && nowMs <= endMs) return 'live';
+        if (nowMs >= (startMs - 15 * 60000) && nowMs < (startMs - 5 * 60000)) return 'soon';
+        if (nowMs > endMs) return 'ended';
+        return 'upcoming';
+    }
 
-        cards.forEach(c => {
-            const start = new Date(c.dataset.start), st = state(c, now), diff = start.getTime() - now;
-            const tag = c.querySelector('[data-status]'), cd = c.querySelector('[data-cd]'), lbl = c.querySelector('[data-cdlabel]');
-            const join = c.querySelector('[data-join]'), jl = c.querySelector('[data-joinlabel]');
-            tag.className = 'status ' + st;
-            tag.textContent = { upcoming: 'Upcoming', soon: 'Starting soon', live: 'Live now', ended: 'Ended' }[st];
-            cd.classList.toggle('live', st === 'live');
-            join.className = 'btn-join' + (st === 'live' ? ' live' : st === 'ended' ? ' ended' : '');
-            if (st === 'live') { lbl.textContent = 'In progress'; cd.textContent = 'LIVE'; jl.textContent = 'Join Now'; }
-            else if (st === 'ended') { lbl.textContent = 'Session'; cd.textContent = 'Ended'; jl.textContent = 'Class Ended'; }
-            else { lbl.textContent = 'Starts in'; cd.textContent = fmt(diff); jl.textContent = 'Join Class'; }
+    function update() {
+        const now = Date.now();
+        const todayStr = new Date().toDateString();
+        const weekEnd = now + (7 * 86400000);
 
-            const isToday = sameDay(start, today), inWeek = start.getTime() >= now - LIVE_MIN * 60000 && start.getTime() <= weekEnd;
-            if (st === 'live') live++;
-            if (isToday) todayN++;
-            if (inWeek) week++;
-            if (diff > 0 && (nextMs === null || diff < nextMs)) nextMs = diff;
+        let liveCount = 0, todayCount = 0, weekCount = 0, totalCount = cards.length;
 
-            const ok = filter === 'all' || (filter === 'live' && st === 'live') || (filter === 'today' && isToday) || (filter === 'week' && inWeek);
-            c.classList.toggle('hidden', !ok); if (ok) shown++;
+        // Track visibility per subject box
+        subjectBoxes.forEach(box => {
+            const boxCards = Array.from(box.querySelectorAll('[data-card]'));
+            let visibleInBox = 0;
+
+            boxCards.forEach(card => {
+                const startMs = new Date(card.dataset.start).getTime();
+                const duration = parseInt(card.dataset.duration || '60', 10);
+                const state = checkState(startMs, duration, now);
+                const classId = card.dataset.id;
+                const diffMs = startMs - now;
+
+                const isToday = new Date(startMs).toDateString() === todayStr;
+                const inWeek = startMs >= now - (duration * 60000) && startMs <= weekEnd;
+
+                if (state === 'live') liveCount++;
+                if (isToday) todayCount++;
+                if (inWeek) weekCount++;
+
+                const pill = card.querySelector('[data-pill]');
+                const cd = card.querySelector('[data-cd]');
+                const actionSlot = card.querySelector('[data-action-slot]');
+
+                // 🎯 PIN TIME HOVER ACTIVE VS FROSTED LOCKED
+                if (state === 'live') {
+                    card.classList.add('is-live');
+                    if (pill) { pill.className = 'status-pill live'; pill.innerHTML = '<span class="beacon-dot" style="width:6px; height:6px;"></span> Live Now'; }
+                    if (cd) { cd.className = 'countdown-text live'; cd.innerHTML = '<i class="fas fa-broadcast-tower"></i> LIVE NOW'; }
+                    // UNBLURRED & ACTIVE HOVER
+                    if (actionSlot && !actionSlot.querySelector('.btn-join-pin.live-now')) {
+                        actionSlot.innerHTML = `<button type="button" class="btn-join-pin live-now" onclick="joinClass(${classId})"><i class="fas fa-video"></i> Join Live</button>`;
+                    }
+                } else if (state === 'soon') {
+                    card.classList.remove('is-live');
+                    if (pill) { pill.className = 'status-pill soon'; pill.textContent = 'Starting Soon'; }
+                    if (cd) { cd.className = 'countdown-text soon'; cd.innerHTML = `<i class="fas fa-hourglass-half"></i> Starts in ${formatTime(diffMs)}`; }
+                    // UNBLURRED & ACTIVE HOVER
+                    if (actionSlot && !actionSlot.querySelector('.btn-join-pin.active-hover')) {
+                        actionSlot.innerHTML = `<button type="button" class="btn-join-pin active-hover" onclick="joinClass(${classId})"><i class="fas fa-video"></i> Join Now</button>`;
+                    }
+                } else if (state === 'ended') {
+                    card.classList.remove('is-live');
+                    if (pill) { pill.className = 'status-pill ended'; pill.textContent = 'Completed'; }
+                    if (cd) { cd.className = 'countdown-text'; cd.innerHTML = '<i class="fas fa-check-circle"></i> ENDED'; }
+                    if (actionSlot && !actionSlot.querySelector('.btn-join-pin.is-ended')) {
+                        actionSlot.innerHTML = `<span class="btn-join-pin is-ended">Ended</span>`;
+                    }
+                } else {
+                    // 🔒 OTHER TIME -> AESTHETIC FROSTED GLASS LOCKED PILL
+                    card.classList.remove('is-live');
+                    if (pill) { pill.className = 'status-pill upcoming'; pill.textContent = 'Upcoming'; }
+                    if (cd) { cd.className = 'countdown-text'; cd.innerHTML = `<i class="far fa-clock"></i> Starts in ${formatTime(diffMs)}`; }
+                    if (actionSlot && !actionSlot.querySelector('.btn-locked-glass')) {
+                        actionSlot.innerHTML = `<div class="btn-locked-glass" title="Live room unlocks 15 minutes before scheduled start time"><i class="fas fa-lock"></i> Locked • Pin-Time</div>`;
+                    }
+                }
+
+                // Filtering by Tab
+                const matches = 
+                    activeFilter === 'all' ||
+                    (activeFilter === 'live' && state === 'live') ||
+                    (activeFilter === 'today' && isToday) ||
+                    (activeFilter === 'week' && inWeek);
+
+                card.classList.toggle('hidden', !matches);
+                if (matches) visibleInBox++;
+            });
+
+            // If a subject has no matching classes under this filter, hide the whole subject box
+            box.classList.toggle('hidden', visibleInBox === 0);
+            const subCount = box.querySelector('[data-sub-count]');
+            if (subCount) subCount.textContent = visibleInBox;
         });
 
-        document.getElementById('cAll').textContent = cards.length;
-        document.getElementById('cLive').textContent = live;
-        document.getElementById('cToday').textContent = todayN;
-        document.getElementById('cWeek').textContent = week;
-        document.getElementById('stTotal').textContent = cards.length;
-        document.getElementById('stToday').textContent = todayN;
-        document.getElementById('stNext').textContent = nextMs === null ? '—' : fmt(nextMs);
-        document.getElementById('noMatch').classList.toggle('hidden', shown > 0);
+        // Update stats
+        document.getElementById('stTotal').textContent = totalCount;
+        document.getElementById('stLive').textContent = liveCount;
+        document.getElementById('stToday').textContent = todayCount;
+        document.getElementById('stWeek').textContent = weekCount;
+        document.getElementById('cAll').textContent = totalCount;
+        document.getElementById('cLive').textContent = liveCount;
+        document.getElementById('cToday').textContent = todayCount;
+        document.getElementById('cWeek').textContent = weekCount;
+
+        // Toggle global no-match
+        const anyVisible = subjectBoxes.some(b => !b.classList.contains('hidden'));
+        const noMatch = document.getElementById('noMatch');
+        if (noMatch) noMatch.classList.toggle('hidden', anyVisible);
     }
 
-    document.querySelectorAll('#tabs .ld-tab').forEach(b => b.addEventListener('click', () => {
-        document.querySelectorAll('#tabs .ld-tab').forEach(x => x.classList.remove('active'));
-        b.classList.add('active'); filter = b.dataset.f; render();
-    }));
-    render(); setInterval(render, 1000);
+    // Tab buttons listener
+    document.querySelectorAll('#tabs .ld-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#tabs .ld-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.dataset.f;
+            update();
+        });
+    });
+
+    update();
+    setInterval(update, 1000);
 })();
+
+// Join Class Handler
+function joinClass(classId) {
+    fetch(`/live-classes/${classId}/join/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.open(data.meeting_link, '_blank');
+        } else {
+            alert(data.message || 'Class is locked until pin-time.');
+        }
+    })
+    .catch(() => {
+        window.location.href = `/live-classes/${classId}/join/`;
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 {% endblock %}
