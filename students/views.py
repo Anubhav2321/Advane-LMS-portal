@@ -77,6 +77,7 @@ from .models import (
     SupportTicketMessage,  #  NEW: Support Ticket Message Thread
     notify_admins_of_support_ticket, #  NEW: Dispatch helper for all 4 admins
     notify_admins_of_ticket_reply,   #  NEW: Dispatch helper for student replies
+    FacultyProfile,                  #  NEW: Faculty Profile Model
 )
 
 User = get_user_model()
@@ -2047,20 +2048,285 @@ def lesson_ai_notes(request, lesson_id):
 @login_required
 def live_classes(request):
     """
-    Live Classes View: Filtered STRICTLY by Enrolled Courses
+    Live Classes View: Comprehensive Live Lecture & Interactive Session Hub
+    Provides real-time pin-time status, attendance verification, intelligent filtering
+    (Live Now, Today, This Week, Past & Recordings), instant search, and course scoping.
     """
     now = timezone.now()
+    local_now = timezone.localtime(now)
+    today_start = timezone.make_aware(datetime.datetime.combine(local_now.date(), datetime.time.min))
+    today_end = timezone.make_aware(datetime.datetime.combine(local_now.date(), datetime.time.max))
     
-    # 1. Get IDs of courses the student is enrolled in
-    enrolled_course_ids = Enrollment.objects.filter(student=request.user).values_list('course_id', flat=True)
-    
-    # 2. Filter Live Classes belonging ONLY to these courses
-    classes = LiveClass.objects.filter(
-        course__id__in=enrolled_course_ids,
-        date_time__gte=now - datetime.timedelta(hours=1)
-    ).order_by('date_time')
-    
-    return render(request, 'student_classes.html', {'classes': classes})
+    # Current week bounds (Monday to Sunday)
+    start_of_week = today_start - datetime.timedelta(days=local_now.weekday())
+    end_of_week = start_of_week + datetime.timedelta(days=6, hours=23, minutes=59, seconds=59)
+
+    # 1. Enrolled courses for this student
+    enrolled_courses = Course.objects.filter(enrollments__student=request.user).distinct()
+    enrolled_course_ids = list(enrolled_courses.values_list('id', flat=True))
+
+    # Base queryset: live classes belonging to enrolled courses (or all if staff)
+    if request.user.is_staff:
+        base_qs = LiveClass.objects.all().select_related('course')
+    else:
+        base_qs = LiveClass.objects.filter(course_id__in=enrolled_course_ids).select_related('course')
+
+    # Attendances for current student
+    attended_class_ids = set(
+        LiveClassAttendance.objects.filter(student=request.user).values_list('live_class_id', flat=True)
+    )
+
+    # Course filter
+    selected_course = request.GET.get('course', '').strip()
+    if selected_course:
+        base_qs = base_qs.filter(Q(course__id=selected_course) | Q(course__slug=selected_course))
+
+    # Search filter
+    search_query = request.GET.get('search', '').strip()
+    if search_query:
+        base_qs = base_qs.filter(
+            Q(title__icontains=search_query) |
+            Q(course__title__icontains=search_query) |
+            Q(course__faculty_name__icontains=search_query) |
+            Q(course__assigned_faculty__first_name__icontains=search_query) |
+            Q(course__assigned_faculty__last_name__icontains=search_query)
+        )
+
+    # All classes list for counting and filtering
+    all_classes_list = list(base_qs.order_by('date_time'))
+
+    # Annotate computed properties for Python rendering & state tracking
+    live_now_list = []
+    today_list = []
+    this_week_list = []
+    past_list = []
+    upcoming_list = []
+
+    for c in all_classes_list:
+        c.is_attended = c.id in attended_class_ids
+        try:
+            c.calendar_url = c.get_google_calendar_url()
+        except Exception:
+            c.calendar_url = "#"
+
+        # Categorize
+        if c.is_live:
+            live_now_list.append(c)
+        if c.is_today:
+            today_list.append(c)
+        if c.is_this_week:
+            this_week_list.append(c)
+        if c.is_ended:
+            past_list.append(c)
+        elif not c.is_live:
+            upcoming_list.append(c)
+
+    # Tab Filter: 'all', 'live', 'today', 'week', 'past'
+    current_tab = request.GET.get('tab', request.GET.get('filter', 'all')).lower()
+    if current_tab == 'live':
+        display_classes = live_now_list
+    elif current_tab == 'today':
+        display_classes = today_list
+    elif current_tab == 'week':
+        display_classes = this_week_list
+    elif current_tab == 'past':
+        display_classes = sorted(past_list, key=lambda x: x.date_time, reverse=True)
+    else:
+        # Prioritize Live Now first, then upcoming, then ended
+        display_classes = sorted(
+            all_classes_list,
+            key=lambda x: (
+                0 if x.is_live else (1 if not x.is_ended else 2),
+                x.date_time if not x.is_ended else -x.date_time.timestamp()
+            )
+        )
+
+    # Nearest upcoming or live class
+    future_or_live = [c for c in all_classes_list if not c.is_ended or c.is_live]
+    next_class = future_or_live[0] if future_or_live else None
+
+    # Telemetry statistics
+    total_classes_count = len(all_classes_list)
+    live_now_count = len(live_now_list)
+    today_count = len(today_list)
+    this_week_count = len(this_week_list)
+    past_count = len(past_list)
+    attended_count = len([c for c in all_classes_list if c.is_attended])
+    attendance_rate = round((attended_count / past_count * 100), 1) if past_count > 0 else 100.0
+
+    # Build Subject-Wise Groupings
+    subject_groups = []
+    for course in enrolled_courses:
+        c_classes = [c for c in all_classes_list if c.course_id == course.id]
+        if c_classes:
+            subject_groups.append({
+                'course': course,
+                'faculty': course.instructor,
+                'classes': c_classes,
+                'has_live': any(c.is_live for c in c_classes),
+                'live_count': sum(1 for c in c_classes if c.is_live),
+                'total_count': len(c_classes),
+            })
+
+    if request.user.is_staff:
+        added_course_ids = {g['course'].id for g in subject_groups if g['course']}
+        other_courses = Course.objects.exclude(id__in=added_course_ids).select_related('assigned_faculty')
+        for course in other_courses:
+            c_classes = [c for c in all_classes_list if c.course_id == course.id]
+            if c_classes:
+                subject_groups.append({
+                    'course': course,
+                    'faculty': course.instructor,
+                    'classes': c_classes,
+                    'has_live': any(c.is_live for c in c_classes),
+                    'live_count': sum(1 for c in c_classes if c.is_live),
+                    'total_count': len(c_classes),
+                })
+
+    context = {
+        'subject_groups': subject_groups,
+        'classes': display_classes,
+        'all_classes': all_classes_list,
+        'enrolled_courses': enrolled_courses,
+        'current_tab': current_tab,
+        'search_query': search_query,
+        'selected_course': selected_course,
+        'total_classes_count': total_classes_count,
+        'live_now_count': live_now_count,
+        'today_count': today_count,
+        'this_week_count': this_week_count,
+        'past_count': past_count,
+        'attended_count': attended_count,
+        'attendance_rate': attendance_rate,
+        'next_class': next_class,
+        'now_iso': now.isoformat(),
+    }
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.GET.get('format') == 'json':
+        return JsonResponse({
+            'status': 'success',
+            'counts': {
+                'all': total_classes_count,
+                'live': live_now_count,
+                'today': today_count,
+                'week': this_week_count,
+                'past': past_count,
+            }
+        })
+
+    return render(request, 'student_classes.html', context)
+
+
+@login_required
+def join_live_class(request, class_id):
+    """
+    Dedicated Join Live Class Controller.
+    - Validates course enrollment
+    - Validates pin-time (Join button is locked/blurred other times)
+    - Automatically records student LiveClassAttendance
+    - Logs activity and syncs course progress
+    - Returns JSON for AJAX modal or redirects directly
+    """
+    live_class = get_object_or_404(LiveClass, id=class_id)
+
+    # 1. Enrollment check (students must be enrolled; staff bypassed)
+    if not request.user.is_staff and live_class.course:
+        if not Enrollment.objects.filter(student=request.user, course=live_class.course).exists():
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'You must be enrolled in this course to enter the live session.'
+                }, status=403)
+            messages.error(request, 'You must be enrolled in this course to join the live class.')
+            return redirect('live_classes')
+
+    # 2. Pin-time validation (Active pin time is within 15 min before start until end)
+    if not live_class.can_join and not request.user.is_staff:
+        if live_class.is_ended:
+            if live_class.recording_url:
+                return redirect(live_class.recording_url)
+            msg = 'This live class session has concluded.'
+        else:
+            local_dt = timezone.localtime(live_class.date_time).strftime('%d %b at %I:%M %p')
+            msg = f'This session will unlock 15 minutes prior to scheduled start ({local_dt}).'
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'status': 'locked',
+                'can_join': False,
+                'message': msg
+            }, status=400)
+        messages.warning(request, msg)
+        return redirect('live_classes')
+
+    # 3. Register attendance
+    LiveClassAttendance.objects.get_or_create(student=request.user, live_class=live_class)
+
+    # 4. Log Student Activity
+    try:
+        log_student_activity(
+            request.user,
+            'lesson_watch',
+            f'Joined live class "{live_class.title}" ({live_class.platform})',
+            course=live_class.course
+        )
+    except Exception:
+        pass
+
+    # 5. Sync Course Progress
+    if live_class.course:
+        try:
+            enrollment = Enrollment.objects.filter(student=request.user, course=live_class.course).first()
+            if enrollment:
+                enrollment.sync_progress()
+        except Exception:
+            pass
+
+    # 6. Return response
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'success',
+            'meeting_link': live_class.meeting_link,
+            'platform': live_class.platform,
+            'meeting_id': live_class.meeting_id or '',
+            'passcode': live_class.passcode or '',
+            'title': live_class.title,
+            'message': 'Attendance registered! Launching live class room...'
+        })
+
+    return redirect(live_class.meeting_link)
+
+
+@login_required
+def live_class_details_api(request, class_id):
+    """
+    API returning full live class details, agenda, and credentials for interactive quick-view modal.
+    """
+    live_class = get_object_or_404(LiveClass, id=class_id)
+    is_attended = LiveClassAttendance.objects.filter(student=request.user, live_class=live_class).exists()
+
+    return JsonResponse({
+        'id': live_class.id,
+        'title': live_class.title,
+        'course': live_class.course.title if live_class.course else 'General Session',
+        'instructor': live_class.effective_instructor,
+        'platform': live_class.platform,
+        'date_time': timezone.localtime(live_class.date_time).strftime('%A, %d %B %Y at %I:%M %p'),
+        'duration_minutes': live_class.duration_minutes,
+        'meeting_id': live_class.meeting_id or '',
+        'passcode': live_class.passcode or '',
+        'meeting_link': live_class.meeting_link,
+        'description': live_class.description or '',
+        'agenda': live_class.agenda_items,
+        'resources_link': live_class.resources_link or '',
+        'recording_url': live_class.recording_url or '',
+        'is_live': live_class.is_live,
+        'can_join': live_class.can_join,
+        'is_ended': live_class.is_ended,
+        'is_attended': is_attended,
+        'calendar_url': live_class.get_google_calendar_url(),
+        'attendees_count': live_class.attendees.count(),
+    })
 
 
 @login_required
@@ -2886,9 +3152,10 @@ def admin_create_live_class(request):
         form = LiveClassForm(request.POST)
         if form.is_valid():
             live_class = form.save()
-            messages.success(request, f"Live class '{live_class.title}' scheduled.")
+            messages.success(request, f"Live class '{live_class.title}' scheduled successfully ({live_class.platform}).")
         else:
-            messages.error(request, "Invalid class details. Date cannot be in past.")
+            err_msg = "; ".join([f"{k}: {', '.join(v)}" for k, v in form.errors.items()])
+            messages.error(request, f"Could not schedule class: {err_msg}")
     return redirect('admin_dashboard')
 
 @staff_member_required
@@ -2936,6 +3203,596 @@ def admin_add_lesson(request, course_id):
         form = LessonForm(initial={'course': course})
     
     return render(request, 'custom_admin/add_lesson.html', {'form': form, 'course': course})
+
+
+# ==============================================================================
+# FACULTY PANEL & INSTRUCTOR MANAGEMENT SYSTEM
+# ==============================================================================
+
+@staff_member_required
+def admin_create_faculty(request):
+    """
+    Creates a new Faculty account from the Admin Panel with streamlined information:
+    - Full Name, Department, Work Experience, Job Role, Contact Number, Email ID,
+    - Ready-made password (e.g. Faculty@123), and course assignment.
+    """
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        phone = request.POST.get('phone', '').strip()
+        department = request.POST.get('department', '').strip()
+        job_role = request.POST.get('job_role', '').strip() or "Professor / Instructor"
+        experience_years = request.POST.get('experience_years', '0').strip()
+        course_id = request.POST.get('course_id')
+        password = request.POST.get('password', '').strip() or 'Faculty@123'
+
+        if not name or not email:
+            messages.error(request, "Faculty full name and email address are required.")
+            return redirect('admin_dashboard')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f"A user with email '{email}' already exists. Please use a unique email address.")
+            return redirect('admin_dashboard')
+
+        base_username = email.split('@')[0]
+        username = base_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        name_parts = name.split()
+        first_name = name_parts[0] if name_parts else name
+        last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+
+        try:
+            exp_int = int(experience_years)
+        except ValueError:
+            exp_int = 0
+
+        faculty_user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            is_faculty=True,
+            is_student=False
+        )
+
+        profile, _ = Profile.objects.get_or_create(user=faculty_user)
+        profile.phone = phone
+        profile.bio = f"{job_role} in {department}. With {exp_int} years of professional experience."
+        profile.save()
+
+        fac_profile, _ = FacultyProfile.objects.get_or_create(user=faculty_user)
+        fac_profile.department = department
+        fac_profile.experience_years = exp_int
+        fac_profile.job_role = job_role
+        fac_profile.save()
+
+        assigned_course_title = ""
+        if course_id:
+            course = Course.objects.filter(id=course_id).first()
+            if course:
+                course.assigned_faculty = faculty_user
+                course.faculty_name = name
+                course.save(update_fields=['assigned_faculty', 'faculty_name'])
+                assigned_course_title = f" & assigned to '{course.title}'"
+
+        messages.success(request, f"Faculty account created successfully for {name}{assigned_course_title}! Credentials: {email} / {password}")
+    return redirect('admin_dashboard')
+
+
+@login_required
+def faculty_dashboard(request):
+    """
+    Dedicated, focused Faculty Dashboard matching the exact Admin Panel aesthetic.
+    Features:
+    - Faculty profile summary (Avatar, Role, Department, Experience, Bio)
+    - Enrolled student details strictly limited to courses taught by this faculty.
+    - Scoped controls: Live Classes, Notices, Library Documents, Exams, Assignments.
+    """
+    user = request.user
+    if not (getattr(user, 'is_faculty', False) or user.is_staff or user.is_superuser):
+        messages.error(request, "Access restricted to faculty members only.")
+        return redirect('dashboard')
+
+    faculty_profile, _ = FacultyProfile.objects.get_or_create(user=user)
+    user_profile, _ = Profile.objects.get_or_create(user=user)
+
+    assigned_courses = Course.objects.filter(assigned_faculty=user).order_by('-created_at')
+    if not assigned_courses.exists() and (user.is_staff or user.is_superuser):
+        assigned_courses = Course.objects.all().order_by('-created_at')
+
+    assigned_course_ids = assigned_courses.values_list('id', flat=True)
+
+    # Enrolled students for courses taught by this faculty
+    student_query = request.GET.get('student_search', '').strip()
+    enrollments_qs = Enrollment.objects.filter(course_id__in=assigned_course_ids).select_related('student', 'course', 'student__profile').order_by('-enrolled_at')
+
+    if student_query:
+        enrollments_qs = enrollments_qs.filter(
+            Q(student__first_name__icontains=student_query) |
+            Q(student__last_name__icontains=student_query) |
+            Q(student__username__icontains=student_query) |
+            Q(student__email__icontains=student_query) |
+            Q(student__student_id__icontains=student_query) |
+            Q(course__title__icontains=student_query)
+        )
+
+    total_assigned_courses = assigned_courses.count()
+    total_enrolled_students = Enrollment.objects.filter(course_id__in=assigned_course_ids).values('student_id').distinct().count()
+
+    faculty_live_classes = LiveClass.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-date_time')
+    faculty_documents = LibraryDocument.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-uploaded_at')
+    faculty_exams = Exam.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-created_at')
+    faculty_assignments = Assignment.objects.filter(course_id__in=assigned_course_ids).select_related('course').prefetch_related('submissions').order_by('-created_at')
+
+    # Scoped form instances with course choices restricted to assigned courses
+    live_class_form = LiveClassForm()
+    live_class_form.fields['course'].queryset = assigned_courses
+
+    library_form = LibraryDocumentForm()
+    library_form.fields['course'].queryset = assigned_courses
+
+    exam_form = ExamForm()
+    exam_form.fields['course'].queryset = assigned_courses
+
+    assignment_form = AssignmentForm()
+    assignment_form.fields['course'].queryset = assigned_courses
+
+    enrolled_student_ids = Enrollment.objects.filter(course_id__in=assigned_course_ids).values_list('student_id', flat=True).distinct()
+    notice_form = NotificationForm()
+    notice_form.fields['recipient'].queryset = User.objects.filter(id__in=enrolled_student_ids).order_by('username')
+    notice_form.fields['recipient'].empty_label = "All My Enrolled Students (Course Broadcast)"
+
+    context = {
+        'faculty_user': user,
+        'faculty_profile': faculty_profile,
+        'user_profile': user_profile,
+        'assigned_courses': assigned_courses,
+        'enrollments': enrollments_qs,
+        'student_search': student_query,
+        'total_assigned_courses': total_assigned_courses,
+        'total_enrolled_students': total_enrolled_students,
+        'live_classes_count': faculty_live_classes.count(),
+        'documents_count': faculty_documents.count(),
+        'exams_count': faculty_exams.count(),
+        'assignments_count': faculty_assignments.count(),
+        'live_classes': faculty_live_classes[:20],
+        'documents': faculty_documents[:20],
+        'exams': faculty_exams[:20],
+        'assignments': faculty_assignments[:20],
+        'live_class_form': live_class_form,
+        'library_form': library_form,
+        'exam_form': exam_form,
+        'assignment_form': assignment_form,
+        'notice_form': notice_form,
+    }
+    return render(request, 'custom_admin/faculty_dashboard.html', context)
+
+
+@login_required
+def faculty_create_live_class(request):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = LiveClassForm(request.POST)
+        if form.is_valid():
+            live_class = form.save(commit=False)
+            if not (request.user.is_staff or request.user.is_superuser):
+                if live_class.course.assigned_faculty != request.user:
+                    messages.error(request, "You can only schedule classes for courses assigned to you.")
+                    return redirect('faculty_dashboard')
+            live_class.save()
+            messages.success(request, f"Live class '{live_class.title}' scheduled successfully for {live_class.course.title}!")
+        else:
+            err_msg = "; ".join([f"{k}: {', '.join(v)}" for k, v in form.errors.items()])
+            messages.error(request, f"Failed to schedule class: {err_msg}")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_delete_live_class(request, class_id):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    live_class = get_object_or_404(LiveClass, id=class_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if live_class.course and live_class.course.assigned_faculty != request.user:
+            messages.error(request, "Permission denied.")
+            return redirect('faculty_dashboard')
+    title = live_class.title
+    live_class.delete()
+    messages.success(request, f"Live class '{title}' has been deleted.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_create_notice(request):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = NotificationForm(request.POST)
+        if form.is_valid():
+            notice = form.save(commit=False)
+            if notice.recipient:
+                notice.is_global = False
+                notice.save()
+                messages.success(request, f"Notice sent to {notice.recipient.get_full_name() or notice.recipient.username} successfully.")
+            else:
+                assigned_courses = Course.objects.filter(assigned_faculty=request.user)
+                if not assigned_courses.exists() and (request.user.is_staff or request.user.is_superuser):
+                    assigned_courses = Course.objects.all()
+                enrolled_students = User.objects.filter(enrollments__course__in=assigned_courses).distinct()
+                count = 0
+                for student in enrolled_students:
+                    Notification.objects.create(
+                        title=notice.title,
+                        message=notice.message,
+                        notification_type=notice.notification_type or 'notice',
+                        action_url=notice.action_url or '/dashboard/',
+                        action_label=notice.action_label or 'View Notice',
+                        recipient=student,
+                        is_global=False
+                    )
+                    count += 1
+                messages.success(request, f"Notice broadcast successfully to {count} enrolled students.")
+        else:
+            messages.error(request, "Failed to post notice. Please check input fields.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_add_library(request):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = LibraryDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            doc = form.save(commit=False)
+            if not (request.user.is_staff or request.user.is_superuser):
+                if doc.course and doc.course.assigned_faculty != request.user:
+                    messages.error(request, "You can only upload documents to courses assigned to you.")
+                    return redirect('faculty_dashboard')
+            doc.uploaded_by = request.user
+            doc.save()
+            messages.success(request, f"Study document '{doc.title}' uploaded successfully to library.")
+        else:
+            messages.error(request, "Failed to upload document. Please upload PDF or Office documents.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_delete_library(request, doc_id):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    doc = get_object_or_404(LibraryDocument, id=doc_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if doc.course and doc.course.assigned_faculty != request.user:
+            messages.error(request, "Permission denied.")
+            return redirect('faculty_dashboard')
+    title = doc.title
+    doc.delete()
+    messages.success(request, f"Document '{title}' deleted successfully.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_create_exam(request):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = ExamForm(request.POST)
+        if form.is_valid():
+            exam = form.save(commit=False)
+            if not (request.user.is_staff or request.user.is_superuser):
+                if exam.course and exam.course.assigned_faculty != request.user:
+                    messages.error(request, "You can only create exams for courses assigned to you.")
+                    return redirect('faculty_dashboard')
+            exam.save()
+            messages.success(request, f"Exam '{exam.title}' published successfully!")
+        else:
+            messages.error(request, "Failed to create exam. Please check all fields.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_delete_exam(request, exam_id):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    exam = get_object_or_404(Exam, id=exam_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if exam.course and exam.course.assigned_faculty != request.user:
+            messages.error(request, "Permission denied.")
+            return redirect('faculty_dashboard')
+    title = exam.title
+    exam.delete()
+    messages.success(request, f"Exam '{title}' deleted successfully.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_create_assignment(request):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            assignment = form.save(commit=False)
+            if not (request.user.is_staff or request.user.is_superuser):
+                if assignment.course and assignment.course.assigned_faculty != request.user:
+                    messages.error(request, "You can only create assignments for courses assigned to you.")
+                    return redirect('faculty_dashboard')
+            assignment.save()
+            messages.success(request, f"Assignment '{assignment.title}' created successfully!")
+        else:
+            err_msg = "; ".join([f"{k}: {', '.join(v)}" for k, v in form.errors.items()])
+            messages.error(request, f"Failed to create assignment: {err_msg}")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_delete_assignment(request, assignment_id):
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if assignment.course and assignment.course.assigned_faculty != request.user:
+            messages.error(request, "Permission denied.")
+            return redirect('faculty_dashboard')
+    title = assignment.title
+    assignment.delete()
+    messages.success(request, f"Assignment '{title}' deleted successfully.")
+    return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_update_profile(request):
+    """
+    Allows faculty to update their profile photo, bio, phone, job role, and specialization.
+    """
+    if not (getattr(request.user, 'is_faculty', False) or request.user.is_staff or request.user.is_superuser):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+    if request.method == 'POST':
+        bio = request.POST.get('bio', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        job_role = request.POST.get('job_role', '').strip()
+        specialization = request.POST.get('specialization', '').strip()
+        department = request.POST.get('department', '').strip()
+        profile_pic = request.FILES.get('profile_pic')
+
+        user = request.user
+        if phone:
+            user.phone = phone
+            user.save(update_fields=['phone'])
+
+        profile, _ = Profile.objects.get_or_create(user=user)
+        if bio:
+            profile.bio = bio
+        if phone:
+            profile.phone = phone
+        if profile_pic:
+            profile.profile_pic = profile_pic
+        profile.save()
+
+        faculty_profile, _ = FacultyProfile.objects.get_or_create(user=user)
+        if job_role:
+            faculty_profile.job_role = job_role
+        if specialization:
+            faculty_profile.specialization = specialization
+        if department:
+            faculty_profile.department = department
+        faculty_profile.save()
+
+        messages.success(request, "Profile updated successfully!")
+    return redirect('faculty_dashboard')
+
+
+# ==============================================================================
+# ADMIN FACULTY MANAGEMENT (DIRECTORY & CONTROLS)
+# ==============================================================================
+
+@staff_member_required
+def admin_faculty_list(request):
+    """
+    Renders the full Faculty Directory for administrators, matching the Student List design.
+    Admin can search faculties, see their department, job role, assigned courses, contact info,
+    work experience, and register new faculties or delete existing ones.
+    """
+    query = request.GET.get('search', '').strip()
+    dept_filter = request.GET.get('department', '').strip()
+
+    base_faculties = User.objects.filter(is_faculty=True).select_related('faculty_profile', 'profile').prefetch_related('assigned_courses').order_by('-date_joined')
+
+    if query:
+        base_faculties = base_faculties.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(phone__icontains=query) |
+            Q(faculty_profile__department__icontains=query) |
+            Q(faculty_profile__job_role__icontains=query) |
+            Q(assigned_courses__title__icontains=query)
+        ).distinct()
+
+    if dept_filter:
+        base_faculties = base_faculties.filter(faculty_profile__department__iexact=dept_filter)
+
+    total_faculties = base_faculties.count()
+    
+    # Unique departments for filtering
+    departments = (
+        FacultyProfile.objects
+        .exclude(department__isnull=True)
+        .exclude(department__exact='')
+        .values_list('department', flat=True)
+        .distinct()
+        .order_by('department')
+    )
+
+    courses = Course.objects.all().order_by('title')
+
+    context = {
+        'faculties': base_faculties,
+        'total_faculties': total_faculties,
+        'search_query': query,
+        'selected_department': dept_filter,
+        'departments': departments,
+        'courses': courses,
+    }
+    return render(request, 'custom_admin/faculty_list.html', context)
+
+
+@staff_member_required
+def admin_delete_faculty(request, faculty_id):
+    """
+    Deletes a faculty member safely and unassigns any courses they taught.
+    """
+    faculty = get_object_or_404(User, id=faculty_id, is_faculty=True)
+    if faculty.is_superuser:
+        messages.error(request, "Super admin accounts cannot be deleted as faculty.")
+        return redirect('admin_faculty_list')
+
+    name = faculty.get_full_name() or faculty.username
+    Course.objects.filter(assigned_faculty=faculty).update(assigned_faculty=None, faculty_name="Expert Faculty")
+    faculty.delete()
+    messages.success(request, f"Faculty '{name}' has been deleted successfully.")
+    return redirect('admin_faculty_list')
+
+
+@staff_member_required
+def admin_faculty_detail(request, faculty_id):
+    """
+    Renders detailed profile, stats, assigned courses, content, and security controls
+    for a faculty member, matching admin_student_detail structure.
+    """
+    faculty = get_object_or_404(User, id=faculty_id)
+    if not (getattr(faculty, 'is_faculty', False) or hasattr(faculty, 'faculty_profile')):
+        messages.warning(request, f"{faculty.get_full_name() or faculty.username} is not registered as a faculty member.")
+        return redirect('admin_faculty_list')
+
+    faculty_profile, _ = FacultyProfile.objects.get_or_create(user=faculty)
+    profile, _ = Profile.objects.get_or_create(user=faculty)
+
+    # Assigned Courses
+    assigned_courses = Course.objects.filter(assigned_faculty=faculty).order_by('-created_at')
+    assigned_course_ids = assigned_courses.values_list('id', flat=True)
+    
+    # Enrollments and students across assigned courses
+    course_enrollments = Enrollment.objects.filter(course_id__in=assigned_course_ids)
+    total_enrollments = course_enrollments.count()
+    total_students_enrolled = course_enrollments.values('student_id').distinct().count()
+
+    # Content created by faculty or for their courses
+    live_classes = LiveClass.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-date_time')
+    exams = Exam.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-created_at')
+    assignments = Assignment.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-created_at')
+    library_docs = LibraryDocument.objects.filter(Q(course_id__in=assigned_course_ids) | Q(uploaded_by=faculty)).distinct().select_related('course').order_by('-uploaded_at')
+
+    # All available courses for quick reassignment in modal
+    all_courses = Course.objects.all().order_by('title')
+
+    context = {
+        'faculty': faculty,
+        'faculty_profile': faculty_profile,
+        'profile': profile,
+        'assigned_courses': assigned_courses,
+        'total_courses': assigned_courses.count(),
+        'total_enrollments': total_enrollments,
+        'total_students_enrolled': total_students_enrolled,
+        'live_classes': live_classes[:20],
+        'total_live_classes': live_classes.count(),
+        'exams': exams[:20],
+        'total_exams': exams.count(),
+        'assignments': assignments[:20],
+        'total_assignments': assignments.count(),
+        'library_docs': library_docs[:20],
+        'total_docs': library_docs.count(),
+        'all_courses': all_courses,
+    }
+    return render(request, 'custom_admin/faculty_detail.html', context)
+
+
+@staff_member_required
+def admin_reset_faculty_password(request, faculty_id):
+    """
+    Allows admin to reset password for a faculty member directly from their profile.
+    """
+    faculty = get_object_or_404(User, id=faculty_id)
+    if request.method == "POST":
+        new_pass = request.POST.get('new_password', '').strip()
+        if new_pass:
+            faculty.set_password(new_pass)
+            faculty.save()
+            messages.success(request, f"Password successfully reset for {faculty.get_full_name() or faculty.username}.")
+        else:
+            messages.error(request, "Please provide a valid non-empty password.")
+    return redirect('admin_faculty_detail', faculty_id=faculty_id)
+
+
+@staff_member_required
+def admin_update_faculty_info(request, faculty_id):
+    """
+    Allows admin to update faculty personal, professional, and course assignment information.
+    """
+    faculty = get_object_or_404(User, id=faculty_id)
+    if request.method == "POST":
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        department = request.POST.get('department', '').strip()
+        job_role = request.POST.get('job_role', '').strip()
+        experience_years = request.POST.get('experience_years', '').strip()
+        specialization = request.POST.get('specialization', '').strip()
+        bio = request.POST.get('bio', '').strip()
+        course_ids = request.POST.getlist('assigned_courses')
+
+        if first_name: faculty.first_name = first_name
+        if last_name: faculty.last_name = last_name
+        if email: faculty.email = email
+        if phone: faculty.phone = phone
+        faculty.save()
+
+        fac_prof, _ = FacultyProfile.objects.get_or_create(user=faculty)
+        if department: fac_prof.department = department
+        if job_role: fac_prof.job_role = job_role
+        if experience_years:
+            try: fac_prof.experience_years = int(experience_years)
+            except ValueError: pass
+        if specialization is not None: fac_prof.specialization = specialization
+        fac_prof.save()
+
+        if hasattr(faculty, 'profile'):
+            if phone: faculty.profile.phone = phone
+            if bio is not None: faculty.profile.bio = bio
+            faculty.profile.save()
+
+        # Update course assignments if explicitly included in form
+        if 'courses_submitted' in request.POST:
+            Course.objects.filter(assigned_faculty=faculty).update(assigned_faculty=None, faculty_name="Expert Faculty")
+            if course_ids:
+                Course.objects.filter(id__in=course_ids).update(
+                    assigned_faculty=faculty,
+                    faculty_name=faculty.get_full_name() or faculty.username
+                )
+
+        messages.success(request, f"Faculty profile updated successfully for {faculty.get_full_name() or faculty.username}.")
+    return redirect('admin_faculty_detail', faculty_id=faculty_id)
+
 
 # --- Admin Student Management Views ---
 
@@ -3095,6 +3952,8 @@ def admin_toggle_block(request, user_id):
     student.save()
     status = "Active" if student.is_active else "Blocked"
     messages.warning(request, f"User {student.username} is now {status}.")
+    if getattr(student, 'is_faculty', False) or hasattr(student, 'faculty_profile'):
+        return redirect('admin_faculty_detail', faculty_id=user_id)
     return redirect('admin_student_detail', user_id=user_id)
 
 @staff_member_required
