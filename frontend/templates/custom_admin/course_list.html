@@ -1,252 +1,727 @@
 {% extends 'base_admin.html' %}
+{% load static %}
 
 {% block content %}
 <style>
-    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+    .page-wrap {
+        padding: 32px 36px 60px;
+        max-width: 1440px;
+        margin: 0 auto;
+        font-family: var(--font-body);
+    }
 
-    .page-header {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
+    /* ============================================= */
+    /* 1. HERO OVERVIEW BANNER                       */
+    /* ============================================= */
+    .course-hero-banner {
+        background: linear-gradient(135deg, rgba(20, 16, 38, 0.95), rgba(10, 10, 26, 0.98));
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-xl);
-        padding: 28px 32px;
+        padding: 30px 36px;
         margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         position: relative;
         overflow: hidden;
+        gap: 24px;
+        flex-wrap: wrap;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
     }
 
-    .page-header::before {
+    .course-hero-banner::before {
         content: '';
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 3px;
-        background: linear-gradient(90deg, var(--accent-red), #ff6090);
+        background: linear-gradient(90deg, #ff3366, #bc13fe, #00d4ff);
     }
 
-    .page-header h2 {
-        font-size: 1.5rem;
+    .course-hero-banner::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(255, 51, 102, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 51, 102, 0.12);
+        border: 1px solid rgba(255, 51, 102, 0.3);
+        color: #ff3366;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .hero-title {
+        font-size: 1.85rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #fff, #c0c0d0);
+        color: #fff;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hero-title span {
+        background: linear-gradient(135deg, #fff 20%, #00d4ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
 
-    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
-
-    .btn-back {
+    .hero-sub {
         color: var(--text-secondary);
-        text-decoration: none;
-        padding: 10px 18px;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg);
-        font-weight: 600;
-        font-size: 0.85rem;
-        display: inline-flex;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 580px;
+        margin: 0;
+    }
+
+    .hero-stats-row {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        transition: var(--transition-fast);
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
-    .btn-back:hover {
-        color: var(--primary);
-        border-color: var(--primary);
-        transform: translateX(-4px);
+    .stat-pill {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 12px 18px;
+        min-width: 90px;
+        text-align: center;
+        transition: transform 0.25s, border-color 0.25s;
     }
+    .stat-pill:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+    .stat-num {
+        font-family: var(--font-mono);
+        font-size: 1.45rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    .stat-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+    .stat-pill.rose .stat-num { color: #ff3366; }
+    .stat-pill.green .stat-num { color: #00e676; }
+    .stat-pill.cyan .stat-num { color: #00d4ff; }
+    .stat-pill.amber .stat-num { color: #ffb74d; }
 
-    /* Table */
-    .table-glass {
-        background: var(--glass-bg);
+    /* ============================================= */
+    /* 2. FILTER & SEARCH CONTROL STRIP              */
+    /* ============================================= */
+    .controls-strip {
+        background: rgba(10, 10, 30, 0.7);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-lg);
-        overflow: hidden;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
 
-    .custom-table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
+    .filter-pills-row {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+        flex-wrap: wrap;
+    }
 
-    .custom-table th {
-        background: rgba(10, 10, 30, 0.5);
-        color: var(--text-muted);
-        text-transform: uppercase;
-        font-size: 0.78rem;
-        letter-spacing: 1.2px;
+    .c-filter-btn {
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+        padding: 7px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.82rem var(--font-body);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.22s ease;
+        white-space: nowrap;
+    }
+    .c-filter-btn:hover {
+        color: #fff;
+        border-color: rgba(0, 212, 255, 0.3);
+        background: rgba(0, 212, 255, 0.05);
+    }
+    .c-filter-btn.active {
+        background: rgba(0, 212, 255, 0.12);
+        border-color: #00d4ff;
+        color: #00d4ff;
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+    }
+    .c-filter-btn .count-badge {
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.7rem;
+        font-family: var(--font-mono);
         font-weight: 700;
-        padding: 18px 20px;
+    }
+    .c-filter-btn.active .count-badge {
+        background: rgba(0, 212, 255, 0.25);
+        color: #fff;
+    }
+
+    .search-box-wrap {
+        position: relative;
+        min-width: 260px;
+    }
+    .search-box-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    .search-box-wrap input {
+        width: 100%;
+        padding: 9px 16px 9px 38px;
+        border-radius: 50px;
+        outline: none;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        font: inherit;
+        font-size: 0.86rem;
+        transition: all 0.2s;
+    }
+    .search-box-wrap input:focus {
+        border-color: #00d4ff;
+        box-shadow: 0 0 14px rgba(0, 212, 255, 0.25);
+    }
+
+    /* ============================================= */
+    /* 3. ULTRA-PREMIUM GLASSMORPHIC TABLE           */
+    /* ============================================= */
+    .table-container-glass {
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .table-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .premium-course-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+    }
+
+    .premium-course-table thead tr {
+        background: rgba(16, 16, 40, 0.85);
         border-bottom: 1px solid var(--glass-border);
     }
 
-    .custom-table td {
-        padding: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    .premium-course-table th {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+        padding: 18px 22px;
+        text-align: left;
+    }
+
+    .premium-course-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: all 0.22s ease;
+    }
+
+    .premium-course-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .premium-course-table td {
+        padding: 18px 22px;
         vertical-align: middle;
     }
 
-    .custom-table tbody tr {
-        transition: var(--transition-fast);
-        animation: rowSlide 0.4s ease forwards;
-        opacity: 0;
+    /* Course Profile Block */
+    .course-identity-cell {
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
 
-    @keyframes rowSlide {
-        to { opacity: 1; transform: translateX(0); }
-        from { transform: translateX(-8px); }
+    .course-icon-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(255, 51, 102, 0.15), rgba(188, 19, 254, 0.15));
+        border: 1px solid rgba(255, 51, 102, 0.3);
+        display: grid;
+        place-items: center;
+        color: #ff3366;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(255, 51, 102, 0.15);
     }
 
-    .custom-table tbody tr:hover { background: var(--glass-bg-hover); }
-
-    .course-name { color: var(--text-primary); font-size: 1.05rem; font-weight: 700; }
-    .course-date { color: var(--text-muted); font-size: 0.82rem; margin-top: 4px; }
-
-    .price-tag { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; }
-
-    .module-badge {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 5px 14px;
-        border-radius: 20px;
-        font-size: 0.82rem;
-        color: var(--text-secondary);
-        border: 1px solid var(--glass-border);
+    .course-title-text {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.35;
+        margin-bottom: 3px;
     }
 
-    .status-pub { color: var(--accent-green); font-weight: 600; }
-    .status-draft { color: var(--accent-red); font-weight: 600; }
+    .course-meta-sub {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-    /* Action Buttons */
-    .btn-action {
-        padding: 8px 14px;
-        border-radius: var(--radius-sm);
-        border: none;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
+    /* Price Badge */
+    .price-chip {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        text-decoration: none;
-        font-family: var(--font-body);
-        transition: var(--transition-smooth);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        font-weight: 700;
     }
-
-    .btn-add-video {
+    .price-chip.paid {
         background: rgba(0, 212, 255, 0.1);
-        color: var(--secondary);
-        border: 1px solid rgba(0, 212, 255, 0.2);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: #00d4ff;
     }
-    .btn-add-video:hover { background: var(--secondary); color: #000; box-shadow: 0 0 12px var(--secondary-glow); }
+    .price-chip.free {
+        background: rgba(0, 230, 118, 0.1);
+        border: 1px solid rgba(0, 230, 118, 0.3);
+        color: #00e676;
+    }
 
-    .btn-edit {
-        background: var(--glass-bg);
-        color: var(--text-secondary);
+    /* Module structure badge */
+    .modules-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid var(--glass-border);
+        color: #e2e8f0;
+        font-size: 0.82rem;
+        font-weight: 600;
     }
-    .btn-edit:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
+    .modules-chip i { color: #bc13fe; }
 
-    .btn-del {
+    /* Status Pill */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+    .status-pill.published {
+        background: rgba(0, 230, 118, 0.1);
+        border: 1px solid rgba(0, 230, 118, 0.35);
+        color: #00e676;
+    }
+    .status-pill.draft {
+        background: rgba(255, 183, 77, 0.1);
+        border: 1px solid rgba(255, 183, 77, 0.35);
+        color: #ffb74d;
+    }
+    .dot-indicator {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+    }
+    .status-pill.published .dot-indicator {
+        background: #00e676;
+        box-shadow: 0 0 8px #00e676;
+    }
+    .status-pill.draft .dot-indicator {
+        background: #ffb74d;
+    }
+
+    /* Actions buttons */
+    .actions-cluster {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .btn-act-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.22s ease;
+    }
+
+    .btn-video-add {
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 136, 255, 0.2));
+        border: 1px solid rgba(0, 212, 255, 0.35);
+        color: #00d4ff;
+    }
+    .btn-video-add:hover {
+        background: #00d4ff;
+        color: #000;
+        box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .btn-act-edit {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: #cbd5e1;
+    }
+    .btn-act-edit:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .btn-act-del {
         background: rgba(255, 51, 102, 0.1);
-        color: var(--accent-red);
-        border: 1px solid rgba(255, 51, 102, 0.2);
+        border: 1px solid rgba(255, 51, 102, 0.25);
+        color: #ff3366;
     }
-    .btn-del:hover { background: var(--accent-red); color: #fff; box-shadow: 0 0 12px rgba(255, 51, 102, 0.3); }
+    .btn-act-del:hover {
+        background: #ff3366;
+        color: #fff;
+        box-shadow: 0 0 16px rgba(255, 51, 102, 0.4);
+        transform: translateY(-2px);
+    }
 
-    .actions-row { display: flex; gap: 8px; justify-content: flex-end; }
+    /* Empty state */
+    .empty-courses-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .empty-courses-state i {
+        font-size: 2.8rem;
+        color: #334155;
+        margin-bottom: 12px;
+        display: block;
+    }
+    .empty-courses-state h3 {
+        color: #fff;
+        font-size: 1.15rem;
+        margin: 0 0 6px 0;
+    }
+    .empty-courses-state p {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        margin: 0;
+    }
 
-    /* Mobile & Tablet Responsiveness */
-    @media (max-width: 768px) {
-        .page-wrap { padding: 18px 14px; }
-        .page-header {
+    /* Mobile Adaptations */
+    @media (max-width: 900px) {
+        .page-wrap { padding: 22px 16px; }
+        .course-hero-banner {
             flex-direction: column;
-            align-items: stretch;
-            padding: 20px 18px;
-            gap: 16px;
+            align-items: flex-start;
+            padding: 24px 20px;
         }
-        .table-glass {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .custom-table { min-width: 650px; }
+        .hero-stats-row { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .stat-pill { min-width: unset; width: 100%; }
+        .controls-strip { flex-direction: column; align-items: stretch; }
+        .search-box-wrap { width: 100%; }
     }
 
     @media (max-width: 480px) {
         .page-wrap { padding: 14px 10px; }
-        .page-header h2 { font-size: 1.3rem; }
+        .hero-title { font-size: 1.45rem; }
+        .actions-cluster { flex-direction: column; align-items: stretch; }
+        .btn-act-action { justify-content: center; width: 100%; }
     }
 </style>
 
 <div class="page-wrap">
     
-    <div class="page-header">
+    <!-- 1. HERO OVERVIEW BANNER -->
+    <div class="course-hero-banner">
         <div>
-            <h2><i class="fas fa-book-open"></i> Manage Courses</h2>
-            <p>Create, edit, and manage your course content.</p>
+            <div class="hero-badge-pill">
+                <i class="fas fa-graduation-cap"></i> Academic Curriculum
+            </div>
+            <h1 class="hero-title">Course <span>Management</span></h1>
+            <p class="hero-sub">Review syllabus structure, manage module video lessons, pricing models, and publish courses to the academy.</p>
         </div>
-        <a href="{% url 'admin_dashboard' %}" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Dashboard
-        </a>
+
+        <div class="hero-stats-row">
+            <div class="stat-pill rose">
+                <div class="stat-num">{{ courses|length }}</div>
+                <div class="stat-lbl">Total Courses</div>
+            </div>
+            <div class="stat-pill green">
+                <div class="stat-num" id="statPubCount">0</div>
+                <div class="stat-lbl">Published</div>
+            </div>
+            <div class="stat-pill amber">
+                <div class="stat-num" id="statDraftCount">0</div>
+                <div class="stat-lbl">Drafts</div>
+            </div>
+            <div class="stat-pill cyan">
+                <div class="stat-num" id="statPaidCount">0</div>
+                <div class="stat-lbl">Paid Modules</div>
+            </div>
+        </div>
     </div>
 
-    <div class="table-glass">
-        <table class="custom-table">
-            <thead>
-                <tr>
-                    <th>Course Info</th>
-                    <th>Pricing</th>
-                    <th>Structure</th>
-                    <th>Status</th>
-                    <th style="text-align: right;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in courses %}
-                <tr>
-                    <td>
-                        <div class="course-name">{{ course.title }}</div>
-                        <div class="course-date">{{ course.created_at|date:"M d, Y" }}</div>
-                    </td>
-                    <td>
-                        {% if course.price > 0 %}
-                            <span class="price-tag" style="color: var(--secondary);">₹{{ course.price }}</span>
-                        {% else %}
-                            <span class="price-tag" style="color: var(--accent-green);">Free</span>
-                        {% endif %}
-                    </td>
-                    <td><span class="module-badge">{{ course.total_modules }} Modules</span></td>
-                    <td>
-                        {% if course.is_published %}
-                            <span class="status-pub"><i class="fas fa-check-circle"></i> Published</span>
-                        {% else %}
-                            <span class="status-draft"><i class="fas fa-pencil-alt"></i> Draft</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="actions-row">
-                            <a href="{% url 'admin_add_lesson' course.id %}" class="btn-action btn-add-video"><i class="fas fa-video"></i> Add Video</a>
-                            <a href="{% url 'admin_edit_course' course.id %}" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
-                            <form action="{% url 'admin_delete_course' course.id %}" method="POST" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-action btn-del" onclick="return confirm('Delete this course?');"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">No courses available.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- 2. FILTER & SEARCH CONTROL STRIP -->
+    <div class="controls-strip">
+        <div class="filter-pills-row" id="courseFilterPills">
+            <button type="button" class="c-filter-btn active" data-filter="all" onclick="applyCourseFilter('all', this)">
+                <i class="fas fa-border-all"></i> All Courses <span class="count-badge">{{ courses|length }}</span>
+            </button>
+            <button type="button" class="c-filter-btn" data-filter="published" onclick="applyCourseFilter('published', this)">
+                <i class="fas fa-circle-check" style="color:#00e676;"></i> Published <span class="count-badge" id="pillPubCount">0</span>
+            </button>
+            <button type="button" class="c-filter-btn" data-filter="draft" onclick="applyCourseFilter('draft', this)">
+                <i class="fas fa-pencil" style="color:#ffb74d;"></i> Drafts <span class="count-badge" id="pillDraftCount">0</span>
+            </button>
+            <button type="button" class="c-filter-btn" data-filter="paid" onclick="applyCourseFilter('paid', this)">
+                <i class="fas fa-tag" style="color:#00d4ff;"></i> Paid <span class="count-badge" id="pillPaidCount">0</span>
+            </button>
+            <button type="button" class="c-filter-btn" data-filter="free" onclick="applyCourseFilter('free', this)">
+                <i class="fas fa-gift" style="color:#a855f7;"></i> Free <span class="count-badge" id="pillFreeCount">0</span>
+            </button>
+        </div>
+
+        <div class="search-box-wrap">
+            <i class="fas fa-search"></i>
+            <input type="search" id="courseSearchInput" placeholder="Search courses by title…" aria-label="Search courses" oninput="filterCourseRows()">
+        </div>
+    </div>
+
+    <!-- 3. PREMIUM GLASS TABLE -->
+    <div class="table-container-glass">
+        <div class="table-scroll-wrapper">
+            <table class="premium-course-table" id="coursesTable">
+                <thead>
+                    <tr>
+                        <th>Course Curriculum</th>
+                        <th>Pricing Model</th>
+                        <th>Modules</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Management</th>
+                    </tr>
+                </thead>
+                <tbody id="courseTableBody">
+                    {% for course in courses %}
+                    <tr class="course-row-item" 
+                        data-title="{{ course.title|lower }}" 
+                        data-status="{% if course.is_published %}published{% else %}draft{% endif %}"
+                        data-price="{% if course.price > 0 %}paid{% else %}free{% endif %}">
+                        <td>
+                            <div class="course-identity-cell">
+                                <div class="course-icon-badge">
+                                    <i class="fas fa-book-bookmark"></i>
+                                </div>
+                                <div>
+                                    <div class="course-title-text">{{ course.title }}</div>
+                                    <div class="course-meta-sub">
+                                        <span><i class="far fa-calendar"></i> Added {{ course.created_at|date:"M d, Y" }}</span>
+                                        <span>•</span>
+                                        <span><i class="fas fa-chalkboard-user"></i> Faculty Portal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if course.price > 0 %}
+                                <span class="price-chip paid"><i class="fas fa-indian-rupee-sign"></i> {{ course.price }}</span>
+                            {% else %}
+                                <span class="price-chip free"><i class="fas fa-circle-check"></i> Free Access</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="modules-chip">
+                                <i class="fas fa-layer-group"></i> {{ course.total_modules }} Module{{ course.total_modules|pluralize }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if course.is_published %}
+                                <span class="status-pill published"><span class="dot-indicator"></span> Published</span>
+                            {% else %}
+                                <span class="status-pill draft"><span class="dot-indicator"></span> Draft</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions-cluster">
+                                <a href="{% url 'admin_add_lesson' course.id %}" class="btn-act-action btn-video-add" title="Add Video Lesson">
+                                    <i class="fas fa-video"></i> Add Video
+                                </a>
+                                <a href="{% url 'admin_edit_course' course.id %}" class="btn-act-action btn-act-edit" title="Edit Course Details">
+                                    <i class="fas fa-pen-to-square"></i> Edit
+                                </a>
+                                <form action="{% url 'admin_delete_course' course.id %}" method="POST" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-act-action btn-act-del" onclick="return confirm('Delete course \'{{ course.title|escapejs }}\'? This will remove associated lessons.');" title="Delete Course">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr id="initialEmptyRow">
+                        <td colspan="5">
+                            <div class="empty-courses-state">
+                                <i class="fas fa-folder-open"></i>
+                                <h3>No Courses Created Yet</h3>
+                                <p>Courses created by instructors will automatically appear here.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="noMatchCourseRow" style="display: none;">
+                        <td colspan="5">
+                            <div class="empty-courses-state">
+                                <i class="fas fa-magnifying-glass"></i>
+                                <h3>No Matching Courses</h3>
+                                <p>Try adjusting your search keywords or filter pills.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-{% endblock %} <!-- Close content block here -->
+{% endblock %}
 
 {% block extra_js %}
 <script>
-    document.querySelectorAll('tbody tr').forEach((row, i) => {
-        row.style.animationDelay = `${i * 60}ms`;
+    let activeCourseFilter = 'all';
+
+    // Calculate dynamic stats from rendered rows
+    function updateCourseAnalytics() {
+        const rows = document.querySelectorAll('.course-row-item');
+        let published = 0, draft = 0, paid = 0, free = 0;
+
+        rows.forEach(r => {
+            const st = r.getAttribute('data-status');
+            const pr = r.getAttribute('data-price');
+            if (st === 'published') published++;
+            if (st === 'draft') draft++;
+            if (pr === 'paid') paid++;
+            if (pr === 'free') free++;
+        });
+
+        const statPub = document.getElementById('statPubCount');
+        const statDraft = document.getElementById('statDraftCount');
+        const statPaid = document.getElementById('statPaidCount');
+        if (statPub) statPub.textContent = published;
+        if (statDraft) statDraft.textContent = draft;
+        if (statPaid) statPaid.textContent = paid;
+
+        const pillPub = document.getElementById('pillPubCount');
+        const pillDraft = document.getElementById('pillDraftCount');
+        const pillPaid = document.getElementById('pillPaidCount');
+        const pillFree = document.getElementById('pillFreeCount');
+        if (pillPub) pillPub.textContent = published;
+        if (pillDraft) pillDraft.textContent = draft;
+        if (pillPaid) pillPaid.textContent = paid;
+        if (pillFree) pillFree.textContent = free;
+    }
+
+    function applyCourseFilter(filter, btn) {
+        activeCourseFilter = filter;
+        document.querySelectorAll('.c-filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        filterCourseRows();
+    }
+
+    function filterCourseRows() {
+        const query = (document.getElementById('courseSearchInput').value || '').trim().toLowerCase();
+        const rows = document.querySelectorAll('.course-row-item');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const title = row.getAttribute('data-title') || '';
+            const status = row.getAttribute('data-status') || '';
+            const price = row.getAttribute('data-price') || '';
+
+            let matchesFilter = (activeCourseFilter === 'all') ||
+                                (activeCourseFilter === 'published' && status === 'published') ||
+                                (activeCourseFilter === 'draft' && status === 'draft') ||
+                                (activeCourseFilter === 'paid' && price === 'paid') ||
+                                (activeCourseFilter === 'free' && price === 'free');
+
+            let matchesSearch = !query || title.includes(query);
+
+            if (matchesFilter && matchesSearch) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const noMatch = document.getElementById('noMatchCourseRow');
+        if (noMatch) {
+            noMatch.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCourseAnalytics();
     });
 </script>
 {% endblock %}

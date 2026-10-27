@@ -1,50 +1,728 @@
 {% extends 'base_admin.html' %}
+{% load static %}
 
 {% block content %}
 <style>
-    .edit-course-wrap { padding: 40px 24px; display: flex; justify-content: center; }
-    .edit-course-box { width: 100%; max-width: 700px; }
-    .edit-course-card { background: #111; padding: 40px; border-radius: 18px; border: 1px solid #333; }
-    .edit-course-title { color: #00d4ff; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; font-size: 1.5rem; word-break: break-word; }
-    label { display: block; color: #ccc; margin-bottom: 8px; font-weight: bold; }
-    input[type="text"], input[type="number"], textarea, select {
-        width: 100%; padding: 12px; background: #000; border: 1px solid #444;
-        border-radius: 8px; color: #fff; margin-bottom: 20px; outline: none; box-sizing: border-box;
+    .page-wrap {
+        padding: 32px 36px 60px;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-family: var(--font-body);
     }
-    input:focus, textarea:focus { border-color: #00d4ff; }
-    .helptext { display: none; }
-    .btn-update-course {
-        width: 100%; padding: 15px; background: #00d4ff; color: #000; border: none;
-        border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px;
+
+    /* ============================================= */
+    /* 1. BREADCRUMB & HEADER BANNER                 */
+    /* ============================================= */
+    .breadcrumb-trail {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
     }
-    @media (max-width: 640px) {
-        .edit-course-wrap { padding: 16px 12px; }
-        .edit-course-card { padding: 20px 16px; border-radius: 14px; }
-        .edit-course-title { font-size: 1.25rem; margin-bottom: 18px; }
-        .btn-update-course { padding: 12px; font-size: 1rem; }
+    .breadcrumb-trail a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .breadcrumb-trail a:hover { color: #00d4ff; }
+    .breadcrumb-trail .sep { color: rgba(255, 255, 255, 0.2); }
+
+    .course-edit-header {
+        background: linear-gradient(135deg, rgba(20, 16, 38, 0.95), rgba(10, 10, 26, 0.98));
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 28px 34px;
+        margin-bottom: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        gap: 20px;
+        flex-wrap: wrap;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .course-edit-header::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, #00d4ff, #bc13fe, #ff3366);
+    }
+
+    .header-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 212, 255, 0.12);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: #00d4ff;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .header-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.5px;
+    }
+    .header-title span {
+        background: linear-gradient(135deg, #fff 20%, #00d4ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .header-sub {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .header-actions-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-glass-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-glass-back:hover {
+        background: rgba(255, 255, 255, 0.09);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateX(-3px);
+    }
+
+    .btn-video-shortcut {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 136, 255, 0.2));
+        border: 1px solid rgba(0, 212, 255, 0.35);
+        color: #00d4ff;
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.22s ease;
+    }
+    .btn-video-shortcut:hover {
+        background: #00d4ff;
+        color: #000;
+        box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+    /* ============================================= */
+    /* 2. TWO-COLUMN EDIT STUDIO GRID                */
+    /* ============================================= */
+    .edit-studio-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 26px;
+    }
+
+    .studio-card {
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 30px 34px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        margin-bottom: 24px;
+        position: relative;
+    }
+
+    .studio-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 20px 0;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .studio-card-title i { color: #00d4ff; }
+
+    /* Form Inputs & Groups */
+    .form-group-item {
+        margin-bottom: 22px;
+    }
+
+    .form-group-item label {
+        display: block;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+    }
+
+    .input-field-wrap {
+        position: relative;
+    }
+
+    .input-field-wrap input[type="text"],
+    .input-field-wrap input[type="number"],
+    .input-field-wrap textarea,
+    .input-field-wrap select {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.92rem;
+        outline: none;
+        transition: all 0.22s ease;
+        box-sizing: border-box;
+    }
+
+    .input-field-wrap input:focus,
+    .input-field-wrap textarea:focus,
+    .input-field-wrap select:focus {
+        border-color: #00d4ff;
+        box-shadow: 0 0 14px rgba(0, 212, 255, 0.25);
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .input-field-wrap textarea {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.6;
+    }
+
+    .input-field-wrap select {
+        cursor: pointer;
+    }
+    .input-field-wrap select option {
+        background: #0d1022;
+        color: #fff;
+    }
+
+    .field-hint-text {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+    }
+
+    .field-error-msg {
+        color: #ff3366;
+        font-size: 0.8rem;
+        margin-top: 6px;
+        font-weight: 600;
+    }
+
+    /* Thumbnail Preview Block */
+    .thumb-preview-box {
+        width: 100%;
+        height: 190px;
+        border-radius: var(--radius-md);
+        background: #060914;
+        border: 1px dashed var(--glass-border);
+        overflow: hidden;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .thumb-preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .thumb-preview-placeholder {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    .thumb-preview-placeholder i {
+        font-size: 2.2rem;
+        color: #334155;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .file-input-custom {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--glass-border);
+        color: #e2e8f0;
+        font-size: 0.84rem;
+        box-sizing: border-box;
+    }
+
+    /* Modern Glass Switch Cards */
+    .switch-row-card {
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        transition: border-color 0.2s;
+    }
+    .switch-row-card:hover {
+        border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .switch-info h4 {
+        margin: 0 0 3px 0;
+        font-size: 0.92rem;
+        color: #fff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .switch-info p {
+        margin: 0;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    /* Custom Checkbox Toggle */
+    .custom-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 26px;
+        flex-shrink: 0;
+    }
+    .custom-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: rgba(255, 255, 255, 0.12);
+        border-radius: 34px;
+        transition: 0.3s;
+        border: 1px solid var(--glass-border);
+    }
+    .switch-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+    .custom-switch input:checked + .switch-slider {
+        background: linear-gradient(135deg, #00d4ff, #00e676);
+        box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+    }
+    .custom-switch input:checked + .switch-slider:before {
+        transform: translateX(22px);
+        background-color: #060914;
+    }
+
+    /* Submit Actions Bar */
+    .submit-actions-bar {
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 20px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 14px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-save-course {
+        padding: 13px 28px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, #00d4ff, #0284c7);
+        color: #040814;
+        font: 800 0.95rem var(--font-body);
+        letter-spacing: 0.4px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 18px rgba(0, 212, 255, 0.35);
+        transition: all 0.22s ease;
+    }
+    .btn-save-course:hover {
+        box-shadow: 0 6px 24px rgba(0, 212, 255, 0.5);
+        transform: translateY(-2px);
+        color: #000;
+    }
+
+    .btn-cancel-link {
+        padding: 12px 22px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font: 600 0.9rem var(--font-body);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-cancel-link:hover {
+        background: rgba(255, 255, 255, 0.09);
+        color: #fff;
+    }
+
+    /* Error Alert */
+    .form-errors-alert {
+        background: rgba(255, 51, 102, 0.1);
+        border: 1px solid rgba(255, 51, 102, 0.35);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        color: #ff3366;
+        margin-bottom: 24px;
+        font-size: 0.88rem;
+    }
+    .form-errors-alert ul {
+        margin: 6px 0 0 18px;
+        padding: 0;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 960px) {
+        .edit-studio-grid {
+            grid-template-columns: 1fr;
+        }
+        .page-wrap { padding: 22px 16px; }
+        .course-edit-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 22px 20px;
+        }
+        .header-actions-group { width: 100%; }
+        .btn-glass-back, .btn-video-shortcut { width: 100%; justify-content: center; }
+        .submit-actions-bar { justify-content: stretch; }
+        .btn-save-course, .btn-cancel-link { width: 100%; justify-content: center; text-align: center; }
     }
 </style>
 
-<div class="edit-course-wrap">
-    <div class="edit-course-box">
-        
-        <div style="margin-bottom: 20px;">
-            <a href="{% url 'admin_course_list' %}" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">&larr; Back to Course List</a>
+<div class="page-wrap">
+    
+    <!-- 1. BREADCRUMB -->
+    <div class="breadcrumb-trail">
+        <a href="{% url 'admin_dashboard' %}"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <span class="sep">/</span>
+        <a href="{% url 'admin_course_list' %}"><i class="fas fa-book-open"></i> Courses</a>
+        <span class="sep">/</span>
+        <span style="color: #fff;">Edit Course</span>
+    </div>
+
+    <!-- 2. HEADER BANNER -->
+    <div class="course-edit-header">
+        <div>
+            <div class="header-badge-pill">
+                <i class="fas fa-pen-to-square"></i> Course Studio Editor
+            </div>
+            <h1 class="header-title">Editing: <span>{{ course.title }}</span></h1>
+            <div class="header-sub">
+                <span><i class="far fa-calendar-alt"></i> Created {{ course.created_at|date:"M d, Y" }}</span>
+                <span>•</span>
+                {% if course.is_published %}
+                    <span style="color: #00e676; font-weight:700;"><i class="fas fa-circle-check"></i> Published</span>
+                {% else %}
+                    <span style="color: #ffb74d; font-weight:700;"><i class="fas fa-pencil"></i> Draft Mode</span>
+                {% endif %}
+                <span>•</span>
+                <span style="color: #00d4ff; font-weight:700;"><i class="fas fa-layer-group"></i> {{ course.total_modules }} Modules</span>
+            </div>
         </div>
 
-        <div class="edit-course-card">
-            <h2 class="edit-course-title">
-                <i class="fas fa-edit"></i> Edit Course: <span style="color: #fff;">{{ course.title }}</span>
-            </h2>
-
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn-update-course">
-                    Update Course Details
-                </button>
-            </form>
+        <div class="header-actions-group">
+            <a href="{% url 'admin_add_lesson' course.id %}" class="btn-video-shortcut">
+                <i class="fas fa-video"></i> Manage Video Lessons
+            </a>
+            <a href="{% url 'admin_course_list' %}" class="btn-glass-back">
+                <i class="fas fa-arrow-left"></i> Course List
+            </a>
         </div>
     </div>
+
+    <!-- 3. FORM VALIDATION ERRORS IF ANY -->
+    {% if form.errors %}
+    <div class="form-errors-alert">
+        <b><i class="fas fa-triangle-exclamation"></i> Please correct the errors below:</b>
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- 4. TWO-COLUMN EDIT STUDIO FORM -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="edit-studio-grid">
+            
+            <!-- LEFT COLUMN: CURRICULUM CORE -->
+            <div>
+                <div class="studio-card">
+                    <h3 class="studio-card-title">
+                        <i class="fas fa-book-bookmark"></i> Curriculum & Details
+                    </h3>
+
+                    <!-- Course Title -->
+                    <div class="form-group-item">
+                        <label for="{{ form.title.id_for_label }}">Course Title *</label>
+                        <div class="input-field-wrap">
+                            {{ form.title }}
+                        </div>
+                        {% if form.title.errors %}
+                            <div class="field-error-msg">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Faculty Instructor Name -->
+                    <div class="form-group-item">
+                        <label for="{{ form.faculty_name.id_for_label }}">Lead Instructor / Faculty Name</label>
+                        <div class="input-field-wrap">
+                            {{ form.faculty_name }}
+                        </div>
+                        <div class="field-hint-text">The instructor displayed on course cards and watching player.</div>
+                        {% if form.faculty_name.errors %}
+                            <div class="field-error-msg">{{ form.faculty_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group-item">
+                        <label for="{{ form.description.id_for_label }}">Comprehensive Description & Syllabus *</label>
+                        <div class="input-field-wrap">
+                            {{ form.description }}
+                        </div>
+                        {% if form.description.errors %}
+                            <div class="field-error-msg">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Difficulty Level -->
+                    <div class="form-group-item">
+                        <label for="{{ form.difficulty_level.id_for_label }}">Academic Difficulty Level</label>
+                        <div class="input-field-wrap">
+                            {{ form.difficulty_level }}
+                        </div>
+                        {% if form.difficulty_level.errors %}
+                            <div class="field-error-msg">{{ form.difficulty_level.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: MEDIA, PRICING & PUBLISHING -->
+            <div>
+                <!-- Thumbnail Card -->
+                <div class="studio-card">
+                    <h3 class="studio-card-title">
+                        <i class="fas fa-image"></i> Course Media Thumbnail
+                    </h3>
+
+                    <div class="thumb-preview-box" id="thumbPreviewBox">
+                        {% if course.thumbnail %}
+                            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="thumb-preview-img" id="thumbImgDisplay">
+                        {% else %}
+                            <div class="thumb-preview-placeholder" id="thumbPlaceholder">
+                                <i class="fas fa-image"></i>
+                                <span>No thumbnail uploaded</span>
+                            </div>
+                            <img src="" alt="Preview" class="thumb-preview-img" id="thumbImgDisplay" style="display:none;">
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group-item" style="margin-bottom: 0;">
+                        <label for="{{ form.thumbnail.id_for_label }}">Upload New Thumbnail</label>
+                        <div class="input-field-wrap">
+                            <input type="file" name="thumbnail" id="id_thumbnail" class="file-input-custom" accept="image/*" onchange="previewCourseThumbnail(event)">
+                        </div>
+                        <div class="field-hint-text">Recommended: 1280x720 (16:9 ratio). Max 2MB (JPG, PNG, WEBP).</div>
+                        {% if form.thumbnail.errors %}
+                            <div class="field-error-msg">{{ form.thumbnail.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Monetization & Configuration Card -->
+                <div class="studio-card">
+                    <h3 class="studio-card-title">
+                        <i class="fas fa-sliders"></i> Pricing & Telemetry
+                    </h3>
+
+                    <!-- Price -->
+                    <div class="form-group-item">
+                        <label for="{{ form.price.id_for_label }}">Course Price (INR ₹)</label>
+                        <div class="input-field-wrap">
+                            {{ form.price }}
+                        </div>
+                        <div class="field-hint-text">Set to 0 for Free Enrolment access.</div>
+                        {% if form.price.errors %}
+                            <div class="field-error-msg">{{ form.price.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Total Modules -->
+                    <div class="form-group-item">
+                        <label for="{{ form.total_modules.id_for_label }}">Total Modules</label>
+                        <div class="input-field-wrap">
+                            {{ form.total_modules }}
+                        </div>
+                        {% if form.total_modules.errors %}
+                            <div class="field-error-msg">{{ form.total_modules.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Coin Purchasable Switch Card -->
+                    <div class="switch-row-card">
+                        <div class="switch-info">
+                            <h4><i class="fas fa-coins" style="color: #ffb74d;"></i> LMS Coins Unlock</h4>
+                            <p>Allow students to unlock this course with reward coins</p>
+                        </div>
+                        <label class="custom-switch">
+                            {{ form.is_coin_purchasable }}
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Coin Price -->
+                    <div class="form-group-item" id="coinPriceGroup" style="display: {% if course.is_coin_purchasable %}block{% else %}none{% endif %};">
+                        <label for="{{ form.coin_price.id_for_label }}">Coin Price (Tokens)</label>
+                        <div class="input-field-wrap">
+                            {{ form.coin_price }}
+                        </div>
+                        {% if form.coin_price.errors %}
+                            <div class="field-error-msg">{{ form.coin_price.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Published Switch Card -->
+                    <div class="switch-row-card">
+                        <div class="switch-info">
+                            <h4><i class="fas fa-globe" style="color: #00e676;"></i> Publication Status</h4>
+                            <p id="publishStatusLabel">{% if course.is_published %}Live on student catalog{% else %}Draft (Hidden from students){% endif %}</p>
+                        </div>
+                        <label class="custom-switch">
+                            {{ form.is_published }}
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 5. BOTTOM SUBMIT ACTIONS BAR -->
+        <div class="submit-actions-bar">
+            <a href="{% url 'admin_course_list' %}" class="btn-cancel-link">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn-save-course">
+                <i class="fas fa-floppy-disk"></i> Update Course Details
+            </button>
+        </div>
+    </form>
+
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Live thumbnail file preview
+    function previewCourseThumbnail(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgDisplay = document.getElementById('thumbImgDisplay');
+                const placeholder = document.getElementById('thumbPlaceholder');
+                if (imgDisplay) {
+                    imgDisplay.src = e.target.result;
+                    imgDisplay.style.display = 'block';
+                }
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Toggle Coin Price group visibility dynamically
+    document.addEventListener('DOMContentLoaded', () => {
+        const coinCheckbox = document.getElementById('id_is_coin_purchasable');
+        const coinPriceGroup = document.getElementById('coinPriceGroup');
+
+        if (coinCheckbox && coinPriceGroup) {
+            coinCheckbox.addEventListener('change', () => {
+                coinPriceGroup.style.display = coinCheckbox.checked ? 'block' : 'none';
+            });
+        }
+
+        // Live status text update on publish toggle
+        const pubCheckbox = document.getElementById('id_is_published');
+        const pubLabel = document.getElementById('publishStatusLabel');
+        if (pubCheckbox && pubLabel) {
+            pubCheckbox.addEventListener('change', () => {
+                pubLabel.textContent = pubCheckbox.checked ? 'Live on student catalog' : 'Draft (Hidden from students)';
+            });
+        }
+    });
+</script>
 {% endblock %}
