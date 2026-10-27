@@ -1,242 +1,701 @@
 {% extends 'base_admin.html' %}
+{% load static %}
 
 {% block content %}
 <style>
-    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+    .page-wrap {
+        padding: 32px 36px 60px;
+        max-width: 1440px;
+        margin: 0 auto;
+        font-family: var(--font-body);
+    }
 
-    .page-header {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
+    /* ============================================= */
+    /* 1. HERO OVERVIEW BANNER                       */
+    /* ============================================= */
+    .enrollment-hero-banner {
+        background: linear-gradient(135deg, rgba(24, 18, 38, 0.95), rgba(10, 10, 26, 0.98));
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-xl);
-        padding: 28px 32px;
+        padding: 30px 36px;
         margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         position: relative;
         overflow: hidden;
+        gap: 24px;
+        flex-wrap: wrap;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
     }
 
-    .page-header::before {
+    .enrollment-hero-banner::before {
         content: '';
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 3px;
-        background: linear-gradient(90deg, var(--accent-amber), #ffd54f);
+        background: linear-gradient(90deg, #ffb74d, #bc13fe, #00d4ff);
     }
 
-    .page-header h2 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #fff, #c0c0d0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+    .enrollment-hero-banner::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(255, 183, 77, 0.08), transparent 70%);
+        pointer-events: none;
     }
 
-    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
-
-    .btn-back {
-        color: var(--text-secondary);
-        text-decoration: none;
-        padding: 10px 18px;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg);
-        font-weight: 600;
-        font-size: 0.85rem;
+    .hero-badge-pill {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        transition: var(--transition-fast);
-    }
-
-    .btn-back:hover {
-        color: var(--primary);
-        border-color: var(--primary);
-        transform: translateX(-4px);
-    }
-
-    .table-glass {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-    }
-
-    table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
-
-    th {
-        background: rgba(10, 10, 30, 0.5);
-        color: var(--text-muted);
-        text-transform: uppercase;
-        font-size: 0.78rem;
-        letter-spacing: 1.2px;
+        gap: 6px;
+        background: rgba(255, 183, 77, 0.12);
+        border: 1px solid rgba(255, 183, 77, 0.3);
+        color: #ffb74d;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
         font-weight: 700;
-        padding: 18px 20px;
-        text-align: left;
-        border-bottom: 1px solid var(--glass-border);
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
     }
 
-    td {
-        padding: 18px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        vertical-align: middle;
-    }
-
-    tbody tr {
-        transition: var(--transition-fast);
-        animation: rowFade 0.4s ease forwards;
-        opacity: 0;
-    }
-
-    @keyframes rowFade {
-        to { opacity: 1; }
-    }
-
-    tbody tr:hover { background: var(--glass-bg-hover); }
-
-    .student-name { color: var(--text-primary); font-weight: 700; }
-    .course-name { color: var(--text-secondary); }
-    .date-text { color: var(--text-muted); font-size: 0.88rem; }
-
-    /* Progress Bar */
-    .progress-wrap {
+    .hero-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.5px;
         display: flex;
         align-items: center;
         gap: 12px;
     }
 
-    .progress-bar-track {
-        width: 120px;
-        height: 6px;
-        background: rgba(255, 255, 255, 0.05);
+    .hero-title span {
+        background: linear-gradient(135deg, #fff 20%, #ffb74d 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-sub {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 580px;
+        margin: 0;
+    }
+
+    .hero-stats-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 12px 18px;
+        min-width: 90px;
+        text-align: center;
+        transition: transform 0.25s, border-color 0.25s;
+    }
+    .stat-pill:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+    .stat-num {
+        font-family: var(--font-mono);
+        font-size: 1.45rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    .stat-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+    .stat-pill.amber .stat-num { color: #ffb74d; }
+    .stat-pill.green .stat-num { color: #00e676; }
+    .stat-pill.cyan .stat-num { color: #00d4ff; }
+    .stat-pill.purple .stat-num { color: #bc13fe; }
+
+    /* ============================================= */
+    /* 2. FILTER & SEARCH CONTROL STRIP              */
+    /* ============================================= */
+    .controls-strip {
+        background: rgba(10, 10, 30, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .filter-pills-row {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+        flex-wrap: wrap;
+    }
+
+    .e-filter-btn {
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+        padding: 7px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.82rem var(--font-body);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.22s ease;
+        white-space: nowrap;
+    }
+    .e-filter-btn:hover {
+        color: #fff;
+        border-color: rgba(255, 183, 77, 0.3);
+        background: rgba(255, 183, 77, 0.05);
+    }
+    .e-filter-btn.active {
+        background: rgba(255, 183, 77, 0.12);
+        border-color: #ffb74d;
+        color: #ffb74d;
+        box-shadow: 0 0 12px rgba(255, 183, 77, 0.2);
+    }
+    .e-filter-btn .count-badge {
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.7rem;
+        font-family: var(--font-mono);
+        font-weight: 700;
+    }
+    .e-filter-btn.active .count-badge {
+        background: rgba(255, 183, 77, 0.25);
+        color: #fff;
+    }
+
+    .search-box-wrap {
+        position: relative;
+        min-width: 270px;
+    }
+    .search-box-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    .search-box-wrap input {
+        width: 100%;
+        padding: 9px 16px 9px 38px;
+        border-radius: 50px;
+        outline: none;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        font: inherit;
+        font-size: 0.86rem;
+        transition: all 0.2s;
+    }
+    .search-box-wrap input:focus {
+        border-color: #ffb74d;
+        box-shadow: 0 0 14px rgba(255, 183, 77, 0.25);
+    }
+
+    /* ============================================= */
+    /* 3. PREMIUM GLASSMORPHIC ENROLLMENTS TABLE     */
+    /* ============================================= */
+    .table-container-glass {
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .table-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .premium-enroll-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+    }
+
+    .premium-enroll-table thead tr {
+        background: rgba(16, 16, 40, 0.85);
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .premium-enroll-table th {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+        padding: 18px 22px;
+        text-align: left;
+    }
+
+    .premium-enroll-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: all 0.22s ease;
+    }
+
+    .premium-enroll-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .premium-enroll-table td {
+        padding: 18px 22px;
+        vertical-align: middle;
+    }
+
+    /* Student Cell */
+    .student-profile-cell {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .student-avatar-wrapper {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        position: relative;
+        flex-shrink: 0;
+        padding: 2px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.4), rgba(188, 19, 254, 0.4));
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .student-avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        background: #090c15;
+    }
+
+    .student-avatar-circle {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00d4ff, #6c63ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #fff;
+        font-size: 1rem;
+    }
+
+    .student-name-text {
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.98rem;
+        line-height: 1.3;
+    }
+
+    .student-email-sub {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+    }
+
+    /* Course Cell */
+    .course-badge-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+    .course-badge-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(188, 19, 254, 0.12);
+        border: 1px solid rgba(188, 19, 254, 0.25);
+        color: #bc13fe;
+        display: grid;
+        place-items: center;
+        font-size: 0.88rem;
+        flex-shrink: 0;
+    }
+
+    /* Progress Dual-Layer Track */
+    .progress-track-block {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .progress-bar-shell {
+        width: 140px;
+        height: 7px;
+        background: rgba(255, 255, 255, 0.06);
         border-radius: 10px;
         overflow: hidden;
     }
 
-    .progress-bar-fill {
+    .progress-bar-glow {
         height: 100%;
         border-radius: 10px;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        transition: width 1s ease;
+        transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .progress-pct {
+    .progress-bar-glow.complete {
+        background: linear-gradient(90deg, #00e676, #00d4ff);
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
+    }
+    .progress-bar-glow.active {
+        background: linear-gradient(90deg, #00d4ff, #bc13fe);
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    }
+    .progress-bar-glow.zero {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .pct-tag {
         font-family: var(--font-mono);
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--secondary);
-        min-width: 36px;
-    }
-
-    .btn-revoke {
-        color: var(--accent-red);
-        text-decoration: none;
-        border: 1px solid rgba(255, 51, 102, 0.2);
-        padding: 7px 16px;
-        border-radius: var(--radius-sm);
         font-size: 0.82rem;
-        font-weight: 600;
-        background: rgba(255, 51, 102, 0.08);
-        transition: var(--transition-smooth);
+        font-weight: 700;
+        min-width: 42px;
+    }
+    .pct-tag.complete { color: #00e676; }
+    .pct-tag.active { color: #00d4ff; }
+    .pct-tag.zero { color: var(--text-muted); }
+
+    /* Date Tag */
+    .date-badge {
+        font-size: 0.82rem;
+        color: var(--text-muted);
         display: inline-flex;
         align-items: center;
         gap: 6px;
     }
 
-    .btn-revoke:hover {
-        background: var(--accent-red);
+    /* Actions */
+    .btn-act-revoke {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid rgba(255, 51, 102, 0.25);
+        background: rgba(255, 51, 102, 0.08);
+        color: #ff3366;
+        transition: all 0.22s ease;
+    }
+    .btn-act-revoke:hover {
+        background: #ff3366;
         color: #fff;
-        box-shadow: 0 0 12px rgba(255, 51, 102, 0.3);
+        box-shadow: 0 0 16px rgba(255, 51, 102, 0.4);
+        transform: translateY(-2px);
     }
 
-    /* Mobile & Tablet Responsiveness */
-    @media (max-width: 768px) {
-        .page-wrap { padding: 18px 14px; }
-        .page-header {
+    /* Empty state */
+    .empty-enroll-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .empty-enroll-state i {
+        font-size: 2.8rem;
+        color: #334155;
+        margin-bottom: 12px;
+        display: block;
+    }
+    .empty-enroll-state h3 {
+        color: #fff;
+        font-size: 1.15rem;
+        margin: 0 0 6px 0;
+    }
+    .empty-enroll-state p {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        margin: 0;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 900px) {
+        .page-wrap { padding: 22px 16px; }
+        .enrollment-hero-banner {
             flex-direction: column;
-            align-items: stretch;
-            padding: 20px 18px;
-            gap: 16px;
+            align-items: flex-start;
+            padding: 24px 20px;
         }
-        .table-glass {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        table { min-width: 650px; }
+        .hero-stats-row { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .stat-pill { min-width: unset; width: 100%; }
+        .controls-strip { flex-direction: column; align-items: stretch; }
+        .search-box-wrap { width: 100%; }
     }
 
     @media (max-width: 480px) {
         .page-wrap { padding: 14px 10px; }
-        .page-header h2 { font-size: 1.3rem; }
+        .hero-title { font-size: 1.45rem; }
     }
 </style>
 
 <div class="page-wrap">
     
-    <div class="page-header">
+    <!-- 1. HERO OVERVIEW BANNER -->
+    <div class="enrollment-hero-banner">
         <div>
-            <h2><i class="fas fa-user-check"></i> Active Enrollments</h2>
-            <p>Monitor and manage all student enrollments.</p>
+            <div class="hero-badge-pill">
+                <i class="fas fa-user-check"></i> Admissions & Telemetry
+            </div>
+            <h1 class="hero-title">Student <span>Enrollments</span></h1>
+            <p class="hero-sub">Real-time telemetry of course registrations, live syllabus completion percentages, and student access management.</p>
         </div>
-        <a href="{% url 'admin_dashboard' %}" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Dashboard
-        </a>
+
+        <div class="hero-stats-row">
+            <div class="stat-pill amber">
+                <div class="stat-num">{{ enrollments|length }}</div>
+                <div class="stat-lbl">Total Enrolled</div>
+            </div>
+            <div class="stat-pill green">
+                <div class="stat-num" id="statCompletedCount">0</div>
+                <div class="stat-lbl">100% Done</div>
+            </div>
+            <div class="stat-pill cyan">
+                <div class="stat-num" id="statActiveCount">0</div>
+                <div class="stat-lbl">In Progress</div>
+            </div>
+            <div class="stat-pill purple">
+                <div class="stat-num" id="statZeroCount">0</div>
+                <div class="stat-lbl">Not Started</div>
+            </div>
+        </div>
     </div>
 
-    <div class="table-glass">
-        <table>
-            <thead>
-                <tr>
-                    <th>Student</th>
-                    <th>Course</th>
-                    <th>Progress</th>
-                    <th>Date</th>
-                    <th style="text-align: right;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for enroll in enrollments %}
-                <tr>
-                    <td><span class="student-name">{{ enroll.student.username }}</span></td>
-                    <td><span class="course-name">{{ enroll.course.title }}</span></td>
-                    <td>
-                        <div class="progress-wrap">
-                            <div class="progress-bar-track">
-                                <div class="progress-bar-fill" data-width="{{ enroll.progress|default:'0' }}%"></div>
+    <!-- 2. FILTER & SEARCH CONTROL STRIP -->
+    <div class="controls-strip">
+        <div class="filter-pills-row" id="enrollFilterPills">
+            <button type="button" class="e-filter-btn active" data-filter="all" onclick="applyEnrollFilter('all', this)">
+                <i class="fas fa-border-all"></i> All Enrollments <span class="count-badge">{{ enrollments|length }}</span>
+            </button>
+            <button type="button" class="e-filter-btn" data-filter="completed" onclick="applyEnrollFilter('completed', this)">
+                <i class="fas fa-circle-check" style="color:#00e676;"></i> Completed <span class="count-badge" id="pillCompletedCount">0</span>
+            </button>
+            <button type="button" class="e-filter-btn" data-filter="active" onclick="applyEnrollFilter('active', this)">
+                <i class="fas fa-spinner fa-spin" style="color:#00d4ff;"></i> In Progress <span class="count-badge" id="pillActiveCount">0</span>
+            </button>
+            <button type="button" class="e-filter-btn" data-filter="zero" onclick="applyEnrollFilter('zero', this)">
+                <i class="fas fa-hourglass-start" style="color:#bc13fe;"></i> Not Started <span class="count-badge" id="pillZeroCount">0</span>
+            </button>
+        </div>
+
+        <div class="search-box-wrap">
+            <i class="fas fa-search"></i>
+            <input type="search" id="enrollSearchInput" placeholder="Search by student or course…" aria-label="Search enrollments" oninput="filterEnrollRows()">
+        </div>
+    </div>
+
+    <!-- 3. PREMIUM GLASS TABLE -->
+    <div class="table-container-glass">
+        <div class="table-scroll-wrapper">
+            <table class="premium-enroll-table" id="enrollTable">
+                <thead>
+                    <tr>
+                        <th>Student Information</th>
+                        <th>Enrolled Course</th>
+                        <th>Study Telemetry</th>
+                        <th>Admitted Date</th>
+                        <th style="text-align: right;">Access Control</th>
+                    </tr>
+                </thead>
+                <tbody id="enrollTableBody">
+                    {% for enroll in enrollments %}
+                    <tr class="enroll-row-item" 
+                        data-student="{{ enroll.student.get_full_name|default:enroll.student.username|lower }} {{ enroll.student.email|lower }}"
+                        data-course="{{ enroll.course.title|lower }}"
+                        data-pct="{{ enroll.progress }}"
+                        data-stage="{% if enroll.progress >= 100 %}completed{% elif enroll.progress > 0 %}active{% else %}zero{% endif %}">
+                        <td>
+                            <div class="student-profile-cell">
+                                <div class="student-avatar-wrapper">
+                                    {% if enroll.student.profile.profile_pic and enroll.student.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                        <img src="{{ enroll.student.profile.profile_pic.url }}" alt="{{ enroll.student.username }}" class="student-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="student-avatar-circle" style="display:none;">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
+                                    {% elif enroll.student.profile_pic_url %}
+                                        <img src="{{ enroll.student.profile_pic_url }}" alt="{{ enroll.student.username }}" class="student-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="student-avatar-circle" style="display:none;">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
+                                    {% else %}
+                                        <div class="student-avatar-circle">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="student-name-text">{{ enroll.student.get_full_name|default:enroll.student.username }}</div>
+                                    <div class="student-email-sub"><i class="far fa-envelope"></i> {{ enroll.student.email|default:"No email registered" }}</div>
+                                </div>
                             </div>
-                            <span class="progress-pct">{{ enroll.progress|default:'0' }}%</span>
-                        </div>
-                    </td>
-                    <td><span class="date-text">{{ enroll.enrolled_at|date:"d M, Y" }}</span></td>
-                    <td style="text-align: right;">
-                        <a href="{% url 'admin_delete_enrollment' enroll.id %}" onclick="return confirm('Revoke access for this student?')" class="btn-revoke">
-                            <i class="fas fa-ban"></i> Revoke
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" style="text-align: center; padding: 50px; color: var(--text-muted);">No enrollments yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td>
+                            <div class="course-badge-wrap">
+                                <div class="course-badge-icon">
+                                    <i class="fas fa-book-bookmark"></i>
+                                </div>
+                                <span>{{ enroll.course.title }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-track-block">
+                                <div class="progress-bar-shell">
+                                    <div class="progress-bar-glow {% if enroll.progress >= 100 %}complete{% elif enroll.progress > 0 %}active{% else %}zero{% endif %}" 
+                                         style="width: {{ enroll.progress }}%;"></div>
+                                </div>
+                                <span class="pct-tag {% if enroll.progress >= 100 %}complete{% elif enroll.progress > 0 %}active{% else %}zero{% endif %}">
+                                    {{ enroll.progress }}%
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="date-badge">
+                                <i class="far fa-calendar-alt"></i> {{ enroll.enrolled_at|date:"M d, Y" }}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <form action="{% url 'admin_delete_enrollment' enroll.id %}" method="POST" style="display:inline; margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-act-revoke" 
+                                        onclick="return confirm('Revoke {{ enroll.student.username }}\'s enrollment in {{ enroll.course.title|escapejs }}?');" 
+                                        title="Revoke Course Access">
+                                    <i class="fas fa-user-xmark"></i> Revoke
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr id="initialEmptyEnrollRow">
+                        <td colspan="5">
+                            <div class="empty-enroll-state">
+                                <i class="fas fa-user-slash"></i>
+                                <h3>No Enrollments Found</h3>
+                                <p>Student course enrollments will be listed here in real-time.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="noMatchEnrollRow" style="display: none;">
+                        <td colspan="5">
+                            <div class="empty-enroll-state">
+                                <i class="fas fa-magnifying-glass"></i>
+                                <h3>No Matching Enrollments</h3>
+                                <p>Try adjusting your search query or filter pills.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-{% endblock %} <!-- Close content block here -->
+{% endblock %}
 
 {% block extra_js %}
 <script>
-    // Apply animation delays dynamically
-    document.querySelectorAll('tbody tr').forEach((row, i) => {
-        row.style.animationDelay = `${i * 60}ms`;
-    });
-    // Apply progress widths dynamically
-    document.querySelectorAll('.progress-bar-fill').forEach(bar => {
-        bar.style.width = bar.getAttribute('data-width');
+    let activeEnrollFilter = 'all';
+
+    function updateEnrollAnalytics() {
+        const rows = document.querySelectorAll('.enroll-row-item');
+        let completed = 0, active = 0, zero = 0;
+
+        rows.forEach(r => {
+            const stage = r.getAttribute('data-stage');
+            if (stage === 'completed') completed++;
+            else if (stage === 'active') active++;
+            else zero++;
+        });
+
+        const statComp = document.getElementById('statCompletedCount');
+        const statAct = document.getElementById('statActiveCount');
+        const statZero = document.getElementById('statZeroCount');
+        if (statComp) statComp.textContent = completed;
+        if (statAct) statAct.textContent = active;
+        if (statZero) statZero.textContent = zero;
+
+        const pillComp = document.getElementById('pillCompletedCount');
+        const pillAct = document.getElementById('pillActiveCount');
+        const pillZero = document.getElementById('pillZeroCount');
+        if (pillComp) pillComp.textContent = completed;
+        if (pillAct) pillAct.textContent = active;
+        if (pillZero) pillZero.textContent = zero;
+    }
+
+    function applyEnrollFilter(filter, btn) {
+        activeEnrollFilter = filter;
+        document.querySelectorAll('.e-filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        filterEnrollRows();
+    }
+
+    function filterEnrollRows() {
+        const query = (document.getElementById('enrollSearchInput').value || '').trim().toLowerCase();
+        const rows = document.querySelectorAll('.enroll-row-item');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const student = row.getAttribute('data-student') || '';
+            const course = row.getAttribute('data-course') || '';
+            const stage = row.getAttribute('data-stage') || '';
+
+            let matchesFilter = (activeEnrollFilter === 'all') || (activeEnrollFilter === stage);
+            let matchesSearch = !query || student.includes(query) || course.includes(query);
+
+            if (matchesFilter && matchesSearch) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const noMatch = document.getElementById('noMatchEnrollRow');
+        if (noMatch) {
+            noMatch.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateEnrollAnalytics();
     });
 </script>
 {% endblock %}

@@ -1,353 +1,851 @@
 {% extends 'base_admin.html' %}
+{% load static %}
 
 {% block content %}
 <style>
-    .page-wrap { padding: 32px; max-width: 1400px; margin: 0 auto; }
+    .page-wrap {
+        padding: 32px 36px 60px;
+        max-width: 1440px;
+        margin: 0 auto;
+        font-family: var(--font-body);
+    }
 
-    .page-header {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
+    /* ============================================= */
+    /* 1. HERO OVERVIEW BANNER                       */
+    /* ============================================= */
+    .doc-hero-banner {
+        background: linear-gradient(135deg, rgba(26, 14, 38, 0.95), rgba(10, 10, 26, 0.98));
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-xl);
-        padding: 28px 32px;
+        padding: 30px 36px;
         margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         position: relative;
         overflow: hidden;
+        gap: 24px;
+        flex-wrap: wrap;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
     }
 
-    .page-header::before {
+    .doc-hero-banner::before {
         content: '';
         position: absolute;
         top: 0; left: 0;
         width: 100%; height: 3px;
-        background: linear-gradient(90deg, var(--accent-purple), #c084fc);
+        background: linear-gradient(90deg, #bc13fe, #00d4ff, #ff3366);
     }
 
-    .page-header h2 {
-        font-size: 1.5rem;
+    .doc-hero-banner::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 380px; height: 100%;
+        background: radial-gradient(ellipse at center right, rgba(188, 19, 254, 0.08), transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(188, 19, 254, 0.12);
+        border: 1px solid rgba(188, 19, 254, 0.3);
+        color: #c084fc;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .hero-title {
+        font-size: 1.85rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #fff, #c0c0d0);
+        color: #fff;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hero-title span {
+        background: linear-gradient(135deg, #fff 20%, #c084fc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
 
-    .page-header p { color: var(--text-muted); margin-top: 4px; font-size: 0.88rem; }
-
-    .btn-back {
+    .hero-sub {
         color: var(--text-secondary);
-        text-decoration: none;
-        padding: 10px 18px;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg);
-        font-weight: 600;
-        font-size: 0.85rem;
-        display: inline-flex;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-width: 580px;
+        margin: 0;
+    }
+
+    .hero-stats-row {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        transition: var(--transition-fast);
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
-    .btn-back:hover {
-        color: var(--primary);
-        border-color: var(--primary);
-        transform: translateX(-4px);
+    .stat-pill {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 12px 18px;
+        min-width: 90px;
+        text-align: center;
+        transition: transform 0.25s, border-color 0.25s;
     }
+    .stat-pill:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+    .stat-num {
+        font-family: var(--font-mono);
+        font-size: 1.45rem;
+        font-weight: 800;
+        line-height: 1.1;
+    }
+    .stat-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+    .stat-pill.purple .stat-num { color: #c084fc; }
+    .stat-pill.rose .stat-num { color: #ff3366; }
+    .stat-pill.cyan .stat-num { color: #00d4ff; }
+    .stat-pill.green .stat-num { color: #00e676; }
 
-    .table-glass {
-        background: var(--glass-bg);
+    /* ============================================= */
+    /* 2. FILTER & SEARCH CONTROL STRIP              */
+    /* ============================================= */
+    .controls-strip {
+        background: rgba(10, 10, 30, 0.7);
         backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-lg);
-        overflow: hidden;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
 
-    table { width: 100%; border-collapse: collapse; color: var(--text-secondary); }
+    .filter-pills-row {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+        flex-wrap: wrap;
+    }
 
-    thead tr {
-        background: rgba(10, 10, 30, 0.5);
+    .d-filter-btn {
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+        padding: 7px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.82rem var(--font-body);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.22s ease;
+        white-space: nowrap;
+    }
+    .d-filter-btn:hover {
+        color: #fff;
+        border-color: rgba(192, 132, 252, 0.3);
+        background: rgba(192, 132, 252, 0.05);
+    }
+    .d-filter-btn.active {
+        background: rgba(192, 132, 252, 0.14);
+        border-color: #c084fc;
+        color: #c084fc;
+        box-shadow: 0 0 12px rgba(192, 132, 252, 0.22);
+    }
+    .d-filter-btn .count-badge {
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.7rem;
+        font-family: var(--font-mono);
+        font-weight: 700;
+    }
+    .d-filter-btn.active .count-badge {
+        background: rgba(192, 132, 252, 0.25);
+        color: #fff;
+    }
+
+    .search-box-wrap {
+        position: relative;
+        min-width: 270px;
+    }
+    .search-box-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    .search-box-wrap input {
+        width: 100%;
+        padding: 9px 16px 9px 38px;
+        border-radius: 50px;
+        outline: none;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        font: inherit;
+        font-size: 0.86rem;
+        transition: all 0.2s;
+    }
+    .search-box-wrap input:focus {
+        border-color: #c084fc;
+        box-shadow: 0 0 14px rgba(192, 132, 252, 0.25);
+    }
+
+    /* ============================================= */
+    /* 3. PREMIUM GLASS TABLE                        */
+    /* ============================================= */
+    .table-container-glass {
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .table-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .premium-doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+    }
+
+    .premium-doc-table thead tr {
+        background: rgba(16, 16, 40, 0.85);
         border-bottom: 1px solid var(--glass-border);
     }
 
-    th {
-        padding: 18px 20px;
-        text-align: left;
+    .premium-doc-table th {
         color: var(--text-muted);
         text-transform: uppercase;
-        font-size: 0.78rem;
+        font-size: 0.74rem;
         letter-spacing: 1.2px;
         font-weight: 700;
+        padding: 18px 22px;
+        text-align: left;
     }
 
-    td {
-        padding: 18px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    .premium-doc-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: all 0.22s ease;
+    }
+
+    .premium-doc-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .premium-doc-table td {
+        padding: 18px 22px;
         vertical-align: middle;
     }
 
-    tbody tr {
-        transition: var(--transition-fast);
-        animation: rowFade 0.4s ease forwards;
-        opacity: 0;
+    /* Document Item Cell */
+    .doc-identity-cell {
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
 
-    @keyframes rowFade { to { opacity: 1; } }
+    .doc-type-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    .doc-type-icon.pdf {
+        background: rgba(255, 51, 102, 0.12);
+        border: 1px solid rgba(255, 51, 102, 0.3);
+        color: #ff3366;
+        box-shadow: 0 4px 12px rgba(255, 51, 102, 0.15);
+    }
+    .doc-type-icon.doc {
+        background: rgba(0, 212, 255, 0.12);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: #00d4ff;
+        box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+    }
+    .doc-type-icon.other {
+        background: rgba(188, 19, 254, 0.12);
+        border: 1px solid rgba(188, 19, 254, 0.3);
+        color: #bc13fe;
+        box-shadow: 0 4px 12px rgba(188, 19, 254, 0.15);
+    }
 
-    tbody tr:hover { background: var(--glass-bg-hover); }
-
-    .doc-name {
-        color: var(--text-primary);
+    .doc-title-text {
+        font-size: 1.02rem;
         font-weight: 700;
+        color: #fff;
+        line-height: 1.35;
+        margin-bottom: 3px;
+    }
+
+    .doc-course-tag {
+        font-size: 0.76rem;
+        color: #a78bfa;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Category Pill */
+    .cat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        color: #00d4ff;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    /* File Link Button */
+    .file-access-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: #e2e8f0;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .file-access-btn:hover {
+        background: rgba(0, 212, 255, 0.1);
+        border-color: rgba(0, 212, 255, 0.3);
+        color: #00d4ff;
+        transform: translateY(-1px);
+    }
+
+    /* Actions */
+    .actions-cluster {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .btn-act-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.22s ease;
+    }
+
+    .btn-act-edit {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: #cbd5e1;
+    }
+    .btn-act-edit:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .btn-act-del {
+        background: rgba(255, 51, 102, 0.1);
+        border: 1px solid rgba(255, 51, 102, 0.25);
+        color: #ff3366;
+    }
+    .btn-act-del:hover {
+        background: #ff3366;
+        color: #fff;
+        box-shadow: 0 0 16px rgba(255, 51, 102, 0.4);
+        transform: translateY(-2px);
+    }
+
+    /* ============================================= */
+    /* 4. EDIT MODAL DIALOG                          */
+    /* ============================================= */
+    .doc-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.78);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: none;
+        place-items: center;
+        z-index: 99999;
+        padding: 20px;
+    }
+    .doc-modal-overlay.active {
+        display: grid;
+    }
+
+    .doc-modal-card {
+        background: #0d1022;
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 32px 36px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+        position: relative;
+    }
+    .doc-modal-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, #bc13fe, #00d4ff);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    }
+
+    .doc-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+    .doc-modal-header h3 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
         display: flex;
         align-items: center;
         gap: 10px;
     }
+    .doc-modal-header h3 i { color: #c084fc; }
 
-    .doc-name i { color: var(--accent-red); }
-
-    .cat-badge {
-        background: rgba(0, 212, 255, 0.1);
-        color: var(--secondary);
-        padding: 5px 14px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        border: 1px solid rgba(0, 212, 255, 0.2);
-    }
-
-    .file-link {
-        color: var(--text-secondary);
-        text-decoration: underline;
-        text-decoration-color: rgba(255, 255, 255, 0.15);
-        transition: var(--transition-fast);
-    }
-
-    .file-link:hover { color: var(--secondary); }
-
-    .date-text { color: var(--text-muted); font-size: 0.88rem; }
-
-    .actions-row { display: flex; gap: 8px; justify-content: flex-end; }
-
-    .btn-action {
-        padding: 8px 14px;
-        border-radius: var(--radius-sm);
+    .doc-modal-close {
+        background: transparent;
         border: none;
+        color: var(--text-muted);
+        font-size: 1.4rem;
         cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
-        font-family: var(--font-body);
-        transition: var(--transition-smooth);
+        padding: 4px;
+        line-height: 1;
+        transition: color 0.2s;
     }
+    .doc-modal-close:hover { color: #fff; }
 
-    .btn-edit-doc {
-        background: var(--glass-bg);
-        color: var(--text-secondary);
-        border: 1px solid var(--glass-border);
+    .doc-form-group {
+        margin-bottom: 18px;
     }
-    .btn-edit-doc:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
-
-    .btn-del-doc {
-        background: rgba(255, 51, 102, 0.1);
-        color: var(--accent-red);
-        border: 1px solid rgba(255, 51, 102, 0.2);
-    }
-    .btn-del-doc:hover { background: var(--accent-red); color: #fff; }
-
-    /* Edit Modal */
-    .edit-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(10px);
-        z-index: 9999;
-        overflow-y: auto;
-    }
-
-    .edit-modal {
-        background: var(--bg-surface);
-        width: 90%;
-        max-width: 500px;
-        margin: 60px auto;
-        padding: 36px;
-        border-radius: var(--radius-xl);
-        border: 1px solid var(--glass-border);
-        position: relative;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    }
-
-    .edit-modal h3 {
-        color: var(--accent-purple);
-        margin-bottom: 24px;
-        font-size: 1.2rem;
-    }
-
-    .edit-modal .close-btn {
-        position: absolute;
-        top: 16px; right: 20px;
-        color: var(--text-secondary);
-        cursor: pointer;
-        font-size: 1.5rem;
-        transition: var(--transition-fast);
-    }
-
-    .edit-modal .close-btn:hover { color: var(--accent-red); }
-
-    .edit-modal label {
-        color: var(--text-secondary);
+    .doc-form-group label {
         display: block;
-        margin-bottom: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .edit-modal input {
-        width: 100%;
-        padding: 12px 14px;
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--glass-border);
-        color: var(--text-primary);
-        border-radius: var(--radius-sm);
-        margin-bottom: 16px;
-        outline: none;
-        font-family: var(--font-body);
-        transition: var(--transition-fast);
-    }
-
-    .edit-modal input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
-
-    .btn-save-doc {
-        width: 100%;
-        padding: 13px;
-        background: var(--accent-purple);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        font-size: 0.82rem;
         font-weight: 700;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: var(--transition-smooth);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 7px;
+    }
+    .doc-form-group input[type="text"],
+    .doc-form-group input[type="file"] {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: var(--radius-sm);
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        font: inherit;
+        font-size: 0.88rem;
+        outline: none;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .doc-form-group input[type="text"]:focus {
+        border-color: #c084fc;
+        box-shadow: 0 0 12px rgba(192, 132, 252, 0.25);
+    }
+    .current-file-note {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
-    .btn-save-doc:hover { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
+    .btn-submit-save {
+        width: 100%;
+        padding: 12px 18px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, #bc13fe, #7928ca);
+        color: #fff;
+        font: 700 0.92rem var(--font-body);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.22s ease;
+        margin-top: 10px;
+    }
+    .btn-submit-save:hover {
+        box-shadow: 0 4px 20px rgba(188, 19, 254, 0.4);
+        transform: translateY(-2px);
+    }
 
-    /* Mobile & Tablet Responsiveness */
-    @media (max-width: 768px) {
-        .page-wrap { padding: 18px 14px; }
-        .page-header {
+    /* Empty state */
+    .empty-docs-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .empty-docs-state i {
+        font-size: 2.8rem;
+        color: #334155;
+        margin-bottom: 12px;
+        display: block;
+    }
+    .empty-docs-state h3 {
+        color: #fff;
+        font-size: 1.15rem;
+        margin: 0 0 6px 0;
+    }
+    .empty-docs-state p {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        margin: 0;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 900px) {
+        .page-wrap { padding: 22px 16px; }
+        .doc-hero-banner {
             flex-direction: column;
-            align-items: stretch;
-            padding: 20px 18px;
-            gap: 16px;
+            align-items: flex-start;
+            padding: 24px 20px;
         }
-        .table-glass {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        table { min-width: 650px; }
-        .edit-modal {
-            max-width: 95vw;
-            padding: 24px 18px;
-        }
+        .hero-stats-row { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .stat-pill { min-width: unset; width: 100%; }
+        .controls-strip { flex-direction: column; align-items: stretch; }
+        .search-box-wrap { width: 100%; }
     }
 
     @media (max-width: 480px) {
         .page-wrap { padding: 14px 10px; }
-        .page-header h2 { font-size: 1.3rem; }
+        .hero-title { font-size: 1.45rem; }
+        .doc-modal-card { padding: 24px 18px; }
     }
 </style>
 
 <div class="page-wrap">
     
-    <div class="page-header">
+    <!-- 1. HERO OVERVIEW BANNER -->
+    <div class="doc-hero-banner">
         <div>
-            <h2><i class="fas fa-folder-open"></i> Library Documents</h2>
-            <p>View, edit, or delete study materials.</p>
+            <div class="hero-badge-pill">
+                <i class="fas fa-file-pdf"></i> Academic Repository
+            </div>
+            <h1 class="hero-title">Library <span>Documents</span></h1>
+            <p class="hero-sub">Inspect uploaded lecture notes, reference PDFs, study material classifications, and manage file resources.</p>
         </div>
-        <a href="{% url 'admin_dashboard' %}" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Dashboard
-        </a>
+
+        <div class="hero-stats-row">
+            <div class="stat-pill purple">
+                <div class="stat-num">{{ documents|length }}</div>
+                <div class="stat-lbl">Total Materials</div>
+            </div>
+            <div class="stat-pill rose">
+                <div class="stat-num" id="statPdfCount">0</div>
+                <div class="stat-lbl">PDF Notes</div>
+            </div>
+            <div class="stat-pill cyan">
+                <div class="stat-num" id="statDocCount">0</div>
+                <div class="stat-lbl">Office Docs</div>
+            </div>
+            <div class="stat-pill green">
+                <div class="stat-num" id="statCatCount">0</div>
+                <div class="stat-lbl">Categories</div>
+            </div>
+        </div>
     </div>
 
-    <div class="table-glass">
-        <table>
-            <thead>
-                <tr>
-                    <th>Document Title</th>
-                    <th>Category</th>
-                    <th>File</th>
-                    <th>Uploaded</th>
-                    <th style="text-align: right;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for doc in documents %}
-                <tr>
-                    <td>
-                        <div class="doc-name">
-                            <i class="fas fa-file-pdf"></i>
-                            {{ doc.title }}
-                        </div>
-                    </td>
-                    <td><span class="cat-badge">{{ doc.category }}</span></td>
-                    <td><a href="{{ doc.file.url }}" target="_blank" class="file-link">View File</a></td>
-                    <td><span class="date-text">{{ doc.uploaded_at|date:"d M, Y" }}</span></td>
-                    <td>
-                        <div class="actions-row">
-                            <button class="btn-action btn-edit-doc" onclick="document.getElementById('edit-modal-{{ doc.id }}').style.display='block'">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <form action="{% url 'admin_delete_document' doc.id %}" method="POST" style="display:inline;">
-                                {% csrf_token %}
-                                <button class="btn-action btn-del-doc" onclick="return confirm('Delete {{ doc.title }}?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+    <!-- 2. FILTER & SEARCH CONTROL STRIP -->
+    <div class="controls-strip">
+        <div class="filter-pills-row" id="docFilterPills">
+            <button type="button" class="d-filter-btn active" data-filter="all" onclick="applyDocFilter('all', this)">
+                <i class="fas fa-border-all"></i> All Materials <span class="count-badge">{{ documents|length }}</span>
+            </button>
+            <button type="button" class="d-filter-btn" data-filter="pdf" onclick="applyDocFilter('pdf', this)">
+                <i class="fas fa-file-pdf" style="color:#ff3366;"></i> PDF Files <span class="count-badge" id="pillPdfCount">0</span>
+            </button>
+            <button type="button" class="d-filter-btn" data-filter="doc" onclick="applyDocFilter('doc', this)">
+                <i class="fas fa-file-word" style="color:#00d4ff;"></i> Word / Docs <span class="count-badge" id="pillDocCount">0</span>
+            </button>
+        </div>
 
-                <!-- Edit Modal -->
-                <div id="edit-modal-{{ doc.id }}" class="edit-overlay">
-                    <div class="edit-modal">
-                        <span class="close-btn" onclick="document.getElementById('edit-modal-{{ doc.id }}').style.display='none'">&times;</span>
-                        <h3><i class="fas fa-edit"></i> Edit Document</h3>
-                        <form action="{% url 'admin_edit_document' doc.id %}" method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <label>Title</label>
-                            <input type="text" name="title" value="{{ doc.title }}" required>
-                            <label>Category</label>
-                            <input type="text" name="category" value="{{ doc.category }}" required>
-                            <label>Replace File (Optional)</label>
-                            <input type="file" name="file">
-                            <p style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 20px;">Current: {{ doc.file.name }}</p>
-                            <button type="submit" class="btn-save-doc">Save Changes</button>
-                        </form>
+        <div class="search-box-wrap">
+            <i class="fas fa-search"></i>
+            <input type="search" id="docSearchInput" placeholder="Search by title, category, course…" aria-label="Search documents" oninput="filterDocRows()">
+        </div>
+    </div>
+
+    <!-- 3. PREMIUM GLASS TABLE -->
+    <div class="table-container-glass">
+        <div class="table-scroll-wrapper">
+            <table class="premium-doc-table" id="docsTable">
+                <thead>
+                    <tr>
+                        <th>Document & Subject</th>
+                        <th>Classification</th>
+                        <th>Resource File</th>
+                        <th>Uploaded Date</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="docsTableBody">
+                    {% for doc in documents %}
+                    <tr class="doc-row-item" 
+                        data-title="{{ doc.title|lower }}"
+                        data-cat="{{ doc.category|lower }}"
+                        data-course="{% if doc.course %}{{ doc.course.title|lower }}{% endif %}"
+                        data-ext="{% if 'pdf' in doc.file.name|lower %}pdf{% elif 'doc' in doc.file.name|lower %}doc{% else %}other{% endif %}">
+                        <td>
+                            <div class="doc-identity-cell">
+                                {% if 'pdf' in doc.file.name|lower %}
+                                    <div class="doc-type-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                                {% elif 'doc' in doc.file.name|lower %}
+                                    <div class="doc-type-icon doc"><i class="fas fa-file-word"></i></div>
+                                {% else %}
+                                    <div class="doc-type-icon other"><i class="fas fa-file-lines"></i></div>
+                                {% endif %}
+                                <div>
+                                    <div class="doc-title-text">{{ doc.title }}</div>
+                                    {% if doc.course %}
+                                        <div class="doc-course-tag"><i class="fas fa-graduation-cap"></i> {{ doc.course.title }}</div>
+                                    {% else %}
+                                        <div class="doc-course-tag" style="color:var(--text-muted);"><i class="fas fa-folder"></i> General Study Material</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="cat-chip"><i class="fas fa-tag"></i> {{ doc.category|default:"General" }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ doc.file.url }}" target="_blank" class="file-access-btn" title="Open / Preview File">
+                                <i class="fas fa-arrow-up-right-from-square"></i> Open File
+                            </a>
+                        </td>
+                        <td>
+                            <span style="font-size:0.82rem; color:var(--text-muted);">
+                                <i class="far fa-calendar-alt"></i> {{ doc.uploaded_at|date:"d M, Y" }}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <div class="actions-cluster">
+                                <button type="button" class="btn-act-action btn-act-edit" onclick="openDocModal('edit-doc-modal-{{ doc.id }}')" title="Edit Metadata">
+                                    <i class="fas fa-pen-to-square"></i> Edit
+                                </button>
+                                <form action="{% url 'admin_delete_document' doc.id %}" method="POST" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-act-action btn-act-del" onclick="return confirm('Delete \'{{ doc.title|escapejs }}\'? This cannot be undone.');" title="Delete Document">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr id="initialEmptyDocsRow">
+                        <td colspan="5">
+                            <div class="empty-docs-state">
+                                <i class="fas fa-folder-open"></i>
+                                <h3>No Documents in Library</h3>
+                                <p>Uploaded study materials will appear here.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="noMatchDocsRow" style="display: none;">
+                        <td colspan="5">
+                            <div class="empty-docs-state">
+                                <i class="fas fa-magnifying-glass"></i>
+                                <h3>No Matching Documents</h3>
+                                <p>Try adjusting your search query or filter pills.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. MODALS (RENDERED CLEANLY OUTSIDE TABLE) -->
+    {% for doc in documents %}
+    <div id="edit-doc-modal-{{ doc.id }}" class="doc-modal-overlay" onclick="handleDocOverlayClick(event, 'edit-doc-modal-{{ doc.id }}')">
+        <div class="doc-modal-card">
+            <div class="doc-modal-header">
+                <h3><i class="fas fa-pen-to-square"></i> Edit Document</h3>
+                <button type="button" class="doc-modal-close" onclick="closeDocModal('edit-doc-modal-{{ doc.id }}')">&times;</button>
+            </div>
+            <form action="{% url 'admin_edit_document' doc.id %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="doc-form-group">
+                    <label>Document Title</label>
+                    <input type="text" name="title" value="{{ doc.title }}" required placeholder="Enter descriptive title">
+                </div>
+                <div class="doc-form-group">
+                    <label>Category / Tag</label>
+                    <input type="text" name="category" value="{{ doc.category }}" required placeholder="e.g. Lecture Notes, Syllabus">
+                </div>
+                <div class="doc-form-group">
+                    <label>Replace File (Optional)</label>
+                    <input type="file" name="file">
+                    <div class="current-file-note">
+                        <i class="fas fa-paperclip"></i> Current file: {{ doc.file.name }}
                     </div>
                 </div>
-                {% empty %}
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 60px; color: var(--text-muted);">
-                        No documents found in the library.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <button type="submit" class="btn-submit-save">
+                    <i class="fas fa-check"></i> Save Changes
+                </button>
+            </form>
+        </div>
     </div>
+    {% endfor %}
+
 </div>
 
-{% endblock %} <!-- Close content block here -->
+{% endblock %}
 
 {% block extra_js %}
 <script>
-    document.querySelectorAll('tbody tr').forEach((row, i) => {
-        row.style.animationDelay = `${i * 60}ms`;
+    let activeDocFilter = 'all';
+
+    function updateDocAnalytics() {
+        const rows = document.querySelectorAll('.doc-row-item');
+        let pdf = 0, doc = 0;
+        const categories = new Set();
+
+        rows.forEach(r => {
+            const ext = r.getAttribute('data-ext');
+            const cat = r.getAttribute('data-cat');
+            if (ext === 'pdf') pdf++;
+            if (ext === 'doc') doc++;
+            if (cat) categories.add(cat);
+        });
+
+        const statPdf = document.getElementById('statPdfCount');
+        const statDoc = document.getElementById('statDocCount');
+        const statCat = document.getElementById('statCatCount');
+        if (statPdf) statPdf.textContent = pdf;
+        if (statDoc) statDoc.textContent = doc;
+        if (statCat) statCat.textContent = categories.size;
+
+        const pillPdf = document.getElementById('pillPdfCount');
+        const pillDoc = document.getElementById('pillDocCount');
+        if (pillPdf) pillPdf.textContent = pdf;
+        if (pillDoc) pillDoc.textContent = doc;
+    }
+
+    function applyDocFilter(filter, btn) {
+        activeDocFilter = filter;
+        document.querySelectorAll('.d-filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        filterDocRows();
+    }
+
+    function filterDocRows() {
+        const query = (document.getElementById('docSearchInput').value || '').trim().toLowerCase();
+        const rows = document.querySelectorAll('.doc-row-item');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const title = row.getAttribute('data-title') || '';
+            const cat = row.getAttribute('data-cat') || '';
+            const course = row.getAttribute('data-course') || '';
+            const ext = row.getAttribute('data-ext') || '';
+
+            let matchesFilter = (activeDocFilter === 'all') || (activeDocFilter === ext);
+            let matchesSearch = !query || title.includes(query) || cat.includes(query) || course.includes(query);
+
+            if (matchesFilter && matchesSearch) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const noMatch = document.getElementById('noMatchDocsRow');
+        if (noMatch) {
+            noMatch.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
+        }
+    }
+
+    function openDocModal(modalId) {
+        const m = document.getElementById(modalId);
+        if (m) m.classList.add('active');
+    }
+
+    function closeDocModal(modalId) {
+        const m = document.getElementById(modalId);
+        if (m) m.classList.remove('active');
+    }
+
+    function handleDocOverlayClick(e, modalId) {
+        if (e.target && e.target.id === modalId) {
+            closeDocModal(modalId);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateDocAnalytics();
     });
 </script>
 {% endblock %}
