@@ -311,10 +311,28 @@ urlpatterns = [
     path('support-tickets/<int:ticket_id>/reply/', student_reply_support_ticket, name='student_reply_support_ticket'),
 ]
 
+import os
 from django.urls import re_path
 from django.views.static import serve
 
+def serve_media(request, path):
+    """
+    Robust media server that first looks in settings.MEDIA_ROOT (persistent disk if on Render)
+    and falls back to BASE_DIR/media (tracked repo media) to ensure avatars and thumbnails
+    never 404 in production.
+    """
+    primary_file = os.path.join(str(settings.MEDIA_ROOT), path)
+    if os.path.exists(primary_file):
+        return serve(request, path, document_root=settings.MEDIA_ROOT)
+    
+    repo_media = os.path.join(str(settings.BASE_DIR), 'media')
+    fallback_file = os.path.join(repo_media, path)
+    if os.path.exists(fallback_file):
+        return serve(request, path, document_root=repo_media)
+        
+    return serve(request, path, document_root=settings.MEDIA_ROOT)
+
 urlpatterns += [
-    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    re_path(r'^media/(?P<path>.*)$', serve_media),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]

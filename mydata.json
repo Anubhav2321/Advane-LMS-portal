@@ -14,6 +14,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": "9593428470",
     "student_id": "231995",
     "student_level": "Beginner",
@@ -40,6 +42,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "171822",
     "student_level": "Advanced",
@@ -66,6 +70,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "836630",
     "student_level": "Beginner",
@@ -92,38 +98,14 @@
     "is_student": false,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": "+919593428470",
     "student_id": null,
     "student_level": "Beginner",
     "stream": null,
     "lms_coins": 100,
     "date_joined": "2026-02-04T13:28:06.929Z",
-    "last_login_ip": null,
-    "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "students.user",
-  "fields": {
-    "password": "pbkdf2_sha256$1200000$amSdMwVGp2vwh92Iz9fBv4$1oZoASl7TpiSW/Qo+d61zMrMBEuGiVYrYiFQ5Rjl+4Y=",
-    "last_login": "2026-02-05T05:43:24.798Z",
-    "is_superuser": false,
-    "username": "Anup",
-    "first_name": "Anup",
-    "last_name": "Samanta",
-    "email": "anupvsamanta2025@gmail.com",
-    "is_staff": false,
-    "is_active": true,
-    "is_student": true,
-    "is_teacher": false,
-    "is_faculty": false,
-    "phone": null,
-    "student_id": "735258",
-    "student_level": "Intermediate",
-    "stream": "Btech",
-    "lms_coins": 500,
-    "date_joined": "2026-02-05T05:43:15.706Z",
     "last_login_ip": null,
     "groups": [],
     "user_permissions": []
@@ -144,6 +126,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "352310",
     "student_level": "Beginner",
@@ -170,6 +154,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "684169",
     "student_level": "Advanced",
@@ -196,6 +182,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "747258",
     "student_level": "Beginner",
@@ -222,6 +210,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "560134",
     "student_level": "Intermediate",
@@ -248,6 +238,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "592372",
     "student_level": "Advanced",
@@ -274,6 +266,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "594410",
     "student_level": "Beginner",
@@ -300,6 +294,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "322449",
     "student_level": "Beginner",
@@ -326,6 +322,8 @@
     "is_student": true,
     "is_teacher": true,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "919595",
     "student_level": "Beginner",
@@ -352,38 +350,14 @@
     "is_student": false,
     "is_teacher": false,
     "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": null,
     "student_level": "Beginner",
     "stream": null,
     "lms_coins": 100,
     "date_joined": "2026-05-04T16:15:21.774Z",
-    "last_login_ip": null,
-    "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "students.user",
-  "fields": {
-    "password": "pbkdf2_sha256$1200000$iQznh29rljWZdevFyp2f3x$OC1OMj1MDVn1VTSwUudMCc9pZCjptXjLv1JAeTcHr3w=",
-    "last_login": "2026-05-31T18:13:30.941Z",
-    "is_superuser": false,
-    "username": "Pallab23",
-    "first_name": "Pallab",
-    "last_name": "Jana",
-    "email": "pallab23@gmail.com",
-    "is_staff": false,
-    "is_active": true,
-    "is_student": false,
-    "is_teacher": false,
-    "is_faculty": true,
-    "phone": null,
-    "student_id": null,
-    "student_level": "Beginner",
-    "stream": null,
-    "lms_coins": 100,
-    "date_joined": "2026-05-04T16:21:20.283Z",
     "last_login_ip": null,
     "groups": [],
     "user_permissions": []
@@ -404,6 +378,8 @@
     "is_student": false,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": "7319105400",
     "student_id": null,
     "student_level": "Beginner",
@@ -430,6 +406,8 @@
     "is_student": false,
     "is_teacher": false,
     "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": null,
     "student_level": "Beginner",
@@ -456,6 +434,8 @@
     "is_student": false,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": null,
     "student_level": "Beginner",
@@ -482,6 +462,8 @@
     "is_student": false,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": "8547598652",
     "student_id": null,
     "student_level": "Beginner",
@@ -508,6 +490,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "903829",
     "student_level": "Intermediate",
@@ -534,6 +518,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": null,
     "student_id": "735768",
     "student_level": "Beginner",
@@ -560,6 +546,8 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": "7845127845",
     "student_id": "153149",
     "student_level": "Intermediate",
@@ -586,12 +574,406 @@
     "is_student": true,
     "is_teacher": false,
     "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
     "phone": "+91 91234 56789",
     "student_id": "762957",
     "student_level": "Advanced",
     "stream": "Btech",
     "lms_coins": 100,
     "date_joined": "2026-10-10T04:52:17.947Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$85iXqSbvqqFU4e6uJjCYFp$SBCExdQugqvzcs9VSjQPT8pQ/bNqz6KGLHJx78SCIao=",
+    "last_login": "2026-10-22T13:47:12.512Z",
+    "is_superuser": false,
+    "username": "student",
+    "first_name": "Student",
+    "last_name": "Test",
+    "email": "studenttest@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": true,
+    "is_teacher": false,
+    "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "9876543210",
+    "student_id": "893437",
+    "student_level": "Beginner",
+    "stream": "Engineering",
+    "lms_coins": 100,
+    "date_joined": "2026-10-22T05:23:35.155Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$NMiWdhg7EE0KwiXRq9ri3H$/2/g5n4cpnjqDGvq8xCpWGealfReUPYI8F1ji2Dk2R0=",
+    "last_login": "2026-10-25T17:09:00.800Z",
+    "is_superuser": true,
+    "username": "@Soham",
+    "first_name": "Soham",
+    "last_name": "Shyamal",
+    "email": "soham2002@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "8545789654",
+    "student_id": null,
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T04:29:02.753Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$scVoTPSYUa9M4UZqfwZGHX$szUd528sHa8xc+WWV0QyLx+euzcHHEVhwhKnJwqzfWA=",
+    "last_login": "2026-10-25T16:32:54.966Z",
+    "is_superuser": false,
+    "username": "teststudent999",
+    "first_name": "",
+    "last_name": "",
+    "email": "teststudent999@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": true,
+    "is_teacher": false,
+    "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": null,
+    "student_id": "411871",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T15:50:58.433Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$EU5SWeewS1Ft90R3ZfvFNM$3Rrd+GCeg/MzcS0sWe2mdHUnKcYdFlnGx0svpW1qhHM=",
+    "last_login": "2026-10-26T15:16:56.880Z",
+    "is_superuser": false,
+    "username": "pritama25",
+    "first_name": "Pritama",
+    "last_name": "Saha",
+    "email": "pritama25@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "8754256598",
+    "student_id": "497616",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T16:30:51.052Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$moPVBMYjfVOLSzCVCDy2kc$z8Tvapolbe5OhMt0BSCcQJsRZCL0Jn8hBxq0znO0I/0=",
+    "last_login": "2026-10-25T17:09:01.617Z",
+    "is_superuser": false,
+    "username": "dr_arindam",
+    "first_name": "Arindam",
+    "last_name": "Mukherjee",
+    "email": "arindam@test.edu",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "None",
+    "student_id": "685374",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T16:31:15.245Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$WCQFq00jewkrJCqWbtkldK$F4fBg1F+p1aVxy2oc+F5ZYjMl5JulF1o4p+kgOPRIbY=",
+    "last_login": "2026-10-25T16:33:14.967Z",
+    "is_superuser": false,
+    "username": "priya.sengupta",
+    "first_name": "Dr.",
+    "last_name": "Priya Sengupta",
+    "email": "priya.sengupta@faculty.edu",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "+91 99999 88888",
+    "student_id": "441729",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T16:33:13.840Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$UeDQer9dhk8LUdMjiOzyzv$jt9uwIcTK94RILAQjogaOcGFl57QLPw56vFH+N7O+xE=",
+    "last_login": "2026-10-25T17:11:42.928Z",
+    "is_superuser": false,
+    "username": "pramit25",
+    "first_name": "Pramit",
+    "last_name": "Bose",
+    "email": "pramit25@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "7845253687",
+    "student_id": "615855",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T17:11:25.942Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$BrgGatj12LcXtReW1pRBwK$hnOErNJVKfjgUICDG1YXZqNZRQY8HstV697fcM5Ym1c=",
+    "last_login": "2026-10-25T17:57:01.470Z",
+    "is_superuser": false,
+    "username": "mainak",
+    "first_name": "Mainak",
+    "last_name": "Mitra",
+    "email": "mainak@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "6587451258",
+    "student_id": "510958",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-25T17:18:22.778Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$w2fsrlZn80sVvR1WDXF34t$muCPzzuWfkQt3FJWDSKiVuddHroaybntyNZx3CohQ+c=",
+    "last_login": "2026-10-26T04:48:57.960Z",
+    "is_superuser": false,
+    "username": "rahul25",
+    "first_name": "Rahul",
+    "last_name": "Mondal",
+    "email": "rahul25@gamil.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "8545783658",
+    "student_id": "155120",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-26T04:47:59.588Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$X1eW3RlGQSEU3rLYYRNAIC$saDt4rvbRKIovIhjvgErMTgkA7U38YRvOKRcYnIv5Io=",
+    "last_login": "2026-10-26T04:56:11.441Z",
+    "is_superuser": false,
+    "username": "anubhavsamanta2035",
+    "first_name": "Anubhav",
+    "last_name": "Samanta",
+    "email": "anubhavsamanta2035@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "+919593428470",
+    "student_id": "327723",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-26T04:55:59.592Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$2YIg038yCyKzszHVazey9s$YOWUNhIB72WUSW70EjeBd2HEhM1RGyO/D2MKMZmnlaA=",
+    "last_login": "2026-10-26T04:58:57.461Z",
+    "is_superuser": false,
+    "username": "sovan26",
+    "first_name": "Sovan",
+    "last_name": "Giri",
+    "email": "sovan26@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "5825413265",
+    "student_id": "802728",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-26T04:58:36.697Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$QzcLJHN3iQX0gfRFjpUhvV$BMdqUq3TzcK448tlseJ8VtDFyi0juGIs2dYxzHEdBj0=",
+    "last_login": "2026-10-27T13:43:10.957Z",
+    "is_superuser": false,
+    "username": "soumyadeep26",
+    "first_name": "Soumyadeep",
+    "last_name": "Adak",
+    "email": "soumyadeep26@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": "5874254598",
+    "student_id": "253529",
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-10-26T05:11:45.772Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$amSdMwVGp2vwh92Iz9fBv4$1oZoASl7TpiSW/Qo+d61zMrMBEuGiVYrYiFQ5Rjl+4Y=",
+    "last_login": "2026-02-05T05:43:24.798Z",
+    "is_superuser": false,
+    "username": "Anup",
+    "first_name": "Anup",
+    "last_name": "Samanta",
+    "email": "anupvsamanta2025@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": true,
+    "is_teacher": false,
+    "is_faculty": false,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": null,
+    "student_id": "735258",
+    "student_level": "Intermediate",
+    "stream": "Btech",
+    "lms_coins": 500,
+    "date_joined": "2026-02-05T05:43:15.706Z",
+    "last_login_ip": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "students.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$iQznh29rljWZdevFyp2f3x$OC1OMj1MDVn1VTSwUudMCc9pZCjptXjLv1JAeTcHr3w=",
+    "last_login": "2026-05-31T18:13:30.941Z",
+    "is_superuser": false,
+    "username": "Pallab23",
+    "first_name": "Pallab",
+    "last_name": "Jana",
+    "email": "pallab23@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "is_student": false,
+    "is_teacher": false,
+    "is_faculty": true,
+    "reputation_score": 100,
+    "engagement_score": 100,
+    "phone": null,
+    "student_id": null,
+    "student_level": "Beginner",
+    "stream": null,
+    "lms_coins": 100,
+    "date_joined": "2026-05-04T16:21:20.283Z",
     "last_login_ip": null,
     "groups": [],
     "user_permissions": []
@@ -989,6 +1371,210 @@
   }
 },
 {
+  "model": "students.profile",
+  "pk": 43,
+  "fields": {
+    "user": [
+      "student"
+    ],
+    "bio": null,
+    "phone": "9876543210",
+    "student_id": "893437",
+    "address": null,
+    "profile_pic": "",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-22T13:47:12.518Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 44,
+  "fields": {
+    "user": [
+      "@Soham"
+    ],
+    "bio": "Control System and HR support team .",
+    "phone": "8545789654",
+    "student_id": null,
+    "address": "",
+    "profile_pic": "profile_pics/admin_43_1792902763.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-25T17:09:00.805Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 46,
+  "fields": {
+    "user": [
+      "teststudent999"
+    ],
+    "bio": null,
+    "phone": null,
+    "student_id": "411871",
+    "address": null,
+    "profile_pic": "",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-27T15:35:28.106Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 47,
+  "fields": {
+    "user": [
+      "pritama25"
+    ],
+    "bio": "Professor / Lead Instructor in BCA. With 5 years of professional experience.",
+    "phone": "8754256598",
+    "student_id": "497616",
+    "address": null,
+    "profile_pic": "profile_pics/user_46_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-27T15:54:43.901Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 48,
+  "fields": {
+    "user": [
+      "dr_arindam"
+    ],
+    "bio": "",
+    "phone": "None",
+    "student_id": "685374",
+    "address": null,
+    "profile_pic": "",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-26T15:48:25.348Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 49,
+  "fields": {
+    "user": [
+      "priya.sengupta"
+    ],
+    "bio": "Passionate about Deep Reinforcement Learning and Cognitive Robotics.",
+    "phone": "+91 99999 88888",
+    "student_id": "441729",
+    "address": null,
+    "profile_pic": "",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-25T16:33:14.985Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 50,
+  "fields": {
+    "user": [
+      "pramit25"
+    ],
+    "bio": "Professor / Head of Dept in Btech. With 10 years of professional experience.",
+    "phone": "7845253687",
+    "student_id": "615855",
+    "address": null,
+    "profile_pic": "profile_pics/user_49_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-26T05:16:00.537Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 51,
+  "fields": {
+    "user": [
+      "mainak"
+    ],
+    "bio": "Professor / Staff Faculty in BCA. With 4 years of professional experience.",
+    "phone": "6587451258",
+    "student_id": "510958",
+    "address": null,
+    "profile_pic": "profile_pics/user_50_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-25T17:57:01.481Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 52,
+  "fields": {
+    "user": [
+      "rahul25"
+    ],
+    "bio": "Professor / Lead Instructor in BCA. With 6 years of professional experience.",
+    "phone": "8545783658",
+    "student_id": "155120",
+    "address": null,
+    "profile_pic": "profile_pics/user_51_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-26T04:51:19.491Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 53,
+  "fields": {
+    "user": [
+      "anubhavsamanta2035"
+    ],
+    "bio": "Professor / Senior Admin in BCA. With 10 years of professional experience.",
+    "phone": "+919593428470",
+    "student_id": "327723",
+    "address": null,
+    "profile_pic": "profile_pics/user_52_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-26T15:14:56.659Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 54,
+  "fields": {
+    "user": [
+      "sovan26"
+    ],
+    "bio": "Professor / Lead Instructor in BCA. With 6 years of professional experience.",
+    "phone": "5825413265",
+    "student_id": "802728",
+    "address": null,
+    "profile_pic": "profile_pics/user_53_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-26T04:59:39.204Z"
+  }
+},
+{
+  "model": "students.profile",
+  "pk": 55,
+  "fields": {
+    "user": [
+      "soumyadeep26"
+    ],
+    "bio": "Professor / Lead Instructor in BCA. With 5 years of professional experience.",
+    "phone": "5874254598",
+    "student_id": "253529",
+    "address": null,
+    "profile_pic": "profile_pics/user_54_avatar.jpg",
+    "linkedin_url": null,
+    "github_url": null,
+    "updated_at": "2026-10-27T15:57:45.729Z"
+  }
+},
+{
   "model": "students.facultyprofile",
   "pk": 1,
   "fields": {
@@ -1000,6 +1586,7 @@
     "salary": "0.00",
     "specialization": null,
     "background": null,
+    "job_role": "Professor / Instructor",
     "updated_at": "2026-05-04T16:15:21.827Z"
   }
 },
@@ -1015,6 +1602,7 @@
     "salary": "0.00",
     "specialization": "ca department",
     "background": "Btech",
+    "job_role": "Professor / Instructor",
     "updated_at": "2026-05-31T18:14:53.477Z"
   }
 },
@@ -1030,7 +1618,200 @@
     "salary": "0.00",
     "specialization": null,
     "background": null,
+    "job_role": "Professor / Instructor",
     "updated_at": "2026-09-20T15:02:22.522Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "avik"
+    ],
+    "department": null,
+    "experience_years": 0,
+    "salary": "0.00",
+    "specialization": null,
+    "background": null,
+    "job_role": "Professor / Instructor",
+    "updated_at": "2026-10-25T16:26:44.168Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "pritama25"
+    ],
+    "department": "BCA",
+    "experience_years": 5,
+    "salary": "0.00",
+    "specialization": "ca department",
+    "background": null,
+    "job_role": "Professor / Lead Instructor",
+    "updated_at": "2026-10-27T15:54:43.894Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "dr_arindam"
+    ],
+    "department": "Computer Science",
+    "experience_years": 7,
+    "salary": "0.00",
+    "specialization": "",
+    "background": null,
+    "job_role": "Lead Professor",
+    "updated_at": "2026-10-26T15:48:25.342Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "priya.sengupta"
+    ],
+    "department": "Robotics & Intelligent Systems",
+    "experience_years": 8,
+    "salary": "0.00",
+    "specialization": "Reinforcement Learning & Embodied AI",
+    "background": null,
+    "job_role": "Senior Professor & Lab Director",
+    "updated_at": "2026-10-25T16:33:14.989Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "pramit25"
+    ],
+    "department": "Btech",
+    "experience_years": 10,
+    "salary": "0.00",
+    "specialization": "",
+    "background": null,
+    "job_role": "Professor / Head of Dept",
+    "updated_at": "2026-10-26T05:16:00.528Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "mainak"
+    ],
+    "department": "BCA",
+    "experience_years": 4,
+    "salary": "0.00",
+    "specialization": "",
+    "background": null,
+    "job_role": "Professor / Staff Faculty",
+    "updated_at": "2026-10-25T17:49:09.205Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "Anubhav"
+    ],
+    "department": null,
+    "experience_years": 0,
+    "salary": "0.00",
+    "specialization": null,
+    "background": null,
+    "job_role": "Professor / Instructor",
+    "updated_at": "2026-10-25T17:20:09.261Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "rahul25"
+    ],
+    "department": "BCA",
+    "experience_years": 6,
+    "salary": "0.00",
+    "specialization": null,
+    "background": null,
+    "job_role": "Professor / Lead Instructor",
+    "updated_at": "2026-10-26T04:51:19.501Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 12,
+  "fields": {
+    "user": [
+      "anubhavsamanta2035"
+    ],
+    "department": "BCA",
+    "experience_years": 10,
+    "salary": "0.00",
+    "specialization": "",
+    "background": null,
+    "job_role": "Professor / Senior Admin",
+    "updated_at": "2026-10-26T15:14:56.653Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 13,
+  "fields": {
+    "user": [
+      "sovan26"
+    ],
+    "department": "BCA",
+    "experience_years": 6,
+    "salary": "0.00",
+    "specialization": null,
+    "background": null,
+    "job_role": "Professor / Lead Instructor",
+    "updated_at": "2026-10-26T04:59:39.214Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 14,
+  "fields": {
+    "user": [
+      "soumyadeep26"
+    ],
+    "department": "BCA",
+    "experience_years": 5,
+    "salary": "0.00",
+    "specialization": "",
+    "background": null,
+    "job_role": "Professor /  Lab Director",
+    "updated_at": "2026-10-27T15:57:45.739Z"
+  }
+},
+{
+  "model": "students.facultyprofile",
+  "pk": 15,
+  "fields": {
+    "user": [
+      "@Soham"
+    ],
+    "department": null,
+    "experience_years": 0,
+    "salary": "0.00",
+    "specialization": null,
+    "background": null,
+    "job_role": "Professor / Instructor",
+    "updated_at": "2026-10-26T06:20:15.470Z"
   }
 },
 {
@@ -1972,6 +2753,23 @@
   }
 },
 {
+  "model": "students.lesson",
+  "pk": 16,
+  "fields": {
+    "course": 31,
+    "title": "Generative AI Full Course 2026 | LLMs, RAG, AI Agents & Projects | Sagar Chouksey",
+    "slug": "generative-ai-full-course-2026-llms-rag-ai-agents-projects-sagar-chouksey",
+    "video_file": "",
+    "video_url": "https://youtu.be/3iFMc6ELt7k",
+    "content": null,
+    "duration": "4:01:08",
+    "order": 1,
+    "is_preview": false,
+    "is_completed": false,
+    "created_at": "2026-10-27T13:57:26.488Z"
+  }
+},
+{
   "model": "students.enrollment",
   "pk": 3,
   "fields": {
@@ -2588,6 +3386,132 @@
   }
 },
 {
+  "model": "students.enrollment",
+  "pk": 94,
+  "fields": {
+    "student": [
+      "teststudent999"
+    ],
+    "course": 2,
+    "enrolled_at": "2026-10-25T15:54:10.441Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-25T15:54:10.441Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 95,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 31,
+    "enrolled_at": "2026-10-26T04:43:39.222Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T04:43:39.222Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 96,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 28,
+    "enrolled_at": "2026-10-26T04:44:03.314Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T04:44:03.314Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 97,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 25,
+    "enrolled_at": "2026-10-26T04:44:22.661Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T04:44:22.661Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 98,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 23,
+    "enrolled_at": "2026-10-26T04:44:42.326Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T04:44:42.326Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 99,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "course": 17,
+    "enrolled_at": "2026-10-26T04:45:41.646Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T04:45:41.646Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 100,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "course": 11,
+    "enrolled_at": "2026-10-26T04:46:11.522Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T04:46:11.522Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 101,
+  "fields": {
+    "student": [
+      "Rohit"
+    ],
+    "course": 36,
+    "enrolled_at": "2026-10-26T05:00:24.527Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-26T05:00:24.527Z"
+  }
+},
+{
+  "model": "students.enrollment",
+  "pk": 102,
+  "fields": {
+    "student": [
+      "teststudent999"
+    ],
+    "course": 36,
+    "enrolled_at": "2026-10-27T15:35:14.790Z",
+    "progress": 0.0,
+    "is_completed": false,
+    "last_accessed": "2026-10-27T15:35:14.790Z"
+  }
+},
+{
   "model": "students.lessonprogress",
   "pk": 1,
   "fields": {
@@ -2697,6 +3621,20 @@
     "completed_at": "2026-10-10T16:39:35.416Z",
     "watch_time_seconds": 37490,
     "created_at": "2026-10-10T16:36:42.341Z"
+  }
+},
+{
+  "model": "students.lessonprogress",
+  "pk": 10,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "lesson": 16,
+    "is_completed": false,
+    "completed_at": null,
+    "watch_time_seconds": 0,
+    "created_at": "2026-10-27T13:59:16.915Z"
   }
 },
 {
@@ -3370,6 +4308,36 @@
     "created_at": "2026-10-12T07:10:23.102Z",
     "deadline": null,
     "duration_minutes": 20,
+    "total_marks": 15,
+    "is_active": true
+  }
+},
+{
+  "model": "students.exam",
+  "pk": 49,
+  "fields": {
+    "course": 2,
+    "title": "AI Quiz: Python String",
+    "description": "Auto-generated AI Quiz from document: Python Basics",
+    "exam_link": null,
+    "created_at": "2026-10-26T05:44:37.320Z",
+    "deadline": null,
+    "duration_minutes": 20,
+    "total_marks": 15,
+    "is_active": true
+  }
+},
+{
+  "model": "students.exam",
+  "pk": 50,
+  "fields": {
+    "course": 31,
+    "title": "AI Quiz: Generative_AI_Study_Introduction",
+    "description": "Auto-generated AI Quiz from document: Generative_AI_Study_Introduction",
+    "exam_link": null,
+    "created_at": "2026-10-27T04:56:37.961Z",
+    "deadline": null,
+    "duration_minutes": 25,
     "total_marks": 15,
     "is_active": true
   }
@@ -9801,6 +10769,426 @@
   }
 },
 {
+  "model": "students.question",
+  "pk": 464,
+  "fields": {
+    "exam": 49,
+    "question_text": "Who developed the Python programming language?",
+    "option1": "James Gosling",
+    "option2": "Guido van Rossum",
+    "option3": "Bjarne Stroustrup",
+    "option4": "Dennis Ritchie",
+    "correct_option": "Guido van Rossum",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 465,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is the primary characteristic of Python as a programming language?",
+    "option1": "It is a low-level, compiled language",
+    "option2": "It is a high-level, interpreted language",
+    "option3": "It is a machine code language",
+    "option4": "It is a markup language",
+    "correct_option": "It is a high-level, interpreted language",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 466,
+  "fields": {
+    "exam": 49,
+    "question_text": "Which of the following is NOT listed as a feature of Python in the text?",
+    "option1": "Object-oriented",
+    "option2": "Portable",
+    "option3": "Compiled language",
+    "option4": "Open source",
+    "correct_option": "Compiled language",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 467,
+  "fields": {
+    "exam": 49,
+    "question_text": "How does an interpreter execute code?",
+    "option1": "It compiles the entire code into machine code first",
+    "option2": "It executes code line by line",
+    "option3": "It ignores the code until the end of the file",
+    "option4": "It translates code into binary before running",
+    "correct_option": "It executes code line by line",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 468,
+  "fields": {
+    "exam": 49,
+    "question_text": "Which of the following is a basic data type in Python?",
+    "option1": "char",
+    "option2": "double",
+    "option3": "bool",
+    "option4": "array",
+    "correct_option": "bool",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 469,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is the key difference between a list and a tuple in Python?",
+    "option1": "Lists are immutable, tuples are mutable",
+    "option2": "Lists are mutable, tuples are immutable",
+    "option3": "Lists are unordered, tuples are ordered",
+    "option4": "Lists store key-value pairs, tuples store single values",
+    "correct_option": "Lists are mutable, tuples are immutable",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 470,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is the purpose of indentation in Python?",
+    "option1": "To make the code look better",
+    "option2": "To define blocks of code",
+    "option3": "To comment out lines",
+    "option4": "To increase execution speed",
+    "correct_option": "To define blocks of code",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 471,
+  "fields": {
+    "exam": 49,
+    "question_text": "Which keyword is used to define a function in Python?",
+    "option1": "func",
+    "option2": "function",
+    "option3": "def",
+    "option4": "define",
+    "correct_option": "def",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 472,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is the difference between the 'break' and 'continue' statements in a loop?",
+    "option1": "break skips the current iteration, continue stops the loop",
+    "option2": "break stops the loop, continue skips the current iteration",
+    "option3": "Both stop the loop immediately",
+    "option4": "Both skip the current iteration",
+    "correct_option": "break stops the loop, continue skips the current iteration",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 473,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is the use of the 'import' keyword in Python?",
+    "option1": "To define a new variable",
+    "option2": "To include modules",
+    "option3": "To create a new class",
+    "option4": "To handle exceptions",
+    "correct_option": "To include modules",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 474,
+  "fields": {
+    "exam": 49,
+    "question_text": "In Object-Oriented Programming (OOP), what is a class?",
+    "option1": "An instance of an object",
+    "option2": "A blueprint for objects",
+    "option3": "A type of loop",
+    "option4": "A data structure for key-value pairs",
+    "correct_option": "A blueprint for objects",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 475,
+  "fields": {
+    "exam": 49,
+    "question_text": "What does inheritance allow in Python?",
+    "option1": "One class to acquire properties of another class",
+    "option2": "A function to call another function",
+    "option3": "A variable to store multiple values",
+    "option4": "A module to import itself",
+    "correct_option": "One class to acquire properties of another class",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 476,
+  "fields": {
+    "exam": 49,
+    "question_text": "Which of the following is a common use case for Python mentioned in the text?",
+    "option1": "Hardware driver development",
+    "option2": "Web development",
+    "option3": "Operating system kernel programming",
+    "option4": "Assembly language optimization",
+    "correct_option": "Web development",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 477,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is the file extension for Python files?",
+    "option1": ".java",
+    "option2": ".cpp",
+    "option3": ".py",
+    "option4": ".js",
+    "correct_option": ".py",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 478,
+  "fields": {
+    "exam": 49,
+    "question_text": "What is slicing used for in Python?",
+    "option1": "To delete parts of a sequence",
+    "option2": "To access parts of a sequence",
+    "option3": "To convert data types",
+    "option4": "To create new variables",
+    "correct_option": "To access parts of a sequence",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 479,
+  "fields": {
+    "exam": 50,
+    "question_text": "According to the hierarchy of AI fields described in the text, which field is a subset of machine learning that specifically uses neural networks with many layers?",
+    "option1": "Artificial Intelligence",
+    "option2": "Deep Learning",
+    "option3": "Generative AI",
+    "option4": "Supervised Learning",
+    "correct_option": "Deep Learning",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 480,
+  "fields": {
+    "exam": 50,
+    "question_text": "In the context of machine learning paradigms, what type of learning involves hiding part of the data and predicting the hidden part, often used for pre-training large language models?",
+    "option1": "Supervised Learning",
+    "option2": "Unsupervised Learning",
+    "option3": "Self-supervised Learning",
+    "option4": "Reinforcement Learning",
+    "correct_option": "Self-supervised Learning",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 481,
+  "fields": {
+    "exam": 50,
+    "question_text": "What is the primary difference between a discriminative model and a generative model as defined in the study notes?",
+    "option1": "Discriminative models create new data, while generative models label inputs.",
+    "option2": "Discriminative models learn the boundary between categories, while generative models learn the data distribution to create new examples.",
+    "option3": "Discriminative models use only neural networks, while generative models use statistical methods.",
+    "option4": "Discriminative models are faster, while generative models are more accurate.",
+    "correct_option": "Discriminative models learn the boundary between categories, while generative models learn the data distribution to create new examples.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 482,
+  "fields": {
+    "exam": 50,
+    "question_text": "Which of the following is cited as a typical example of a discriminative model in the text?",
+    "option1": "GANs",
+    "option2": "Diffusion models",
+    "option3": "Logistic regression",
+    "option4": "GPT-style language models",
+    "correct_option": "Logistic regression",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 483,
+  "fields": {
+    "exam": 50,
+    "question_text": "According to the 'Key Note' in Section 3.3, why can the same prompt produce different outputs from a generative model on different runs?",
+    "option1": "Because the model looks up stored answers from a database.",
+    "option2": "Because generation is sampling, where the model chooses each output piece from a probability distribution.",
+    "option3": "Because the model's weights change after every inference step.",
+    "option4": "Because the user's internet connection speed affects the output.",
+    "correct_option": "Because generation is sampling, where the model chooses each output piece from a probability distribution.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 484,
+  "fields": {
+    "exam": 50,
+    "question_text": "Who introduced Generative Adversarial Networks (GANs) and in what year, according to the text?",
+    "option1": "Kingma and Welling in 2013",
+    "option2": "Ian Goodfellow and colleagues in 2014",
+    "option3": "The GPT team in 2018",
+    "option4": "Researchers in 2020",
+    "correct_option": "Ian Goodfellow and colleagues in 2014",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 485,
+  "fields": {
+    "exam": 50,
+    "question_text": "What is a known weakness of GANs mentioned in the study notes?",
+    "option1": "They require many denoising steps to generate a sample.",
+    "option2": "They produce only blurry images.",
+    "option3": "Training is unstable and the generator can suffer mode collapse.",
+    "option4": "They cannot generate text or audio.",
+    "correct_option": "Training is unstable and the generator can suffer mode collapse.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 486,
+  "fields": {
+    "exam": 50,
+    "question_text": "In a Variational Autoencoder (VAE), what do the parameters μ (mean) and σ (standard deviation) describe?",
+    "option1": "The size of the neural network layers.",
+    "option2": "The probability distribution in the latent space into which the input is compressed.",
+    "option3": "The number of training epochs required.",
+    "option4": "The noise level added to the input image.",
+    "correct_option": "The probability distribution in the latent space into which the input is compressed.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 487,
+  "fields": {
+    "exam": 50,
+    "question_text": "What is a primary weakness of Variational Autoencoders (VAEs) compared to GANs or diffusion models?",
+    "option1": "Unstable training process.",
+    "option2": "Reconstructed or generated images are often blurrier.",
+    "option3": "They cannot perform interpolation.",
+    "option4": "They require labelled data for training.",
+    "correct_option": "Reconstructed or generated images are often blurrier.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 488,
+  "fields": {
+    "exam": 50,
+    "question_text": "How does the forward process of a diffusion model work?",
+    "option1": "It removes noise from an image step by step.",
+    "option2": "It adds a little Gaussian noise to an image over many steps until only random noise remains.",
+    "option3": "It compresses the image into a latent code.",
+    "option4": "It predicts the next token in a sequence.",
+    "correct_option": "It adds a little Gaussian noise to an image over many steps until only random noise remains.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 489,
+  "fields": {
+    "exam": 50,
+    "question_text": "What is a significant disadvantage of using diffusion models for generation?",
+    "option1": "They produce low-quality, unrealistic outputs.",
+    "option2": "They are prone to mode collapse.",
+    "option3": "Sampling needs many denoising steps, making generation slow and compute-heavy.",
+    "option4": "They cannot be used for audio or video generation.",
+    "correct_option": "Sampling needs many denoising steps, making generation slow and compute-heavy.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 490,
+  "fields": {
+    "exam": 50,
+    "question_text": "How do autoregressive transformers, such as Large Language Models (LLMs), generate text?",
+    "option1": "By generating the entire sentence simultaneously in one forward pass.",
+    "option2": "By generating a sequence one token at a time, predicting each new token from all previous tokens.",
+    "option3": "By reversing a noising process applied to the text.",
+    "option4": "By compressing text into a latent space and decoding it.",
+    "correct_option": "By generating a sequence one token at a time, predicting each new token from all previous tokens.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 491,
+  "fields": {
+    "exam": 50,
+    "question_text": "Which of the following is listed as an example of an autoregressive transformer-based Large Language Model?",
+    "option1": "VAE",
+    "option2": "GAN",
+    "option3": "GPT family",
+    "option4": "Logistic Regression",
+    "correct_option": "GPT family",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 492,
+  "fields": {
+    "exam": 50,
+    "question_text": "According to the text, what is the role of the discriminator in a GAN?",
+    "option1": "To turn random noise into a sample.",
+    "option2": "To try to tell real samples from generated ones.",
+    "option3": "To compress the input into a probability distribution.",
+    "option4": "To add Gaussian noise to the data.",
+    "correct_option": "To try to tell real samples from generated ones.",
+    "marks": 1
+  }
+},
+{
+  "model": "students.question",
+  "pk": 493,
+  "fields": {
+    "exam": 50,
+    "question_text": "What is the main purpose of the 'Refine' stage in the four-stage process of how a generative model works?",
+    "option1": "To collect a large dataset of billions of words.",
+    "option2": "To adjust the neural network's weights to fit the data.",
+    "option3": "To fine-tune and align the model to behave helpfully and safely.",
+    "option4": "To run inference on a user's prompt.",
+    "correct_option": "To fine-tune and align the model to behave helpfully and safely.",
+    "marks": 1
+  }
+},
+{
   "model": "students.quizresult",
   "pk": 1,
   "fields": {
@@ -10330,7 +11718,7 @@
     "exam": 31,
     "score": 11.0,
     "total_marks": 15.0,
-    "taken_at": "2026-10-06T05:49:21.000Z"
+    "taken_at": "2026-10-06T05:49:21Z"
   }
 },
 {
@@ -12313,6 +13701,1692 @@
   }
 },
 {
+  "model": "students.notification",
+  "pk": 105,
+  "fields": {
+    "title": "📩 Support Mail #TKT-915654: Course enroll issue .",
+    "message": "From: Anubhav Samanta (anubhavsamanta2025@gmail.com) | Phone: 9593428470 | ID: #231995\nCategory: General Inquiry / Guidance | Priority: Urgent / Critical\n\nIssue: i paid the gen ai course . but it not visible in my dashboard . please fixed this error  eminently ....",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Resolve Ticket",
+    "recipient": [
+      "abhishek23_at_gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:47:29.467Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 106,
+  "fields": {
+    "title": "📩 Support Mail #TKT-915654: Course enroll issue .",
+    "message": "From: Anubhav Samanta (anubhavsamanta2025@gmail.com) | Phone: 9593428470 | ID: #231995\nCategory: General Inquiry / Guidance | Priority: Urgent / Critical\n\nIssue: i paid the gen ai course . but it not visible in my dashboard . please fixed this error  eminently ....",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Resolve Ticket",
+    "recipient": [
+      "mondal2005_at_gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:47:29.476Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 107,
+  "fields": {
+    "title": "📩 Support Mail #TKT-915654: Course enroll issue .",
+    "message": "From: Anubhav Samanta (anubhavsamanta2025@gmail.com) | Phone: 9593428470 | ID: #231995\nCategory: General Inquiry / Guidance | Priority: Urgent / Critical\n\nIssue: i paid the gen ai course . but it not visible in my dashboard . please fixed this error  eminently ....",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Resolve Ticket",
+    "recipient": [
+      "avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:47:29.484Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 108,
+  "fields": {
+    "title": "📩 Support Mail #TKT-915654: Course enroll issue .",
+    "message": "From: Anubhav Samanta (anubhavsamanta2025@gmail.com) | Phone: 9593428470 | ID: #231995\nCategory: General Inquiry / Guidance | Priority: Urgent / Critical\n\nIssue: i paid the gen ai course . but it not visible in my dashboard . please fixed this error  eminently ....",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Resolve Ticket",
+    "recipient": [
+      "Anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:47:29.491Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 109,
+  "fields": {
+    "title": "📬 Support Reply #TKT-915654",
+    "message": "Administrator (Avik) replied to your request 'Course enroll issue .': we are working ....",
+    "notification_type": "support",
+    "action_url": "/profile/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:51:43.273Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 110,
+  "fields": {
+    "title": "📬 Support Reply #TKT-915654",
+    "message": "Administrator (Avik) replied to your request 'Course enroll issue .': Hello Anubhav,\n\nPlease provide us with your 6-digit Student ID and registration phone number so we can verify account ow...",
+    "notification_type": "support",
+    "action_url": "/profile/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:52:54.090Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 111,
+  "fields": {
+    "title": "📬 Support Reply #TKT-915654",
+    "message": "Administrator (Avik) replied to your request 'Course enroll issue .': Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that ever...",
+    "notification_type": "support",
+    "action_url": "/profile/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:55:42.621Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 112,
+  "fields": {
+    "title": "📬 Support Reply #TKT-915654",
+    "message": "Administrator (Avik) replied to your request 'Course enroll issue .': Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that ever...",
+    "notification_type": "support",
+    "action_url": "/profile/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T05:56:02.936Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 113,
+  "fields": {
+    "title": "🔥 [URGENT REPLY] #TKT-915654 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-915654:\n\n\"Hello Admin, my 6-digit ID is 123456 and phone number is 9876543210....\"\n\nPriority: URGENT / CRITICAL | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "abhishek23_at_gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T13:49:02.216Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 114,
+  "fields": {
+    "title": "🔥 [URGENT REPLY] #TKT-915654 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-915654:\n\n\"Hello Admin, my 6-digit ID is 123456 and phone number is 9876543210....\"\n\nPriority: URGENT / CRITICAL | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "mondal2005_at_gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T13:49:02.220Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 115,
+  "fields": {
+    "title": "🔥 [URGENT REPLY] #TKT-915654 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-915654:\n\n\"Hello Admin, my 6-digit ID is 123456 and phone number is 9876543210....\"\n\nPriority: URGENT / CRITICAL | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T13:49:02.224Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 116,
+  "fields": {
+    "title": "🔥 [URGENT REPLY] #TKT-915654 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-915654:\n\n\"Hello Admin, my 6-digit ID is 123456 and phone number is 9876543210....\"\n\nPriority: URGENT / CRITICAL | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/12/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "Anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T13:49:02.227Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 117,
+  "fields": {
+    "title": "📬 Support Reply #TKT-915654",
+    "message": "Administrator (Avik) replied to your request 'Course enroll issue .': Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that ever...",
+    "notification_type": "support",
+    "action_url": "/profile/#ticket-12",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-22T14:31:39.038Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 118,
+  "fields": {
+    "title": "📬 Support Reply #TKT-532259",
+    "message": "Administrator (Avik) replied to your request 'System glitch .': ok...",
+    "notification_type": "support",
+    "action_url": "/profile/#ticket-10",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-24T14:05:08.285Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 119,
+  "fields": {
+    "title": "⚡ [HIGH REPLY] #TKT-532259 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-532259:\n\n\"please fixed ....\"\n\nPriority: HIGH PRIORITY | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/10/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "abhishek23_at_gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-24T14:06:16.976Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 120,
+  "fields": {
+    "title": "⚡ [HIGH REPLY] #TKT-532259 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-532259:\n\n\"please fixed ....\"\n\nPriority: HIGH PRIORITY | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/10/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "mondal2005_at_gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-24T14:06:16.983Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 121,
+  "fields": {
+    "title": "⚡ [HIGH REPLY] #TKT-532259 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-532259:\n\n\"please fixed ....\"\n\nPriority: HIGH PRIORITY | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/10/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-24T14:06:16.991Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 122,
+  "fields": {
+    "title": "⚡ [HIGH REPLY] #TKT-532259 from Anubhav Samanta",
+    "message": "Student Anubhav Samanta (ID: #231995) replied to Ticket #TKT-532259:\n\n\"please fixed ....\"\n\nPriority: HIGH PRIORITY | Status: Pending Review",
+    "notification_type": "support",
+    "action_url": "/admin-panel/support-tickets/10/",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "Anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-24T14:06:17.000Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 123,
+  "fields": {
+    "title": "📬 Support Reply #TKT-532259",
+    "message": "Administrator (Avik) replied to your request 'System glitch .': Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that ever...",
+    "notification_type": "support",
+    "action_url": "/profile/#ticket-10",
+    "action_label": "Open Support Desk",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-24T14:08:42.052Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 124,
+  "fields": {
+    "title": "🚨 IMPORTANT NOTICE: Scheduled Holiday Closure & System Availability",
+    "message": "Dear Students, Faculty, and Staff,\n\nPlease be advised that the institution will be closed on 15th Aug.  in observance of [Name of Holiday, e.g., Thanksgiving / Independence Day].",
+    "notification_type": "notice",
+    "action_url": "/dashboard/",
+    "action_label": "View Details",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:03:46.653Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 125,
+  "fields": {
+    "title": "Live Class: Linux First class",
+    "message": "Live interactive class 'Linux First class' for 'Linux' is scheduled for 02 Nov 2026 at 04:30 PM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:06:39.522Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 126,
+  "fields": {
+    "title": "Live Class: Deep Learning Foundations & Neural Architectures [LIVE BROADCAST]",
+    "message": "Live interactive class 'Deep Learning Foundations & Neural Architectures [LIVE BROADCAST]' for 'Machine Learning' is scheduled for 25 Oct 2026 at 02:22 PM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:32:36.430Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 127,
+  "fields": {
+    "title": "Live Class: Python Concurrency, Asyncio & Multithreading Masterclass",
+    "message": "Live interactive class 'Python Concurrency, Asyncio & Multithreading Masterclass' for 'Python' is scheduled for 25 Oct 2026 at 03:17 PM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:32:36.440Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 128,
+  "fields": {
+    "title": "Live Class: Dynamic Programming & Graph Traversal (DFS/BFS) Live Workshop",
+    "message": "Live interactive class 'Dynamic Programming & Graph Traversal (DFS/BFS) Live Workshop' for 'DSA' is scheduled for 27 Oct 2026 at 05:32 PM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:32:36.449Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 129,
+  "fields": {
+    "title": "Live Class: Linux Kernel Internals, Daemons & Systemd Services",
+    "message": "Live interactive class 'Linux Kernel Internals, Daemons & Systemd Services' for 'Linux' is scheduled for 29 Oct 2026 at 04:32 PM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:32:36.459Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 130,
+  "fields": {
+    "title": "Live Class: Building Autonomous AI Agents with LangChain & Gemini Flash",
+    "message": "Live interactive class 'Building Autonomous AI Agents with LangChain & Gemini Flash' for 'Generative Ai' is scheduled for 24 Oct 2026 at 10:32 AM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T14:32:36.469Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 131,
+  "fields": {
+    "title": "Live Class: Faculty Special Masterclass on Deep Learning",
+    "message": "Live interactive class 'Faculty Special Masterclass on Deep Learning' for 'Computer Vision (CV) and Image Understanding' is scheduled for 25 Oct 2026 at 06:32 PM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-25T16:32:54.867Z",
+    "read_by": [
+      [
+        "elon26@gmail.com"
+      ],
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 132,
+  "fields": {
+    "title": "Assignment Evaluated: method",
+    "message": "Your assignment for 'Java' has been evaluated. Score: 80.0/100. Feedback: Excellent work, clean OOP architecture!",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/4/",
+    "action_label": "Review Grade",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:36:15.244Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 133,
+  "fields": {
+    "title": "Exam Deadline Extended: Cyber security",
+    "message": "The deadline for exam 'Cyber security' (Computer Vision (CV) and Image Understanding) has been updated to 15 Nov, 2026 • 11:59 PM.",
+    "notification_type": "exam",
+    "action_url": "/exams/",
+    "action_label": "Take Exam",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.820Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 134,
+  "fields": {
+    "title": "Exam Deadline Extended: Cyber security",
+    "message": "The deadline for exam 'Cyber security' (Computer Vision (CV) and Image Understanding) has been updated to 15 Nov, 2026 • 11:59 PM.",
+    "notification_type": "exam",
+    "action_url": "/exams/",
+    "action_label": "Take Exam",
+    "recipient": [
+      "Rohit"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.828Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 135,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "teststudent999"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.860Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 136,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "munna2005@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.867Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 137,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "elon26@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.873Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 138,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Babai"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.879Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 139,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "anubhav7"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.887Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 140,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Souvik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.894Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 141,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Rohit"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.900Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 142,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.907Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 143,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Soham"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.914Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 144,
+  "fields": {
+    "title": "Due Date Extended: Array",
+    "message": "The submission deadline for assignment 'Array' (Python) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/2/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.920Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 145,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "teststudent999"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.963Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 146,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "munna2005@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.971Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 147,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "elon26@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.977Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 148,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Babai"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.984Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 149,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "anubhav7"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:34.994Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 150,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Souvik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:35.000Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 151,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Rohit"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:35.007Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 152,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:35.014Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 153,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Soham"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:35.021Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 154,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:40:35.028Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 155,
+  "fields": {
+    "title": "Exam Deadline Extended: Cyber security",
+    "message": "The deadline for exam 'Cyber security' (Computer Vision (CV) and Image Understanding) has been updated to 15 Nov, 2026 • 11:59 PM.",
+    "notification_type": "exam",
+    "action_url": "/exams/",
+    "action_label": "Take Exam",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.178Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 156,
+  "fields": {
+    "title": "Exam Deadline Extended: Cyber security",
+    "message": "The deadline for exam 'Cyber security' (Computer Vision (CV) and Image Understanding) has been updated to 15 Nov, 2026 • 11:59 PM.",
+    "notification_type": "exam",
+    "action_url": "/exams/",
+    "action_label": "Take Exam",
+    "recipient": [
+      "Rohit"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.182Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 157,
+  "fields": {
+    "title": "Due Date Extended: method",
+    "message": "The submission deadline for assignment 'method' (Java) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/4/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Soham"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.195Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 158,
+  "fields": {
+    "title": "Due Date Extended: method",
+    "message": "The submission deadline for assignment 'method' (Java) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/4/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.199Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 159,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "teststudent999"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.218Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 160,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "munna2005@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.222Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 161,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "elon26@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.227Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 162,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Babai"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.231Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 163,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "anubhav7"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.236Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 164,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Souvik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.239Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 165,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Rohit"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.244Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 166,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.248Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 167,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Soham"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.251Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 168,
+  "fields": {
+    "title": "Live Class Rescheduled: Advanced Python Live Masterclass",
+    "message": "Live class 'Advanced Python Live Masterclass' (Python) has been rescheduled to 27 Oct, 2026 • 03:30 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:41:50.255Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 169,
+  "fields": {
+    "title": "New AI Exam: AI Quiz: Python String",
+    "message": "A new exam assessment 'AI Quiz: Python String' in 'Python' is ready. Complete this task to earn certifications & coins!",
+    "notification_type": "exam",
+    "action_url": "/take-exam/49/",
+    "action_label": "Start Exam",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-26T05:44:37.322Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 170,
+  "fields": {
+    "title": "Due Date Extended: method",
+    "message": "The submission deadline for assignment 'method' (Java) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/4/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "Soham"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:47:30.941Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 171,
+  "fields": {
+    "title": "Due Date Extended: method",
+    "message": "The submission deadline for assignment 'method' (Java) has been extended to 20 Nov, 2026 • 06:00 PM.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/4/",
+    "action_label": "Submit Assignment",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:47:30.946Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 172,
+  "fields": {
+    "title": "Live Class Rescheduled: OOP",
+    "message": "Live class 'OOP' (Java) has been rescheduled to 26 Oct, 2026 • 05:00 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "Soham"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:54:20.202Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 173,
+  "fields": {
+    "title": "Live Class Rescheduled: OOP",
+    "message": "Live class 'OOP' (Java) has been rescheduled to 26 Oct, 2026 • 05:00 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-26T05:54:20.207Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 174,
+  "fields": {
+    "title": "Live Class: Demystifying Neural Networks, GANs, and Diffusion Models",
+    "message": "Live interactive class 'Demystifying Neural Networks, GANs, and Diffusion Models' for 'Generative Ai' is scheduled for 27 Oct 2026 at 10:30 AM. Make sure to attend!",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "Join Live Class",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-27T04:21:19.974Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 175,
+  "fields": {
+    "title": "New Notice",
+    "message": "new class is added .",
+    "notification_type": "course",
+    "action_url": "live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:23:53.500Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 176,
+  "fields": {
+    "title": "New Notice",
+    "message": "new class is added .",
+    "notification_type": "course",
+    "action_url": "live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:23:53.508Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 177,
+  "fields": {
+    "title": "New Notice",
+    "message": "new class is added .",
+    "notification_type": "course",
+    "action_url": "live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:23:53.515Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 178,
+  "fields": {
+    "title": "class notice",
+    "message": "live class added .",
+    "notification_type": "live_class",
+    "action_url": "live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:25:03.080Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 179,
+  "fields": {
+    "title": "class notice",
+    "message": "live class added .",
+    "notification_type": "live_class",
+    "action_url": "live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:25:03.115Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 180,
+  "fields": {
+    "title": "class notice",
+    "message": "live class added .",
+    "notification_type": "live_class",
+    "action_url": "live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:25:03.121Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 181,
+  "fields": {
+    "title": "New Notice",
+    "message": "class added .",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:26:06.944Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 182,
+  "fields": {
+    "title": "New Notice",
+    "message": "class added .",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:26:06.953Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 183,
+  "fields": {
+    "title": "New Notice",
+    "message": "class added .",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Details",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:26:06.959Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 184,
+  "fields": {
+    "title": "New Study Material: Generative_AI_Study_Introduction",
+    "message": "Study resource 'Generative_AI_Study_Introduction' [Generative Ai] (General) has been uploaded to the Digital Library.",
+    "notification_type": "document",
+    "action_url": "/library/",
+    "action_label": "View in Library",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-27T04:53:22.526Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 185,
+  "fields": {
+    "title": "New Notice",
+    "message": "Dear Students ,\nI send the new gen ai notes . please read this . after 5 days i will give you the exam details .",
+    "notification_type": "exam",
+    "action_url": "/library/",
+    "action_label": "View Details",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:55:50.748Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 186,
+  "fields": {
+    "title": "New Notice",
+    "message": "Dear Students ,\nI send the new gen ai notes . please read this . after 5 days i will give you the exam details .",
+    "notification_type": "exam",
+    "action_url": "/library/",
+    "action_label": "View Details",
+    "recipient": [
+      "Avik"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:55:50.754Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 187,
+  "fields": {
+    "title": "New Notice",
+    "message": "Dear Students ,\nI send the new gen ai notes . please read this . after 5 days i will give you the exam details .",
+    "notification_type": "exam",
+    "action_url": "/library/",
+    "action_label": "View Details",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T04:55:50.758Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 188,
+  "fields": {
+    "title": "New AI Exam: AI Quiz: Generative_AI_Study_Introduction",
+    "message": "A new exam assessment 'AI Quiz: Generative_AI_Study_Introduction' in 'Generative Ai' is ready. Complete this task to earn certifications & coins!",
+    "notification_type": "exam",
+    "action_url": "/take-exam/50/",
+    "action_label": "Start Exam",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-27T04:56:37.962Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 189,
+  "fields": {
+    "title": "New Assignment Task: Generative_AI_QA_Bank",
+    "message": "A new course assignment 'Generative_AI_QA_Bank' in 'Generative Ai' has been posted. Due date: 17 Dec 2026. Submit your solution on time!",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/31/",
+    "action_label": "Submit Task",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-27T04:59:16.196Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 190,
+  "fields": {
+    "title": "Assignment Evaluated: Generative_AI_QA_Bank",
+    "message": "Your assignment for 'Generative Ai' has been evaluated. Score: 0.0/100. Feedback: Good effort!",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/31/",
+    "action_label": "Review Grade",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T13:45:20.815Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 191,
+  "fields": {
+    "title": "New Lesson: Generative AI Full Course 2026 | LLMs, RAG, AI Agents & Projects | Sagar Chouksey",
+    "message": "Lesson #1 'Generative AI Full Course 2026 | LLMs, RAG, AI Agents & Projects | Sagar Chouksey' has been added to 'Generative Ai'. Continue your learning!",
+    "notification_type": "lesson",
+    "action_url": "/courses/watch/31/16/",
+    "action_label": "Watch Lesson",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-27T13:57:26.503Z",
+    "read_by": [
+      [
+        "anubhav"
+      ]
+    ]
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 192,
+  "fields": {
+    "title": "Live Class Rescheduled: Building Autonomous AI Agents with LangChain & Gemini Flash",
+    "message": "Live class 'Building Autonomous AI Agents with LangChain & Gemini Flash' (Generative Ai) has been rescheduled to 27 Oct, 2026 • 07:45 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "ravikisan2003@gmail.com"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T14:13:48.208Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 193,
+  "fields": {
+    "title": "Live Class Rescheduled: Building Autonomous AI Agents with LangChain & Gemini Flash",
+    "message": "Live class 'Building Autonomous AI Agents with LangChain & Gemini Flash' (Generative Ai) has been rescheduled to 27 Oct, 2026 • 07:45 PM.",
+    "notification_type": "live_class",
+    "action_url": "/live-classes/",
+    "action_label": "View Schedule",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T14:13:48.216Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 194,
+  "fields": {
+    "title": "Assignment Evaluated: Generative_AI_QA_Bank (FAILED)",
+    "message": "Your assignment for 'Generative Ai' has been evaluated. Result: FAILED ❌ • Score: 0.0/100. Feedback: Evaluation recorded.",
+    "notification_type": "assignment",
+    "action_url": "/courses/watch/31/#asgn-card-13",
+    "action_label": "Review Grade",
+    "recipient": [
+      "anubhav"
+    ],
+    "is_global": false,
+    "created_at": "2026-10-27T15:01:22.460Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 195,
+  "fields": {
+    "title": "New AI Exam: Test Expired Exam",
+    "message": "A new exam assessment 'Test Expired Exam' in 'Computer Vision (CV) and Image Understanding' is ready. Complete this task to earn certifications & coins!",
+    "notification_type": "exam",
+    "action_url": "/take-exam/51/",
+    "action_label": "Start Exam",
+    "recipient": null,
+    "is_global": true,
+    "created_at": "2026-10-27T15:35:14.837Z",
+    "read_by": []
+  }
+},
+{
+  "model": "students.notification",
+  "pk": 196,
+  "fields": {
+    "title": "⚠️ Exam Deadline Missed: Test Expired Exam",
+    "message": "You missed the deadline (27 Oct, 01:35 PM) for 'Test Expired Exam' in Computer Vision (CV) and Image Understanding. Your reputation dropped by 15 points, engagement decreased, and course completion for Computer Vision (CV) and Image Understanding is now BLOCKED.",
+    "notification_type": "exam",
+    "action_url": "/exams/",
+    "action_label": "View Exam Archive",
+    "recipient": [
+      "teststudent999"
+    ],
+    "is_global": true,
+    "created_at": "2026-10-27T15:35:14.865Z",
+    "read_by": []
+  }
+},
+{
   "model": "students.liveclass",
   "pk": 1,
   "fields": {
@@ -12321,6 +15395,15 @@
     "description": "Today we are discussing python array.",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-04T21:58:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-04T16:29:01.021Z"
   }
 },
@@ -12333,6 +15416,15 @@
     "description": "Today we are discussing about python array .",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-06T08:30:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-05T15:40:03.306Z"
   }
 },
@@ -12345,6 +15437,15 @@
     "description": "today we discussing sql injection",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-07T11:10:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-06T05:39:14.140Z"
   }
 },
@@ -12357,6 +15458,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-07T12:20:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-06T05:49:01.923Z"
   }
 },
@@ -12369,6 +15479,15 @@
     "description": "all student please join the class ..",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-10T09:31:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-09T03:50:19.736Z"
   }
 },
@@ -12381,6 +15500,15 @@
     "description": "today we are discussing about Python array",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-12T09:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-11T15:28:46.011Z"
   }
 },
@@ -12393,6 +15521,15 @@
     "description": "today we are discussing about oops concept .",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-16T10:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-15T04:20:18.508Z"
   }
 },
@@ -12405,6 +15542,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-15T10:59:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-15T04:22:07.275Z"
   }
 },
@@ -12417,6 +15563,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-19T09:10:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-18T03:40:40.357Z"
   }
 },
@@ -12429,6 +15584,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-20T10:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-18T03:41:30.083Z"
   }
 },
@@ -12441,6 +15605,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-02-20T09:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-02-18T03:42:24.278Z"
   }
 },
@@ -12453,6 +15626,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-03-12T10:30:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-03-05T15:43:39.287Z"
   }
 },
@@ -12465,6 +15647,15 @@
     "description": "Today we are discussing java inheritance . please join the class as per the time .",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-03-09T10:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-03-06T16:37:32.708Z"
   }
 },
@@ -12477,6 +15668,15 @@
     "description": "Dear student please join as the pin time in the particular class .",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-05-23T12:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-05-22T16:32:39.036Z"
   }
 },
@@ -12489,6 +15689,15 @@
     "description": "Dear student please join the class as the pin time .",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-06-25T19:30:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-05-25T14:05:40.556Z"
   }
 },
@@ -12501,6 +15710,15 @@
     "description": "Todays topic OOP in java.",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-06-26T11:30:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-05-25T14:08:45.522Z"
   }
 },
@@ -12513,6 +15731,15 @@
     "description": "",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-09-30T21:12:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-09-20T15:42:35.390Z"
   }
 },
@@ -12525,7 +15752,184 @@
     "description": "please join dear students .",
     "meeting_link": "https://meet.google.com/gzy-uakv-obj",
     "date_time": "2026-11-11T22:46:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
     "created_at": "2026-10-03T17:17:02.558Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 20,
+  "fields": {
+    "course": 33,
+    "title": "Linux First class",
+    "description": "Master the fundamentals of Linux with this comprehensive introductory course.",
+    "meeting_link": "https://meet.google.com/gzy-uakv-obj",
+    "date_time": "2026-10-29T06:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
+    "created_at": "2026-10-25T14:06:39.513Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 21,
+  "fields": {
+    "course": 19,
+    "title": "Deep Learning Foundations & Neural Architectures [LIVE BROADCAST]",
+    "description": "Master deep learning core mechanics: forward propagation, backprop gradient flows, loss landscapes, and practical PyTorch tensor pipelines.",
+    "meeting_link": "https://meet.google.com/gzy-uakv-obj",
+    "date_time": "2026-10-26T13:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Google Meet",
+    "instructor_name": "Dr. Alex Rivera",
+    "meeting_id": "842-192-301",
+    "passcode": "NEURAL2026",
+    "recording_url": null,
+    "resources_link": "https://github.com/example/dl-pytorch-starter",
+    "agenda": "• Feedforward & Convolutional Networks\n• Backpropagation Calculus Deep Dive\n• Live PyTorch Tensor Debugging\n• Real-Time Interactive Doubt Clearing",
+    "is_cancelled": false,
+    "created_at": "2026-10-25T14:32:36.401Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 22,
+  "fields": {
+    "course": 2,
+    "title": "Python Concurrency, Asyncio & Multithreading Masterclass",
+    "description": "Demystifying async event loops, coroutines, thread safety, and concurrency models in modern Python 3.12+.",
+    "meeting_link": "https://zoom.us/j/9128471203",
+    "date_time": "2026-10-27T05:30:00Z",
+    "duration_minutes": 75,
+    "platform": "Zoom",
+    "instructor_name": "Sarah Jenkins, Lead Architect",
+    "meeting_id": "912 847 1203",
+    "passcode": "ASYNC26",
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": "• Event Loops & Coroutines\n• Async HTTP Requests with Aiohttp\n• Race Conditions & GIL Internals\n• Hands-on Live Coding Demo",
+    "is_cancelled": false,
+    "created_at": "2026-10-25T14:32:36.438Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 23,
+  "fields": {
+    "course": 32,
+    "title": "Dynamic Programming & Graph Traversal (DFS/BFS) Live Workshop",
+    "description": "Break down top DP patterns, memoization vs tabulation, and solve complex graph traversal challenges step by step.",
+    "meeting_link": "https://youtube.com/live/demo-stream",
+    "date_time": "2026-10-27T11:00:00Z",
+    "duration_minutes": 90,
+    "platform": "YouTube Live",
+    "instructor_name": "Vikram Malhotra",
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": "• Memoization vs Tabulation\n• 0/1 Knapsack & Subset Sums\n• Dijkstra Shortest Path\n• Live Competitive Coding Problems",
+    "is_cancelled": false,
+    "created_at": "2026-10-25T14:32:36.447Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 24,
+  "fields": {
+    "course": 33,
+    "title": "Linux Kernel Internals, Daemons & Systemd Services",
+    "description": "Explore kernel rings, process lifecycle, signals, and deploy production-grade systemd daemon services.",
+    "meeting_link": "https://teams.microsoft.com/l/meetup-join/demo",
+    "date_time": "2026-10-28T08:30:00Z",
+    "duration_minutes": 60,
+    "platform": "Microsoft Teams",
+    "instructor_name": "Anubhav Sharma",
+    "meeting_id": "451-992-019",
+    "passcode": "LINUX26",
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": "• Process Scheduling & Forks\n• Writing Custom Systemd Units\n• IPC Signals & Pipes\n• Open Q&A Session",
+    "is_cancelled": false,
+    "created_at": "2026-10-25T14:32:36.457Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 25,
+  "fields": {
+    "course": 31,
+    "title": "Building Autonomous AI Agents with LangChain & Gemini Flash",
+    "description": "Hands-on architectural review of autonomous agent loops, memory vectors, tool calling, and structured outputs.",
+    "meeting_link": "https://meet.google.com/gzy-uakv-obj",
+    "date_time": "2026-10-27T14:15:00Z",
+    "duration_minutes": 60,
+    "platform": "Microsoft Teams",
+    "instructor_name": "Elena Rostova",
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "resources_link": "https://github.com/example/genai-agents-code",
+    "agenda": "• Agentic Loops vs Linear Prompts\n• Tool Execution Sandbox\n• Vector Database Embeddings\n• Complete Demo Code Walkthrough",
+    "is_cancelled": false,
+    "created_at": "2026-10-25T14:32:36.466Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 26,
+  "fields": {
+    "course": 36,
+    "title": "Faculty Special Masterclass on Deep Learning",
+    "description": null,
+    "meeting_link": "https://meet.google.com/xyz-abcd-efg",
+    "date_time": "2026-10-26T09:30:00Z",
+    "duration_minutes": 90,
+    "platform": "Google Meet",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
+    "created_at": "2026-10-25T16:32:54.862Z"
+  }
+},
+{
+  "model": "students.liveclass",
+  "pk": 27,
+  "fields": {
+    "course": 31,
+    "title": "Demystifying Neural Networks, GANs, and Diffusion Models",
+    "description": null,
+    "meeting_link": "https://teams.live.com/meet/9387750046077?p=tkKLnhwekRp1gbkTEm",
+    "date_time": "2026-10-27T05:00:00Z",
+    "duration_minutes": 60,
+    "platform": "Microsoft Teams",
+    "instructor_name": null,
+    "meeting_id": null,
+    "passcode": null,
+    "recording_url": null,
+    "resources_link": null,
+    "agenda": null,
+    "is_cancelled": false,
+    "created_at": "2026-10-27T04:21:19.965Z"
   }
 },
 {
@@ -12683,6 +16087,53 @@
   }
 },
 {
+  "model": "students.librarydocument",
+  "pk": 30,
+  "fields": {
+    "course": 31,
+    "title": "Generative_AI_Study_Introduction",
+    "category": "General",
+    "file": "library_docs/Generative_AI_Study_Introduction.pdf",
+    "uploaded_at": "2026-10-27T04:53:22.522Z",
+    "uploaded_by": [
+      "soumyadeep26"
+    ]
+  }
+},
+{
+  "model": "students.liveclassattendance",
+  "pk": 1,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "live_class": 25,
+    "joined_at": "2026-10-25T14:32:36.481Z"
+  }
+},
+{
+  "model": "students.liveclassattendance",
+  "pk": 2,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "live_class": 21,
+    "joined_at": "2026-10-25T14:33:36.243Z"
+  }
+},
+{
+  "model": "students.liveclassattendance",
+  "pk": 3,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "live_class": 22,
+    "joined_at": "2026-10-25T15:58:10.856Z"
+  }
+},
+{
   "model": "students.lessoncomment",
   "pk": 1,
   "fields": {
@@ -12752,6 +16203,7 @@
     "file": "",
     "due_date": "2026-05-15T21:37:00Z",
     "total_marks": 100,
+    "pass_marks": 40,
     "created_at": "2026-05-13T16:08:24.042Z"
   }
 },
@@ -12765,6 +16217,7 @@
     "file": "",
     "due_date": "2026-06-30T00:42:00Z",
     "total_marks": 100,
+    "pass_marks": 40,
     "created_at": "2026-05-31T18:11:43.082Z"
   }
 },
@@ -12778,6 +16231,7 @@
     "file": "assignments/briefs/Assignment_5.pdf",
     "due_date": "2026-10-15T23:59:00Z",
     "total_marks": 100,
+    "pass_marks": 40,
     "created_at": "2026-10-08T14:09:28.710Z"
   }
 },
@@ -12791,6 +16245,7 @@
     "file": "assignments/briefs/Python_Questions.pdf",
     "due_date": "2026-10-29T00:00:00Z",
     "total_marks": 100,
+    "pass_marks": 40,
     "created_at": "2026-10-08T14:28:58.499Z"
   }
 },
@@ -12804,6 +16259,7 @@
     "file": "assignments/briefs/linux_basics_questions.pdf",
     "due_date": "2026-10-20T23:58:00Z",
     "total_marks": 100,
+    "pass_marks": 40,
     "created_at": "2026-10-12T05:02:33.912Z"
   }
 },
@@ -12817,7 +16273,22 @@
     "file": "assignments/briefs/linux_basics_qa.pdf",
     "due_date": "2026-10-19T06:30:00Z",
     "total_marks": 100,
+    "pass_marks": 40,
     "created_at": "2026-10-12T07:08:15.699Z"
+  }
+},
+{
+  "model": "students.assignment",
+  "pk": 13,
+  "fields": {
+    "course": 31,
+    "title": "Generative_AI_QA_Bank",
+    "description": "A short preamble that connects the task directly to specific learning objectives or previous lectures.",
+    "file": "assignments/briefs/Generative_AI_QA_Bank.pdf",
+    "due_date": "2026-12-17T18:29:00Z",
+    "total_marks": 100,
+    "pass_marks": 40,
+    "created_at": "2026-10-27T04:59:16.188Z"
   }
 },
 {
@@ -12833,8 +16304,10 @@
     "submitted_at": "2026-10-08T06:12:52.174Z",
     "updated_at": "2026-10-08T14:29:53.053Z",
     "is_graded": true,
+    "is_passed": true,
     "marks_obtained": 80.0,
-    "feedback": "Excellent work, clean OOP architecture!"
+    "feedback": "Excellent work, clean OOP architecture!",
+    "graded_by": null
   }
 },
 {
@@ -12850,8 +16323,10 @@
     "submitted_at": "2026-10-08T13:51:58.182Z",
     "updated_at": "2026-10-12T05:10:26.036Z",
     "is_graded": true,
+    "is_passed": true,
     "marks_obtained": 5.0,
-    "feedback": "poor ."
+    "feedback": "poor .",
+    "graded_by": null
   }
 },
 {
@@ -12867,8 +16342,10 @@
     "submitted_at": "2026-10-12T05:03:50.114Z",
     "updated_at": "2026-10-12T05:05:30.998Z",
     "is_graded": true,
+    "is_passed": true,
     "marks_obtained": 98.0,
-    "feedback": "very good ."
+    "feedback": "very good .",
+    "graded_by": null
   }
 },
 {
@@ -12884,8 +16361,10 @@
     "submitted_at": "2026-10-12T05:09:37.184Z",
     "updated_at": "2026-10-12T05:10:48.197Z",
     "is_graded": true,
+    "is_passed": true,
     "marks_obtained": 85.0,
-    "feedback": "make improve."
+    "feedback": "make improve.",
+    "graded_by": null
   }
 },
 {
@@ -12901,8 +16380,50 @@
     "submitted_at": "2026-10-12T06:56:40.336Z",
     "updated_at": "2026-10-12T06:56:40.337Z",
     "is_graded": false,
+    "is_passed": true,
     "marks_obtained": null,
-    "feedback": null
+    "feedback": null,
+    "graded_by": null
+  }
+},
+{
+  "model": "students.assignmentsubmission",
+  "pk": 12,
+  "fields": {
+    "assignment": 12,
+    "student": [
+      "anubhav"
+    ],
+    "file": "",
+    "text_answer": "",
+    "submitted_at": "2026-10-27T06:21:58.938Z",
+    "updated_at": "2026-10-27T06:21:58.938Z",
+    "is_graded": false,
+    "is_passed": true,
+    "marks_obtained": null,
+    "feedback": null,
+    "graded_by": null
+  }
+},
+{
+  "model": "students.assignmentsubmission",
+  "pk": 13,
+  "fields": {
+    "assignment": 13,
+    "student": [
+      "anubhav"
+    ],
+    "file": "assignments/submissions/Generative_AI_QA_Bank.pdf",
+    "text_answer": "",
+    "submitted_at": "2026-10-27T13:44:57.554Z",
+    "updated_at": "2026-10-27T15:01:22.436Z",
+    "is_graded": true,
+    "is_passed": false,
+    "marks_obtained": 0.0,
+    "feedback": "",
+    "graded_by": [
+      "soumyadeep26"
+    ]
   }
 },
 {
@@ -15127,6 +18648,101 @@
   }
 },
 {
+  "model": "students.coursegroupmessage",
+  "pk": 124,
+  "fields": {
+    "course": 4,
+    "sender": [
+      "anubhav"
+    ],
+    "reply_to": null,
+    "text": "/ai",
+    "attachment": "",
+    "is_pinned": false,
+    "is_edited": false,
+    "bounty_amount": 0,
+    "is_bounty_resolved": false,
+    "bounty_winner": null,
+    "created_at": "2026-10-21T04:49:36.648Z"
+  }
+},
+{
+  "model": "students.coursegroupmessage",
+  "pk": 125,
+  "fields": {
+    "course": 4,
+    "sender": [
+      "ai_commander"
+    ],
+    "reply_to": 124,
+    "text": "🚀 Hello, I'm your AI Tech Assistant!\n\nI'm here to help you with coding, system architecture, debugging, and general tech questions. Whether you need a quick regex, an explanation of a design pattern, or help with a deployment strategy, I've got you covered.\n\n💡 **How I Work**:\n- Concise answers 📝\n- Code snippets when needed 💻\n- No fluff, just value 🎯\n\nWhat would you like to learn or solve today?",
+    "attachment": "",
+    "is_pinned": false,
+    "is_edited": false,
+    "bounty_amount": 0,
+    "is_bounty_resolved": false,
+    "bounty_winner": null,
+    "created_at": "2026-10-21T04:49:38.972Z"
+  }
+},
+{
+  "model": "students.coursegroupmessage",
+  "pk": 126,
+  "fields": {
+    "course": 4,
+    "sender": [
+      "anubhav"
+    ],
+    "reply_to": null,
+    "text": "/ai what is todays lesion",
+    "attachment": "",
+    "is_pinned": false,
+    "is_edited": true,
+    "bounty_amount": 0,
+    "is_bounty_resolved": false,
+    "bounty_winner": null,
+    "created_at": "2026-10-21T04:49:59.893Z"
+  }
+},
+{
+  "model": "students.coursegroupmessage",
+  "pk": 127,
+  "fields": {
+    "course": 4,
+    "sender": [
+      "anubhav"
+    ],
+    "reply_to": null,
+    "text": "/ai what is todays lesions ?",
+    "attachment": "",
+    "is_pinned": false,
+    "is_edited": false,
+    "bounty_amount": 0,
+    "is_bounty_resolved": false,
+    "bounty_winner": null,
+    "created_at": "2026-10-21T04:50:45.537Z"
+  }
+},
+{
+  "model": "students.coursegroupmessage",
+  "pk": 128,
+  "fields": {
+    "course": 4,
+    "sender": [
+      "ai_commander"
+    ],
+    "reply_to": 127,
+    "text": "It looks like there might be a typo in your question! 😅 I assume you meant **\"lessons\"** (to learn from) or perhaps you are asking about **\"LeetCode\"** daily problems?\n\nHere is how I can help with both:\n\n### If you meant **Daily Lessons** 💡\nSince I am an AI, I don't have a specific \"daily lesson plan\" like a human instructor. However, I can suggest a quick tech concept to review today:\n\n🚀 **Concept of the Day: Idempotency**\n*   **What it is:** A function or request that produces the same result no matter how many times you apply it.\n*   **Example:** Sending an HTTP `GET` request twice usually returns the same data. Sending a `POST` request twice might create two items (not idempotent).\n*   **Why it matters:** Ensures reliability in network calls and database transactions.\n\n### If you meant **LeetCode/Daily Coding Problems** 💻\nI don't have real-time access to today's specific LeetCode problem of the day, but I can give you a classic **Medium** difficulty problem to practice:\n\n**Problem: Two Sum**\n*   **Task:** Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n*   **Hint:** Use a Hash Map to store numbers you have seen and check if `target - currentNumber` exists in the map.\n*   **Time Complexity:** O(n)\n\nWould you like a code explanation for one of these? 🤖",
+    "attachment": "",
+    "is_pinned": false,
+    "is_edited": false,
+    "bounty_amount": 0,
+    "is_bounty_resolved": false,
+    "bounty_winner": null,
+    "created_at": "2026-10-21T04:50:47.749Z"
+  }
+},
+{
   "model": "students.messagereaction",
   "pk": 1,
   "fields": {
@@ -16678,6 +20294,82 @@
   }
 },
 {
+  "model": "students.dynamicbountyproblem",
+  "pk": 70,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "course": 2,
+    "language": "python",
+    "topic": "Sorting",
+    "difficulty": "Hard",
+    "title": "Frequency Sort",
+    "description": "**Problem Statement**\nGiven an integer array arr, sort the array so that numbers with higher frequency come first. If two numbers have the same frequency, the smaller number comes first. Return the sorted array.\n\n**Example 1**\nInput: arr = [1,1,2,2,2,3]\nOutput: [2,2,2,1,1,3]\nExplanation: Frequency of 2 is 3, 1 is 2, 3 is 1.\n\n**Example 2**\nInput: arr = [2,3,1,3,2]\nOutput: [2,2,3,3,1]\nExplanation: 2 and 3 both appear twice, 2 < 3 so 2 comes first.\n\n**Constraints**\n- 1 <= len(arr) <= 10^5\n- -10^9 <= arr[i] <= 10^9\n- Expected time complexity: O(n log n)\n- Expected auxiliary space: O(n)",
+    "base_code": "def solve(arr):\n    # Write your logic here\n    pass",
+    "base_bounty_coins": 100,
+    "is_solved": true,
+    "created_at": "2026-10-20T06:38:52.315Z"
+  }
+},
+{
+  "model": "students.dynamicbountyproblem",
+  "pk": 71,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "course": 32,
+    "language": "python",
+    "topic": "Arrays",
+    "difficulty": "Easy",
+    "title": "Maximum Pair Product",
+    "description": "## Problem Statement\nGiven an integer array `arr`, return the maximum product of any two distinct elements.\n\n## Example 1\n**Input:** `arr = [3, 5, -2, 9]`\n**Output:** `45`\n**Explanation:** The maximum product is `5 * 9 = 45`.\n\n## Example 2\n**Input:** `arr = [-1, -3, -4, 2]`\n**Output:** `12`\n**Explanation:** The maximum product is `-3 * -4 = 12`.\n\n## Constraints\n- `2 <= len(arr) <= 10^5`\n- `-10^4 <= arr[i] <= 10^4`\n- Expected time complexity: `O(n)`\n- Expected auxiliary space: `O(1)`",
+    "base_code": "def solve(arr):\n    # Write your logic here\n    pass",
+    "base_bounty_coins": 10,
+    "is_solved": true,
+    "created_at": "2026-10-24T06:14:27.893Z"
+  }
+},
+{
+  "model": "students.dynamicbountyproblem",
+  "pk": 72,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "course": 29,
+    "language": "dbms",
+    "topic": "table",
+    "difficulty": "Medium",
+    "title": "Employees with Salary Above Department Average",
+    "description": "**Problem Statement**\nGiven a table `Employee` with columns `id`, `name`, `salary`, and `department_id`, write an SQL query to find the names of employees whose salary is strictly greater than the average salary of their department. Return the result ordered by `id` ascending.\n\n**Example 1**\n```sql\nEmployee\n+----+--------+--------+---------------+\n| id | name   | salary | department_id |\n+----+--------+--------+---------------+\n| 1  | Alice  | 70000  | 1             |\n| 2  | Bob    | 60000  | 1             |\n| 3  | Carol  | 80000  | 2             |\n| 4  | Dave   | 50000  | 2             |\n+----+--------+--------+---------------+\n```\n**Output**\n```sql\n+------+\n| name |\n+------+\n| Alice|\n| Carol|\n+------+\n```\n\n**Example 2**\n```sql\nEmployee\n+----+--------+--------+---------------+\n| id | name   | salary | department_id |\n+----+--------+--------+---------------+\n| 1  | Eve    | 90000  | 3             |\n| 2  | Frank  | 90000  | 3             |\n| 3  | Grace  | 70000  | 3             |\n+----+--------+--------+---------------+\n```\n**Output**\n```sql\n+------+\n| name |\n+------+\n| Eve  |\n| Frank|\n+------+\n```\n\n**Constraints**\n- `1 <= number of rows in Employee <= 10^5`\n- `0 <= salary <= 10^9`\n- The query must run in O(N) time relative to the number of rows.",
+    "base_code": "def solve():\n    # Write your SQL query here\n    pass",
+    "base_bounty_coins": 30,
+    "is_solved": true,
+    "created_at": "2026-10-24T15:02:44.930Z"
+  }
+},
+{
+  "model": "students.dynamicbountyproblem",
+  "pk": 73,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "course": 20,
+    "language": "dbms",
+    "topic": "insert",
+    "difficulty": "Hard",
+    "title": "Bulk Insert with Manager Constraints",
+    "description": "**Problem Statement**\nYou are given an initially empty table `Employees(id INT PRIMARY KEY, name VARCHAR(100), salary INT, manager_id INT)`. You will receive a list of `n` insert operations. Each operation is a tuple `(id, name, salary, manager_id)`. For each operation, insert the row only if all of the following hold:\n1. `id` does not already exist in the table.\n2. `manager_id` is either `NULL` or refers to an existing `id` already present.\n3. `salary` is greater than the salary of the manager (if a manager exists).\n\nReturn the number of successful insertions after processing all operations in order.\n\n**Example 1**\n```\nInput: ops = [(1, 'Alice', 5000, NULL), (2, 'Bob', 6000, 1), (3, 'Charlie', 5500, 1)]\nOutput: 3\n```\n\n**Example 2**\n```\nInput: ops = [(1, 'Dave', 7000, NULL), (2, 'Eve', 6500, 1), (3, 'Frank', 8000, 2), (4, 'Grace', 7500, 2)]\nOutput: 3\n```\n\n**Constraints**\n- 1 ≤ n ≤ 10^5\n- 1 ≤ id ≤ 10^9\n- 1 ≤ salary ≤ 10^9\n- Time limit: 2 seconds\n- Memory limit: 256 MB",
+    "base_code": "def solve(arr):\n    # Write your logic here\n    pass",
+    "base_bounty_coins": 100,
+    "is_solved": true,
+    "created_at": "2026-10-24T15:05:32.679Z"
+  }
+},
+{
   "model": "students.bountysubmission",
   "pk": 1,
   "fields": {
@@ -17729,6 +21421,74 @@
     "earned_coins": 30,
     "multiplier_applied": 1.0,
     "submitted_at": "2026-10-10T14:20:50.362Z"
+  }
+},
+{
+  "model": "students.bountysubmission",
+  "pk": 63,
+  "fields": {
+    "problem": 70,
+    "student": [
+      "anubhav"
+    ],
+    "submitted_code": "from collections import Counter\r\n\r\ndef frequencySort(arr):\r\n    freq = Counter(arr)\r\n\r\n    arr.sort(key=lambda x: (-freq[x], x))\r\n\r\n    return arr\r\n\r\n\r\n# Example 1\r\narr = [1, 1, 2, 2, 2, 3]\r\nprint(frequencySort(arr))\r\n\r\n# Example 2\r\narr = [2, 3, 1, 3, 2]\r\nprint(frequencySort(arr))\r\n",
+    "status": "AI Accepted",
+    "execution_time": null,
+    "attempt_number": 1,
+    "earned_coins": 100,
+    "multiplier_applied": 1.0,
+    "submitted_at": "2026-10-20T06:39:49.978Z"
+  }
+},
+{
+  "model": "students.bountysubmission",
+  "pk": 64,
+  "fields": {
+    "problem": 71,
+    "student": [
+      "anubhav"
+    ],
+    "submitted_code": "def max_pair_product(arr):\r\n    max1 = max2 = float('-inf')\r\n    min1 = min2 = float('inf')\r\n\r\n    for num in arr:\r\n        if num > max1:\r\n            max2 = max1\r\n            max1 = num\r\n        elif num > max2:\r\n            max2 = num\r\n\r\n        if num < min1:\r\n            min2 = min1\r\n            min1 = num\r\n        elif num < min2:\r\n            min2 = num\r\n\r\n    return max(max1 * max2, min1 * min2)\r\n\r\n\r\n# Example 1\r\narr = [3, 5, -2, 9]\r\nprint(max_pair_product(arr))  # Output: 45\r\n\r\n# Example 2\r\narr = [-1, -3, -4, 2]\r\nprint(max_pair_product(arr))  # Output: 12",
+    "status": "AI Accepted",
+    "execution_time": null,
+    "attempt_number": 1,
+    "earned_coins": 10,
+    "multiplier_applied": 1.0,
+    "submitted_at": "2026-10-24T06:15:35.293Z"
+  }
+},
+{
+  "model": "students.bountysubmission",
+  "pk": 65,
+  "fields": {
+    "problem": 72,
+    "student": [
+      "anubhav"
+    ],
+    "submitted_code": "SELECT name\r\nFROM Employee e\r\nWHERE salary > (\r\n    SELECT AVG(salary)\r\n    FROM Employee\r\n    WHERE department_id = e.department_id\r\n)\r\nORDER BY id ASC;",
+    "status": "AI Accepted",
+    "execution_time": null,
+    "attempt_number": 1,
+    "earned_coins": 30,
+    "multiplier_applied": 1.0,
+    "submitted_at": "2026-10-24T15:03:47.723Z"
+  }
+},
+{
+  "model": "students.bountysubmission",
+  "pk": 66,
+  "fields": {
+    "problem": 73,
+    "student": [
+      "anubhav"
+    ],
+    "submitted_code": "def count_successful_insertions(ops):\r\n    employees = {}\r\n    count = 0\r\n\r\n    for emp_id, name, salary, manager_id in ops:\r\n        if emp_id in employees:\r\n            continue\r\n\r\n        if manager_id is not None:\r\n            if manager_id not in employees:\r\n                continue\r\n\r\n            if salary <= employees[manager_id][1]:\r\n                continue\r\n\r\n        employees[emp_id] = (name, salary)\r\n        count += 1\r\n\r\n    return count",
+    "status": "AI Accepted",
+    "execution_time": null,
+    "attempt_number": 1,
+    "earned_coins": 100,
+    "multiplier_applied": 1.0,
+    "submitted_at": "2026-10-24T15:06:14.979Z"
   }
 },
 {
@@ -19001,7 +22761,7 @@
     "description": "abhishek25@gmail.com logged in successfully",
     "course": null,
     "metadata": {},
-    "created_at": "2026-10-10T14:01:09.000Z"
+    "created_at": "2026-10-10T14:01:09Z"
   }
 },
 {
@@ -19414,6 +23174,822 @@
   }
 },
 {
+  "model": "students.studentactivity",
+  "pk": 133,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-18T04:27:23.033Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 134,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-18T04:52:47.831Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 135,
+  "fields": {
+    "student": [
+      "anubhav7"
+    ],
+    "activity_type": "profile_update",
+    "description": "Student profile completed (Intermediate, Science)",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-18T04:53:43.386Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 137,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-20T04:10:56.181Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 138,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-20T06:33:04.178Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 139,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-21T04:49:12.761Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 140,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-22T05:04:32.962Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 141,
+  "fields": {
+    "student": [
+      "student"
+    ],
+    "activity_type": "register",
+    "description": "Account registered for student (ID: #893437)",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-22T05:23:35.201Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 142,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-22T13:10:53.438Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 143,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-24T04:22:54.603Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 144,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-24T13:27:28.478Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 145,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-24T13:52:42.214Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 146,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-24T13:53:05.397Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 147,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-24T14:01:43.201Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 148,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-25T04:24:59.933Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 149,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-25T04:24:59.941Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 150,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-25T13:38:21.845Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 151,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Joined live class \"Deep Learning Foundations & Neural Architectures [LIVE BROADCAST]\" (Google Meet)",
+    "course": 19,
+    "metadata": {},
+    "created_at": "2026-10-25T14:33:36.280Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 152,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Joined live class \"Deep Learning Foundations & Neural Architectures [LIVE BROADCAST]\" (Google Meet)",
+    "course": 19,
+    "metadata": {},
+    "created_at": "2026-10-25T14:39:27.434Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 154,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-25T15:32:27.155Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 155,
+  "fields": {
+    "student": [
+      "teststudent999"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-25T15:50:58.677Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 156,
+  "fields": {
+    "student": [
+      "teststudent999"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in Python",
+    "course": 2,
+    "metadata": {
+      "txn_id": "TXN261025B551C9E2",
+      "method": "net",
+      "amount": "599.00"
+    },
+    "created_at": "2026-10-25T15:54:10.450Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 157,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Joined live class \"Python Concurrency, Asyncio & Multithreading Masterclass\" (Zoom)",
+    "course": 2,
+    "metadata": {},
+    "created_at": "2026-10-25T15:58:10.862Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 158,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-26T04:24:58.254Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 159,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T04:24:58.262Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 160,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-26T04:43:10.646Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 161,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "login",
+    "description": "ravikisan2003@gmail.com logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T04:43:10.652Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 162,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "profile_update",
+    "description": "Student profile completed (Intermediate, BCA)",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T04:43:26.726Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 163,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in Generative Ai",
+    "course": 31,
+    "metadata": {
+      "txn_id": "TXN261026B879082A",
+      "method": "upi",
+      "amount": "999.01"
+    },
+    "created_at": "2026-10-26T04:43:39.231Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 164,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in TypeScript",
+    "course": 28,
+    "metadata": {
+      "txn_id": "TXN26102641940B39",
+      "method": "net",
+      "amount": "399.00"
+    },
+    "created_at": "2026-10-26T04:44:03.322Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 165,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in AngularJS",
+    "course": 25,
+    "metadata": {
+      "txn_id": "TXN261026537B1229",
+      "method": "upi",
+      "amount": "399.00"
+    },
+    "created_at": "2026-10-26T04:44:22.668Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 166,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in DBMS",
+    "course": 23,
+    "metadata": {
+      "txn_id": "TXN261026D5E81E2F",
+      "method": "upi",
+      "amount": "300.00"
+    },
+    "created_at": "2026-10-26T04:44:42.332Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 167,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-26T04:45:13.025Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 168,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "activity_type": "login",
+    "description": "elon26@gmail.com logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T04:45:13.032Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 169,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "activity_type": "profile_update",
+    "description": "Student profile completed (Intermediate, Computer Science)",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T04:45:22.960Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 170,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in Java Script",
+    "course": 17,
+    "metadata": {
+      "txn_id": "TXN261026FC2C2C47",
+      "method": "upi",
+      "amount": "100.00"
+    },
+    "created_at": "2026-10-26T04:45:41.655Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 171,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in Prompt Engineering",
+    "course": 11,
+    "metadata": {
+      "txn_id": "TXN26102628DC61D1",
+      "method": "upi",
+      "amount": "150.00"
+    },
+    "created_at": "2026-10-26T04:46:11.530Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 172,
+  "fields": {
+    "student": [
+      "Rohit"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-26T05:00:06.601Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 173,
+  "fields": {
+    "student": [
+      "Rohit"
+    ],
+    "activity_type": "login",
+    "description": "Rohit logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T05:00:06.606Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 174,
+  "fields": {
+    "student": [
+      "Rohit"
+    ],
+    "activity_type": "profile_update",
+    "description": "Student profile completed (Beginner, BCA)",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T05:00:14.065Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 175,
+  "fields": {
+    "student": [
+      "Rohit"
+    ],
+    "activity_type": "course_enroll",
+    "description": "Paid and enrolled in Computer Vision (CV) and Image Understanding",
+    "course": 36,
+    "metadata": {
+      "txn_id": "TXN2610269151C67B",
+      "method": "upi",
+      "amount": "1200.00"
+    },
+    "created_at": "2026-10-26T05:00:24.533Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 176,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T05:03:53.290Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 177,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"method\" for Java",
+    "course": 4,
+    "metadata": {},
+    "created_at": "2026-10-26T05:27:28.933Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 178,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-26T15:12:12.628Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 179,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "Daily learning session active",
+    "course": null,
+    "metadata": {
+      "auto_daily_session": true
+    },
+    "created_at": "2026-10-27T04:02:11.715Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 180,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-27T04:02:11.722Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 181,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"installation\" for Linux",
+    "course": 33,
+    "metadata": {},
+    "created_at": "2026-10-27T05:09:40.202Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 182,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-27T05:20:25.830Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 183,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"installation\" for Linux",
+    "course": 33,
+    "metadata": {},
+    "created_at": "2026-10-27T05:57:24.471Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 184,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"Generative_AI_QA_Bank\" for Generative Ai",
+    "course": 31,
+    "metadata": {},
+    "created_at": "2026-10-27T06:00:30.066Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 185,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"installation\" for Linux",
+    "course": 33,
+    "metadata": {},
+    "created_at": "2026-10-27T06:21:58.960Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 186,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"String\" for Python",
+    "course": 2,
+    "metadata": {},
+    "created_at": "2026-10-27T06:35:27.270Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 187,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "login",
+    "description": "anubhav logged in successfully",
+    "course": null,
+    "metadata": {},
+    "created_at": "2026-10-27T13:40:56.846Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 188,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Submitted assignment: \"Generative_AI_QA_Bank\" for Generative Ai",
+    "course": 31,
+    "metadata": {},
+    "created_at": "2026-10-27T13:44:57.584Z"
+  }
+},
+{
+  "model": "students.studentactivity",
+  "pk": 189,
+  "fields": {
+    "student": [
+      "anubhav"
+    ],
+    "activity_type": "lesson_watch",
+    "description": "Joined live class \"Building Autonomous AI Agents with LangChain & Gemini Flash\" (Microsoft Teams)",
+    "course": 31,
+    "metadata": {},
+    "created_at": "2026-10-27T14:14:33.266Z"
+  }
+},
+{
   "model": "students.payment",
   "pk": 1,
   "fields": {
@@ -19624,6 +24200,174 @@
   }
 },
 {
+  "model": "students.payment",
+  "pk": 13,
+  "fields": {
+    "student": [
+      "teststudent999"
+    ],
+    "course": 2,
+    "txn_id": "TXN261025B551C9E2",
+    "method": "net",
+    "provider": "state",
+    "instrument": "State Bank of India",
+    "original_amount": "599.00",
+    "discount_amount": "0.00",
+    "amount_paid": "599.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-25T15:54:10.436Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 14,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 31,
+    "txn_id": "TXN261026B879082A",
+    "method": "upi",
+    "provider": "gpay",
+    "instrument": "",
+    "original_amount": "999.01",
+    "discount_amount": "0.00",
+    "amount_paid": "999.01",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T04:43:39.194Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 15,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 28,
+    "txn_id": "TXN26102641940B39",
+    "method": "net",
+    "provider": "state",
+    "instrument": "State Bank of India",
+    "original_amount": "399.00",
+    "discount_amount": "0.00",
+    "amount_paid": "399.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T04:44:03.291Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 16,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 25,
+    "txn_id": "TXN261026537B1229",
+    "method": "upi",
+    "provider": "bhim",
+    "instrument": "",
+    "original_amount": "399.00",
+    "discount_amount": "0.00",
+    "amount_paid": "399.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T04:44:22.656Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 17,
+  "fields": {
+    "student": [
+      "ravikisan2003@gmail.com"
+    ],
+    "course": 23,
+    "txn_id": "TXN261026D5E81E2F",
+    "method": "upi",
+    "provider": "paytm",
+    "instrument": "",
+    "original_amount": "300.00",
+    "discount_amount": "0.00",
+    "amount_paid": "300.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T04:44:42.294Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 18,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "course": 17,
+    "txn_id": "TXN261026FC2C2C47",
+    "method": "upi",
+    "provider": "paytm",
+    "instrument": "",
+    "original_amount": "100.00",
+    "discount_amount": "0.00",
+    "amount_paid": "100.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T04:45:41.614Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 19,
+  "fields": {
+    "student": [
+      "elon26@gmail.com"
+    ],
+    "course": 11,
+    "txn_id": "TXN26102628DC61D1",
+    "method": "upi",
+    "provider": "paytm",
+    "instrument": "",
+    "original_amount": "150.00",
+    "discount_amount": "0.00",
+    "amount_paid": "150.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T04:46:11.492Z"
+  }
+},
+{
+  "model": "students.payment",
+  "pk": 20,
+  "fields": {
+    "student": [
+      "Rohit"
+    ],
+    "course": 36,
+    "txn_id": "TXN2610269151C67B",
+    "method": "upi",
+    "provider": "paytm",
+    "instrument": "",
+    "original_amount": "1200.00",
+    "discount_amount": "0.00",
+    "amount_paid": "1200.00",
+    "coins_spent": 0,
+    "coupon": null,
+    "status": "success",
+    "created_at": "2026-10-26T05:00:24.498Z"
+  }
+},
+{
   "model": "students.supportticket",
   "pk": 1,
   "fields": {
@@ -19813,6 +24557,327 @@
   }
 },
 {
+  "model": "students.supportticket",
+  "pk": 12,
+  "fields": {
+    "ticket_number": "TKT-915654",
+    "student": [
+      "anubhav"
+    ],
+    "name": "Anubhav Samanta",
+    "email": "anubhavsamanta2025@gmail.com",
+    "phone": "9593428470",
+    "student_id_code": "231995",
+    "source": "student_profile",
+    "category": "general_query",
+    "priority": "urgent",
+    "subject": "Course enroll issue .",
+    "message": "i paid the gen ai course . but it not visible in my dashboard . please fixed this error  eminently .",
+    "status": "resolved",
+    "admin_reply": "Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that everything is working as expected.\n\nBest regards,\nAdministration Team",
+    "replied_by": [
+      "avik"
+    ],
+    "replied_at": "2026-10-22T14:31:39.020Z",
+    "created_at": "2026-10-22T05:47:29.453Z",
+    "updated_at": "2026-10-22T14:31:39.020Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 1,
+  "fields": {
+    "ticket": 12,
+    "sender": [
+      "anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": false,
+    "message": "i paid the gen ai course . but it not visible in my dashboard . please fixed this error  eminently .",
+    "created_at": "2026-10-22T13:25:57.813Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 2,
+  "fields": {
+    "ticket": 12,
+    "sender": [
+      "avik"
+    ],
+    "sender_name": "Avik Kulavi",
+    "is_admin": true,
+    "message": "Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that everything is working as expected.\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-22T13:25:57.824Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 3,
+  "fields": {
+    "ticket": 11,
+    "sender": [
+      "anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": false,
+    "message": "i forget my password please reset this .",
+    "created_at": "2026-10-22T13:25:57.834Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 4,
+  "fields": {
+    "ticket": 11,
+    "sender": [
+      "Anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": true,
+    "message": "Hello Anubhav,\n\nWe have verified your account details. Your temporary credentials have been generated:\nTemporary Password: 12345678\n\nPlease sign in with your email/phone and immediately change your password in your Profile Settings.\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-22T13:25:57.846Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 5,
+  "fields": {
+    "ticket": 10,
+    "sender": [
+      "anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": false,
+    "message": "i complete my python course and also attemt the quiz . and solve the coding . but i can not get my lms coins , please fixed my problem as per the time . adn give me lms coins .",
+    "created_at": "2026-10-22T13:25:57.855Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 6,
+  "fields": {
+    "ticket": 10,
+    "sender": [
+      "avik"
+    ],
+    "sender_name": "Avik Kulavi",
+    "is_admin": true,
+    "message": "Hello Anubhav,\n\nOur system administration team is currently investigating this issue. We will update you with a complete resolution shortly.\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-22T13:25:57.866Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 7,
+  "fields": {
+    "ticket": 7,
+    "sender": [
+      "guddupandit25@gmail.com"
+    ],
+    "sender_name": "Munna Tripathi",
+    "is_admin": false,
+    "message": "My student ID is not working on the new portal login page.",
+    "created_at": "2026-10-22T13:25:57.877Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 8,
+  "fields": {
+    "ticket": 7,
+    "sender": [
+      "Anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": true,
+    "message": "ok",
+    "created_at": "2026-10-22T13:25:57.885Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 9,
+  "fields": {
+    "ticket": 6,
+    "sender": [
+      "guddupandit25@gmail.com"
+    ],
+    "sender_name": "Guddu Pandit",
+    "is_admin": false,
+    "message": "Hello admins, I cannot login with my password on my tablet. Please reset it.",
+    "created_at": "2026-10-22T13:25:57.896Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 10,
+  "fields": {
+    "ticket": 6,
+    "sender": [
+      "abhishek23_at_gmail.com"
+    ],
+    "sender_name": "Abhishek Chowdhury",
+    "is_admin": true,
+    "message": "Hello, your password has been reset to TempPassword123! Please change it after login.",
+    "created_at": "2026-10-22T13:25:57.909Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 11,
+  "fields": {
+    "ticket": 4,
+    "sender": [
+      "guddupandit25@gmail.com"
+    ],
+    "sender_name": "Guddu Pandit",
+    "is_admin": false,
+    "message": "Hello admins, I cannot login with my password on my tablet. Please reset it.",
+    "created_at": "2026-10-22T13:25:57.923Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 12,
+  "fields": {
+    "ticket": 4,
+    "sender": [
+      "Anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": true,
+    "message": "Hello Guddu,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and let us know if you need any further assistance!\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-22T13:25:57.937Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 13,
+  "fields": {
+    "ticket": 2,
+    "sender": [
+      "munna2005@gmail.com"
+    ],
+    "sender_name": "Munna Bhaiya",
+    "is_admin": false,
+    "message": "Dear support team  . I am trying to login my account for a time but i am unable to do this . so can you please reslove my probelm .",
+    "created_at": "2026-10-22T13:25:57.948Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 14,
+  "fields": {
+    "ticket": 2,
+    "sender": [
+      "Anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": true,
+    "message": "Hello Munna,\n\nWe have verified your account details. Your temporary credentials have been generated:\nTemporary Password: TempPass6624!\n\nPlease sign in with your email/phone and immediately change your password in your Profile Settings.\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-22T13:25:57.958Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 15,
+  "fields": {
+    "ticket": 1,
+    "sender": [
+      "munna2005@gmail.com"
+    ],
+    "sender_name": "Munna Bhaiya",
+    "is_admin": false,
+    "message": "hello my dear admin sir . \n         I am phasing a huge porblem . i forget my password . can you please reset my password .",
+    "created_at": "2026-10-22T13:25:57.967Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 16,
+  "fields": {
+    "ticket": 1,
+    "sender": [
+      "Anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": true,
+    "message": "we are solved your problem . tour new password is \n12345678",
+    "created_at": "2026-10-22T13:25:57.977Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 17,
+  "fields": {
+    "ticket": 12,
+    "sender": [
+      "anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": false,
+    "message": "Hello Admin, my 6-digit ID is 123456 and phone number is 9876543210.",
+    "created_at": "2026-10-22T13:49:02.210Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 18,
+  "fields": {
+    "ticket": 12,
+    "sender": [
+      "avik"
+    ],
+    "sender_name": "Avik Kulavi",
+    "is_admin": true,
+    "message": "Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that everything is working as expected.\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-22T14:31:39.031Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 19,
+  "fields": {
+    "ticket": 10,
+    "sender": [
+      "avik"
+    ],
+    "sender_name": "Avik Kulavi",
+    "is_admin": true,
+    "message": "ok",
+    "created_at": "2026-10-24T14:05:08.276Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 20,
+  "fields": {
+    "ticket": 10,
+    "sender": [
+      "anubhav"
+    ],
+    "sender_name": "Anubhav Samanta",
+    "is_admin": false,
+    "message": "please fixed .",
+    "created_at": "2026-10-24T14:06:16.966Z"
+  }
+},
+{
+  "model": "students.supportticketmessage",
+  "pk": 21,
+  "fields": {
+    "ticket": 10,
+    "sender": [
+      "avik"
+    ],
+    "sender_name": "Avik Kulavi",
+    "is_admin": true,
+    "message": "Hello Anubhav,\n\nThis issue has been thoroughly resolved on your account. Please refresh your portal and verify that everything is working as expected.\n\nBest regards,\nAdministration Team",
+    "created_at": "2026-10-24T14:08:42.041Z"
+  }
+},
+{
   "model": "account.emailaddress",
   "pk": 2,
   "fields": {
@@ -19833,6 +24898,18 @@
     ],
     "email": "abhichowdhury003@gmail.com",
     "verified": true,
+    "primary": true
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "teststudent999"
+    ],
+    "email": "teststudent999@gmail.com",
+    "verified": false,
     "primary": true
   }
 },

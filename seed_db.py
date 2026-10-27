@@ -38,17 +38,19 @@ def reset_postgres_sequences():
             print(f"[WARN] Sequence reset for {app_name}: {e}")
 
 def seed():
-    force = '--force' in sys.argv
+    force = '--force' in sys.argv or os.getenv('FORCE_SEED', '').lower() in ('1', 'true', 'yes')
+    faculty_count = User.objects.filter(is_faculty=True).count()
     has_courses = Course.objects.exists()
     has_users = User.objects.filter(is_superuser=True).exists()
 
-    if (has_courses or has_users) and not force:
-        print("[SAFEGUARD] Database already contains active courses/users.")
-        print("[SAFEGUARD] Skipping loaddata to protect live user data from being overwritten or deleted!")
+    # If already populated with full faculty data and courses, skip unless forced
+    if faculty_count >= 10 and (has_courses or has_users) and not force:
+        print(f"[SAFEGUARD] Database already contains active faculty ({faculty_count}) and courses.")
+        print("[SAFEGUARD] Skipping loaddata. Use --force or FORCE_SEED=1 to re-sync.")
         reset_postgres_sequences()
         return
 
-    print("[INFO] Fresh database detected. Seeding initial data from mydata.json...")
+    print(f"[INFO] Seeding / synchronizing database from mydata.json (faculty count: {faculty_count}, force: {force})...")
     try:
         call_command('loaddata', 'mydata.json')
         print("[SUCCESS] Initial fixtures successfully loaded!")

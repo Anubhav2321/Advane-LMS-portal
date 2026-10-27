@@ -6,7 +6,15 @@ pip install -r requirements.txt
 
 python manage.py collectstatic --no-input
 python manage.py migrate
-python seed_db.py
+
+# Sync repository media files (avatars, thumbnails, docs) into persistent disk if configured
+if [ -n "$PERSISTENT_DATA_DIR" ]; then
+    echo "[INFO] Syncing repository media files to persistent storage: $PERSISTENT_DATA_DIR/media"
+    mkdir -p "$PERSISTENT_DATA_DIR/media"
+    cp -rn media/* "$PERSISTENT_DATA_DIR/media/" 2>/dev/null || true
+fi
+
+python seed_db.py --force
 
 # --- AUTO-CONFIGURE SITE DOMAIN FOR GOOGLE OAUTH ---
 # Sets the Django Site record to match the Render hostname so 
