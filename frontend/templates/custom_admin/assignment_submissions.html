@@ -366,6 +366,20 @@
         border: 1px solid rgba(108, 99, 255, 0.4);
     }
 
+    .graded-badge-pill.pass {
+        background: rgba(16, 185, 129, 0.18);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.45);
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .graded-badge-pill.fail {
+        background: rgba(239, 68, 68, 0.18);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+    }
+
     .graded-badge-pill.pending {
         background: rgba(255, 183, 77, 0.15);
         color: var(--accent-amber);
@@ -466,6 +480,16 @@
         margin-bottom: 14px;
     }
 
+    .current-eval-recap.pass {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .current-eval-recap.fail {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+        border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
     .eval-head-row {
         display: flex;
         justify-content: space-between;
@@ -478,6 +502,29 @@
         font-size: 1.1rem;
         font-weight: 800;
         color: var(--accent-amber);
+    }
+
+    .eval-status-badge {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.74rem;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .eval-status-badge.pass {
+        background: rgba(16, 185, 129, 0.22);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.5);
+    }
+
+    .eval-status-badge.fail {
+        background: rgba(239, 68, 68, 0.22);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.5);
     }
 
     .eval-feedback-quote {
@@ -498,9 +545,60 @@
 
     .grading-form-grid {
         display: grid;
-        grid-template-columns: 180px 1fr auto;
+        grid-template-columns: 140px 180px 1fr auto;
         gap: 14px;
         align-items: flex-end;
+    }
+
+    .passfail-toggle-group {
+        display: flex;
+        gap: 6px;
+        background: rgba(8, 12, 24, 0.85);
+        padding: 4px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-border);
+    }
+
+    .btn-pf-toggle {
+        flex: 1;
+        padding: 7px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid transparent;
+        background: transparent;
+        color: #64748b;
+        user-select: none;
+    }
+
+    .btn-pf-toggle.pass:hover {
+        color: #34d399;
+        background: rgba(16, 185, 129, 0.1);
+    }
+
+    .btn-pf-toggle.fail:hover {
+        color: #f87171;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    .btn-pf-toggle.pass.active {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.18));
+        border: 1.5px solid #10b981;
+        color: #34d399;
+        box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-pf-toggle.fail.active {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.18));
+        border: 1.5px solid #ef4444;
+        color: #f87171;
+        box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
     }
 
     .grade-label {
@@ -587,10 +685,23 @@
 
     <!-- TOP NAVIGATION BAR -->
     <div class="top-nav-bar">
+        {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}
+        <a href="{% url 'faculty_dashboard' %}#tab-assignments" class="btn-back-link">
+            <i class="fas fa-arrow-left"></i> Back to Faculty Dashboard
+        </a>
+        <div class="breadcrumb-trail">
+            <a href="{% url 'faculty_dashboard' %}">Faculty Console</a>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            <a href="{% url 'faculty_dashboard' %}#tab-assignments">Assignments</a>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            <span>{{ course.title }}</span>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            <span style="color:#fff; font-weight:700;">{{ assignment.title }}</span>
+        </div>
+        {% else %}
         <a href="{% url 'admin_assignment_list' %}" class="btn-back-link">
             <i class="fas fa-arrow-left"></i> Back to Assignments List
         </a>
-
         <div class="breadcrumb-trail">
             <a href="{% url 'admin_dashboard' %}">Admin</a>
             <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
@@ -600,6 +711,7 @@
             <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
             <span style="color:#fff; font-weight:700;">{{ assignment.title }}</span>
         </div>
+        {% endif %}
     </div>
 
     <!-- ASSIGNMENT OVERVIEW HEADER CARD -->
@@ -617,7 +729,7 @@
                         <i class="fas fa-award"></i> Total Marks: <strong>{{ assignment.total_marks }}</strong>
                     </span>
                     <span class="meta-badge-item">
-                        <i class="far fa-clock"></i> Due Date: <strong>{{ assignment.due_date|date:"d M, Y • h:i A" }}</strong>
+                        <i class="far fa-clock"></i> Due Date: <strong id="headerDueDateDisplay">{{ assignment.due_date|date:"d M, Y • h:i A" }}</strong>
                         {% if assignment.is_past_due %}
                             <span style="color:var(--accent-red); margin-left:4px;">(Past Due)</span>
                         {% endif %}
@@ -628,13 +740,16 @@
                 </div>
             </div>
 
-            {% if assignment.file %}
-            <div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button type="button" onclick="openExtendDueModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: var(--radius-sm); background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: var(--transition-fast);">
+                    <i class="fas fa-calendar-plus"></i> Extend Due Date
+                </button>
+                {% if assignment.file %}
                 <a href="{{ assignment.file.url }}" target="_blank" download class="btn-download-brief-lg">
                     <i class="fas fa-cloud-arrow-down"></i> Download Brief Specification ({{ assignment.file_extension }})
                 </a>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
 
         <!-- SUBMISSIONS METRICS -->
@@ -729,7 +844,11 @@
                         {% endif %}
 
                         {% if sub.is_graded %}
-                            <span class="graded-badge-pill evaluated"><i class="fas fa-award"></i> Graded: {{ sub.marks_obtained|floatformat:1 }}/{{ assignment.total_marks }}</span>
+                            {% if sub.is_pass %}
+                                <span class="graded-badge-pill pass"><i class="fas fa-circle-check"></i> Passed: {{ sub.marks_obtained|floatformat:1 }}/{{ assignment.total_marks }}</span>
+                            {% else %}
+                                <span class="graded-badge-pill fail"><i class="fas fa-circle-xmark"></i> Failed: {{ sub.marks_obtained|floatformat:1 }}/{{ assignment.total_marks }}</span>
+                            {% endif %}
                         {% else %}
                             <span class="graded-badge-pill pending"><i class="fas fa-hourglass-half"></i> Pending Review</span>
                         {% endif %}
@@ -773,14 +892,25 @@
 
             <!-- Current Evaluation Record if already graded -->
             {% if sub.is_graded %}
-            <div class="current-eval-recap">
+            <div class="current-eval-recap {% if sub.is_pass %}pass{% else %}fail{% endif %}">
                 <div class="eval-head-row">
                     <span class="eval-score-text">
-                        <i class="fas fa-star" style="color:#ffb74d;"></i> Score: {{ sub.marks_obtained|floatformat:1 }} / {{ assignment.total_marks }} Marks
+                        <i class="fas fa-star" style="color:#ffb74d;"></i> Score: <strong>{{ sub.marks_obtained|floatformat:1 }}</strong> / {{ assignment.total_marks }} Marks
                     </span>
-                    <span style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">
-                        Official Instructor Grade Recorded
-                    </span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        {% if sub.is_pass %}
+                            <span class="eval-status-badge pass"><i class="fas fa-circle-check"></i> PASSED</span>
+                        {% else %}
+                            <span class="eval-status-badge fail"><i class="fas fa-circle-xmark"></i> FAILED</span>
+                        {% endif %}
+                        <span style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">
+                            {% if sub.evaluator %}
+                                <i class="fas fa-user-check" style="color:var(--accent-green); margin-right:4px;"></i> Evaluated by: <strong style="color:#fff;">{{ sub.evaluator.get_full_name|default:sub.evaluator.username }}</strong>
+                            {% else %}
+                                Official Instructor Grade Recorded
+                            {% endif %}
+                        </span>
+                    </div>
                 </div>
                 {% if sub.feedback %}
                 <p class="eval-feedback-quote">"{{ sub.feedback }}"</p>
@@ -797,7 +927,20 @@
                     <div class="grading-form-grid">
                         <div>
                             <label class="grade-label">Marks (Max {{ assignment.total_marks }}) *</label>
-                            <input type="number" step="0.5" min="0" max="{{ assignment.total_marks }}" name="marks_obtained" id="grade-input-{{ sub.id }}" class="grade-input" value="{{ sub.marks_obtained|default:'' }}" placeholder="e.g. 95" required>
+                            <input type="number" step="0.5" min="0" max="{{ assignment.total_marks }}" name="marks_obtained" id="grade-input-{{ sub.id }}" class="grade-input" value="{{ sub.marks_obtained|default:'' }}" placeholder="e.g. 95" required oninput="syncPassFailToggle('{{ sub.id }}', this.value, {{ assignment.pass_marks|default:40 }})">
+                        </div>
+
+                        <div>
+                            <label class="grade-label">Pass / Fail Option *</label>
+                            <input type="hidden" name="is_passed" id="passfail-input-{{ sub.id }}" value="{% if sub.is_graded %}{% if sub.is_pass %}pass{% else %}fail{% endif %}{% else %}pass{% endif %}">
+                            <div class="passfail-toggle-group">
+                                <button type="button" class="btn-pf-toggle pass {% if not sub.is_graded or sub.is_pass %}active{% endif %}" id="btn-pf-pass-{{ sub.id }}" onclick="setPassFail('{{ sub.id }}', 'pass')">
+                                    <i class="fas fa-circle-check"></i> Pass
+                                </button>
+                                <button type="button" class="btn-pf-toggle fail {% if sub.is_graded and not sub.is_pass %}active{% endif %}" id="btn-pf-fail-{{ sub.id }}" onclick="setPassFail('{{ sub.id }}', 'fail')">
+                                    <i class="fas fa-circle-xmark"></i> Fail
+                                </button>
+                            </div>
                         </div>
 
                         <div>
@@ -828,7 +971,53 @@
 
 </div>
 
+<!-- Extend Due Date Modal -->
+<div id="extendDueModalOverlay" style="display:none; position:fixed; inset:0; background:rgba(4,7,16,0.85); backdrop-filter:blur(14px); z-index:99999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background:#0d111c; border:1px solid rgba(245, 158, 11, 0.4); border-radius:18px; width:100%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(245, 158, 11, 0.15); overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(245, 158, 11, 0.08);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-calendar-plus" style="color:#fbbf24; font-size:1.2rem;"></i>
+                <h3 style="margin:0; font-size:1.15rem; color:#fff; font-weight:700;">Extend Due Date</h3>
+            </div>
+            <button type="button" onclick="closeExtendDueModal()" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        <form method="POST" action="{% url 'faculty_extend_assignment_deadline' assignment.id %}" style="padding:24px;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'admin_assignment_submissions_detail' assignment.id %}">
+            <div style="margin-bottom:16px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-bottom:6px;">Assignment</label>
+                <input type="text" value="{{ assignment.title }}" readonly style="width:100%; box-sizing:border-box; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#cbd5e1; font-weight:600;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#fbbf24; text-transform:uppercase; margin-bottom:6px;">New Due Date & Time</label>
+                <input type="datetime-local" name="due_date" required value="{{ assignment.due_date|date:'Y-m-d\TH:i' }}" style="width:100%; box-sizing:border-box; padding:10px 14px; background:rgba(0,0,0,0.4); border:1px solid rgba(245, 158, 11, 0.4); border-radius:8px; color:#fff; font-size:0.95rem; font-family:inherit;">
+                <small style="display:block; color:#94a3b8; font-size:0.75rem; margin-top:5px;">Students who couldn't submit within the old deadline can submit without penalty.</small>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" onclick="closeExtendDueModal()" style="padding:10px 18px; border-radius:8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; cursor:pointer;">Cancel</button>
+                <button type="submit" style="padding:10px 22px; border-radius:8px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; color:#000; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fas fa-check"></i> Save New Deadline
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openExtendDueModal() {
+        const modal = document.getElementById('extendDueModalOverlay');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeExtendDueModal() {
+        const modal = document.getElementById('extendDueModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
     function filterStudentSubmissions() {
         const q = document.getElementById('studentSearchFilter').value.toLowerCase().trim();
         const cards = document.querySelectorAll('.sub-item-card');
@@ -842,6 +1031,31 @@
                 card.style.display = 'none';
             }
         });
+    }
+
+    function setPassFail(subId, status) {
+        const input = document.getElementById('passfail-input-' + subId);
+        const btnPass = document.getElementById('btn-pf-pass-' + subId);
+        const btnFail = document.getElementById('btn-pf-fail-' + subId);
+        if (input) input.value = status;
+        if (status === 'pass') {
+            if (btnPass) btnPass.classList.add('active');
+            if (btnFail) btnFail.classList.remove('active');
+        } else {
+            if (btnPass) btnPass.classList.remove('active');
+            if (btnFail) btnFail.classList.add('active');
+        }
+    }
+
+    function syncPassFailToggle(subId, val, passCutoff) {
+        if (!val || isNaN(val)) return;
+        const score = parseFloat(val);
+        const cutoff = (passCutoff && passCutoff > 0) ? passCutoff : 40;
+        if (score >= cutoff) {
+            setPassFail(subId, 'pass');
+        } else {
+            setPassFail(subId, 'fail');
+        }
     }
 
     function handleGradingSubmit(e, subId) {

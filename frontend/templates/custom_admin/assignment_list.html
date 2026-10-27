@@ -907,7 +907,7 @@
                     <div>
                         <!-- Top Meta -->
                         <div class="asgn-admin-top">
-                            <span class="asgn-marks-badge"><i class="fas fa-award"></i> {{ asgn.total_marks }} Marks</span>
+                            <span class="asgn-marks-badge"><i class="fas fa-award"></i> {{ asgn.total_marks }} Marks <small style="opacity:0.85; font-size:0.75rem;">(Pass: {{ asgn.pass_marks|default:40 }})</small></span>
                             {% if asgn.is_past_due %}
                             <span class="asgn-due-pill overdue"><i class="fas fa-circle-exclamation"></i> Overdue ({{ asgn.due_date|date:"M d, Y" }})</span>
                             {% else %}
@@ -1025,7 +1025,12 @@
 
                     <div class="admin-form-group">
                         <label class="admin-form-label"><i class="fas fa-award"></i> Total Marks *</label>
-                        <input type="number" name="total_marks" class="admin-form-control" value="100" min="1" required>
+                        <input type="number" name="total_marks" id="modalTotalMarks" class="admin-form-control" value="100" min="1" required oninput="const pm = document.getElementById('modalPassMarks'); if(pm && (!pm.value || pm.dataset.autocalc !== 'false')) { pm.value = Math.max(1, Math.round(this.value * 0.4)); }">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label"><i class="fas fa-circle-check" style="color:var(--accent-green);"></i> Passing Marks *</label>
+                        <input type="number" name="pass_marks" id="modalPassMarks" class="admin-form-control" value="40" min="1" required onchange="this.dataset.autocalc='false'">
                     </div>
                 </div>
 
