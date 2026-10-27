@@ -314,6 +314,16 @@ urlpatterns = [
 import os
 from django.urls import re_path
 from django.views.static import serve
+from django.http import JsonResponse
+
+def system_sync_data_api(request):
+    """
+    Direct production data synchronizer endpoint.
+    Loads all faculty, profiles, avatars, courses, and exams from mydata.json.
+    """
+    from seed_db import smart_sync_production
+    result = smart_sync_production(force=True)
+    return JsonResponse(result)
 
 def serve_media(request, path):
     """
@@ -333,6 +343,7 @@ def serve_media(request, path):
     return serve(request, path, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [
+    path('api/system/sync-production-data/', system_sync_data_api, name='system_sync_data_api'),
     re_path(r'^media/(?P<path>.*)$', serve_media),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]
