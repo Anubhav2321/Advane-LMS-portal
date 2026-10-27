@@ -150,6 +150,17 @@ class StudentRegistrationForm(forms.ModelForm):
 # 2. COURSE CREATION FORM (ADMIN)
 
 class CourseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'coin_price' in self.fields:
+            self.fields['coin_price'].required = False
+        if 'total_modules' in self.fields:
+            self.fields['total_modules'].required = False
+        if 'faculty_name' in self.fields:
+            self.fields['faculty_name'].required = False
+        if 'thumbnail' in self.fields:
+            self.fields['thumbnail'].required = False
+
     class Meta:
         model = Course
         fields = ['title', 'description', 'faculty_name', 'thumbnail', 'price', 'is_coin_purchasable', 'coin_price', 'total_modules', 'difficulty_level', 'is_published']
@@ -167,14 +178,26 @@ class CourseForm(forms.ModelForm):
 
     def clean_price(self):
         price = self.cleaned_data.get('price')
+        if price is None:
+            return 0
         if price < 0:
             raise ValidationError("Price cannot be negative.")
         return price
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if not cleaned_data.get('coin_price'):
+            cleaned_data['coin_price'] = 0
+        if not cleaned_data.get('total_modules'):
+            cleaned_data['total_modules'] = 0
+        if not cleaned_data.get('faculty_name'):
+            cleaned_data['faculty_name'] = 'Expert Faculty'
+        return cleaned_data
+
     def clean_thumbnail(self):
         thumbnail = self.cleaned_data.get('thumbnail')
         if thumbnail:
-            if thumbnail.size > 2 * 1024 * 1024: # 2MB limit
+            if hasattr(thumbnail, 'size') and thumbnail.size > 2 * 1024 * 1024: # 2MB limit
                 raise ValidationError("Image file too large ( > 2mb ).")
         return thumbnail
 
@@ -342,13 +365,14 @@ class AssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Assignment
-        fields = ['course', 'title', 'description', 'file', 'due_date', 'total_marks']
+        fields = ['course', 'title', 'description', 'file', 'due_date', 'total_marks', 'pass_marks']
         widgets = {
             'course': forms.Select(attrs={'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Full-Stack REST API & Database Migration'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Provide instructions, evaluation criteria, and submission specifications...'}),
             'file': forms.FileInput(attrs={'class': 'form-control'}),
             'total_marks': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '100'}),
+            'pass_marks': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '40'}),
         }
 
 

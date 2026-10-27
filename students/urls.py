@@ -65,13 +65,16 @@ urlpatterns = [
     # Faculty Panel Endpoints
     path('faculty/dashboard/', views.faculty_dashboard, name='faculty_dashboard'),
     path('faculty/create-live-class/', views.faculty_create_live_class, name='faculty_create_live_class'),
+    path('faculty/edit-live-class/<int:class_id>/', views.faculty_edit_live_class, name='faculty_edit_live_class'),
     path('faculty/delete-live-class/<int:class_id>/', views.faculty_delete_live_class, name='faculty_delete_live_class'),
     path('faculty/create-notice/', views.faculty_create_notice, name='faculty_create_notice'),
     path('faculty/add-library/', views.faculty_add_library, name='faculty_add_library'),
     path('faculty/delete-library/<int:doc_id>/', views.faculty_delete_library, name='faculty_delete_library'),
     path('faculty/create-exam/', views.faculty_create_exam, name='faculty_create_exam'),
+    path('faculty/exams/<int:exam_id>/extend-deadline/', views.faculty_extend_exam_deadline, name='faculty_extend_exam_deadline'),
     path('faculty/delete-exam/<int:exam_id>/', views.faculty_delete_exam, name='faculty_delete_exam'),
     path('faculty/create-assignment/', views.faculty_create_assignment, name='faculty_create_assignment'),
+    path('faculty/assignments/<int:assignment_id>/extend-deadline/', views.faculty_extend_assignment_deadline, name='faculty_extend_assignment_deadline'),
     path('faculty/delete-assignment/<int:assignment_id>/', views.faculty_delete_assignment, name='faculty_delete_assignment'),
     path('faculty/update-profile/', views.faculty_update_profile, name='faculty_update_profile'),
     
