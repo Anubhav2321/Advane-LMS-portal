@@ -660,6 +660,293 @@
         background: #ef4444;
         color: #fff;
     }
+
+    /* ============================================= */
+    /* AI QUIZ MODAL & ACTION EXTENSION STYLES       */
+    /* ============================================= */
+    .quiz-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(4, 7, 16, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        z-index: 99999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .quiz-modal {
+        background: #0d111c;
+        border: 1px solid rgba(168, 85, 247, 0.4);
+        width: 92%;
+        max-width: 860px;
+        max-height: 90vh;
+        border-radius: var(--radius-xl);
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(168, 85, 247, 0.2);
+        overflow: hidden;
+    }
+    .quiz-modal-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(90deg, rgba(168, 85, 247, 0.12), transparent);
+    }
+    .quiz-modal-header h3 {
+        color: #fff;
+        font-size: 1.15rem;
+        margin: 0;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .quiz-modal-close {
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: var(--transition-fast);
+    }
+    .quiz-modal-close:hover { color: #ef4444; }
+    .quiz-modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+    }
+    .quiz-modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.3);
+    }
+    .btn-save-quiz {
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: #fff;
+        display: none;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+        transition: var(--transition-smooth);
+    }
+    .btn-save-quiz:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+    .fac-quiz-btn {
+        padding: 6px 12px;
+        background: rgba(168, 85, 247, 0.18);
+        border: 1px solid rgba(168, 85, 247, 0.45);
+        color: #c084fc;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .fac-quiz-btn:hover {
+        background: rgba(168, 85, 247, 0.35);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    .fac-action-btn-subs {
+        padding: 7px 14px;
+        background: rgba(59, 130, 246, 0.18);
+        border: 1px solid rgba(59, 130, 246, 0.45);
+        color: #60a5fa;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .fac-action-btn-subs:hover {
+        background: rgba(59, 130, 246, 0.35);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    .fac-action-btn-extend {
+        padding: 7px 12px;
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        color: #fbbf24;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .fac-action-btn-extend:hover {
+        background: rgba(245, 158, 11, 0.3);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    .fac-action-btn-reschedule {
+        padding: 6px 12px;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #34d399;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+    .fac-action-btn-reschedule:hover {
+        background: rgba(16, 185, 129, 0.3);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    /* Course Separation & Filter Bar Styling */
+    .fac-course-filter-bar {
+        background: rgba(13, 17, 28, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    }
+    .fac-course-filter-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .fac-course-filter-pills {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .fac-course-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
+        border-radius: 99px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.04);
+        color: #cbd5e1;
+    }
+    .fac-course-pill:hover {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #34d399;
+        transform: translateY(-1px);
+    }
+    .fac-course-pill.active {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.2));
+        border-color: #10b981;
+        color: #10b981;
+        box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
+        font-weight: 700;
+    }
+    .fac-course-pill-badge {
+        font-size: 0.72rem;
+        padding: 2px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        color: inherit;
+    }
+    .fac-course-group-card {
+        background: rgba(13, 17, 28, 0.6);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 24px;
+        overflow: hidden;
+        transition: border-color 0.2s ease;
+    }
+    .fac-course-group-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+    .fac-course-group-header {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.04));
+        border-bottom: 1px solid var(--glass-border);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .fac-course-group-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .fac-course-group-title i {
+        color: #10b981;
+    }
+    .fac-course-group-chip {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 99px;
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .fac-course-filter-link {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #00d4ff;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: color 0.15s;
+    }
+    .fac-course-filter-link:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+    .fac-course-group-body {
+        padding: 16px 20px;
+    }
+    .fac-empty-sub {
+        text-align: center;
+        padding: 24px 16px;
+        color: #64748b;
+        font-size: 0.88rem;
+        font-style: italic;
+    }
 </style>
 
 <div class="fac-container">
@@ -732,6 +1019,7 @@
             <div class="fac-stat-label">Enrolled Students</div>
         </div>
 
+        
         <div class="fac-stat-card fac-stat-pink">
             <div class="fac-stat-icon"><i class="fas fa-video"></i></div>
             <div class="fac-stat-number">{{ live_classes_count }}</div>
@@ -758,6 +1046,37 @@
     </div>
 
     <!-- ============================================= -->
+    <!-- COURSE SEPARATION & FOCUS FILTER SWITCHER     -->
+    <!-- When faculty has 2 or more assigned courses   -->
+    <!-- ============================================= -->
+    {% if total_assigned_courses >= 2 %}
+    <div class="fac-course-filter-bar" id="course-filter-bar">
+        <div class="fac-course-filter-label">
+            <i class="fas fa-layer-group" style="color: #10b981; font-size: 1.05rem;"></i>
+            <span>Course Separation Filter:</span>
+            {% if selected_course %}
+                <span style="color: #34d399; font-weight: 700; background: rgba(16, 185, 129, 0.15); padding: 3px 10px; border-radius: 99px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    Focusing: {{ selected_course.title }}
+                </span>
+            {% else %}
+                <span style="color: #94a3b8; font-weight: 600;">Separated Course-Wise View</span>
+            {% endif %}
+        </div>
+        <div class="fac-course-filter-pills">
+            <a href="{% url 'faculty_dashboard' %}" class="fac-course-pill {% if not selected_course %}active{% endif %}">
+                <i class="fas fa-border-all"></i> All Courses (Separated)
+                <span class="fac-course-pill-badge">{{ total_assigned_courses }}</span>
+            </a>
+            {% for c in assigned_courses %}
+            <a href="?course={{ c.id }}" class="fac-course-pill {% if selected_course and selected_course.id == c.id %}active{% endif %}">
+                <i class="fas fa-book"></i> {{ c.title|truncatechars:28 }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ============================================= -->
     <!-- 3. ENROLLED STUDENTS DETAILS TABLE (SCOPED)   -->
     <!-- ============================================= -->
     <div class="fac-section" id="students-section">
@@ -765,12 +1084,13 @@
             <div class="fac-section-title">
                 <i class="fas fa-user-graduate"></i> Enrolled Students
                 <span style="font-size: 0.82rem; font-weight: 600; color: #10b981; background: rgba(16, 185, 129, 0.12); padding: 3px 10px; border-radius: 99px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                    {{ enrollments.count }} Student{{ enrollments.count|pluralize }} in your Courses
+                    {{ enrollments.count }} Student{{ enrollments.count|pluralize }} in {% if selected_course %}{{ selected_course.title }}{% else %}your Assigned Courses{% endif %}
                 </span>
             </div>
 
             <!-- Instant Student Filter Search -->
             <form method="GET" action="#students-section" style="display: flex; gap: 8px;">
+                {% if selected_course %}<input type="hidden" name="course" value="{{ selected_course.id }}">{% endif %}
                 <div style="position: relative; width: 280px;">
                     <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 0.85rem;"></i>
                     <input type="text" name="student_search" value="{{ student_search }}" placeholder="Search by name, ID, or course..." style="width: 100%; box-sizing: border-box; padding: 9px 12px 9px 34px; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
@@ -779,86 +1099,176 @@
                     Filter
                 </button>
                 {% if student_search %}
-                <a href="{% url 'faculty_dashboard' %}#students-section" style="padding: 9px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; border-radius: 8px; font-size: 0.88rem; text-decoration: none; display: flex; align-items: center;">
+                <a href="{% url 'faculty_dashboard' %}{% if selected_course %}?course={{ selected_course.id }}{% endif %}#students-section" style="padding: 9px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; border-radius: 8px; font-size: 0.88rem; text-decoration: none; display: flex; align-items: center;">
                     <i class="fas fa-times"></i>
                 </a>
                 {% endif %}
             </form>
         </div>
 
-        <div class="table-responsive">
-            <table class="fac-table">
-                <thead>
-                    <tr>
-                        <th>Student Profile</th>
-                        <th>Student ID</th>
-                        <th>Course Enrolled</th>
-                        <th>Contact / Email</th>
-                        <th>Enrolled Date</th>
-                        <th>Course Progress</th>
-                        <th class="status-col-cell">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for enroll in enrollments %}
-                    <tr>
-                        <td>
-                            <div class="student-cell">
-                                {% if enroll.student.profile.profile_pic and enroll.student.profile.profile_pic.name != 'profile_pics/default.png' %}
-                                    <img src="{{ enroll.student.profile.profile_pic.url }}" alt="{{ enroll.student.username }}" class="student-avatar">
-                                {% else %}
-                                    <div class="student-avatar-initial">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
-                                {% endif %}
-                                <div>
-                                    <div style="font-weight: 700; color: #fff;">{{ enroll.student.get_full_name|default:enroll.student.username }}</div>
-                                    <div style="color: #64748b; font-size: 0.8rem;">@{{ enroll.student.username }}</div>
+        {% if total_assigned_courses >= 2 and not selected_course and not student_search %}
+            <!-- Separated Course Blocks for Students -->
+            {% for cb in courses_breakdown %}
+            <div class="fac-course-group-card" style="margin-bottom: 22px;">
+                <div class="fac-course-group-header">
+                    <div class="fac-course-group-title">
+                        <i class="fas fa-graduation-cap"></i> {{ cb.course.title }}
+                        <span class="fac-course-group-chip">{{ cb.students_count }} Student{{ cb.students_count|pluralize }} Enrolled</span>
+                    </div>
+                    <a href="?course={{ cb.course.id }}#students-section" class="fac-course-filter-link">
+                        Focus this Course <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="fac-table">
+                        <thead>
+                            <tr>
+                                <th>Student Profile</th>
+                                <th>Student ID</th>
+                                <th>Course</th>
+                                <th>Contact / Email</th>
+                                <th>Enrolled Date</th>
+                                <th>Course Progress</th>
+                                <th class="status-col-cell">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enroll in cb.enrollments %}
+                            <tr>
+                                <td>
+                                    <div class="student-cell">
+                                        {% if enroll.student.profile.profile_pic and enroll.student.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                            <img src="{{ enroll.student.profile.profile_pic.url }}" alt="{{ enroll.student.username }}" class="student-avatar">
+                                        {% else %}
+                                            <div class="student-avatar-initial">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
+                                        {% endif %}
+                                        <div>
+                                            <div style="font-weight: 700; color: #fff;">{{ enroll.student.get_full_name|default:enroll.student.username }}</div>
+                                            <div style="color: #64748b; font-size: 0.8rem;">@{{ enroll.student.username }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="student-id-badge">{{ enroll.student.student_id|default:"100001" }}</span>
+                                </td>
+                                <td>
+                                    <span class="course-pill"><i class="fas fa-book"></i> {{ enroll.course.title }}</span>
+                                </td>
+                                <td>
+                                    <div style="color: #cbd5e1; font-size: 0.85rem;"><i class="fas fa-envelope" style="color: #64748b; margin-right: 4px;"></i> {{ enroll.student.email }}</div>
+                                    {% if enroll.student.phone or enroll.student.profile.phone %}
+                                    <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;"><i class="fas fa-phone-alt" style="margin-right: 4px;"></i> {{ enroll.student.profile.phone|default:enroll.student.phone }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span style="color: #94a3b8; font-size: 0.85rem;">{{ enroll.enrolled_at|date:"d M Y" }}</span>
+                                </td>
+                                <td>
+                                    <div class="progress-bar-wrap">
+                                        <div class="progress-bar-fill" style="width: {{ enroll.progress|default:0 }}%;"></div>
+                                    </div>
+                                    <div style="font-size: 0.78rem; font-weight: 700; color: #34d399;">{{ enroll.progress|default:0 }}% Completed</div>
+                                </td>
+                                <td class="status-col-cell">
+                                    {% if enroll.is_completed or enroll.progress >= 100 %}
+                                        <span class="badge-status-completed">
+                                            <i class="fas fa-check-circle"></i> Completed
+                                        </span>
+                                    {% else %}
+                                        <span class="badge-status-inprogress">
+                                            <span class="badge-dot-cyan"></span> In Progress
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="fac-empty-sub">
+                                    No students enrolled in {{ cb.course.title }} yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Single Table for Selected Course or Filter Search -->
+            <div class="table-responsive">
+                <table class="fac-table">
+                    <thead>
+                        <tr>
+                            <th>Student Profile</th>
+                            <th>Student ID</th>
+                            <th>Course Enrolled</th>
+                            <th>Contact / Email</th>
+                            <th>Enrolled Date</th>
+                            <th>Course Progress</th>
+                            <th class="status-col-cell">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enroll in enrollments %}
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    {% if enroll.student.profile.profile_pic and enroll.student.profile_pic != 'profile_pics/default.png' %}
+                                        <img src="{{ enroll.student.profile.profile_pic.url }}" alt="{{ enroll.student.username }}" class="student-avatar">
+                                    {% else %}
+                                        <div class="student-avatar-initial">{{ enroll.student.first_name.0|default:enroll.student.username.0|upper }}</div>
+                                    {% endif %}
+                                    <div>
+                                        <div style="font-weight: 700; color: #fff;">{{ enroll.student.get_full_name|default:enroll.student.username }}</div>
+                                        <div style="color: #64748b; font-size: 0.8rem;">@{{ enroll.student.username }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="student-id-badge">{{ enroll.student.student_id|default:"100001" }}</span>
-                        </td>
-                        <td>
-                            <span class="course-pill"><i class="fas fa-book"></i> {{ enroll.course.title }}</span>
-                        </td>
-                        <td>
-                            <div style="color: #cbd5e1; font-size: 0.85rem;"><i class="fas fa-envelope" style="color: #64748b; margin-right: 4px;"></i> {{ enroll.student.email }}</div>
-                            {% if enroll.student.phone or enroll.student.profile.phone %}
-                            <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;"><i class="fas fa-phone-alt" style="margin-right: 4px;"></i> {{ enroll.student.profile.phone|default:enroll.student.phone }}</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span style="color: #94a3b8; font-size: 0.85rem;">{{ enroll.enrolled_at|date:"d M Y" }}</span>
-                        </td>
-                        <td>
-                            <div class="progress-bar-wrap">
-                                <div class="progress-bar-fill" style="width: {{ enroll.progress|default:0 }}%;"></div>
-                            </div>
-                            <div style="font-size: 0.78rem; font-weight: 700; color: #34d399;">{{ enroll.progress|default:0 }}% Completed</div>
-                        </td>
-                        <td class="status-col-cell">
-                            {% if enroll.is_completed or enroll.progress >= 100 %}
-                                <span class="badge-status-completed">
-                                    <i class="fas fa-check-circle"></i> Completed
-                                </span>
-                            {% else %}
-                                <span class="badge-status-inprogress">
-                                    <span class="badge-dot-cyan"></span> In Progress
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">
-                            <i class="fas fa-users-slash" style="font-size: 2.2rem; color: #475569; margin-bottom: 12px; display: block;"></i>
-                            No students currently enrolled in your assigned courses.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                            </td>
+                            <td>
+                                <span class="student-id-badge">{{ enroll.student.student_id|default:"100001" }}</span>
+                            </td>
+                            <td>
+                                <span class="course-pill"><i class="fas fa-book"></i> {{ enroll.course.title }}</span>
+                            </td>
+                            <td>
+                                <div style="color: #cbd5e1; font-size: 0.85rem;"><i class="fas fa-envelope" style="color: #64748b; margin-right: 4px;"></i> {{ enroll.student.email }}</div>
+                                {% if enroll.student.phone or enroll.student.profile.phone %}
+                                <div style="color: #64748b; font-size: 0.8rem; margin-top: 2px;"><i class="fas fa-phone-alt" style="margin-right: 4px;"></i> {{ enroll.student.profile.phone|default:enroll.student.phone }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span style="color: #94a3b8; font-size: 0.85rem;">{{ enroll.enrolled_at|date:"d M Y" }}</span>
+                            </td>
+                            <td>
+                                <div class="progress-bar-wrap">
+                                    <div class="progress-bar-fill" style="width: {{ enroll.progress|default:0 }}%;"></div>
+                                </div>
+                                <div style="font-size: 0.78rem; font-weight: 700; color: #34d399;">{{ enroll.progress|default:0 }}% Completed</div>
+                            </td>
+                            <td class="status-col-cell">
+                                {% if enroll.is_completed or enroll.progress >= 100 %}
+                                    <span class="badge-status-completed">
+                                        <i class="fas fa-check-circle"></i> Completed
+                                    </span>
+                                {% else %}
+                                    <span class="badge-status-inprogress">
+                                        <span class="badge-dot-cyan"></span> In Progress
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #94a3b8;">
+                                <i class="fas fa-users-slash" style="font-size: 2.2rem; color: #475569; margin-bottom: 12px; display: block;"></i>
+                                No students currently found in your assigned courses.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
     </div>
 
     <!-- ============================================= -->
@@ -930,31 +1340,93 @@
                         <span><i class="fas fa-video" style="color: #ff3366;"></i> Scheduled Live Classes</span>
                         <span style="font-size: 0.85rem; color: #94a3b8;">{{ live_classes.count }} total</span>
                     </h3>
-                    {% for lc in live_classes %}
-                    <div class="fac-item-card">
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ lc.title }}</div>
-                            <div style="color: #60a5fa; font-size: 0.8rem; margin: 2px 0;">{{ lc.course.title }}</div>
-                            <div style="color: #94a3b8; font-size: 0.78rem;">
-                                <i class="fas fa-clock" style="color: #10b981;"></i> {{ lc.date_time|date:"d M Y, h:i A" }} ({{ lc.duration_minutes }} mins) • 
-                                <span style="color: #ffaa00; font-weight: 600;">{{ lc.get_platform_display|default:lc.platform }}</span>
+                    {% if total_assigned_courses >= 2 and not selected_course %}
+                        {% for cb in courses_breakdown %}
+                        <div class="fac-course-group-card">
+                            <div class="fac-course-group-header">
+                                <div class="fac-course-group-title">
+                                    <i class="fas fa-video" style="color: #ff3366;"></i> {{ cb.course.title }}
+                                    <span class="fac-course-group-chip">{{ cb.classes_count }} Live Class{{ cb.classes_count|pluralize:"es" }}</span>
+                                </div>
+                                <a href="?course={{ cb.course.id }}#tab-classes" class="fac-course-filter-link">Focus this Course <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                            <div class="fac-course-group-body">
+                                {% for lc in cb.classes %}
+                                <div class="fac-item-card">
+                                    <div>
+                                        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ lc.title }}</div>
+                                        <div style="color: #60a5fa; font-size: 0.8rem; margin: 2px 0;">{{ lc.course.title }}</div>
+                                        <div style="color: #94a3b8; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span><i class="fas fa-clock" style="color: #10b981;"></i> {{ lc.date_time|date:"d M Y, h:i A" }} ({{ lc.duration_minutes }} mins)</span>
+                                            <span>• <strong style="color: #ffaa00;">{{ lc.get_platform_display|default:lc.platform }}</strong></span>
+                                            {% if lc.is_live %}
+                                                <span style="background: rgba(255, 51, 102, 0.2); color: #ff3366; font-weight: 700; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem; border: 1px solid rgba(255, 51, 102, 0.4);"><i class="fas fa-broadcast-tower"></i> LIVE NOW</span>
+                                            {% elif lc.is_starting_soon %}
+                                                <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-weight: 700; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem; border: 1px solid rgba(245, 158, 11, 0.4);"><i class="fas fa-hourglass-half"></i> SOON</span>
+                                            {% elif lc.is_ended %}
+                                                <span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; font-weight: 600; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem;">Completed</span>
+                                            {% else %}
+                                                <span style="background: rgba(0, 212, 255, 0.15); color: #00d4ff; font-weight: 600; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem;">Upcoming</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <button type="button" class="fac-action-btn-reschedule" onclick="openEditLiveClassModal({{ lc.id }}, '{{ lc.title|escapejs }}', '{{ lc.date_time|date:'Y-m-d\TH:i' }}', {{ lc.duration_minutes }}, '{{ lc.platform|escapejs }}', '{{ lc.meeting_link|escapejs }}')" title="Reschedule Date & Time">
+                                            <i class="fas fa-clock"></i> Reschedule
+                                        </button>
+                                        <a href="{{ lc.meeting_link }}" target="_blank" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                            Launch <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                                        </a>
+                                        <a href="{% url 'faculty_delete_live_class' lc.id %}" onclick="return confirm('Delete this live class?');" class="fac-del-btn" title="Delete Class">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="fac-empty-sub">No live classes scheduled for this course.</div>
+                                {% endfor %}
                             </div>
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <a href="{{ lc.meeting_link }}" target="_blank" style="padding: 6px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
-                                Join <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
-                            </a>
-                            <a href="{% url 'faculty_delete_live_class' lc.id %}" onclick="return confirm('Delete this live class?');" class="fac-del-btn">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                        {% endfor %}
+                    {% else %}
+                        {% for lc in live_classes %}
+                        <div class="fac-item-card">
+                            <div>
+                                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ lc.title }}</div>
+                                <div style="color: #60a5fa; font-size: 0.8rem; margin: 2px 0;">{{ lc.course.title }}</div>
+                                <div style="color: #94a3b8; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span><i class="fas fa-clock" style="color: #10b981;"></i> {{ lc.date_time|date:"d M Y, h:i A" }} ({{ lc.duration_minutes }} mins)</span>
+                                    <span>• <strong style="color: #ffaa00;">{{ lc.get_platform_display|default:lc.platform }}</strong></span>
+                                    {% if lc.is_live %}
+                                        <span style="background: rgba(255, 51, 102, 0.2); color: #ff3366; font-weight: 700; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem; border: 1px solid rgba(255, 51, 102, 0.4);"><i class="fas fa-broadcast-tower"></i> LIVE NOW</span>
+                                    {% elif lc.is_starting_soon %}
+                                        <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-weight: 700; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem; border: 1px solid rgba(245, 158, 11, 0.4);"><i class="fas fa-hourglass-half"></i> SOON</span>
+                                    {% elif lc.is_ended %}
+                                        <span style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; font-weight: 600; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem;">Completed</span>
+                                    {% else %}
+                                        <span style="background: rgba(0, 212, 255, 0.15); color: #00d4ff; font-weight: 600; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem;">Upcoming</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <button type="button" class="fac-action-btn-reschedule" onclick="openEditLiveClassModal({{ lc.id }}, '{{ lc.title|escapejs }}', '{{ lc.date_time|date:'Y-m-d\TH:i' }}', {{ lc.duration_minutes }}, '{{ lc.platform|escapejs }}', '{{ lc.meeting_link|escapejs }}')" title="Reschedule Date & Time">
+                                    <i class="fas fa-clock"></i> Reschedule
+                                </button>
+                                <a href="{{ lc.meeting_link }}" target="_blank" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                    Launch <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                                </a>
+                                <a href="{% url 'faculty_delete_live_class' lc.id %}" onclick="return confirm('Delete this live class?');" class="fac-del-btn" title="Delete Class">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    {% empty %}
-                    <div style="text-align: center; padding: 30px; color: #64748b;">
-                        <i class="fas fa-calendar-times" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
-                        No live classes scheduled yet.
-                    </div>
-                    {% endfor %}
+                        {% empty %}
+                        <div style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fas fa-calendar-times" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                            No live classes scheduled yet.
+                        </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -1038,33 +1510,79 @@
                         <span><i class="fas fa-folder-open" style="color: #a855f7;"></i> Uploaded Documents</span>
                         <span style="font-size: 0.85rem; color: #94a3b8;">{{ documents.count }} files</span>
                     </h3>
-                    {% for doc in documents %}
-                    <div class="fac-item-card">
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ doc.title }}</div>
-                            <div style="color: #60a5fa; font-size: 0.8rem;">{{ doc.course.title }}</div>
-                            <div style="color: #94a3b8; font-size: 0.78rem;">
-                                <span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 2px 6px; border-radius: 4px;">{{ doc.category }}</span>
-                                • {{ doc.uploaded_at|date:"d M Y" }}
+                    {% if total_assigned_courses >= 2 and not selected_course %}
+                        {% for cb in courses_breakdown %}
+                        <div class="fac-course-group-card">
+                            <div class="fac-course-group-header">
+                                <div class="fac-course-group-title">
+                                    <i class="fas fa-folder" style="color: #a855f7;"></i> {{ cb.course.title }}
+                                    <span class="fac-course-group-chip">{{ cb.docs_count }} File{{ cb.docs_count|pluralize }}</span>
+                                </div>
+                                <a href="?course={{ cb.course.id }}#tab-library" class="fac-course-filter-link">Focus this Course <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                            <div class="fac-course-group-body">
+                                {% for doc in cb.docs %}
+                                <div class="fac-item-card">
+                                    <div>
+                                        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ doc.title }}</div>
+                                        <div style="color: #60a5fa; font-size: 0.8rem;">{{ doc.course.title }}</div>
+                                        <div style="color: #94a3b8; font-size: 0.78rem;">
+                                            <span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 2px 6px; border-radius: 4px;">{{ doc.category }}</span>
+                                            • {{ doc.uploaded_at|date:"d M Y" }}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <button type="button" class="fac-quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title|escape }}" {% if doc.course %}data-course-id="{{ doc.course.id }}" data-course-title="{{ doc.course.title|escape }}"{% endif %} onclick="openQuizModal(this)">
+                                            <i class="fas fa-brain"></i> AI Quiz
+                                        </button>
+                                        {% if doc.file %}
+                                        <a href="{{ doc.file.url }}" target="_blank" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                            <i class="fas fa-download"></i> View
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'faculty_delete_library' doc.id %}" onclick="return confirm('Delete this study document?');" class="fac-del-btn" title="Delete Document">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="fac-empty-sub">No study documents uploaded for this course yet.</div>
+                                {% endfor %}
                             </div>
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            {% if doc.file %}
-                            <a href="{{ doc.file.url }}" target="_blank" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
-                                <i class="fas fa-download"></i> View
-                            </a>
-                            {% endif %}
-                            <a href="{% url 'faculty_delete_library' doc.id %}" onclick="return confirm('Delete this study document?');" class="fac-del-btn">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                        {% endfor %}
+                    {% else %}
+                        {% for doc in documents %}
+                        <div class="fac-item-card">
+                            <div>
+                                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ doc.title }}</div>
+                                <div style="color: #60a5fa; font-size: 0.8rem;">{{ doc.course.title }}</div>
+                                <div style="color: #94a3b8; font-size: 0.78rem;">
+                                    <span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 2px 6px; border-radius: 4px;">{{ doc.category }}</span>
+                                    • {{ doc.uploaded_at|date:"d M Y" }}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <button type="button" class="fac-quiz-btn" data-doc-id="{{ doc.id }}" data-title="{{ doc.title|escape }}" {% if doc.course %}data-course-id="{{ doc.course.id }}" data-course-title="{{ doc.course.title|escape }}"{% endif %} onclick="openQuizModal(this)">
+                                    <i class="fas fa-brain"></i> AI Quiz
+                                </button>
+                                {% if doc.file %}
+                                <a href="{{ doc.file.url }}" target="_blank" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                    <i class="fas fa-download"></i> View
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'faculty_delete_library' doc.id %}" onclick="return confirm('Delete this study document?');" class="fac-del-btn" title="Delete Document">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    {% empty %}
-                    <div style="text-align: center; padding: 30px; color: #64748b;">
-                        <i class="fas fa-file-excel" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
-                        No study materials uploaded yet.
-                    </div>
-                    {% endfor %}
+                        {% empty %}
+                        <div style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fas fa-file-excel" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                            No study materials uploaded yet.
+                        </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -1074,9 +1592,9 @@
         <!-- ============================================= -->
         <div id="tab-exams" class="fac-tab-pane">
             <div class="fac-action-grid" id="exams-section">
-                <!-- Exam Form -->
+                <!-- Standard / External Exam Form -->
                 <div class="fac-form-box">
-                    <h3><i class="fas fa-plus-circle" style="color: #06b6d4;"></i> Create Exam / Assessment</h3>
+                    <h3><i class="fas fa-plus-circle" style="color: #06b6d4;"></i> Standard / External Exam Form</h3>
                     <form method="POST" action="{% url 'faculty_create_exam' %}">
                         {% csrf_token %}
                         <label>Course</label>
@@ -1085,7 +1603,7 @@
                         <label>Exam Title</label>
                         {{ exam_form.title }}
 
-                        <label>External Exam / Form Link</label>
+                        <label>External Exam / Form Link (Optional)</label>
                         {{ exam_form.exam_link }}
 
                         <label>Description & Instructions</label>
@@ -1103,7 +1621,7 @@
                         </div>
 
                         <button type="submit" class="fac-submit-btn">
-                            <i class="fas fa-check-double"></i> Publish Exam
+                            <i class="fas fa-check-double"></i> Publish Standard Exam
                         </button>
                     </form>
                 </div>
@@ -1114,37 +1632,99 @@
                         <span><i class="fas fa-feather-alt" style="color: #06b6d4;"></i> Published Exams</span>
                         <span style="font-size: 0.85rem; color: #94a3b8;">{{ exams.count }} exams</span>
                     </h3>
-                    {% for exam in exams %}
-                    <div class="fac-item-card">
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ exam.title }}</div>
-                            <div style="color: #60a5fa; font-size: 0.8rem;">{{ exam.course.title }}</div>
-                            <div style="color: #94a3b8; font-size: 0.78rem;">
-                                Duration: {{ exam.duration_minutes }}m • Deadline: {{ exam.deadline|date:"d M Y, h:i A"|default:"Open" }} •
-                                {% if exam.is_active %}
-                                    <span style="color: #10b981; font-weight: 600;">Active</span>
-                                {% else %}
-                                    <span style="color: #ef4444; font-weight: 600;">Inactive</span>
-                                {% endif %}
+                    {% if total_assigned_courses >= 2 and not selected_course %}
+                        {% for cb in courses_breakdown %}
+                        <div class="fac-course-group-card">
+                            <div class="fac-course-group-header">
+                                <div class="fac-course-group-title">
+                                    <i class="fas fa-feather-alt" style="color: #06b6d4;"></i> {{ cb.course.title }}
+                                    <span class="fac-course-group-chip">{{ cb.exams_count }} Exam{{ cb.exams_count|pluralize }}</span>
+                                </div>
+                                <a href="?course={{ cb.course.id }}#tab-exams" class="fac-course-filter-link">Focus this Course <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                            <div class="fac-course-group-body">
+                                {% for exam in cb.exams %}
+                                <div class="fac-item-card">
+                                    <div>
+                                        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ exam.title }}</div>
+                                        <div style="color: #60a5fa; font-size: 0.8rem;">{{ exam.course.title }}</div>
+                                        <div style="color: #94a3b8; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span>Duration: {{ exam.duration_minutes }}m</span>
+                                            <span>• Deadline: {{ exam.deadline|date:"d M Y, h:i A"|default:"Open" }}</span>
+                                            <span>• 
+                                                {% if exam.is_active %}
+                                                    <span style="color: #10b981; font-weight: 600;">Active</span>
+                                                {% else %}
+                                                    <span style="color: #ef4444; font-weight: 600;">Inactive</span>
+                                                {% endif %}
+                                            </span>
+                                            {% if exam.is_expired %}
+                                                <span style="color: #ef4444; font-weight: 700;">(Deadline Expired)</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <button type="button" class="fac-action-btn-extend" onclick="openExtendExamModal({{ exam.id }}, '{{ exam.title|escapejs }}', '{% if exam.deadline %}{{ exam.deadline|date:'Y-m-d\TH:i' }}{% endif %}', {{ exam.is_active|yesno:'true,false' }}, {{ exam.duration_minutes }})" title="Extend Exam Deadline">
+                                            <i class="fas fa-calendar-plus"></i> Extend Date
+                                        </button>
+                                        {% if exam.exam_link %}
+                                        <a href="{{ exam.exam_link }}" target="_blank" style="padding: 6px 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: #22d3ee; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                            <i class="fas fa-external-link-alt"></i> Link
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'faculty_delete_exam' exam.id %}" onclick="return confirm('Delete this exam?');" class="fac-del-btn" title="Delete Exam">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="fac-empty-sub">No exams or quizzes published for this course yet.</div>
+                                {% endfor %}
                             </div>
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            {% if exam.exam_link %}
-                            <a href="{{ exam.exam_link }}" target="_blank" style="padding: 6px 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: #22d3ee; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
-                                <i class="fas fa-external-link-alt"></i> Link
-                            </a>
-                            {% endif %}
-                            <a href="{% url 'faculty_delete_exam' exam.id %}" onclick="return confirm('Delete this exam?');" class="fac-del-btn">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                        {% endfor %}
+                    {% else %}
+                        {% for exam in exams %}
+                        <div class="fac-item-card">
+                            <div>
+                                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ exam.title }}</div>
+                                <div style="color: #60a5fa; font-size: 0.8rem;">{{ exam.course.title }}</div>
+                                <div style="color: #94a3b8; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span>Duration: {{ exam.duration_minutes }}m</span>
+                                    <span>• Deadline: {{ exam.deadline|date:"d M Y, h:i A"|default:"Open" }}</span>
+                                    <span>• 
+                                        {% if exam.is_active %}
+                                            <span style="color: #10b981; font-weight: 600;">Active</span>
+                                        {% else %}
+                                            <span style="color: #ef4444; font-weight: 600;">Inactive</span>
+                                        {% endif %}
+                                    </span>
+                                    {% if exam.is_expired %}
+                                        <span style="color: #ef4444; font-weight: 700;">(Deadline Expired)</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <button type="button" class="fac-action-btn-extend" onclick="openExtendExamModal({{ exam.id }}, '{{ exam.title|escapejs }}', '{% if exam.deadline %}{{ exam.deadline|date:'Y-m-d\TH:i' }}{% endif %}', {{ exam.is_active|yesno:'true,false' }}, {{ exam.duration_minutes }})" title="Extend Exam Deadline">
+                                    <i class="fas fa-calendar-plus"></i> Extend Date
+                                </button>
+                                {% if exam.exam_link %}
+                                <a href="{{ exam.exam_link }}" target="_blank" style="padding: 6px 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: #22d3ee; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">
+                                    <i class="fas fa-external-link-alt"></i> Link
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'faculty_delete_exam' exam.id %}" onclick="return confirm('Delete this exam?');" class="fac-del-btn" title="Delete Exam">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    {% empty %}
-                    <div style="text-align: center; padding: 30px; color: #64748b;">
-                        <i class="fas fa-clipboard-check" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
-                        No exams or quizzes published yet.
-                    </div>
-                    {% endfor %}
+                        {% empty %}
+                        <div style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fas fa-clipboard-check" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                            No exams or quizzes published yet.
+                        </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -1174,6 +1754,9 @@
                         <label>Total Marks</label>
                         {{ assignment_form.total_marks }}
 
+                        <label>Passing Marks (Pass/Fail Cutoff)</label>
+                        {{ assignment_form.pass_marks }}
+
                         <label>Attach Specification / Brief (Optional)</label>
                         {{ assignment_form.file }}
 
@@ -1186,31 +1769,100 @@
                 <!-- Assignments List -->
                 <div class="fac-list-box">
                     <h3 style="color: #fff; font-size: 1.1rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; display: flex; justify-content: space-between;">
-                        <span><i class="fas fa-clipboard-list" style="color: #3b82f6;"></i> Active Assignments</span>
+                        <span><i class="fas fa-clipboard-list" style="color: #3b82f6;"></i> Course Assignments & Submissions</span>
                         <span style="font-size: 0.85rem; color: #94a3b8;">{{ assignments.count }} tasks</span>
                     </h3>
-                    {% for asgn in assignments %}
-                    <div class="fac-item-card">
-                        <div>
-                            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ asgn.title }}</div>
-                            <div style="color: #60a5fa; font-size: 0.8rem;">{{ asgn.course.title }}</div>
-                            <div style="color: #94a3b8; font-size: 0.78rem;">
-                                Due: {{ asgn.due_date|date:"d M Y, h:i A" }} • Marks: {{ asgn.total_marks }} •
-                                <span style="color: #34d399; font-weight: 600;">{{ asgn.submissions.count }} Submissions</span>
+                    {% if total_assigned_courses >= 2 and not selected_course %}
+                        {% for cb in courses_breakdown %}
+                        <div class="fac-course-group-card">
+                            <div class="fac-course-group-header">
+                                <div class="fac-course-group-title">
+                                    <i class="fas fa-tasks" style="color: #3b82f6;"></i> {{ cb.course.title }}
+                                    <span class="fac-course-group-chip">{{ cb.assignments_count }} Task{{ cb.assignments_count|pluralize }}</span>
+                                </div>
+                                <a href="?course={{ cb.course.id }}#tab-assignments" class="fac-course-filter-link">Focus this Course <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                            <div class="fac-course-group-body">
+                                {% for asgn in cb.assignments %}
+                                <div class="fac-item-card">
+                                    <div>
+                                        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ asgn.title }}</div>
+                                        <div style="color: #60a5fa; font-size: 0.8rem;">{{ asgn.course.title }}</div>
+                                        <div style="color: #94a3b8; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span>Due: {{ asgn.due_date|date:"d M Y, h:i A" }}</span>
+                                            <span>• Marks: {{ asgn.total_marks }}</span>
+                                            <span>• <strong style="color: #34d399;">{{ asgn.submissions.count }} Submissions</strong></span>
+                                            {% if asgn.is_past_due %}
+                                                <span style="color: #ef4444; font-weight: 700;">(Past Due)</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <!-- View Submissions & Grade Button -->
+                                        <a href="{% url 'admin_assignment_submissions_detail' asgn.id %}" class="fac-action-btn-subs" title="View Submissions & Evaluate Students">
+                                            <i class="fas fa-users-viewfinder"></i> Submissions ({{ asgn.submissions.count }})
+                                        </a>
+                                        <!-- Extend Due Date Button -->
+                                        <button type="button" class="fac-action-btn-extend" onclick="openExtendAssignmentModal({{ asgn.id }}, '{{ asgn.title|escapejs }}', '{{ asgn.due_date|date:'Y-m-d\TH:i' }}', {{ asgn.total_marks }})" title="Extend Submission Deadline">
+                                            <i class="fas fa-calendar-plus"></i> Extend Date
+                                        </button>
+                                        {% if asgn.file %}
+                                        <a href="{{ asgn.file.url }}" target="_blank" download style="padding: 7px 11px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-file-download"></i> Brief
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'faculty_delete_assignment' asgn.id %}" onclick="return confirm('Delete this assignment?');" class="fac-del-btn" title="Delete Assignment">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="fac-empty-sub">No assignments created for this course yet.</div>
+                                {% endfor %}
                             </div>
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <a href="{% url 'faculty_delete_assignment' asgn.id %}" onclick="return confirm('Delete this assignment?');" class="fac-del-btn">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                        {% endfor %}
+                    {% else %}
+                        {% for asgn in assignments %}
+                        <div class="fac-item-card">
+                            <div>
+                                <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ asgn.title }}</div>
+                                <div style="color: #60a5fa; font-size: 0.8rem;">{{ asgn.course.title }}</div>
+                                <div style="color: #94a3b8; font-size: 0.78rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span>Due: {{ asgn.due_date|date:"d M Y, h:i A" }}</span>
+                                    <span>• Marks: {{ asgn.total_marks }}</span>
+                                    <span>• <strong style="color: #34d399;">{{ asgn.submissions.count }} Submissions</strong></span>
+                                    {% if asgn.is_past_due %}
+                                        <span style="color: #ef4444; font-weight: 700;">(Past Due)</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <!-- View Submissions & Grade Button -->
+                                <a href="{% url 'admin_assignment_submissions_detail' asgn.id %}" class="fac-action-btn-subs" title="View Submissions & Evaluate Students">
+                                    <i class="fas fa-users-viewfinder"></i> Submissions ({{ asgn.submissions.count }})
+                                </a>
+                                <!-- Extend Due Date Button -->
+                                <button type="button" class="fac-action-btn-extend" onclick="openExtendAssignmentModal({{ asgn.id }}, '{{ asgn.title|escapejs }}', '{{ asgn.due_date|date:'Y-m-d\TH:i' }}', {{ asgn.total_marks }})" title="Extend Submission Deadline">
+                                    <i class="fas fa-calendar-plus"></i> Extend Date
+                                </button>
+                                {% if asgn.file %}
+                                <a href="{{ asgn.file.url }}" target="_blank" download style="padding: 7px 11px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-file-download"></i> Brief
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'faculty_delete_assignment' asgn.id %}" onclick="return confirm('Delete this assignment?');" class="fac-del-btn" title="Delete Assignment">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    {% empty %}
-                    <div style="text-align: center; padding: 30px; color: #64748b;">
-                        <i class="fas fa-folder" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
-                        No assignments created yet.
-                    </div>
-                    {% endfor %}
+                        {% empty %}
+                        <div style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fas fa-folder" style="font-size: 1.8rem; margin-bottom: 8px; display: block;"></i>
+                            No assignments created yet.
+                        </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -1287,16 +1939,273 @@
     </div>
 </div>
 
+<!-- ============================================= -->
+<!-- AI QUIZ GENERATION MODAL                      -->
+<!-- ============================================= -->
+<div id="quizModal" class="quiz-modal-overlay">
+    <div class="quiz-modal">
+        <div class="quiz-modal-header">
+            <h3><i class="fas fa-magic" style="color: var(--accent-purple);"></i> AI Quiz Generator: <span id="modalDocTitle"></span></h3>
+            <span class="quiz-modal-close" onclick="closeQuizModal()">&times;</span>
+        </div>
+
+        <!-- Quiz Settings Bar (Title, Course Selection, Duration, Question Count) -->
+        <div id="quizSettingsBar" style="padding: 16px 24px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass-border); display: none;">
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                <div style="flex: 2 1 200px; min-width: 180px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;">Quiz Title</label>
+                    <input type="text" id="modalQuizTitle" style="width:100%; box-sizing: border-box; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem;" placeholder="Exam Title">
+                </div>
+                <div style="flex: 1.5 1 180px; min-width: 160px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;">Link To Course <span style="color:var(--accent-red);">*</span></label>
+                    <select id="modalQuizCourse" style="width:100%; box-sizing: border-box; background:#121324; border:1px solid var(--glass-border); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem;" required>
+                        <option value="">-- Select Course (Required) --</option>
+                        {% for c in courses %}
+                        <option value="{{ c.id }}">{{ c.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="flex: 0.8 1 90px; min-width: 85px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;">Duration (m)</label>
+                    <input type="number" id="modalQuizDuration" value="20" min="5" max="180" style="width:100%; box-sizing: border-box; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem;">
+                </div>
+                <div style="flex: 1 1 140px; min-width: 120px;">
+                    <label style="display:block; font-size:0.75rem; color:var(--accent-purple); font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.8px;"><i class="fas fa-list-ol"></i> Questions (10-20)</label>
+                    <select id="modalQuizCount" style="width:100%; box-sizing: border-box; background:#121324; border:1px solid var(--accent-purple); color:#fff; border-radius:var(--radius-sm); padding:8px 12px; font-size:0.85rem; font-weight:600;">
+                        <option value="10">10 Questions</option>
+                        <option value="12">12 Questions</option>
+                        <option value="15" selected>15 Questions</option>
+                        <option value="18">18 Questions</option>
+                        <option value="20">20 Questions</option>
+                    </select>
+                </div>
+                <div style="align-self: flex-end;">
+                    <button type="button" class="btn-action" id="btnRegenerateQuiz" onclick="regenerateQuizWithCount()" style="background:rgba(124, 77, 255, 0.2); border:1px solid var(--accent-purple); color:#fff; padding:8px 14px; border-radius:var(--radius-sm); font-size:0.82rem; cursor:pointer; height:37px; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;" title="Regenerate questions with selected count">
+                        <i class="fas fa-sync-alt"></i> Regenerate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="quizLoader" style="text-align:center; padding:60px 20px; display:none;">
+            <div style="display:inline-block; position:relative; margin-bottom:20px;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 48px; color: var(--accent-purple);"></i>
+                <i class="fas fa-brain" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:20px; color:var(--secondary);"></i>
+            </div>
+            <h4 style="color:#fff; margin-bottom:8px; font-size:1.05rem;" id="quizLoaderTitle">Generating Quiz from Document...</h4>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; max-width:440px; margin:0 auto;" id="quizLoaderSubtitle">AI is analyzing the content and generating between 10–20 comprehensive multiple-choice questions with answers.</p>
+        </div>
+        <div id="quizContent" class="quiz-modal-body"></div>
+        <div class="quiz-modal-footer">
+            <span id="quizQuestionsCount" style="float:left; color:var(--text-muted); font-size:0.85rem; line-height:38px;"></span>
+            <button type="button" class="btn-action" style="background:var(--glass-bg); color:var(--text-secondary); border:1px solid var(--glass-border); margin-right:8px; padding:10px 18px;" onclick="closeQuizModal()">Cancel</button>
+            <button type="button" id="saveQuizBtn" class="btn-save-quiz" onclick="saveQuizToDB()">Save to Exams</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- EXTEND EXAM DEADLINE MODAL                    -->
+<!-- ============================================= -->
+<div id="extendExamModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(5, 7, 15, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: rgba(13, 17, 28, 0.95); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(6, 182, 212, 0.2); position: relative; animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(6, 182, 212, 0.1), transparent);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); display: flex; align-items: center; justify-content: center; color: #22d3ee; font-size: 1.15rem;">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #fff;">Extend Exam Deadline</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Update cutoff time so students can take the exam</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeExtendExamModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="extendExamForm" method="POST" action="" style="padding: 22px 24px;">
+            {% csrf_token %}
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Exam Title</label>
+                <input type="text" id="extendExamTitleInput" readonly style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; color: #cbd5e1; font-size: 0.9rem; cursor: not-allowed;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #22d3ee; margin-bottom: 6px;">New Deadline <span style="color: #ef4444;">*</span></label>
+                    <input type="datetime-local" id="extendExamDeadlineInput" name="deadline" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Duration (Minutes)</label>
+                    <input type="number" id="extendExamDurationInput" name="duration_minutes" min="5" max="300" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+            </div>
+            <div style="margin-bottom: 22px; display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.03); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.06);">
+                <input type="checkbox" id="extendExamIsActiveInput" name="is_active" value="true" style="width: 18px; height: 18px; accent-color: #22d3ee; cursor: pointer;">
+                <label for="extendExamIsActiveInput" style="margin: 0; font-size: 0.88rem; color: #fff; cursor: pointer;">Keep / Re-activate Exam Status (Unexpired for Students)</label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px;">
+                <button type="button" onclick="closeExtendExamModal()" style="padding: 10px 18px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #06b6d4, #0891b2); border: 1px solid rgba(6, 182, 212, 0.4); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);">
+                    <i class="fas fa-check-circle"></i> Save & Extend Deadline
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- EXTEND ASSIGNMENT DEADLINE MODAL              -->
+<!-- ============================================= -->
+<div id="extendAssignmentModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(5, 7, 15, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: rgba(13, 17, 28, 0.95); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(59, 130, 246, 0.2); position: relative; animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; color: #60a5fa; font-size: 1.15rem;">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #fff;">Extend Assignment Due Date</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Give students additional time to submit work</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeExtendAssignmentModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="extendAssignmentForm" method="POST" action="" style="padding: 22px 24px;">
+            {% csrf_token %}
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Assignment Title</label>
+                <input type="text" id="extendAssignmentTitleInput" readonly style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; color: #cbd5e1; font-size: 0.9rem; cursor: not-allowed;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-bottom: 22px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #60a5fa; margin-bottom: 6px;">New Due Date & Time <span style="color: #ef4444;">*</span></label>
+                    <input type="datetime-local" id="extendAssignmentDueDateInput" name="due_date" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Total Marks</label>
+                    <input type="number" id="extendAssignmentMarksInput" name="total_marks" min="1" max="1000" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px;">
+                <button type="button" onclick="closeExtendAssignmentModal()" style="padding: 10px 18px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59, 130, 246, 0.4); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);">
+                    <i class="fas fa-check-circle"></i> Save & Extend Due Date
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- EDIT / RESCHEDULE LIVE CLASS MODAL            -->
+<!-- ============================================= -->
+<div id="editLiveClassModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(5, 7, 15, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: rgba(13, 17, 28, 0.95); border: 1px solid rgba(255, 51, 102, 0.35); border-radius: 20px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(255, 51, 102, 0.2); position: relative; animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(255, 51, 102, 0.1), transparent);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(255, 51, 102, 0.15); border: 1px solid rgba(255, 51, 102, 0.3); display: flex; align-items: center; justify-content: center; color: #ff3366; font-size: 1.15rem;">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #fff;">Reschedule Live Class</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Update meeting schedule, duration, or stream URL</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeEditLiveClassModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editLiveClassForm" method="POST" action="" style="padding: 22px 24px;">
+            {% csrf_token %}
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Class Topic / Title <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="editLiveClassTitleInput" name="title" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #ff3366; margin-bottom: 6px;">New Date & Time <span style="color: #ef4444;">*</span></label>
+                    <input type="datetime-local" id="editLiveClassDateTimeInput" name="date_time" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 51, 102, 0.4); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Duration (Mins)</label>
+                    <input type="number" id="editLiveClassDurationInput" name="duration" min="15" max="300" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Meeting Platform</label>
+                <select id="editLiveClassPlatformInput" name="platform" style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: #121324; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+                    <option value="Google Meet">Google Meet</option>
+                    <option value="Zoom">Zoom</option>
+                    <option value="Microsoft Teams">Microsoft Teams</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 22px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Meeting Link / URL <span style="color: #ef4444;">*</span></label>
+                <input type="url" id="editLiveClassLinkInput" name="meeting_link" required placeholder="https://meet.google.com/..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px;">
+                <button type="button" onclick="closeEditLiveClassModal()" style="padding: 10px 18px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #ff3366, #e11d48); border: 1px solid rgba(255, 51, 102, 0.4); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.35);">
+                    <i class="fas fa-check-circle"></i> Update & Reschedule
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    // --- CSRF Cookie Helper ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // --- Tab Switching & Hash Navigation ---
     function switchFacultyTab(tabId, btn) {
         document.querySelectorAll('.fac-tab-pane').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.fac-tab-btn').forEach(el => el.classList.remove('active'));
         
         const target = document.getElementById(tabId);
         if (target) target.classList.add('active');
-        if (btn) btn.classList.add('active');
+        if (btn) {
+            btn.classList.add('active');
+        } else {
+            const matchingBtn = document.querySelector(`.fac-tab-btn[onclick*="${tabId}"]`);
+            if (matchingBtn) matchingBtn.classList.add('active');
+        }
+
+        // Sync active highlight in faculty sidebar
+        try {
+            const sidebarItem = document.querySelector(`.sidebar .fac-nav-item[data-nav="${tabId}"]`);
+            if (sidebarItem) {
+                document.querySelectorAll('.sidebar .fac-nav-item').forEach(el => el.classList.remove('active'));
+                sidebarItem.classList.add('active');
+            }
+        } catch (e) {
+            console.debug('Sidebar sync error:', e);
+        }
     }
 
+    // --- Profile Modal ---
     function openFacultyProfileModal() {
         const modal = document.getElementById('facProfileModalOverlay');
         if (modal) {
@@ -1313,8 +2222,453 @@
         }
     }
 
+    // --- AI Quiz Modal Variables & Functions ---
+    let currentQuestions = [];
+    let currentDocTitle = "";
+    let currentCourseId = null;
+    let currentDocId = null;
+
+    function closeQuizModal() {
+        const modal = document.getElementById('quizModal');
+        if (modal) modal.style.display = 'none';
+        const settingsBar = document.getElementById('quizSettingsBar');
+        if (settingsBar) settingsBar.style.display = 'none';
+        const content = document.getElementById('quizContent');
+        if (content) content.innerHTML = '';
+        currentQuestions = [];
+        const saveBtn = document.getElementById('saveQuizBtn');
+        if (saveBtn) {
+            saveBtn.style.display = 'inline-block';
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+        }
+        document.body.style.overflow = 'auto';
+    }
+
+    async function openQuizModal(docId, title, courseId, questionCount) {
+        if (docId && (docId instanceof HTMLElement || docId.dataset)) {
+            const btn = docId.closest('.fac-quiz-btn') || docId;
+            title = btn.dataset.title || btn.getAttribute('data-title') || '';
+            courseId = btn.dataset.courseId ? parseInt(btn.dataset.courseId) : null;
+            docId = btn.dataset.docId || btn.getAttribute('data-doc-id');
+        }
+
+        currentDocId = docId;
+        currentDocTitle = title || "Document";
+        currentCourseId = courseId;
+        currentQuestions = [];
+
+        const modal = document.getElementById('quizModal');
+        const loader = document.getElementById('quizLoader');
+        const content = document.getElementById('quizContent');
+        const saveBtn = document.getElementById('saveQuizBtn');
+        const settingsBar = document.getElementById('quizSettingsBar');
+        const docTitleEl = document.getElementById('modalDocTitle');
+        const titleInput = document.getElementById('modalQuizTitle');
+        const courseSelect = document.getElementById('modalQuizCourse');
+        const countSelect = document.getElementById('modalQuizCount');
+        const questionsCount = document.getElementById('quizQuestionsCount');
+        const loaderSubtitle = document.getElementById('quizLoaderSubtitle');
+
+        let numQuestions = questionCount || (countSelect ? parseInt(countSelect.value) : 15);
+        if (isNaN(numQuestions) || numQuestions < 10 || numQuestions > 20) {
+            numQuestions = 15;
+        }
+        if (countSelect) countSelect.value = String(numQuestions);
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        docTitleEl.innerText = currentDocTitle;
+        content.innerHTML = '';
+        loader.style.display = 'block';
+        if (loaderSubtitle) {
+            loaderSubtitle.innerText = `AI is analyzing the content and generating ${numQuestions} comprehensive multiple-choice questions with answers.`;
+        }
+        if (settingsBar) settingsBar.style.display = 'none';
+        if (saveBtn) {
+            saveBtn.style.display = 'none';
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+        }
+        if (questionsCount) questionsCount.innerText = '';
+
+        if (titleInput) titleInput.value = `AI Quiz: ${currentDocTitle}`;
+        if (courseSelect) courseSelect.value = currentCourseId ? String(currentCourseId) : "";
+
+        const formData = new FormData();
+        formData.append('doc_id', docId);
+        formData.append('num_questions', numQuestions);
+
+        const csrfToken = getCookie('csrftoken') || '{{ csrf_token }}';
+
+        try {
+            const response = await fetch("{% url 'generate_quiz' %}", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrfToken }
+            });
+            const data = await response.json();
+            loader.style.display = 'none';
+
+            if (data.status === 'success' && data.quiz && data.quiz.length > 0) {
+                currentQuestions = data.quiz;
+                if (data.doc_title) {
+                    currentDocTitle = data.doc_title;
+                    docTitleEl.innerText = currentDocTitle;
+                    if (titleInput) titleInput.value = `AI Quiz: ${currentDocTitle}`;
+                }
+                if (data.course && data.course.id) {
+                    currentCourseId = data.course.id;
+                    if (courseSelect) courseSelect.value = String(currentCourseId);
+                }
+
+                if (settingsBar) settingsBar.style.display = 'block';
+                if (saveBtn) {
+                    saveBtn.style.display = 'inline-block';
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                }
+                if (questionsCount) questionsCount.innerText = `${data.quiz.length} Questions Generated`;
+                renderQuestions(data.quiz);
+            } else if (data.status === 'success' && (!data.quiz || data.quiz.length === 0)) {
+                content.innerHTML = `<div style="text-align:center; padding:40px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:40px; color:#f59e0b; margin-bottom:15px;"></i>
+                    <p style="color:#f59e0b; font-weight:600;">AI could not generate questions from this document.</p>
+                    <p style="color:#94a3b8; margin-top:10px; font-size:0.85rem;">The document may have insufficient selectable text or scanned images.</p>
+                    <button type="button" class="btn-action" style="margin-top:16px; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.15); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="openQuizModal('${docId}', '${currentDocTitle}', ${currentCourseId || 'null'}, ${numQuestions})"><i class="fas fa-redo"></i> Retry Generation</button>
+                </div>`;
+            } else {
+                content.innerHTML = `<div style="text-align:center; padding:40px;">
+                    <i class="fas fa-times-circle" style="font-size:40px; color:#ef4444; margin-bottom:15px;"></i>
+                    <p style="color:#ef4444; font-weight:600;">Error: ${data.message || 'Unknown error occurred'}</p>
+                    <button type="button" class="btn-action" style="margin-top:16px; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.15); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="openQuizModal('${docId}', '${currentDocTitle}', ${currentCourseId || 'null'}, ${numQuestions})"><i class="fas fa-redo"></i> Try Again</button>
+                </div>`;
+            }
+        } catch (error) {
+            console.error('Quiz generation error:', error);
+            loader.style.display = 'none';
+            content.innerHTML = `<div style="text-align:center; padding:40px;">
+                <i class="fas fa-wifi" style="font-size:40px; color:#ef4444; margin-bottom:15px;"></i>
+                <p style="color:#ef4444; font-weight:600;">Network Error or Server Timeout.</p>
+                <p style="color:#94a3b8; margin-top:10px; font-size:0.85rem;">The AI took longer than expected to process or connection was interrupted.</p>
+                <button type="button" class="btn-action" style="margin-top:16px; background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.15); padding:8px 16px; border-radius:6px; cursor:pointer;" onclick="openQuizModal('${docId}', '${currentDocTitle}', ${currentCourseId || 'null'}, ${numQuestions})"><i class="fas fa-redo"></i> Retry</button>
+            </div>`;
+        }
+    }
+
+    async function regenerateQuizWithCount() {
+        if (!currentDocId) return;
+        const countSelect = document.getElementById('modalQuizCount');
+        const count = countSelect ? parseInt(countSelect.value) : 15;
+        await openQuizModal(currentDocId, currentDocTitle, currentCourseId, count);
+    }
+
+    function setQuizQuestionAnswer(qIdx, optLetter) {
+        if (currentQuestions && currentQuestions[qIdx]) {
+            currentQuestions[qIdx].correct_option = optLetter;
+            currentQuestions[qIdx].answer = ['A', 'B', 'C', 'D'].indexOf(optLetter);
+            renderQuestions(currentQuestions);
+        }
+    }
+
+    function renderQuestions(questions) {
+        const content = document.getElementById('quizContent');
+        if (!questions || questions.length === 0) {
+            content.innerHTML = '<p style="color:#f59e0b; text-align:center; padding:30px;">No questions were generated.</p>';
+            return;
+        }
+        let html = '<div class="generated-quiz-list">';
+        questions.forEach((q, idx) => {
+            const optA = q.correct_option === 'A';
+            const optB = q.correct_option === 'B';
+            const optC = q.correct_option === 'C';
+            const optD = q.correct_option === 'D';
+
+            html += `
+                <div class="q-item" style="background:rgba(0,0,0,0.3); padding:16px; margin-bottom:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
+                    <div class="q-text" style="margin-bottom:10px; font-weight:600; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                        <span><strong>Q${idx+1}:</strong> ${q.question_text}</span>
+                        <span style="font-size:0.75rem; color:#94a3b8; font-weight:400;">Click option to set answer</span>
+                    </div>
+                    <div class="q-options" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                        <div class="opt ${optA ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'A')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optA ? 'background:rgba(16,185,129,0.18); border:1px solid #10b981; color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#cbd5e1;'}">
+                            <strong>A)</strong> ${q.option_a} ${optA ? '<i class="fas fa-check-circle" style="color:#10b981; float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                        <div class="opt ${optB ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'B')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optB ? 'background:rgba(16,185,129,0.18); border:1px solid #10b981; color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#cbd5e1;'}">
+                            <strong>B)</strong> ${q.option_b} ${optB ? '<i class="fas fa-check-circle" style="color:#10b981; float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                        <div class="opt ${optC ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'C')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optC ? 'background:rgba(16,185,129,0.18); border:1px solid #10b981; color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#cbd5e1;'}">
+                            <strong>C)</strong> ${q.option_c} ${optC ? '<i class="fas fa-check-circle" style="color:#10b981; float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                        <div class="opt ${optD ? 'correct' : ''}" onclick="setQuizQuestionAnswer(${idx}, 'D')" style="cursor:pointer; transition:all 0.2s; padding:10px 12px; border-radius:6px; font-size:0.85rem; ${optD ? 'background:rgba(16,185,129,0.18); border:1px solid #10b981; color:#fff; font-weight:600;' : 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#cbd5e1;'}">
+                            <strong>D)</strong> ${q.option_d} ${optD ? '<i class="fas fa-check-circle" style="color:#10b981; float:right; margin-top:2px;"></i>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        content.innerHTML = html;
+    }
+
+    async function saveQuizToDB() {
+        if (!currentQuestions || currentQuestions.length === 0) {
+            alert('No questions were found to save. Please generate questions first.');
+            return;
+        }
+        
+        const saveBtn = document.getElementById('saveQuizBtn');
+        const titleInput = document.getElementById('modalQuizTitle');
+        const courseSelect = document.getElementById('modalQuizCourse');
+        const durationInput = document.getElementById('modalQuizDuration');
+        const settingsBar = document.getElementById('quizSettingsBar');
+
+        let selectedCourseId = courseSelect && courseSelect.value ? parseInt(courseSelect.value) : (currentCourseId || null);
+        const duration = (durationInput && durationInput.value && !isNaN(parseInt(durationInput.value))) 
+            ? Math.max(5, parseInt(durationInput.value)) 
+            : 20;
+
+        if (!selectedCourseId) {
+            alert('Please select a course to link this quiz to so enrolled students can access it.');
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                saveBtn.disabled = false;
+            }
+            if (courseSelect) courseSelect.focus();
+            return;
+        }
+
+        const quizTitle = (titleInput && titleInput.value && titleInput.value.trim()) 
+            ? titleInput.value.trim() 
+            : (currentDocTitle ? `AI Quiz: ${currentDocTitle}` : 'AI Generated Quiz');
+
+        if (saveBtn) {
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving to Exams...';
+            saveBtn.disabled = true;
+        }
+
+        try {
+            const payload = {
+                title: quizTitle,
+                description: `Auto-generated AI Quiz from document: ${currentDocTitle}`,
+                course_id: selectedCourseId,
+                doc_id: currentDocId,
+                duration_minutes: duration,
+                questions: currentQuestions
+            };
+
+            const csrfToken = getCookie('csrftoken') || '{{ csrf_token }}';
+
+            const response = await fetch("{% url 'save_quiz' %}", {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                let errMsg = `Server returned status ${response.status}`;
+                try {
+                    const errData = await response.json();
+                    if (errData && errData.message) errMsg = errData.message;
+                } catch (_) {}
+                throw new Error(errMsg);
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                if (settingsBar) settingsBar.style.display = 'none';
+                if (saveBtn) saveBtn.style.display = 'none';
+                const countEl = document.getElementById('quizQuestionsCount');
+                if (countEl) countEl.innerText = '';
+
+                document.getElementById('quizContent').innerHTML = `
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <i class="fas fa-check-circle" style="font-size: 54px; color: #10b981; margin-bottom:18px; filter: drop-shadow(0 0 15px rgba(16,185,129,0.4));"></i>
+                        <h3 style="color: #fff; font-size:1.3rem; margin-bottom:8px;">Quiz Created &amp; Saved to Course!</h3>
+                        <p style="color: #cbd5e1; margin-bottom: 24px; font-size: 0.95rem;">
+                            <strong>${data.exam_title || quizTitle}</strong> has been created and published under 
+                            <span style="color:#a855f7; font-weight:600;">${data.course_title || 'General Exams'}</span>.
+                        </p>
+                        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+                            <a href="/take-exam/${data.exam_id}/" target="_blank" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; padding:11px 22px; background:#10b981; color:#000; font-weight:700; border-radius:8px; transition:transform 0.2s;">
+                                <i class="fas fa-play"></i> Preview Exam
+                            </a>
+                            <a href="#tab-exams" onclick="closeQuizModal(); switchFacultyTab('tab-exams'); location.reload();" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; padding:11px 22px; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); font-weight:600; border-radius:8px;">
+                                <i class="fas fa-clipboard-list"></i> Refresh Exams List
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alert("Error saving quiz: " + (data.message || 'Unknown error'));
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                    saveBtn.disabled = false;
+                }
+            }
+        } catch (error) {
+            console.error('Save quiz error:', error);
+            alert("Error saving quiz: " + (error.message || "Please check connection."));
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> Save to Exams';
+                saveBtn.disabled = false;
+            }
+        }
+    }
+
+    function triggerAiQuizFromSelect() {
+        const select = document.getElementById('facultyAiDocSelect');
+        const countSelect = document.getElementById('facultyAiQuestionCount');
+        const durationInput = document.getElementById('facultyAiDuration');
+
+        if (!select || !select.value) {
+            alert('Please select an uploaded PDF or study material document first.');
+            return;
+        }
+
+        const selectedOption = select.options[select.selectedIndex];
+        const docId = select.value;
+        const title = selectedOption.dataset.title || selectedOption.text.split('(')[0].trim();
+        const courseId = selectedOption.dataset.courseId ? parseInt(selectedOption.dataset.courseId) : null;
+        const count = countSelect ? parseInt(countSelect.value) : 15;
+        const duration = durationInput ? parseInt(durationInput.value) : 20;
+
+        const modalDuration = document.getElementById('modalQuizDuration');
+        if (modalDuration) modalDuration.value = duration;
+
+        openQuizModal(docId, title, courseId, count);
+    }
+
+    // --- Extend Exam Deadline Modal Handlers ---
+    function openExtendExamModal(examId, title, deadlineIso, isActive, duration) {
+        const modal = document.getElementById('extendExamModalOverlay');
+        const form = document.getElementById('extendExamForm');
+        const titleInput = document.getElementById('extendExamTitleInput');
+        const deadlineInput = document.getElementById('extendExamDeadlineInput');
+        const durationInput = document.getElementById('extendExamDurationInput');
+        const activeInput = document.getElementById('extendExamIsActiveInput');
+
+        if (form) form.action = `/faculty/exams/${examId}/extend-deadline/`;
+        if (titleInput) titleInput.value = title;
+        if (deadlineInput) deadlineInput.value = deadlineIso || '';
+        if (durationInput && duration) durationInput.value = duration;
+        if (activeInput) activeInput.checked = (isActive === true || isActive === 'true');
+
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeExtendExamModal() {
+        const modal = document.getElementById('extendExamModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // --- Extend Assignment Due Date Modal Handlers ---
+    function openExtendAssignmentModal(assignmentId, title, dueDateIso, marks) {
+        const modal = document.getElementById('extendAssignmentModalOverlay');
+        const form = document.getElementById('extendAssignmentForm');
+        const titleInput = document.getElementById('extendAssignmentTitleInput');
+        const dueInput = document.getElementById('extendAssignmentDueDateInput');
+        const marksInput = document.getElementById('extendAssignmentMarksInput');
+
+        if (form) form.action = `/faculty/assignments/${assignmentId}/extend-deadline/`;
+        if (titleInput) titleInput.value = title;
+        if (dueInput) dueInput.value = dueDateIso || '';
+        if (marksInput && marks) marksInput.value = marks;
+
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeExtendAssignmentModal() {
+        const modal = document.getElementById('extendAssignmentModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // --- Edit Live Class Modal Handlers ---
+    function openEditLiveClassModal(classId, title, dateTimeIso, duration, platform, link) {
+        const modal = document.getElementById('editLiveClassModalOverlay');
+        const form = document.getElementById('editLiveClassForm');
+        const titleInput = document.getElementById('editLiveClassTitleInput');
+        const dateInput = document.getElementById('editLiveClassDateTimeInput');
+        const durInput = document.getElementById('editLiveClassDurationInput');
+        const platSelect = document.getElementById('editLiveClassPlatformInput');
+        const linkInput = document.getElementById('editLiveClassLinkInput');
+
+        if (form) form.action = `/faculty/edit-live-class/${classId}/`;
+        if (titleInput) titleInput.value = title;
+        if (dateInput) dateInput.value = dateTimeIso || '';
+        if (durInput) durInput.value = duration || 60;
+        if (platSelect) platSelect.value = platform || 'Google Meet';
+        if (linkInput) linkInput.value = link || '';
+
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeEditLiveClassModal() {
+        const modal = document.getElementById('editLiveClassModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // --- Escape Key Closes Modals ---
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeFacultyProfileModal();
+        if (e.key === 'Escape') {
+            closeFacultyProfileModal();
+            closeQuizModal();
+            closeExtendExamModal();
+            closeExtendAssignmentModal();
+            closeEditLiveClassModal();
+        }
+    });
+
+    // --- Auto Switch to Tab from Hash ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash;
+        if (hash) {
+            if (hash === '#tab-assignments' || hash === '#assignments' || hash === '#assignments-section') {
+                switchFacultyTab('tab-assignments');
+            } else if (hash === '#tab-exams' || hash === '#exams' || hash === '#exams-section') {
+                switchFacultyTab('tab-exams');
+            } else if (hash === '#tab-library' || hash === '#library' || hash === '#library-section') {
+                switchFacultyTab('tab-library');
+            } else if (hash === '#tab-notices' || hash === '#notices' || hash === '#notices-section') {
+                switchFacultyTab('tab-notices');
+            } else if (hash === '#tab-classes' || hash === '#live-classes' || hash === '#live-class-section') {
+                switchFacultyTab('tab-classes');
+            } else if (hash === '#students-section' || hash === '#students') {
+                const nav = document.querySelector('.sidebar .fac-nav-item[data-nav="students-section"]');
+                if (nav) {
+                    document.querySelectorAll('.sidebar .fac-nav-item').forEach(el => el.classList.remove('active'));
+                    nav.classList.add('active');
+                }
+            } else if (hash === '#profile-section' || hash === '#profile') {
+                const nav = document.querySelector('.sidebar .fac-nav-item[data-nav="profile-section"]');
+                if (nav) {
+                    document.querySelectorAll('.sidebar .fac-nav-item').forEach(el => el.classList.remove('active'));
+                    nav.classList.add('active');
+                }
+            }
+        }
     });
 </script>
 {% endblock %}

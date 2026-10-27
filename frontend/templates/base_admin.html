@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning-365 | Admin Panel</title>
+    <title>Learning-365 | {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty Panel{% else %}Admin Panel{% endif %}</title>
     
     <!-- Google Fonts: Inter + Orbitron -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,8 +174,11 @@
             min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-right: 4px;
-            margin-bottom: 10px;
+            padding: 0 4px 10px 0;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .nav-links::-webkit-scrollbar {
@@ -192,21 +195,44 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        .nav-links li { margin-bottom: 3px; }
+        .nav-links li { 
+            margin-bottom: 4px; 
+            list-style: none;
+        }
+
+        .nav-section-label {
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #64748b;
+            padding: 14px 12px 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        .nav-section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+        }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: var(--radius-md);
-            transition: var(--transition-fast);
+            gap: 13px;
+            padding: 11px 16px;
+            border-radius: 12px;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 0.92rem;
-            font-weight: 500;
+            font-weight: 600;
             position: relative;
             overflow: hidden;
+            border: 1px solid transparent;
         }
 
         .nav-links a::before {
@@ -216,31 +242,42 @@
             width: 0; height: 100%;
             background: linear-gradient(90deg, var(--primary-glow), transparent);
             transition: var(--transition-smooth);
-            border-radius: var(--radius-md);
+            border-radius: 12px;
         }
 
-        .nav-links a:hover::before,
-        .nav-links a.active::before {
+        .nav-links a:hover::before {
             width: 100%;
         }
 
-        .nav-links a:hover,
-        .nav-links a.active {
+        .nav-links a:hover {
             color: var(--text-primary);
-            background: var(--glass-bg-hover);
-            transform: translateX(4px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(3px);
         }
 
         .nav-links a.active {
-            border-left: 3px solid var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
+            color: #fff;
+            background: rgba(108, 99, 255, 0.14);
+            border: 1px solid rgba(108, 99, 255, 0.35);
+            border-left: 3.5px solid var(--primary);
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.22);
+        }
+
+        /* Faculty active navigation badge */
+        .fac-nav-item.active {
+            background: rgba(16, 185, 129, 0.12) !important;
+            border-color: rgba(16, 185, 129, 0.32) !important;
+            border-left: 3.5px solid #10b981 !important;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2) !important;
+            color: #fff !important;
         }
 
         .nav-links a i {
             width: 22px;
             text-align: center;
             font-size: 1.05rem;
-            transition: var(--transition-fast);
+            transition: transform 0.2s ease, color 0.2s ease;
             position: relative;
             z-index: 1;
         }
@@ -248,18 +285,18 @@
         .nav-links a span {
             position: relative;
             z-index: 1;
+            letter-spacing: 0.2px;
         }
 
         .nav-links a:hover i {
-            color: var(--primary);
-            transform: scale(1.1);
+            transform: scale(1.12);
         }
 
         /* Sidebar Divider */
         .nav-divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
-            margin: 8px 6px;
+            margin: 10px 6px;
         }
 
         /* Sidebar Footer Wrapper */
@@ -807,10 +844,10 @@
             <i class="fas fa-bars"></i>
         </button>
         <div class="admin-mobile-brand">
-            <i class="fas fa-shield-halved"></i>
-            <span>Admin <strong>Panel</strong></span>
+            <i class="fas {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}fa-chalkboard-teacher{% else %}fa-shield-halved{% endif %}"></i>
+            <span>{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty <strong>Panel</strong>{% else %}Admin <strong>Panel</strong>{% endif %}</span>
         </div>
-        <a href="{% url 'admin_profile' %}" class="admin-mobile-avatar" title="Admin Profile">
+        <a href="{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}{% url 'faculty_dashboard' %}{% else %}{% url 'admin_profile' %}{% endif %}" class="admin-mobile-avatar" title="{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty Profile{% else %}Admin Profile{% endif %}">
             {% if request.user.profile_pic_url %}
                 <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
                 <div class="fallback" style="display:none;">{{ request.user.first_name.0|default:request.user.username.0|upper }}</div>
@@ -828,8 +865,8 @@
 
     <div class="sidebar" id="adminSidebar">
         <div class="brand">
-            <i class="fas fa-shield-halved"></i>
-            <span>Admin Panel</span>
+            <i class="fas {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}fa-chalkboard-teacher{% else %}fa-shield-halved{% endif %}"></i>
+            <span>{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty Panel{% else %}Admin Panel{% endif %}</span>
             <button class="admin-sidebar-close-btn" onclick="toggleAdminSidebar()" aria-label="Close navigation">
                 <i class="fas fa-times"></i>
             </button>
@@ -838,83 +875,91 @@
         <ul class="nav-links">
             {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}
             <!-- FACULTY-SPECIFIC NAVIGATION -->
+            <li class="nav-section-label">Core Dashboard</li>
+
             <li>
-                <a href="{% url 'faculty_dashboard' %}" class="{% if request.resolver_match.url_name == 'faculty_dashboard' %}active{% endif %}">
+                <a href="{% url 'faculty_dashboard' %}" class="fac-nav-item {% if request.resolver_match.url_name == 'faculty_dashboard' and not request.GET.section %}active{% endif %}" data-nav="overview" onclick="return handleFacultySidebarNav(event, 'overview')">
                     <i class="fas fa-chart-pie" style="color: #10b981;"></i>
                     <span>Faculty Console</span>
                 </a>
             </li>
 
             <li>
-                <a href="{% url 'faculty_dashboard' %}#students-section">
+                <a href="{% url 'faculty_dashboard' %}#students-section" class="fac-nav-item" data-nav="students" onclick="return handleFacultySidebarNav(event, 'students')">
                     <i class="fas fa-user-graduate" style="color: #00d4ff;"></i>
                     <span>Enrolled Students</span>
                 </a>
             </li>
 
+            <li class="nav-section-label">Academic Suite</li>
+
             <li>
-                <a href="{% url 'faculty_dashboard' %}#live-class-section">
+                <a href="{% url 'faculty_dashboard' %}#tab-classes" class="fac-nav-item" data-nav="tab-classes" onclick="return handleFacultySidebarNav(event, 'tab-classes')">
                     <i class="fas fa-video" style="color: #ff3366;"></i>
                     <span>Live Classes</span>
                 </a>
             </li>
 
             <li>
-                <a href="{% url 'faculty_dashboard' %}#notices-section">
+                <a href="{% url 'faculty_dashboard' %}#tab-notices" class="fac-nav-item" data-nav="tab-notices" onclick="return handleFacultySidebarNav(event, 'tab-notices')">
                     <i class="fas fa-bullhorn" style="color: #ffaa00;"></i>
                     <span>Notice Board</span>
                 </a>
             </li>
 
             <li>
-                <a href="{% url 'faculty_dashboard' %}#library-section">
+                <a href="{% url 'faculty_dashboard' %}#tab-library" class="fac-nav-item" data-nav="tab-library" onclick="return handleFacultySidebarNav(event, 'tab-library')">
                     <i class="fas fa-file-pdf" style="color: #a855f7;"></i>
                     <span>PDF Library</span>
                 </a>
             </li>
 
             <li>
-                <a href="{% url 'faculty_dashboard' %}#exams-section">
+                <a href="{% url 'faculty_dashboard' %}#tab-exams" class="fac-nav-item" data-nav="tab-exams" onclick="return handleFacultySidebarNav(event, 'tab-exams')">
                     <i class="fas fa-feather-alt" style="color: #06b6d4;"></i>
                     <span>Exams & Quizzes</span>
                 </a>
             </li>
 
             <li>
-                <a href="{% url 'faculty_dashboard' %}#assignments-section">
+                <a href="{% url 'faculty_dashboard' %}#tab-assignments" class="fac-nav-item {% if 'assignment' in request.resolver_match.url_name and request.resolver_match.url_name != 'faculty_dashboard' %}active{% endif %}" data-nav="tab-assignments" onclick="return handleFacultySidebarNav(event, 'tab-assignments')">
                     <i class="fas fa-tasks" style="color: #3b82f6;"></i>
                     <span>Assignments</span>
                 </a>
             </li>
 
-            <div class="nav-divider"></div>
+            <li class="nav-section-label">System</li>
 
             <li>
                 <a href="{% url 'home' %}" target="_blank">
-                    <i class="fas fa-external-link-alt"></i>
+                    <i class="fas fa-external-link-alt" style="color: #94a3b8;"></i>
                     <span>View Portal</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{% url 'dashboard' %}" style="color: #00d4ff;">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Switch to Student</span>
                 </a>
             </li>
 
             {% else %}
             <!-- STANDARD ADMIN NAVIGATION -->
+            <li class="nav-section-label">Main Console</li>
+
             <li>
                 <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-chart-pie"></i>
+                    <i class="fas fa-chart-pie" style="color: #6c63ff;"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
 
             <li>
+                <a href="{% url 'admin_profile' %}" class="{% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}">
+                    <i class="fas fa-user-shield" style="color: #00d4ff;"></i>
+                    <span>Admin Profile</span>
+                </a>
+            </li>
+
+            <li class="nav-section-label">Academic Management</li>
+
+            <li>
                 <a href="{% url 'admin_student_list' %}" class="{% if 'student' in request.resolver_match.url_name %}active{% endif %}">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-users" style="color: #00d4ff;"></i>
                     <span>Students</span>
                 </a>
             </li>
@@ -928,31 +973,33 @@
 
             <li>
                 <a href="{% url 'admin_course_list' %}" class="{% if 'course' in request.resolver_match.url_name and 'assignment' not in request.resolver_match.url_name %}active{% endif %}">
-                    <i class="fas fa-book-open"></i>
+                    <i class="fas fa-book-open" style="color: #ff3366;"></i>
                     <span>Courses</span>
                 </a>
             </li>
 
             <li>
                 <a href="{% url 'admin_assignment_list' %}" class="{% if 'assignment' in request.resolver_match.url_name %}active{% endif %}">
-                    <i class="fas fa-clipboard-list"></i>
+                    <i class="fas fa-clipboard-list" style="color: #ffb74d;"></i>
                     <span>Assignments</span>
                 </a>
             </li>
             
             <li>
                 <a href="{% url 'admin_enrollment_list' %}" class="{% if 'enrollment' in request.resolver_match.url_name %}active{% endif %}">
-                    <i class="fas fa-user-check"></i>
+                    <i class="fas fa-user-check" style="color: #a855f7;"></i>
                     <span>Enrollments</span>
                 </a>
             </li>
             
             <li>
                 <a href="{% url 'admin_document_list' %}" class="{% if 'document' in request.resolver_match.url_name %}active{% endif %}">
-                    <i class="fas fa-folder-open"></i>
+                    <i class="fas fa-folder-open" style="color: #06b6d4;"></i>
                     <span>Documents</span>
                 </a>
             </li>
+
+            <li class="nav-section-label">Support & Site</li>
 
             <li>
                 <a href="{% url 'admin_support_tickets' %}" class="{% if 'support' in request.resolver_match.url_name %}active{% endif %}">
@@ -965,25 +1012,9 @@
             </li>
 
             <li>
-                <a href="{% url 'admin_profile' %}" class="{% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Admin Profile</span>
-                </a>
-            </li>
-            
-            <div class="nav-divider"></div>
-
-            <li>
                 <a href="{% url 'home' %}" target="_blank">
-                    <i class="fas fa-external-link-alt"></i>
+                    <i class="fas fa-external-link-alt" style="color: #94a3b8;"></i>
                     <span>View Site</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{% url 'dashboard' %}" style="color: #00d4ff;">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>Switch to Student</span>
                 </a>
             </li>
             {% endif %}
@@ -1128,6 +1159,71 @@
                 }
             });
         });
+
+        // Faculty Sidebar Navigation & Tab Sync
+        function handleFacultySidebarNav(event, target) {
+            const isFacultyDash = window.location.pathname.includes('/faculty/dashboard');
+
+            document.querySelectorAll('.sidebar .fac-nav-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.querySelector(`.sidebar .fac-nav-item[data-nav="${target}"]`);
+            if (activeItem) activeItem.classList.add('active');
+
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('adminSidebar');
+                const scrim = document.getElementById('adminScrim');
+                if (sidebar) sidebar.classList.remove('active');
+                if (scrim) scrim.classList.remove('show');
+            }
+
+            if (!isFacultyDash) {
+                return true;
+            }
+
+            event.preventDefault();
+            if (target === 'overview') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                history.pushState(null, '', window.location.pathname + window.location.search);
+                return false;
+            }
+
+            if (target === 'students') {
+                const el = document.getElementById('students-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                history.pushState(null, '', '#students-section');
+                return false;
+            }
+
+            if (target.startsWith('tab-')) {
+                if (typeof switchFacultyTab === 'function') {
+                    switchFacultyTab(target);
+                }
+                const el = document.getElementById(target) || document.getElementById('faculty-tabs-bar');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                history.pushState(null, '', '#' + target);
+                return false;
+            }
+            return true;
+        }
+
+        function syncFacultySidebarFromHash() {
+            const hash = window.location.hash.replace('#', '');
+            if (!hash) return;
+            let targetNav = null;
+            if (hash === 'students-section' || hash === 'students') targetNav = 'students';
+            else if (hash === 'tab-classes' || hash === 'live-classes' || hash === 'live-class-section') targetNav = 'tab-classes';
+            else if (hash === 'tab-notices' || hash === 'notices' || hash === 'notices-section') targetNav = 'tab-notices';
+            else if (hash === 'tab-library' || hash === 'library' || hash === 'library-section') targetNav = 'tab-library';
+            else if (hash === 'tab-exams' || hash === 'exams' || hash === 'exams-section') targetNav = 'tab-exams';
+            else if (hash === 'tab-assignments' || hash === 'assignments' || hash === 'assignments-section') targetNav = 'tab-assignments';
+
+            if (targetNav) {
+                document.querySelectorAll('.sidebar .fac-nav-item').forEach(el => el.classList.remove('active'));
+                const item = document.querySelector(`.sidebar .fac-nav-item[data-nav="${targetNav}"]`);
+                if (item) item.classList.add('active');
+            }
+        }
+        window.addEventListener('hashchange', syncFacultySidebarFromHash);
+        window.addEventListener('DOMContentLoaded', syncFacultySidebarFromHash);
     </script>
     
     {% block extra_js %}
