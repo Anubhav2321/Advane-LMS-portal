@@ -14,7 +14,7 @@ if [ -n "$PERSISTENT_DATA_DIR" ]; then
     cp -rn media/* "$PERSISTENT_DATA_DIR/media/" 2>/dev/null || true
 fi
 
-python seed_db.py --force
+python seed_db.py --force || true
 
 # --- AUTO-CONFIGURE SITE DOMAIN FOR GOOGLE OAUTH ---
 # Sets the Django Site record to match the Render hostname so 

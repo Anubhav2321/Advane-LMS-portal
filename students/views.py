@@ -90,6 +90,13 @@ def home_view(request):
     """
     Renders the Landing Page with stats.
     """
+    if User.objects.filter(is_faculty=True).count() < 10:
+        try:
+            from seed_db import smart_sync_production
+            smart_sync_production(force=True)
+        except Exception:
+            pass
+
     featured_courses = Course.objects.filter(is_published=True).order_by('-created_at')[:6]
     total_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).count()
     total_courses_count = Course.objects.count()
@@ -4097,6 +4104,13 @@ def admin_faculty_list(request):
     Admin can search faculties, see their department, job role, assigned courses, contact info,
     work experience, and register new faculties or delete existing ones.
     """
+    if User.objects.filter(is_faculty=True).count() < 10:
+        try:
+            from seed_db import smart_sync_production
+            smart_sync_production(force=True)
+        except Exception:
+            pass
+
     query = request.GET.get('search', '').strip()
     dept_filter = request.GET.get('department', '').strip()
 
