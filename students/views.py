@@ -78,6 +78,7 @@ from .models import (
     notify_admins_of_support_ticket, #  NEW: Dispatch helper for all 4 admins
     notify_admins_of_ticket_reply,   #  NEW: Dispatch helper for student replies
     FacultyProfile,                  #  NEW: Faculty Profile Model
+    check_and_apply_exam_penalties,  #  NEW: Real-time exam deadline penalty engine
 )
 
 User = get_user_model()
@@ -665,9 +666,15 @@ def student_dashboard(request):
         Q(is_global=True) | Q(recipient=user)
     ).exclude(read_by=user).count()
     
+    # Run Real-Time Exam Penalty & Deadline Enforcement Engine
+    check_and_apply_exam_penalties(user)
+
+    for e in enriched_enrollments:
+        e.has_missed_exams = e.has_missed_exams()
+
     # Calculate Stats directly from enriched enrollments
     total_enrolled = len(enriched_enrollments)
-    completed_courses = sum(1 for e in enriched_enrollments if e.real_progress >= 100.0)
+    completed_courses = sum(1 for e in enriched_enrollments if e.real_progress >= 100.0 and not e.has_missed_exams)
     certificate_eligible = completed_courses
     
     #  GLOBAL LEADERBOARD LOGIC
@@ -688,13 +695,16 @@ def student_dashboard(request):
         date_time__gte=timezone.now()
     ).order_by('date_time')[:5]
     
-    # 3. Fetch Active Exams for enrolled courses
+    # 3. Fetch Active Exams for enrolled courses (strictly open and unexpired)
+    now = timezone.now()
     active_exams = Exam.objects.filter(
         course_id__in=enrolled_course_ids,
         is_active=True
+    ).filter(
+        Q(deadline__isnull=True) | Q(deadline__gte=now)
     ).exclude(
         quizresult__student=user
-    ).order_by('-created_at')[:5]
+    ).select_related('course').order_by('deadline', '-created_at')[:5]
     
     # 4. Fetch Recent Digital Archive/Library Documents
     recent_documents = LibraryDocument.objects.filter(
@@ -1654,7 +1664,7 @@ def course_watch(request, course_id, lesson_id=None):
         'completed_lessons_count': len(completed_lesson_ids),
         'total_lessons_count': lessons.count(),
         'total_duration_str': total_duration_str,
-        'lesson_progress_map': json.dumps(lesson_progress_map),
+        'lesson_progress_map': lesson_progress_map,
         'current_lesson_progress': current_lesson_progress,
         'youtube_id': youtube_id,
         'comments': comments,          
@@ -1670,6 +1680,8 @@ def course_watch(request, course_id, lesson_id=None):
         'is_admin_or_faculty': is_admin_or_faculty,
         'assignment_form': AssignmentForm(initial={'course': course}) if is_admin_or_faculty else None,
         'submission_form': AssignmentSubmissionForm(),
+        'has_missed_exams': enrollment.has_missed_exams() if enrollment else False,
+        'missed_exams': list(enrollment.get_missed_exams()) if enrollment else [],
     }
     return render(request, 'course_watch.html', context)
 
@@ -1802,13 +1814,20 @@ def admin_create_assignment(request, course_id):
         except ValueError:
             total_marks = 100
 
+        pass_marks_str = request.POST.get('pass_marks', '').strip()
+        try:
+            pass_marks = int(pass_marks_str) if pass_marks_str else max(1, int(total_marks * 0.4))
+        except ValueError:
+            pass_marks = max(1, int(total_marks * 0.4))
+
         assignment = Assignment.objects.create(
             course=course,
             title=title,
             description=description,
             file=file_obj,
             due_date=due_date,
-            total_marks=total_marks
+            total_marks=total_marks,
+            pass_marks=pass_marks
         )
 
         msg = f'Assignment "{assignment.title}" posted successfully! Students have been alerted.'
@@ -1901,6 +1920,7 @@ def admin_grade_submission(request, submission_id):
     submission = get_object_or_404(AssignmentSubmission, id=submission_id)
     marks_str = (request.POST.get('marks_obtained') or request.POST.get('score') or '').strip()
     feedback = request.POST.get('feedback', '').strip()
+    status_str = (request.POST.get('is_passed') or request.POST.get('status') or '').strip().lower()
 
     try:
         marks = float(marks_str)
@@ -1909,31 +1929,48 @@ def admin_grade_submission(request, submission_id):
     except (ValueError, TypeError):
         return JsonResponse({'success': False, 'message': 'Please enter a valid numeric score.'}, status=400)
 
+    # Determine pass/fail
+    pass_cutoff = getattr(submission.assignment, 'pass_marks', None)
+    if pass_cutoff is None or pass_cutoff <= 0:
+        pass_cutoff = submission.assignment.total_marks * 0.4
+
+    if status_str in ['pass', 'true', '1', 'passed']:
+        is_passed = True
+    elif status_str in ['fail', 'false', '0', 'failed']:
+        is_passed = False
+    else:
+        is_passed = (marks >= pass_cutoff)
+
     submission.marks_obtained = marks
+    submission.is_passed = is_passed
     submission.feedback = feedback
     submission.is_graded = True
+    submission.graded_by = request.user
     submission.save()
 
+    status_tag = 'PASSED ✅' if is_passed else 'FAILED ❌'
     # Notify student in real-time
     try:
         Notification.objects.create(
             recipient=submission.student,
-            title=f"Assignment Evaluated: {submission.assignment.title}",
-            message=f"Your assignment for '{submission.assignment.course.title}' has been evaluated. Score: {marks}/{submission.assignment.total_marks}. Feedback: {feedback[:120] if feedback else 'Good effort!'}",
+            title=f"Assignment Evaluated: {submission.assignment.title} ({'PASSED' if is_passed else 'FAILED'})",
+            message=f"Your assignment for '{submission.assignment.course.title}' has been evaluated. Result: {status_tag} • Score: {marks}/{submission.assignment.total_marks}. Feedback: {feedback[:120] if feedback else 'Evaluation recorded.'}",
             notification_type='assignment',
-            action_url=f"/courses/watch/{submission.assignment.course.id}/",
+            action_url=f"/courses/watch/{submission.assignment.course.id}/#asgn-card-{submission.assignment.id}",
             action_label="Review Grade",
             is_global=False
         )
     except Exception:
         pass
 
-    msg = f'Evaluation recorded for {submission.student.get_full_name() or submission.student.username}! Score: {marks}/{submission.assignment.total_marks}'
+    msg = f'Evaluation recorded for {submission.student.get_full_name() or submission.student.username}! Result: {status_tag} (Score: {marks}/{submission.assignment.total_marks})'
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
             'success': True,
             'message': msg,
             'marks_obtained': marks,
+            'is_passed': is_passed,
+            'status_label': 'Passed' if is_passed else 'Failed',
             'feedback': feedback
         })
 
@@ -2332,49 +2369,180 @@ def live_class_details_api(request, class_id):
 @login_required
 def library_view(request):
     """
-    Library View: Filtered STRICTLY by Enrolled Courses
+    Library View: Strictly Enrolled Courses with Subject-Wise Categorization and Grouping.
+    Allows students to navigate notes and documents Subject-by-Subject or view all.
     """
-    # 1. Get IDs of courses the student is enrolled in
-    enrolled_course_ids = Enrollment.objects.filter(student=request.user).values_list('course_id', flat=True)
+    # 1. Get enrolled courses
+    enrolled_enrollments = list(Enrollment.objects.filter(student=request.user).select_related('course'))
+    enrolled_course_ids = [e.course_id for e in enrolled_enrollments]
     
-    # 2. Filter documents belonging ONLY to these courses
-    documents = LibraryDocument.objects.filter(
+    # 2. Filter documents belonging ONLY to enrolled courses
+    documents_qs = LibraryDocument.objects.filter(
         course__id__in=enrolled_course_ids
-    ).order_by('-uploaded_at')
+    ).select_related('course', 'uploaded_by').order_by('-uploaded_at')
     
-    query = request.GET.get('search')
+    query = request.GET.get('search', '').strip()
+    selected_subject_id = request.GET.get('subject', '').strip()
+    
     if query:
-        documents = documents.filter(title__icontains=query)
+        documents_qs = documents_qs.filter(
+            Q(title__icontains=query) | Q(category__icontains=query) | Q(course__title__icontains=query)
+        )
+    
+    filtered_documents = documents_qs
+    if selected_subject_id and selected_subject_id.isdigit():
+        filtered_documents = documents_qs.filter(course_id=int(selected_subject_id))
 
-    return render(request, 'student_library.html', {'documents': documents})
+    all_docs_list = list(documents_qs)
+    total_docs = len(all_docs_list)
+    
+    # 3. Build Subject Groups for clean course-by-course presentation
+    subject_groups = []
+    courses_with_meta = []
+    
+    for enr in enrolled_enrollments:
+        c = enr.course
+        c_docs = [d for d in all_docs_list if d.course_id == c.id]
+        pdf_c = sum(1 for d in c_docs if d.file and d.file.name.lower().endswith('.pdf'))
+        word_c = sum(1 for d in c_docs if d.file and (d.file.name.lower().endswith('.doc') or d.file.name.lower().endswith('.docx')))
+        
+        courses_with_meta.append({
+            'id': c.id,
+            'title': c.title,
+            'doc_count': len(c_docs),
+            'faculty_name': c.faculty_name or (c.assigned_faculty.full_name if c.assigned_faculty else 'Faculty'),
+        })
+
+        if c_docs:
+            subject_groups.append({
+                'course': c,
+                'documents': c_docs,
+                'count': len(c_docs),
+                'pdf_count': pdf_c,
+                'word_count': word_c,
+            })
+
+    # Sort courses alphabetically
+    courses_with_meta.sort(key=lambda x: x['title'])
+
+    context = {
+        'documents': filtered_documents,
+        'all_documents': all_docs_list,
+        'subject_groups': subject_groups,
+        'enrolled_courses': courses_with_meta,
+        'total_docs': total_docs,
+        'selected_subject_id': selected_subject_id,
+        'search_query': query,
+    }
+    return render(request, 'student_library.html', context)
+
 
 # 5. QUIZ, EXAMS & AI CHAT
 
 @login_required
 def student_exam_list(request):
     """
-    Shows Active Exams AND Exam History/Results.
-    Staff and Superusers can view all exams.
-    Students see exams ONLY for their actively enrolled courses.
+    Shows Active Exams (Subject-Wise) AND Exam History/Results, plus Missed/Expired Archives.
+    Enforces real-time deadlines, penalties on missed exams, and course completion locks.
     """
-    if request.user.is_staff or request.user.is_superuser:
-        available_exams = Exam.objects.filter(is_active=True).order_by('-created_at')
-    else:
-        # 1. Get IDs of courses the student is enrolled in
-        enrolled_course_ids = Enrollment.objects.filter(student=request.user).values_list('course_id', flat=True)
-        
-        # 2. Filter exams: strictly for courses the student is enrolled in
-        available_exams = Exam.objects.filter(
-            course_id__in=enrolled_course_ids, 
-            is_active=True
-        ).order_by('-created_at')
+    # 1. Run penalty engine for the student
+    if not (request.user.is_staff or request.user.is_superuser):
+        check_and_apply_exam_penalties(request.user)
 
-    # 3. Fetch History/Results
-    past_results = QuizResult.objects.filter(student=request.user).select_related('exam').order_by('-taken_at')
+    now = timezone.now()
+    
+    # 2. Get enrolled courses
+    if request.user.is_staff or request.user.is_superuser:
+        enrolled_courses_qs = Course.objects.all()
+        enrolled_course_ids = list(enrolled_courses_qs.values_list('id', flat=True))
+    else:
+        enrolled_courses_qs = Course.objects.filter(enrollments__student=request.user).distinct()
+        enrolled_course_ids = list(enrolled_courses_qs.values_list('id', flat=True))
+
+    # 3. Query all exams for these courses
+    all_exams = Exam.objects.filter(
+        course_id__in=enrolled_course_ids,
+        is_active=True
+    ).select_related('course').order_by('deadline', '-created_at')
+
+    # 4. Attempted exam IDs
+    attempted_exam_ids = set(
+        QuizResult.objects.filter(student=request.user).values_list('exam_id', flat=True)
+    )
+
+    available_exams = []
+    missed_exams = []
+
+    for exam in all_exams:
+        exam.remaining = exam.time_remaining_info()
+        if exam.id in attempted_exam_ids:
+            # Already completed; appears in past results
+            continue
+        if exam.is_expired():
+            # Expired without attempt -> Missed Assessment Archive
+            missed_exams.append(exam)
+        else:
+            # Open and ready to take
+            available_exams.append(exam)
+
+    # 5. Fetch Past Results with score percentages and grading
+    past_results = QuizResult.objects.filter(
+        student=request.user
+    ).select_related('exam', 'exam__course').order_by('-taken_at')
+
+    for r in past_results:
+        total = max(r.total_marks, 1.0)
+        r.percentage = int((r.score / total) * 100)
+        if r.percentage >= 80:
+            r.grade = 'Distinction'
+            r.grade_class = 'pass'
+        elif r.percentage >= 50:
+            r.grade = 'Passed'
+            r.grade_class = 'mid'
+        else:
+            r.grade = 'Needs Improvement'
+            r.grade_class = 'fail'
+
+    # 6. Subject-Wise grouping and meta statistics
+    # Check if student has blocked courses
+    blocked_courses = []
+    if not (request.user.is_staff or request.user.is_superuser):
+        for c in enrolled_courses_qs:
+            enr = Enrollment.objects.filter(student=request.user, course=c).first()
+            if enr and enr.has_missed_exams():
+                blocked_courses.append(c)
+
+    # Build enrolled subject tabs metadata with counts
+    subject_tabs = []
+    for c in enrolled_courses_qs:
+        c_active = sum(1 for e in available_exams if e.course_id == c.id)
+        c_missed = sum(1 for e in missed_exams if e.course_id == c.id)
+        c_taken = sum(1 for r in past_results if r.exam and r.exam.course_id == c.id)
+        subject_tabs.append({
+            'id': c.id,
+            'title': c.title,
+            'active_count': c_active,
+            'missed_count': c_missed,
+            'taken_count': c_taken,
+            'is_blocked': any(bc.id == c.id for bc in blocked_courses),
+        })
+
+    subject_tabs.sort(key=lambda x: x['title'])
 
     context = {
         'exams': available_exams,
-        'results': past_results
+        'missed_exams': missed_exams,
+        'results': past_results,
+        'subject_tabs': subject_tabs,
+        'blocked_courses': blocked_courses,
+        'blocked_courses_count': len(blocked_courses),
+        'active_count': len(available_exams),
+        'missed_count': len(missed_exams),
+        'taken_count': past_results.count(),
+        'reputation_score': getattr(request.user, 'reputation_score', 100),
+        'reputation_tier': getattr(request.user, 'reputation_tier', {'label': 'Good Standing', 'badge': 'Good', 'color': '#00f3ff'}),
+        'engagement_score': getattr(request.user, 'engagement_score', 100),
+        'engagement_tier': getattr(request.user, 'engagement_tier', {'label': 'Active', 'badge': 'High', 'color': '#00e676'}),
     }
     return render(request, 'exam_list.html', context) 
 
@@ -2382,8 +2550,8 @@ def student_exam_list(request):
 @login_required
 def take_exam(request, exam_id):
     """
-    Exam Taking Page with Enrolled Check (bypassed for staff and superusers).
-    Students can only take exams for courses they are enrolled in.
+    Exam Taking Page with Enrolled Check and Expiration Deadline Enforcement.
+    Students cannot attempt an exam if its deadline has passed.
     """
     exam = get_object_or_404(Exam, id=exam_id)
     
@@ -2396,6 +2564,21 @@ def take_exam(request, exam_id):
         is_enrolled = Enrollment.objects.filter(student=request.user, course=exam.course).exists()
         if not is_enrolled:
             messages.error(request, f'You must be enrolled in "{exam.course.title}" to take this exam.')
+            return redirect('student_exam_list')
+
+        # Check deadline expiration!
+        if exam.is_expired():
+            # Check if student previously attempted it
+            already_taken = QuizResult.objects.filter(student=request.user, exam=exam).exists()
+            if already_taken:
+                messages.info(request, f'You have already completed "{exam.title}". View your score in Result Archives.')
+            else:
+                messages.error(
+                    request, 
+                    f'The deadline for "{exam.title}" expired on {exam.deadline.strftime("%d %b %Y, %I:%M %p")}. '
+                    f'Unattempted exams cannot be taken after deadline and have moved to your Missed Archives. '
+                    f'Your reputation and course completion for "{exam.course.title}" have been penalized.'
+                )
             return redirect('student_exam_list')
 
     # 2. Render exam page
@@ -2570,6 +2753,13 @@ def save_quiz_view(request):
                     'status': 'error', 
                     'message': 'Please select a Course to link this quiz to. Quizzes must be linked to a specific course so only enrolled students can access them.'
                 }, status=400)
+
+            if getattr(request.user, 'is_faculty', False) and not (request.user.is_staff or request.user.is_superuser):
+                if course_obj.assigned_faculty != request.user:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'You can only save quizzes to courses assigned to you.'
+                    }, status=403)
 
             with transaction.atomic():
                 exam = Exam.objects.create(
@@ -3323,48 +3513,98 @@ def faculty_dashboard(request):
         )
 
     total_assigned_courses = assigned_courses.count()
+
+    # Support isolating view to a specific course if faculty has multiple assigned courses
+    selected_course_id = request.GET.get('course', '').strip()
+    selected_course = None
+    if selected_course_id and selected_course_id.isdigit():
+        selected_course = assigned_courses.filter(id=int(selected_course_id)).first()
+
+    # Per-course breakdown for separating content when faculty has multiple assigned courses
+    courses_breakdown = []
+    for c in assigned_courses:
+        c_enrolls = Enrollment.objects.filter(course=c).select_related('student', 'student__profile').order_by('-enrolled_at')
+        c_classes = LiveClass.objects.filter(course=c).order_by('-date_time')
+        c_docs = LibraryDocument.objects.filter(course=c).order_by('-uploaded_at')
+        c_exams = Exam.objects.filter(course=c).order_by('-created_at')
+        c_assignments = Assignment.objects.filter(course=c).prefetch_related('submissions').order_by('-created_at')
+        courses_breakdown.append({
+            'course': c,
+            'students_count': c_enrolls.count(),
+            'enrollments': c_enrolls[:50],
+            'classes_count': c_classes.count(),
+            'classes': c_classes[:50],
+            'docs_count': c_docs.count(),
+            'docs': c_docs[:50],
+            'exams_count': c_exams.count(),
+            'exams': c_exams[:50],
+            'assignments_count': c_assignments.count(),
+            'assignments': c_assignments[:50],
+        })
+
+    # Filter querysets if a specific course is selected
+    filtered_course_ids = [selected_course.id] if selected_course else assigned_course_ids
+
+    # Enrolled students for courses taught by this faculty
+    student_query = request.GET.get('student_search', '').strip()
+    enrollments_qs = Enrollment.objects.filter(course_id__in=filtered_course_ids).select_related('student', 'course', 'student__profile').order_by('-enrolled_at')
+
+    if student_query:
+        enrollments_qs = enrollments_qs.filter(
+            Q(student__first_name__icontains=student_query) |
+            Q(student__last_name__icontains=student_query) |
+            Q(student__username__icontains=student_query) |
+            Q(student__email__icontains=student_query) |
+            Q(student__student_id__icontains=student_query) |
+            Q(course__title__icontains=student_query)
+        )
+
     total_enrolled_students = Enrollment.objects.filter(course_id__in=assigned_course_ids).values('student_id').distinct().count()
 
-    faculty_live_classes = LiveClass.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-date_time')
-    faculty_documents = LibraryDocument.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-uploaded_at')
-    faculty_exams = Exam.objects.filter(course_id__in=assigned_course_ids).select_related('course').order_by('-created_at')
-    faculty_assignments = Assignment.objects.filter(course_id__in=assigned_course_ids).select_related('course').prefetch_related('submissions').order_by('-created_at')
+    faculty_live_classes = LiveClass.objects.filter(course_id__in=filtered_course_ids).select_related('course').order_by('-date_time')
+    faculty_documents = LibraryDocument.objects.filter(course_id__in=filtered_course_ids).select_related('course').order_by('-uploaded_at')
+    faculty_exams = Exam.objects.filter(course_id__in=filtered_course_ids).select_related('course').order_by('-created_at')
+    faculty_assignments = Assignment.objects.filter(course_id__in=filtered_course_ids).select_related('course').prefetch_related('submissions').order_by('-created_at')
 
     # Scoped form instances with course choices restricted to assigned courses
     live_class_form = LiveClassForm()
-    live_class_form.fields['course'].queryset = assigned_courses
+    live_class_form.fields['course'].queryset = assigned_courses if not selected_course else Course.objects.filter(id=selected_course.id)
 
     library_form = LibraryDocumentForm()
-    library_form.fields['course'].queryset = assigned_courses
+    library_form.fields['course'].queryset = assigned_courses if not selected_course else Course.objects.filter(id=selected_course.id)
 
     exam_form = ExamForm()
-    exam_form.fields['course'].queryset = assigned_courses
+    exam_form.fields['course'].queryset = assigned_courses if not selected_course else Course.objects.filter(id=selected_course.id)
 
     assignment_form = AssignmentForm()
-    assignment_form.fields['course'].queryset = assigned_courses
+    assignment_form.fields['course'].queryset = assigned_courses if not selected_course else Course.objects.filter(id=selected_course.id)
 
-    enrolled_student_ids = Enrollment.objects.filter(course_id__in=assigned_course_ids).values_list('student_id', flat=True).distinct()
+    enrolled_student_ids = Enrollment.objects.filter(course_id__in=filtered_course_ids).values_list('student_id', flat=True).distinct()
     notice_form = NotificationForm()
     notice_form.fields['recipient'].queryset = User.objects.filter(id__in=enrolled_student_ids).order_by('username')
-    notice_form.fields['recipient'].empty_label = "All My Enrolled Students (Course Broadcast)"
+    notice_form.fields['recipient'].empty_label = f"All Students in {selected_course.title}" if selected_course else "All My Enrolled Students (Course Broadcast)"
 
     context = {
         'faculty_user': user,
         'faculty_profile': faculty_profile,
         'user_profile': user_profile,
         'assigned_courses': assigned_courses,
+        'courses': assigned_courses,
+        'selected_course': selected_course,
+        'courses_breakdown': courses_breakdown,
         'enrollments': enrollments_qs,
         'student_search': student_query,
         'total_assigned_courses': total_assigned_courses,
         'total_enrolled_students': total_enrolled_students,
-        'live_classes_count': faculty_live_classes.count(),
-        'documents_count': faculty_documents.count(),
-        'exams_count': faculty_exams.count(),
-        'assignments_count': faculty_assignments.count(),
-        'live_classes': faculty_live_classes[:20],
-        'documents': faculty_documents[:20],
-        'exams': faculty_exams[:20],
-        'assignments': faculty_assignments[:20],
+        'live_classes_count': LiveClass.objects.filter(course_id__in=assigned_course_ids).count(),
+        'documents_count': LibraryDocument.objects.filter(course_id__in=assigned_course_ids).count(),
+        'exams_count': Exam.objects.filter(course_id__in=assigned_course_ids).count(),
+        'assignments_count': Assignment.objects.filter(course_id__in=assigned_course_ids).count(),
+        'live_classes': faculty_live_classes[:50],
+        'documents': faculty_documents[:50],
+        'all_faculty_documents': faculty_documents,
+        'exams': faculty_exams[:50],
+        'assignments': faculty_assignments[:50],
         'live_class_form': live_class_form,
         'library_form': library_form,
         'exam_form': exam_form,
@@ -3598,6 +3838,252 @@ def faculty_update_profile(request):
 
         messages.success(request, "Profile updated successfully!")
     return redirect('faculty_dashboard')
+
+
+@login_required
+def faculty_extend_exam_deadline(request, exam_id):
+    """
+    Extends or updates the submission deadline and active state for an exam.
+    Accessible to Faculty (for their assigned courses) and Admins.
+    Dispatches automated notifications to all enrolled students.
+    """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Permission denied.'}, status=403)
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+
+    exam = get_object_or_404(Exam, id=exam_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if exam.course and exam.course.assigned_faculty != request.user:
+            msg = "You can only modify exams for your assigned courses."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=403)
+            messages.error(request, msg)
+            return redirect('faculty_dashboard')
+
+    if request.method == 'POST':
+        deadline_str = request.POST.get('deadline', '').strip()
+        is_active_val = request.POST.get('is_active')
+        duration_val = request.POST.get('duration_minutes', '').strip()
+
+        try:
+            if deadline_str:
+                parsed_dt = datetime.datetime.fromisoformat(deadline_str)
+                if timezone.is_naive(parsed_dt):
+                    parsed_dt = timezone.make_aware(parsed_dt)
+                exam.deadline = parsed_dt
+            elif request.POST.get('clear_deadline') == 'true':
+                exam.deadline = None
+
+            if duration_val and duration_val.isdigit():
+                exam.duration_minutes = max(5, int(duration_val))
+
+            if is_active_val is not None:
+                exam.is_active = (str(is_active_val).lower() in ['true', '1', 'on', 'yes'])
+            else:
+                exam.is_active = True
+
+            exam.save()
+
+            formatted_dt = timezone.localtime(exam.deadline).strftime('%d %b, %Y • %I:%M %p') if exam.deadline else "Open (No Deadline)"
+
+            # Notify enrolled students
+            if exam.course:
+                enrolled_students = User.objects.filter(enrollments__course=exam.course).distinct()
+                for student in enrolled_students:
+                    Notification.objects.create(
+                        recipient=student,
+                        title=f"Exam Deadline Extended: {exam.title}",
+                        message=f"The deadline for exam '{exam.title}' ({exam.course.title}) has been updated to {formatted_dt}.",
+                        notification_type='exam',
+                        action_url="/exams/",
+                        action_label="Take Exam",
+                        is_global=False
+                    )
+
+            msg = f"Exam '{exam.title}' deadline successfully updated to {formatted_dt}."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': msg,
+                    'new_deadline': formatted_dt,
+                    'is_active': exam.is_active
+                })
+            messages.success(request, msg)
+        except Exception as e:
+            msg = f"Failed to update deadline: {str(e)}"
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=400)
+            messages.error(request, msg)
+
+    next_url = request.POST.get('next') or 'faculty_dashboard'
+    return redirect(next_url)
+
+
+@login_required
+def faculty_extend_assignment_deadline(request, assignment_id):
+    """
+    Extends or updates the submission due date for an assignment.
+    Accessible to Faculty (for their assigned courses) and Admins.
+    Dispatches automated notifications to all enrolled students.
+    """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Permission denied.'}, status=403)
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if assignment.course and assignment.course.assigned_faculty != request.user:
+            msg = "You can only modify assignments for your assigned courses."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=403)
+            messages.error(request, msg)
+            return redirect('faculty_dashboard')
+
+    if request.method == 'POST':
+        due_date_str = request.POST.get('due_date', '').strip()
+        total_marks_val = request.POST.get('total_marks', '').strip()
+
+        if not due_date_str:
+            msg = "Please select a valid new due date and time."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=400)
+            messages.error(request, msg)
+            return redirect('faculty_dashboard')
+
+        try:
+            parsed_dt = datetime.datetime.fromisoformat(due_date_str)
+            if timezone.is_naive(parsed_dt):
+                parsed_dt = timezone.make_aware(parsed_dt)
+            assignment.due_date = parsed_dt
+
+            if total_marks_val and total_marks_val.isdigit():
+                assignment.total_marks = max(1, int(total_marks_val))
+
+            assignment.save()
+
+            formatted_dt = timezone.localtime(parsed_dt).strftime('%d %b, %Y • %I:%M %p')
+
+            # Notify enrolled students
+            if assignment.course:
+                enrolled_students = User.objects.filter(enrollments__course=assignment.course).distinct()
+                for student in enrolled_students:
+                    Notification.objects.create(
+                        recipient=student,
+                        title=f"Due Date Extended: {assignment.title}",
+                        message=f"The submission deadline for assignment '{assignment.title}' ({assignment.course.title}) has been extended to {formatted_dt}.",
+                        notification_type='assignment',
+                        action_url=f"/courses/watch/{assignment.course.id}/",
+                        action_label="Submit Assignment",
+                        is_global=False
+                    )
+
+            msg = f"Due date for assignment '{assignment.title}' successfully extended to {formatted_dt}."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': msg,
+                    'new_due_date': formatted_dt
+                })
+            messages.success(request, msg)
+        except Exception as e:
+            msg = f"Failed to update due date: {str(e)}"
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=400)
+            messages.error(request, msg)
+
+    next_url = request.POST.get('next') or 'faculty_dashboard'
+    return redirect(next_url)
+
+
+@login_required
+def faculty_edit_live_class(request, class_id):
+    """
+    Edits and reschedules a live class (date/time, title, platform, duration, meeting link).
+    Accessible to Faculty (for their assigned courses) and Admins.
+    Dispatches automated notifications to all enrolled students.
+    """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'Permission denied.'}, status=403)
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+
+    live_class = get_object_or_404(LiveClass, id=class_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if live_class.course and live_class.course.assigned_faculty != request.user:
+            msg = "You can only modify live classes for your assigned courses."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': msg}, status=403)
+            messages.error(request, msg)
+            return redirect('faculty_dashboard')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        date_time_str = request.POST.get('date_time', '').strip()
+        duration_minutes_str = (request.POST.get('duration_minutes') or request.POST.get('duration') or '').strip()
+        platform = request.POST.get('platform', '').strip()
+        meeting_link = request.POST.get('meeting_link', '').strip()
+
+        if title:
+            live_class.title = title
+        if platform:
+            live_class.platform = platform
+        if meeting_link:
+            live_class.meeting_link = meeting_link
+        if duration_minutes_str:
+            try:
+                live_class.duration_minutes = max(15, int(duration_minutes_str))
+            except ValueError:
+                pass
+
+        if date_time_str:
+            try:
+                parsed_dt = datetime.datetime.fromisoformat(date_time_str)
+                if timezone.is_naive(parsed_dt):
+                    parsed_dt = timezone.make_aware(parsed_dt)
+                live_class.date_time = parsed_dt
+            except Exception as e:
+                msg = f"Invalid date/time format: {e}"
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'message': msg}, status=400)
+                messages.error(request, msg)
+                return redirect('faculty_dashboard')
+
+        live_class.save()
+        formatted_dt = timezone.localtime(live_class.date_time).strftime('%d %b, %Y • %I:%M %p')
+
+        # Notify enrolled students
+        if live_class.course:
+            enrolled_students = User.objects.filter(enrollments__course=live_class.course).distinct()
+            for student in enrolled_students:
+                Notification.objects.create(
+                    recipient=student,
+                    title=f"Live Class Rescheduled: {live_class.title}",
+                    message=f"Live class '{live_class.title}' ({live_class.course.title}) has been rescheduled to {formatted_dt}.",
+                    notification_type='live_class',
+                    action_url="/live-classes/",
+                    action_label="View Schedule",
+                    is_global=False
+                )
+
+        msg = f"Live class '{live_class.title}' successfully rescheduled to {formatted_dt}."
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': msg,
+                'new_datetime': formatted_dt
+            })
+        messages.success(request, msg)
+
+    next_url = request.POST.get('next') or 'faculty_dashboard'
+    return redirect(next_url)
 
 
 # ==============================================================================
@@ -4032,7 +4518,7 @@ def admin_delete_document(request, doc_id):
 
 @staff_member_required
 def admin_enrollment_list(request):
-    enrollments = Enrollment.objects.all().select_related('student', 'course').order_by('-enrolled_at')
+    enrollments = Enrollment.objects.all().select_related('student__profile', 'course').order_by('-enrolled_at')
     return render(request, 'custom_admin/enrollment_list.html', {'enrollments': enrollments})
 
 @staff_member_required
@@ -4047,17 +4533,27 @@ def admin_delete_enrollment(request, enroll_id):
 # 📋 ADMIN PANEL: ASSIGNMENTS & EVALUATIONS SYSTEM
 # ========================================================
 
-@staff_member_required
+@login_required
 def admin_assignment_list(request):
     """
-    Renders the Admin Panel Assignments section organized subject-wise.
+    Renders the Assignments section organized subject-wise.
     Enables creating assignments, filtering by subject/course, and inspecting submissions.
+    Accessible to Administrators and Faculty (scoped to their assigned courses).
     """
-    courses = Course.objects.all().order_by('title')
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+
+    if request.user.is_staff or request.user.is_superuser:
+        courses = Course.objects.all().order_by('title')
+        assignments_qs = Assignment.objects.select_related('course').prefetch_related('submissions', 'submissions__student').order_by('course__title', 'due_date')
+    else:
+        courses = Course.objects.filter(assigned_faculty=request.user).order_by('title')
+        assignments_qs = Assignment.objects.filter(course__assigned_faculty=request.user).select_related('course').prefetch_related('submissions', 'submissions__student').order_by('course__title', 'due_date')
+
     course_filter = request.GET.get('course', '').strip()
     search_q = request.GET.get('q', '').strip()
-
-    assignments_qs = Assignment.objects.select_related('course').prefetch_related('submissions', 'submissions__student').order_by('course__title', 'due_date')
 
     if course_filter and course_filter.isdigit():
         assignments_qs = assignments_qs.filter(course_id=int(course_filter))
@@ -4169,13 +4665,20 @@ def admin_create_assignment_panel(request):
     except ValueError:
         total_marks = 100
 
+    pass_marks_str = request.POST.get('pass_marks', '').strip()
+    try:
+        pass_marks = int(pass_marks_str) if pass_marks_str else max(1, int(total_marks * 0.4))
+    except ValueError:
+        pass_marks = max(1, int(total_marks * 0.4))
+
     assignment = Assignment.objects.create(
         course=course,
         title=title,
         description=description,
         file=file_obj,
         due_date=due_date,
-        total_marks=total_marks
+        total_marks=total_marks,
+        pass_marks=pass_marks
     )
 
     # Notify enrolled students in real-time
@@ -4202,14 +4705,25 @@ def admin_create_assignment_panel(request):
     return redirect('admin_assignment_list')
 
 
-@staff_member_required
+@login_required
 def admin_assignment_submissions_detail(request, assignment_id):
     """
-    Renders dedicated Admin Submissions & Evaluation page for an assignment.
+    Renders dedicated Submissions & Evaluation page for an assignment.
     Displays all student submissions with complete student profiles, deliverable files,
     text answers, and grading/feedback controls.
+    Accessible to Administrators and Faculty (for courses taught by them).
     """
+    is_admin_faculty = request.user.is_staff or request.user.is_superuser or getattr(request.user, 'is_faculty', False)
+    if not is_admin_faculty:
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard')
+
     assignment = get_object_or_404(Assignment.objects.select_related('course'), id=assignment_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        if assignment.course and assignment.course.assigned_faculty != request.user:
+            messages.error(request, "You can only view submissions for courses assigned to you.")
+            return redirect('faculty_dashboard')
+
     submissions = assignment.submissions.select_related('student', 'student__profile').all().order_by('-submitted_at')
     
     enrolled_count = assignment.course.enrollments.count()
@@ -4840,6 +5354,7 @@ def track_progress(request):
                     student=request.user, lesson=lesson
                 )
                 
+                coins_earned = 0
                 # Only update if the new watch time is higher (prevents rewinding losing progress)
                 if watch_time > lesson_progress.watch_time_seconds:
                     lesson_progress.watch_time_seconds = watch_time
@@ -4851,6 +5366,7 @@ def track_progress(request):
                         lesson_progress.completed_at = timezone.now()
                         request.user.lms_coins += 20
                         request.user.save(update_fields=['lms_coins'])
+                        coins_earned = 20
                         log_student_activity(request.user, 'lesson_watch', f'Completed "{lesson.title}"', course=lesson.course)
                     
                     lesson_progress.save()
@@ -4858,6 +5374,11 @@ def track_progress(request):
                 # Sync progress globally
                 enrollment = get_object_or_404(Enrollment, student=request.user, course=lesson.course)
                 enrollment.sync_progress()
+                real_progress_data = enrollment.get_real_progress()
+                completed_lessons_count = LessonProgress.objects.filter(
+                    student=request.user, lesson__course=lesson.course, is_completed=True
+                ).count()
+                total_lessons_count = lesson.course.lessons.count()
                 
                 # Calculate per-lesson completion percentage
                 required_time = lesson.duration_in_seconds * 0.8
@@ -4875,7 +5396,11 @@ def track_progress(request):
                     'lesson_percent': lesson_percent,
                     'watch_time': lesson_progress.watch_time_seconds,
                     'required_time': int(required_time) if required_time > 0 else 0,
-                    'coins_earned': 20 if lesson_progress.is_completed else 0,
+                    'coins_earned': coins_earned,
+                    'user_coins': request.user.lms_coins,
+                    'completed_lessons_count': completed_lessons_count,
+                    'total_lessons_count': total_lessons_count,
+                    'real_progress_data': real_progress_data,
                 })
                 
             elif track_type == 'pdf':
@@ -4917,6 +5442,11 @@ def track_progress(request):
                 
                 enrollment = get_object_or_404(Enrollment, student=request.user, course=lesson.course)
                 enrollment.sync_progress()
+                real_progress_data = enrollment.get_real_progress()
+                completed_lessons_count = LessonProgress.objects.filter(
+                    student=request.user, lesson__course=lesson.course, is_completed=True
+                ).count()
+                total_lessons_count = lesson.course.lessons.count()
                 
                 return JsonResponse({
                     'status': 'success',
@@ -4925,6 +5455,10 @@ def track_progress(request):
                     'lesson_percent': 100,
                     'watch_time': lesson_progress.watch_time_seconds,
                     'coins_earned': coins_earned,
+                    'user_coins': request.user.lms_coins,
+                    'completed_lessons_count': completed_lessons_count,
+                    'total_lessons_count': total_lessons_count,
+                    'real_progress_data': real_progress_data,
                 })
                 
         except Exception as e:
