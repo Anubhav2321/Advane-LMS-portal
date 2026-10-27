@@ -2,99 +2,76 @@
 {% load static %}
 
 {% block content %}
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
     /* ======================================================== */
-    /* 🌌 STUDENT PORTAL UNIFIED DESIGN SYSTEM (DASHBOARD-MATCH) */
+    /* 🌌 FRESH, NEAT & CLEAN GLASSMORPHISM LIBRARY THEME        */
     /* ======================================================== */
     :root {
         --bg-dark: #07090e;
-        --card-bg: rgba(14, 18, 30, 0.95);
-        --card-bg-hover: rgba(22, 28, 45, 0.95);
+        --card-bg: rgba(14, 18, 30, 0.92);
+        --card-bg-hover: rgba(20, 26, 44, 0.95);
         --border-glass: rgba(255, 255, 255, 0.08);
-        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --border-glow-cyan: rgba(0, 243, 255, 0.35);
         --neon-cyan: #00f3ff;
         --neon-purple: #bc13fe;
-        --neon-blue: #3b82f6;
+        --neon-rose: #ff3366;
         --accent-green: #00e676;
         --accent-amber: #ffb74d;
-        --accent-red: #ff3366;
-        --text-main: #e2e8f0;
+        --accent-blue: #3b82f6;
+        --text-main: #f1f5f9;
         --text-muted: #94a3b8;
     }
 
-    /* Ambient Mesh */
     .portal-ambient {
         position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
         background: 
-            radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
-            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
-            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
+            radial-gradient(circle at 12% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 88% 22%, rgba(188, 19, 254, 0.05), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.03), transparent 55%);
     }
 
     .portal-container {
-        padding: 35px 40px 80px;
-        max-width: 1440px;
+        padding: 32px 36px 80px;
+        max-width: 1400px;
         margin: 0 auto;
         font-family: 'Outfit', sans-serif;
         color: var(--text-main);
     }
 
-    /* ======================================================== */
-    /* 🚀 DOWN-TO-UP SMOOTH ENTRANCE ANIMATIONS                */
-    /* ======================================================== */
+    /* Entrance Animation */
     @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(28px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-
     .fade-in-up {
-        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.18s; }
-    .delay-3 { animation-delay: 0.26s; }
-
-    /* Staggered cards entrance */
-    .stagger-card {
-        animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .stagger-card:nth-child(1) { animation-delay: 0.12s; }
-    .stagger-card:nth-child(2) { animation-delay: 0.17s; }
-    .stagger-card:nth-child(3) { animation-delay: 0.22s; }
-    .stagger-card:nth-child(4) { animation-delay: 0.27s; }
-    .stagger-card:nth-child(5) { animation-delay: 0.32s; }
-    .stagger-card:nth-child(6) { animation-delay: 0.37s; }
-    .stagger-card:nth-child(7) { animation-delay: 0.42s; }
-    .stagger-card:nth-child(8) { animation-delay: 0.47s; }
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.16s; }
+    .delay-3 { animation-delay: 0.24s; }
 
     /* ======================================================== */
-    /* 1. HERO BANNER (NO LEFT-SIDE BLUE BAR)                   */
+    /* 1. FRESH HERO BANNER                                     */
     /* ======================================================== */
     .portal-hero {
-        background: linear-gradient(135deg, rgba(20, 25, 42, 0.95), rgba(12, 15, 26, 0.98));
+        background: linear-gradient(135deg, rgba(18, 23, 38, 0.95), rgba(11, 14, 24, 0.98));
         border: 1px solid var(--border-glass);
-        border-radius: 22px;
-        padding: 30px 38px;
+        border-radius: 20px;
+        padding: 28px 34px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        margin-bottom: 26px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+        margin-bottom: 24px;
         position: relative;
         overflow: hidden;
-        gap: 24px;
+        gap: 20px;
         flex-wrap: wrap;
     }
 
@@ -102,37 +79,34 @@
         content: '';
         position: absolute;
         top: 0; right: 0;
-        width: 380px; height: 100%;
+        width: 340px; height: 100%;
         background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
         pointer-events: none;
     }
 
     .portal-badge-pill {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        background: rgba(0, 243, 255, 0.1);
         color: var(--neon-cyan);
-        padding: 5px 14px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 700;
-        font-size: 0.78rem;
-        border: 1px solid rgba(0, 243, 255, 0.3);
+        font-size: 0.74rem;
+        border: 1px solid rgba(0, 243, 255, 0.25);
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.8px;
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .portal-hero-title {
         font-family: 'Space Grotesk', sans-serif;
         font-size: 2.1rem;
-        margin: 0 0 8px;
+        margin: 0 0 6px;
         color: #fff;
         font-weight: 700;
         letter-spacing: -0.5px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
     }
 
     .portal-hero-title span {
@@ -140,7 +114,6 @@
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        color: transparent;
     }
 
     .portal-hero-sub {
@@ -151,7 +124,7 @@
         max-width: 540px;
     }
 
-    /* Mini Stats in Hero */
+    /* Clean Hero Stats */
     .mini-stats {
         display: flex;
         gap: 12px;
@@ -164,14 +137,12 @@
         border-radius: 14px;
         padding: 12px 18px;
         text-align: center;
-        min-width: 95px;
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        min-width: 90px;
+        transition: transform 0.25s ease, border-color 0.25s ease;
     }
-
     .mini-stat:hover {
         transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.18);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        border-color: rgba(255, 255, 255, 0.16);
     }
 
     .mini-stat-number {
@@ -179,385 +150,506 @@
         font-size: 1.45rem;
         font-weight: 700;
         line-height: 1.1;
-        white-space: nowrap;
     }
 
     .mini-stat-label {
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 5px;
+        letter-spacing: 0.8px;
+        margin-top: 4px;
         font-weight: 600;
     }
 
     .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
     .mini-stat.purple .mini-stat-number { color: var(--neon-purple); }
     .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
 
     /* ======================================================== */
-    /* 2. TOOLBAR / CATEGORIES / SEARCH / VIEW                  */
+    /* 2. UNIFIED SUBJECT & VIEW CONTROLLER STRIP               */
     /* ======================================================== */
-    .portal-toolbar {
-        background: rgba(14, 18, 30, 0.85);
+    .control-strip {
+        background: rgba(14, 18, 30, 0.88);
         border: 1px solid var(--border-glass);
-        border-radius: 18px;
-        padding: 16px 22px;
+        border-radius: 16px;
+        padding: 14px 20px;
         display: flex;
-        gap: 16px;
         align-items: center;
         justify-content: space-between;
+        gap: 16px;
         flex-wrap: wrap;
         margin-bottom: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
     }
 
-    .lb-cats {
+    .subject-pill-row {
         display: flex;
         gap: 8px;
-        flex-wrap: wrap;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 243, 255, 0.25) transparent;
+        flex: 1;
+        min-width: 280px;
+        -webkit-overflow-scrolling: touch;
     }
+    .subject-pill-row::-webkit-scrollbar { height: 3px; }
+    .subject-pill-row::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 3px; }
 
-    .lb-cat {
-        padding: 8px 18px;
-        border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.035);
+    .subj-btn {
+        border: 1px solid var(--border-glass);
+        background: rgba(255, 255, 255, 0.03);
         color: var(--text-muted);
-        font-weight: 600;
-        font-size: 0.84rem;
+        padding: 8px 16px;
+        border-radius: 50px;
         cursor: pointer;
-        transition: all 0.25s ease;
-        font-family: inherit;
+        font: 600 0.84rem 'Outfit', sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.22s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
-
-    .lb-cat:hover {
+    .subj-btn:hover {
         color: #fff;
-        border-color: rgba(255, 255, 255, 0.25);
-        transform: translateY(-1px);
+        border-color: rgba(0, 243, 255, 0.3);
+        background: rgba(0, 243, 255, 0.05);
     }
-
-    .lb-cat.active {
+    .subj-btn.active {
         background: rgba(0, 243, 255, 0.12);
         border-color: var(--neon-cyan);
         color: var(--neon-cyan);
-        box-shadow: 0 0 16px rgba(0, 243, 255, 0.18);
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.18);
+    }
+    .subj-btn .pill-count {
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.7rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+    }
+    .subj-btn.active .pill-count {
+        background: rgba(0, 243, 255, 0.25);
+        color: #fff;
     }
 
-    .lb-controls {
+    .right-controls {
         display: flex;
-        gap: 12px;
         align-items: center;
-        flex-wrap: wrap;
+        gap: 12px;
+        flex-shrink: 0;
     }
 
-    .lb-search {
+    .clean-search {
         position: relative;
     }
-
-    .lb-search i {
+    .clean-search i {
         position: absolute;
-        left: 16px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--text-muted);
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
-
-    .lb-input {
-        width: 270px;
-        padding: 10px 16px 10px 42px;
+    .clean-search input {
+        width: 230px;
+        padding: 8px 14px 8px 36px;
         border-radius: 50px;
         outline: none;
-        background: rgba(0, 0, 0, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-glass);
         color: #fff;
-        font-family: inherit;
-        font-size: 0.9rem;
-        transition: all 0.25s ease;
+        font: inherit;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
     }
-
-    .lb-input:focus {
+    .clean-search input:focus {
         border-color: var(--neon-cyan);
-        box-shadow: 0 0 16px rgba(0, 243, 255, 0.25);
-        background: rgba(0, 0, 0, 0.65);
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+        width: 260px;
     }
 
-    .lb-view {
+    .clean-view-toggle {
         display: inline-flex;
-        padding: 4px;
-        gap: 4px;
-        border-radius: 12px;
         background: rgba(0, 0, 0, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 3px;
+        border-radius: 10px;
+        border: 1px solid var(--border-glass);
+        gap: 3px;
     }
-
-    .lb-view button {
-        width: 36px;
-        height: 34px;
+    .clean-view-toggle button {
         border: none;
-        border-radius: 8px;
         background: transparent;
         color: var(--text-muted);
+        padding: 6px 12px;
+        border-radius: 7px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        font-size: 0.82rem;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 5px;
+        font-weight: 600;
+        transition: all 0.2s;
     }
-
-    .lb-view button:hover {
-        color: #fff;
-    }
-
-    .lb-view button.active {
+    .clean-view-toggle button:hover { color: #fff; }
+    .clean-view-toggle button.active {
         background: rgba(0, 243, 255, 0.15);
         color: var(--neon-cyan);
-        border: 1px solid rgba(0, 243, 255, 0.3);
     }
 
     /* ======================================================== */
-    /* 3. DOCUMENT CARDS GRID & LIST (DASHBOARD-MATCHING)      */
+    /* 3. FRESH SUBJECT SECTIONS (SUBJECT-WISE VAG)             */
     /* ======================================================== */
-    .portal-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        gap: 22px;
-        padding-bottom: 30px;
-    }
-
-    .doc {
-        background: var(--card-bg);
+    .subject-section {
+        background: rgba(14, 18, 30, 0.7);
         border: 1px solid var(--border-glass);
         border-radius: 20px;
-        padding: 24px;
+        padding: 24px 28px;
+        margin-bottom: 26px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: border-color 0.25s ease;
+    }
+    .subject-section:hover {
+        border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .subject-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .subject-icon-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(0, 243, 255, 0.1);
+        border: 1px solid rgba(0, 243, 255, 0.25);
+        display: grid;
+        place-items: center;
+        color: var(--neon-cyan);
+        font-size: 1.2rem;
+    }
+
+    .subject-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+    }
+
+    .subject-meta-tag {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        padding: 4px 12px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .subject-meta-tag i { color: var(--accent-green); }
+
+    .btn-classroom-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 16px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-glass);
+        color: var(--text-muted);
+        font: 600 0.82rem 'Outfit', sans-serif;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-classroom-link:hover {
+        background: rgba(0, 243, 255, 0.1);
+        border-color: rgba(0, 243, 255, 0.3);
+        color: var(--neon-cyan);
+        text-decoration: none;
+    }
+
+    /* ======================================================== */
+    /* 4. BALANCED & MATCHING NOTE CARDS                        */
+    /* ======================================================== */
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 20px;
+    }
+
+    .note-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 18px;
+        padding: 22px 24px;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         gap: 16px;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        min-height: 200px;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
         position: relative;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+    }
+    .note-card:hover {
+        border-color: var(--border-glow-cyan);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
     }
 
-    .doc:hover {
-        border-color: var(--border-glass-glow);
-        transform: translateY(-5px);
-        box-shadow: 0 18px 45px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
-    }
-
-    .doc-top {
+    .card-head {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         gap: 12px;
     }
 
-    .doc-ico {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
+    .doc-type-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
         display: grid;
         place-items: center;
-        font-size: 1.35rem;
+        font-size: 1.25rem;
         flex-shrink: 0;
     }
-    .doc-ico.pdf {
-        color: #ff3366;
+    .doc-type-icon.pdf {
+        color: var(--neon-rose);
         background: rgba(255, 51, 102, 0.12);
-        border: 1px solid rgba(255, 51, 102, 0.3);
+        border: 1px solid rgba(255, 51, 102, 0.25);
     }
-    .doc-ico.word {
-        color: #3b82f6;
+    .doc-type-icon.word {
+        color: var(--accent-blue);
         background: rgba(59, 130, 246, 0.12);
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        border: 1px solid rgba(59, 130, 246, 0.25);
     }
-    .doc-ico.other {
+    .doc-type-icon.other {
         color: var(--neon-cyan);
-        background: rgba(0, 243, 255, 0.12);
-        border: 1px solid rgba(0, 243, 255, 0.3);
+        background: rgba(0, 243, 255, 0.1);
+        border: 1px solid rgba(0, 243, 255, 0.25);
     }
 
-    .doc-name {
-        margin: 0;
+    .cat-chip {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid var(--border-glass);
+    }
+
+    .note-title {
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.15rem;
         font-weight: 700;
         color: #fff;
-        line-height: 1.35;
-        flex: 1;
+        margin: 0;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .doc-tag {
-        padding: 4px 12px;
-        border-radius: 99px;
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.6px;
-        text-transform: uppercase;
-        color: var(--neon-cyan);
-        background: rgba(0, 243, 255, 0.08);
-        border: 1px solid rgba(0, 243, 255, 0.25);
-        white-space: nowrap;
-    }
-
-    .doc-meta {
-        display: flex;
-        gap: 16px;
-        color: var(--text-muted);
-        font-size: 0.78rem;
-        flex-wrap: wrap;
-        padding-top: 10px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .doc-meta span {
-        display: flex;
+    .subject-pill-tag {
+        display: inline-flex;
         align-items: center;
         gap: 6px;
-    }
-    .doc-meta span i {
-        color: var(--neon-cyan);
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #a78bfa;
+        background: rgba(167, 139, 250, 0.08);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+        padding: 4px 10px;
+        border-radius: 8px;
+        margin-top: 6px;
+        width: fit-content;
     }
 
-    .doc-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: auto;
-    }
-
-    .btn-dl {
-        flex: 1;
+    .card-meta {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 11px 16px;
-        border-radius: 12px;
-        text-decoration: none;
-        color: #060814;
-        font: 700 0.82rem 'Outfit', sans-serif;
-        letter-spacing: 0.4px;
-        text-transform: uppercase;
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-        box-shadow: 0 6px 18px rgba(0, 243, 255, 0.25);
-        transition: all 0.25s ease;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .btn-dl:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+    .card-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-act {
+        flex: 1;
+        padding: 9px 16px;
+        border-radius: 10px;
+        font: 700 0.82rem 'Outfit', sans-serif;
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .btn-act.preview {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-glass);
+        color: #cbd5e1;
+    }
+    .btn-act.preview:hover {
+        background: rgba(255, 255, 255, 0.09);
+        color: #fff;
+        text-decoration: none;
+    }
+    .btn-act.download {
+        background: linear-gradient(135deg, var(--neon-cyan), #0284c7);
+        color: #07090e;
+        font-weight: 700;
+        border: none;
+    }
+    .btn-act.download:hover {
+        opacity: 0.92;
+        box-shadow: 0 4px 14px rgba(0, 243, 255, 0.35);
         color: #000;
         text-decoration: none;
     }
 
-    .btn-view {
-        padding: 11px 16px;
-        border-radius: 12px;
-        text-decoration: none;
-        color: var(--text-main);
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--border-glass);
-        font: 600 0.82rem 'Outfit', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        transition: all 0.25s ease;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .btn-view:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-        color: #fff;
-        transform: translateY(-2px);
-        text-decoration: none;
-    }
-
-    /* List View Variant */
-    .portal-grid.list {
+    /* List View for flat grid */
+    .notes-grid.list-view {
         grid-template-columns: 1fr;
         gap: 14px;
     }
-    .portal-grid.list .doc {
+    .notes-grid.list-view .note-card {
         flex-direction: row;
         align-items: center;
         padding: 16px 22px;
-        gap: 20px;
+        min-height: auto;
     }
-    .portal-grid.list .doc-top {
-        gap: 16px;
+    .notes-grid.list-view .card-head {
         align-items: center;
         flex: 1;
     }
-    .portal-grid.list .doc-meta {
-        padding-top: 0;
+    .notes-grid.list-view .card-meta {
         border-top: none;
-        margin-bottom: 0;
+        padding-top: 0;
+        margin: 0 20px;
     }
-    .portal-grid.list .doc-actions {
+    .notes-grid.list-view .card-actions {
+        width: 220px;
+        flex-shrink: 0;
         margin-top: 0;
     }
-    .portal-grid.list .btn-dl {
-        flex: none;
-        padding: 10px 22px;
-    }
 
-    /* Empty states */
-    .portal-empty {
+    /* Empty state */
+    .empty-library-state {
         text-align: center;
-        padding: 70px 20px;
+        padding: 60px 20px;
         background: var(--card-bg);
-        border: 1px dashed rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        margin-top: 10px;
     }
-    .portal-empty i {
-        font-size: 3rem;
+    .empty-library-state i {
+        font-size: 2.6rem;
         color: #334155;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         display: block;
     }
-    .portal-empty div {
+    .empty-library-state div {
         color: var(--text-muted);
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         font-weight: 600;
     }
 
-    .portal-foot {
-        margin-top: 30px;
-        text-align: center;
-        color: #64748b;
-        font-size: 0.78rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-    .portal-foot i {
-        color: var(--accent-green);
-    }
+    .hidden { display: none !important; }
 
-    .hidden {
-        display: none !important;
+    /* ======================================================== */
+    /* 5. MULTI-SCREEN & MOBILE RESPONSIVENESS                  */
+    /* ======================================================== */
+    @media (max-width: 1200px) {
+        .notes-grid { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
     }
 
     @media (max-width: 900px) {
-        .portal-container { padding: 20px 14px 60px; }
-        .portal-hero { padding: 22px 20px; }
-        .lb-input { width: 100%; }
-        .lb-controls, .lb-search { width: 100%; }
-        .portal-grid.list .doc { flex-direction: column; align-items: flex-start; }
+        .portal-container { padding: 24px 18px 60px; }
+        .control-strip { flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
+        .clean-search input { width: 100%; }
+        .clean-search input:focus { width: 100%; }
+        .right-controls { width: 100%; display: flex; justify-content: space-between; gap: 12px; }
+        .clean-search { flex: 1; }
+        .subject-pill-row { width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+        .portal-container { padding: 18px 14px 60px; }
+        .portal-hero { padding: 22px 18px; flex-direction: column; align-items: flex-start; gap: 18px; }
+        .portal-hero-title { font-size: 1.65rem; }
+        .portal-hero-sub { font-size: 0.85rem; max-width: 100%; }
+        .mini-stats { display: grid; grid-template-columns: repeat(2, 1fr); width: 100%; gap: 10px; }
+        .mini-stat { min-width: unset; width: 100%; padding: 12px 14px; }
+        .subject-section { padding: 20px 16px; border-radius: 16px; }
+        .subject-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .btn-classroom-link { width: 100%; justify-content: center; }
+        .notes-grid { grid-template-columns: 1fr !important; gap: 16px; }
+        .note-card { padding: 20px 18px; border-radius: 16px; }
+        
+        /* List view on mobile wraps into clean cards */
+        .notes-grid.list-view { grid-template-columns: 1fr !important; }
+        .notes-grid.list-view .note-card {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 14px;
+            padding: 18px;
+        }
+        .notes-grid.list-view .card-head { width: 100%; }
+        .notes-grid.list-view .card-meta {
+            margin: 0 !important;
+            padding-top: 10px !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        .notes-grid.list-view .card-actions { width: 100% !important; margin-top: 6px; }
     }
 
     @media (max-width: 480px) {
-        .portal-hero { flex-direction: column; align-items: flex-start; }
-        .portal-grid { grid-template-columns: 1fr; }
-        .doc-actions { flex-direction: column; width: 100%; }
-        .btn-view { justify-content: center; }
+        .portal-container { padding: 14px 10px 60px; }
+        .portal-hero { padding: 18px 14px; border-radius: 16px; margin-bottom: 18px; }
+        .portal-hero-title { font-size: 1.45rem; }
+        .mini-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .mini-stat-number { font-size: 1.25rem; }
+        .mini-stat-label { font-size: 0.62rem; }
+        .right-controls { flex-direction: column; width: 100%; }
+        .clean-view-toggle { width: 100%; justify-content: center; }
+        .clean-view-toggle button { flex: 1; justify-content: center; }
+        .note-card { padding: 18px 16px; }
+        .card-actions { flex-direction: column; gap: 8px; }
+        .btn-act { width: 100%; }
     }
 </style>
 
@@ -565,131 +657,285 @@
 
 <div class="portal-container">
 
-    <!-- 1. HERO BANNER (NO LEFT-SIDE BLUE BAR) -->
+    <!-- 1. FRESH HERO BANNER -->
     <div class="portal-hero fade-in-up">
         <div>
             <div class="portal-badge-pill">
-                <i class="fas fa-book-bookmark"></i> Digital Repository
+                <i class="fas fa-book-bookmark"></i> Academic Study Material
             </div>
-            <h1 class="portal-hero-title">Digital <span>Library</span></h1>
-            <p class="portal-hero-sub">Notes, references and study material from your enrolled courses, ready to view or download.</p>
+            <h1 class="portal-hero-title">Course <span>Library</span></h1>
+            <p class="portal-hero-sub">Lecture slides, study notes, and reference documents organized cleanly by enrolled subjects.</p>
         </div>
         <div class="mini-stats">
             <div class="mini-stat cyan">
-                <div class="mini-stat-number" id="stDocs">0</div>
+                <div class="mini-stat-number" id="statDocCount">{{ total_docs }}</div>
                 <div class="mini-stat-label">Documents</div>
             </div>
             <div class="mini-stat purple">
-                <div class="mini-stat-number" id="stCats">0</div>
-                <div class="mini-stat-label">Categories</div>
+                <div class="mini-stat-number">{{ enrolled_courses|length }}</div>
+                <div class="mini-stat-label">Subjects</div>
             </div>
             <div class="mini-stat green">
-                <div class="mini-stat-number" id="stPdf">0</div>
-                <div class="mini-stat-label">PDF Files</div>
+                <div class="mini-stat-number" id="statPdfCount">0</div>
+                <div class="mini-stat-label">PDF Notes</div>
+            </div>
+            <div class="mini-stat amber">
+                <div class="mini-stat-number" id="statCatCount">0</div>
+                <div class="mini-stat-label">Categories</div>
             </div>
         </div>
     </div>
 
-    <!-- 2. TOOLBAR / CATEGORIES / SEARCH / VIEW -->
-    <div class="portal-toolbar fade-in-up delay-1">
-        <div class="lb-cats" id="catBar"></div>
-        <div class="lb-controls">
-            <form method="GET" class="lb-search" id="searchForm">
+    <!-- 2. UNIFIED SUBJECT & VIEW CONTROLLER STRIP -->
+    <div class="control-strip fade-in-up delay-1">
+        <div class="subject-pill-row" id="subjectPillRow">
+            <button type="button" class="subj-btn {% if not selected_subject_id %}active{% endif %}" data-subject-id="all" onclick="setSubjectFilter('all', this)">
+                <i class="fas fa-border-all"></i> All Subjects
+                <span class="pill-count">{{ total_docs }}</span>
+            </button>
+            {% for c in enrolled_courses %}
+            <button type="button" class="subj-btn {% if selected_subject_id == c.id|stringformat:'s' %}active{% endif %}" data-subject-id="{{ c.id }}" onclick="setSubjectFilter('{{ c.id }}', this)">
+                <i class="fas fa-book-open"></i> {{ c.title }}
+                <span class="pill-count">{{ c.doc_count }}</span>
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="right-controls">
+            <div class="clean-search">
                 <i class="fas fa-search"></i>
-                <input type="search" name="search" id="searchInput" class="lb-input" placeholder="Search documents…" value="{{ request.GET.search|default:'' }}" aria-label="Search documents">
-            </form>
-            <div class="lb-view">
-                <button type="button" id="viewGrid" class="active" title="Grid view"><i class="fas fa-table-cells-large"></i></button>
-                <button type="button" id="viewList" title="List view"><i class="fas fa-list"></i></button>
+                <input type="search" id="libSearchInput" placeholder="Search notes…" value="{{ search_query|default:'' }}" aria-label="Search documents">
+            </div>
+            <div class="clean-view-toggle">
+                <button type="button" id="btnGroupedMode" class="active" onclick="switchMode('grouped')" title="Grouped by Subject">
+                    <i class="fas fa-layer-group"></i> Sections
+                </button>
+                <button type="button" id="btnAllMode" onclick="switchMode('all')" title="All Notes Flat Grid">
+                    <i class="fas fa-table-cells"></i> All
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 3. DOCUMENT GRID -->
-    {% if documents %}
-    <div class="portal-grid" id="docGrid">
-        {% for doc in documents %}
-        <article class="doc stagger-card" data-cat="{{ doc.category|default:'General' }}" data-title="{{ doc.title|lower }}" data-pdf="{% if 'pdf' in doc.file.name|lower %}1{% else %}0{% endif %}">
-            <div class="doc-top">
-                {% if 'pdf' in doc.file.name|lower %}
-                    <div class="doc-ico pdf"><i class="fas fa-file-pdf"></i></div>
-                {% elif 'doc' in doc.file.name|lower %}
-                    <div class="doc-ico word"><i class="fas fa-file-word"></i></div>
-                {% else %}
-                    <div class="doc-ico other"><i class="fas fa-file-alt"></i></div>
-                {% endif %}
-                <h3 class="doc-name">{{ doc.title }}</h3>
-                <span class="doc-tag">{{ doc.category|default:"General" }}</span>
-            </div>
-            <div class="doc-meta">
-                <span><i class="far fa-calendar-alt"></i> {{ doc.uploaded_at|date:"d M, Y" }}</span>
-                <span><i class="fas fa-lock"></i> Protected</span>
-            </div>
-            <div class="doc-actions">
-                <a href="{{ doc.file.url }}" target="_blank" class="btn-view"><i class="far fa-eye"></i> View</a>
-                <a href="{{ doc.file.url }}" download class="btn-dl"><i class="fas fa-download"></i> Download</a>
-            </div>
-        </article>
-        {% endfor %}
-    </div>
-    <div class="portal-empty hidden stagger-card" id="noMatch">
-        <i class="fas fa-magnifying-glass"></i>
-        <div>No documents match your filters</div>
-    </div>
-    {% else %}
-    <div class="portal-empty stagger-card">
-        <i class="fas fa-box-open"></i>
-        <div>Library is empty — no documents found</div>
-    </div>
-    {% endif %}
+    <!-- 3. SUBJECT SECTIONS VIEW (Default Clean Grouping) -->
+    <div id="view-grouped-sections" class="fade-in-up delay-2">
+        {% if subject_groups %}
+            {% for group in subject_groups %}
+            <div class="subject-section" data-section-subj-id="{{ group.course.id }}">
+                <div class="subject-header">
+                    <div class="subject-header-left">
+                        <div class="subject-icon-box">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h2 class="subject-title">{{ group.course.title }}</h2>
+                            <div style="display:flex; gap:8px; align-items:center; margin-top:3px; flex-wrap:wrap;">
+                                <span class="subject-meta-tag">
+                                    <i class="fas fa-user-tie"></i> Faculty: {{ group.course.faculty_name|default:"Department Instructor" }}
+                                </span>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">
+                                    {{ group.count }} Material{{ group.count|pluralize }} ({{ group.pdf_count }} PDF{{ group.pdf_count|pluralize }})
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'course_watch' group.course.id %}" class="btn-classroom-link">
+                        <i class="fas fa-chalkboard-user"></i> Go to Classroom
+                    </a>
+                </div>
 
-    <div class="portal-foot fade-in-up delay-2">
-        <i class="fas fa-shield-alt"></i> Secure student connection · End-to-end encrypted repository
+                <div class="notes-grid">
+                    {% for doc in group.documents %}
+                    <article class="note-card" data-cat="{{ doc.category|default:'General' }}" data-subj="{{ doc.course.id }}" data-title="{{ doc.title|lower }}" data-pdf="{% if 'pdf' in doc.file.name|lower %}1{% else %}0{% endif %}">
+                        <div>
+                            <div class="card-head">
+                                {% if 'pdf' in doc.file.name|lower %}
+                                    <div class="doc-type-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                                {% elif 'doc' in doc.file.name|lower %}
+                                    <div class="doc-type-icon word"><i class="fas fa-file-word"></i></div>
+                                {% else %}
+                                    <div class="doc-type-icon other"><i class="fas fa-file-alt"></i></div>
+                                {% endif %}
+                                <span class="cat-chip">{{ doc.category|default:"Study Notes" }}</span>
+                            </div>
+                            <h3 class="note-title" style="margin-top:10px;">{{ doc.title }}</h3>
+                        </div>
+
+                        <div>
+                            <div class="card-meta">
+                                <span><i class="far fa-calendar"></i> {{ doc.uploaded_at|date:"d M, Y" }}</span>
+                                <span style="color:var(--accent-green);"><i class="fas fa-shield-check"></i> Verified</span>
+                            </div>
+                            <div class="card-actions" style="margin-top:10px;">
+                                <a href="{{ doc.file.url }}" target="_blank" class="btn-act preview">
+                                    <i class="far fa-eye"></i> View
+                                </a>
+                                <a href="{{ doc.file.url }}" download class="btn-act download">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-library-state">
+                <i class="fas fa-folder-open"></i>
+                <div>No study materials available for enrolled courses</div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 4. ALL NOTES FLAT GRID VIEW -->
+    <div id="view-all-notes" class="hidden">
+        {% if all_documents %}
+        <div class="notes-grid" id="allNotesGrid">
+            {% for doc in all_documents %}
+            <article class="note-card" data-cat="{{ doc.category|default:'General' }}" data-subj="{{ doc.course.id }}" data-title="{{ doc.title|lower }}" data-pdf="{% if 'pdf' in doc.file.name|lower %}1{% else %}0{% endif %}">
+                <div>
+                    <div class="card-head">
+                        {% if 'pdf' in doc.file.name|lower %}
+                            <div class="doc-type-icon pdf"><i class="fas fa-file-pdf"></i></div>
+                        {% elif 'doc' in doc.file.name|lower %}
+                            <div class="doc-type-icon word"><i class="fas fa-file-word"></i></div>
+                        {% else %}
+                            <div class="doc-type-icon other"><i class="fas fa-file-alt"></i></div>
+                        {% endif %}
+                        <span class="cat-chip">{{ doc.category|default:"Notes" }}</span>
+                    </div>
+                    <h3 class="note-title" style="margin-top:10px;">{{ doc.title }}</h3>
+                    <div class="subject-pill-tag">
+                        <i class="fas fa-book"></i> {{ doc.course.title|truncatechars:32 }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card-meta">
+                        <span><i class="far fa-calendar"></i> {{ doc.uploaded_at|date:"d M, Y" }}</span>
+                        <span><i class="fas fa-lock"></i> Protected</span>
+                    </div>
+                    <div class="card-actions" style="margin-top:10px;">
+                        <a href="{{ doc.file.url }}" target="_blank" class="btn-act preview">
+                            <i class="far fa-eye"></i> View
+                        </a>
+                        <a href="{{ doc.file.url }}" download class="btn-act download">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-library-state">
+            <i class="fas fa-box-open"></i>
+            <div>No documents found</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="empty-library-state hidden" id="noMatchLib">
+        <i class="fas fa-magnifying-glass"></i>
+        <div>No notes match your subject filter or search query</div>
     </div>
 
 </div>
 
 <script>
 (function () {
-    const cards = Array.from(document.querySelectorAll('#docGrid .doc'));
-    const grid = document.getElementById('docGrid');
-    if (!cards.length) return;
+    let activeSubject = 'all';
+    let currentMode = 'grouped'; // 'grouped' or 'all'
 
-    const cats = ['All'].concat([...new Set(cards.map(c => c.dataset.cat))].sort());
-    let activeCat = 'All';
-    const bar = document.getElementById('catBar');
-    cats.forEach(c => {
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'lb-cat' + (c === 'All' ? ' active' : ''); b.textContent = c;
-        b.onclick = () => { activeCat = c; bar.querySelectorAll('.lb-cat').forEach(x => x.classList.toggle('active', x === b)); apply(); };
-        bar.appendChild(b);
-    });
+    const allCards = Array.from(document.querySelectorAll('#view-all-notes .note-card'));
+    const subjectSections = Array.from(document.querySelectorAll('.subject-section'));
+    const searchInput = document.getElementById('libSearchInput');
 
-    document.getElementById('stDocs').textContent = cards.length;
-    document.getElementById('stCats').textContent = cats.length - 1;
-    document.getElementById('stPdf').textContent = cards.filter(c => c.dataset.pdf === '1').length;
+    // Compute stats
+    const pdfs = allCards.filter(c => c.dataset.pdf === '1').length;
+    const cats = [...new Set(allCards.map(c => c.dataset.cat))];
+    const pdfCountEl = document.getElementById('statPdfCount');
+    const catCountEl = document.getElementById('statCatCount');
+    if (pdfCountEl) pdfCountEl.textContent = pdfs;
+    if (catCountEl) catCountEl.textContent = cats.length;
 
-    const input = document.getElementById('searchInput');
-    function apply() {
-        const q = input.value.trim().toLowerCase();
-        let n = 0;
-        cards.forEach(c => {
-            const ok = (activeCat === 'All' || c.dataset.cat === activeCat) && (!q || c.dataset.title.includes(q));
-            c.classList.toggle('hidden', !ok); if (ok) n++;
-        });
-        document.getElementById('noMatch').classList.toggle('hidden', n > 0);
+    // Mode Switcher (Sections vs All Grid)
+    window.switchMode = function (mode) {
+        currentMode = mode;
+        const btnGrouped = document.getElementById('btnGroupedMode');
+        const btnAll = document.getElementById('btnAllMode');
+        const viewGrouped = document.getElementById('view-grouped-sections');
+        const viewAll = document.getElementById('view-all-notes');
+
+        if (mode === 'grouped') {
+            btnGrouped.classList.add('active');
+            btnAll.classList.remove('active');
+            viewGrouped.classList.remove('hidden');
+            viewAll.classList.add('hidden');
+        } else {
+            btnAll.classList.add('active');
+            btnGrouped.classList.remove('active');
+            viewAll.classList.remove('hidden');
+            viewGrouped.classList.add('hidden');
+        }
+        applyFilter();
+    };
+
+    // Subject Filter Button
+    window.setSubjectFilter = function (subjId, btn) {
+        activeSubject = String(subjId);
+        document.querySelectorAll('#subjectPillRow .subj-btn').forEach(b => b.classList.toggle('active', b === btn));
+        applyFilter();
+    };
+
+    function applyFilter() {
+        const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        let matchCount = 0;
+
+        if (currentMode === 'grouped') {
+            subjectSections.forEach(sec => {
+                const secSubjId = String(sec.dataset.sectionSubjId);
+                const subjMatches = (activeSubject === 'all' || activeSubject === secSubjId);
+
+                if (!subjMatches) {
+                    sec.classList.add('hidden');
+                    return;
+                }
+
+                const cards = sec.querySelectorAll('.note-card');
+                let visibleInSec = 0;
+                cards.forEach(c => {
+                    const titleMatches = !q || c.dataset.title.includes(q);
+                    c.classList.toggle('hidden', !titleMatches);
+                    if (titleMatches) {
+                        visibleInSec++;
+                        matchCount++;
+                    }
+                });
+
+                sec.classList.toggle('hidden', visibleInSec === 0 && q.length > 0);
+            });
+        } else {
+            allCards.forEach(c => {
+                const subjMatches = (activeSubject === 'all' || String(c.dataset.subj) === activeSubject);
+                const titleMatches = !q || c.dataset.title.includes(q);
+                const show = subjMatches && titleMatches;
+
+                c.classList.toggle('hidden', !show);
+                if (show) matchCount++;
+            });
+        }
+
+        const noMatchEl = document.getElementById('noMatchLib');
+        if (noMatchEl) {
+            noMatchEl.classList.toggle('hidden', matchCount > 0);
+        }
     }
-    input.addEventListener('input', apply);
-    document.getElementById('searchForm').addEventListener('submit', e => e.preventDefault());
 
-    const gBtn = document.getElementById('viewGrid'), lBtn = document.getElementById('viewList');
-    function setView(list) {
-        grid.classList.toggle('list', list); gBtn.classList.toggle('active', !list); lBtn.classList.toggle('active', list);
-        localStorage.setItem('lib_view', list ? 'list' : 'grid');
+    if (searchInput) {
+        searchInput.addEventListener('input', applyFilter);
     }
-    gBtn.onclick = () => setView(false); lBtn.onclick = () => setView(true);
-    setView(localStorage.getItem('lib_view') === 'list');
-    apply();
 })();
 </script>
 {% endblock %}

@@ -2,99 +2,75 @@
 {% load static %}
 
 {% block content %}
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
     /* ======================================================== */
-    /* 🌌 STUDENT PORTAL UNIFIED DESIGN SYSTEM (DASHBOARD-MATCH) */
+    /* 🌌 FRESH, NEAT & CLEAN GLASSMORPHISM EXAM CENTER THEME   */
     /* ======================================================== */
     :root {
         --bg-dark: #07090e;
-        --card-bg: rgba(14, 18, 30, 0.95);
-        --card-bg-hover: rgba(22, 28, 45, 0.95);
+        --card-bg: rgba(14, 18, 30, 0.92);
+        --card-bg-hover: rgba(20, 26, 44, 0.95);
         --border-glass: rgba(255, 255, 255, 0.08);
-        --border-glass-glow: rgba(0, 243, 255, 0.35);
+        --border-glow-cyan: rgba(0, 243, 255, 0.35);
         --neon-cyan: #00f3ff;
         --neon-purple: #bc13fe;
-        --neon-blue: #3b82f6;
+        --neon-rose: #ff3366;
         --accent-green: #00e676;
         --accent-amber: #ffb74d;
-        --accent-red: #ff3366;
-        --text-main: #e2e8f0;
+        --accent-blue: #3b82f6;
+        --text-main: #f1f5f9;
         --text-muted: #94a3b8;
     }
 
-    /* Ambient Background Mesh */
     .portal-ambient {
         position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
         background: 
-            radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
-            radial-gradient(circle at 85% 25%, rgba(188, 19, 254, 0.06), transparent 50%),
-            radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.04), transparent 55%);
+            radial-gradient(circle at 14% 15%, rgba(0, 243, 255, 0.05), transparent 45%),
+            radial-gradient(circle at 86% 22%, rgba(188, 19, 254, 0.05), transparent 50%),
+            radial-gradient(circle at 50% 85%, rgba(255, 51, 102, 0.03), transparent 55%);
     }
 
     .portal-container {
-        padding: 35px 40px 80px;
-        max-width: 1440px;
+        padding: 32px 36px 80px;
+        max-width: 1400px;
         margin: 0 auto;
         font-family: 'Outfit', sans-serif;
         color: var(--text-main);
     }
 
-    /* ======================================================== */
-    /* 🚀 DOWN-TO-UP SMOOTH ENTRANCE ANIMATIONS                */
-    /* ======================================================== */
+    /* Entrance Animation */
     @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(28px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-
     .fade-in-up {
-        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.18s; }
-    .delay-3 { animation-delay: 0.26s; }
-
-    /* Staggered card entrance */
-    .stagger-card {
-        animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .stagger-card:nth-child(1) { animation-delay: 0.12s; }
-    .stagger-card:nth-child(2) { animation-delay: 0.17s; }
-    .stagger-card:nth-child(3) { animation-delay: 0.22s; }
-    .stagger-card:nth-child(4) { animation-delay: 0.27s; }
-    .stagger-card:nth-child(5) { animation-delay: 0.32s; }
-    .stagger-card:nth-child(6) { animation-delay: 0.37s; }
-    .stagger-card:nth-child(7) { animation-delay: 0.42s; }
-    .stagger-card:nth-child(8) { animation-delay: 0.47s; }
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.16s; }
 
     /* ======================================================== */
-    /* 1. HERO BANNER (NO LEFT-SIDE BLUE BAR)                   */
+    /* 1. FRESH HERO BANNER                                     */
     /* ======================================================== */
     .portal-hero {
-        background: linear-gradient(135deg, rgba(20, 25, 42, 0.95), rgba(12, 15, 26, 0.98));
+        background: linear-gradient(135deg, rgba(18, 23, 38, 0.95), rgba(11, 14, 24, 0.98));
         border: 1px solid var(--border-glass);
-        border-radius: 22px;
-        padding: 30px 38px;
+        border-radius: 20px;
+        padding: 28px 34px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        margin-bottom: 26px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+        margin-bottom: 24px;
         position: relative;
         overflow: hidden;
-        gap: 24px;
+        gap: 20px;
         flex-wrap: wrap;
     }
 
@@ -102,43 +78,40 @@
         content: '';
         position: absolute;
         top: 0; right: 0;
-        width: 380px; height: 100%;
+        width: 340px; height: 100%;
         background: radial-gradient(ellipse at center right, rgba(0, 243, 255, 0.08), transparent 70%);
         pointer-events: none;
     }
 
     .portal-badge-pill {
-        background: linear-gradient(135deg, rgba(0, 243, 255, 0.12), rgba(188, 19, 254, 0.12));
+        background: rgba(0, 243, 255, 0.1);
         color: var(--neon-cyan);
-        padding: 5px 14px;
+        padding: 4px 12px;
         border-radius: 20px;
         font-weight: 700;
-        font-size: 0.78rem;
-        border: 1px solid rgba(0, 243, 255, 0.3);
+        font-size: 0.74rem;
+        border: 1px solid rgba(0, 243, 255, 0.25);
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.8px;
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .portal-hero-title {
         font-family: 'Space Grotesk', sans-serif;
         font-size: 2.1rem;
-        margin: 0 0 8px;
+        margin: 0 0 6px;
         color: #fff;
         font-weight: 700;
         letter-spacing: -0.5px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
     }
 
     .portal-hero-title span {
         background: linear-gradient(135deg, #fff 20%, var(--neon-cyan) 80%);
-        -webkit-background-clip: text;
         background-clip: text;
+        -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
@@ -150,26 +123,7 @@
         max-width: 540px;
     }
 
-    .portal-alert-item {
-        padding: 14px 20px;
-        border-radius: 14px;
-        margin-bottom: 10px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(0, 243, 255, 0.12);
-        border: 1px solid rgba(0, 243, 255, 0.3);
-        color: var(--neon-cyan);
-    }
-    .portal-alert-item.alert-error {
-        background: rgba(255, 51, 102, 0.12);
-        border-color: rgba(255, 51, 102, 0.3);
-        color: var(--accent-red);
-    }
-
-    /* Mini Stats in Hero */
+    /* Clean Hero Stats */
     .mini-stats {
         display: flex;
         gap: 12px;
@@ -182,14 +136,12 @@
         border-radius: 14px;
         padding: 12px 18px;
         text-align: center;
-        min-width: 95px;
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        min-width: 90px;
+        transition: transform 0.25s ease, border-color 0.25s ease;
     }
-
     .mini-stat:hover {
         transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.18);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        border-color: rgba(255, 255, 255, 0.16);
     }
 
     .mini-stat-number {
@@ -197,533 +149,645 @@
         font-size: 1.45rem;
         font-weight: 700;
         line-height: 1.1;
-        white-space: nowrap;
     }
 
     .mini-stat-label {
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 5px;
+        letter-spacing: 0.8px;
+        margin-top: 4px;
         font-weight: 600;
     }
 
     .mini-stat.cyan .mini-stat-number { color: var(--neon-cyan); }
-    .mini-stat.purple .mini-stat-number { color: var(--neon-purple); }
-    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
     .mini-stat.green .mini-stat-number { color: var(--accent-green); }
+    .mini-stat.rose .mini-stat-number { color: var(--neon-rose); }
+    .mini-stat.amber .mini-stat-number { color: var(--accent-amber); }
 
     /* ======================================================== */
-    /* 2. TOOLBAR / TABS / CONTROLS                             */
+    /* ⚠️ FRESH CLEAN BLOCKED COURSES ALERT                     */
     /* ======================================================== */
-    .portal-toolbar {
-        background: rgba(14, 18, 30, 0.85);
-        border: 1px solid var(--border-glass);
-        border-radius: 18px;
-        padding: 16px 22px;
+    .clean-blocked-alert {
+        background: rgba(255, 51, 102, 0.07);
+        border: 1px solid rgba(255, 51, 102, 0.28);
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
         display: flex;
-        gap: 16px;
         align-items: center;
         justify-content: space-between;
+        gap: 14px;
         flex-wrap: wrap;
-        margin-bottom: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
     }
 
+    .alert-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .alert-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 51, 102, 0.15);
+        color: var(--neon-rose);
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .alert-text {
+        font-size: 0.86rem;
+        color: #f1f5f9;
+        line-height: 1.4;
+    }
+    .alert-text b {
+        color: #fff;
+    }
+    .blocked-pill {
+        display: inline-block;
+        background: rgba(255, 51, 102, 0.2);
+        color: #fff;
+        padding: 1px 7px;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin-right: 4px;
+    }
+
+    /* ======================================================== */
+    /* 2. TAB STRIP (MATCHING STUDENT CLASSES)                  */
+    /* ======================================================== */
     .portal-tabs-bar {
         display: inline-flex;
         padding: 5px;
-        gap: 5px;
-        border-radius: 50px;
-        background: rgba(0, 0, 0, 0.35);
-        border: 1px solid var(--border-glass);
-    }
-
-    .ac-tab {
-        border: 1px solid transparent;
-        background: transparent;
-        color: var(--text-muted);
-        padding: 8px 18px;
-        border-radius: 50px;
-        cursor: pointer;
-        font: 600 0.85rem 'Outfit', sans-serif;
-        transition: all 0.25s ease;
-        display: inline-flex;
-        align-items: center;
         gap: 6px;
-    }
-
-    .ac-tab:hover {
-        color: #fff;
-    }
-
-    .ac-tab.active {
-        background: rgba(0, 243, 255, 0.12);
-        border-color: var(--neon-cyan);
-        color: var(--neon-cyan);
-        box-shadow: 0 0 16px rgba(0, 243, 255, 0.18);
-    }
-
-    .ac-tab .count {
-        padding: 2px 8px;
-        border-radius: 99px;
-        background: rgba(255, 255, 255, 0.1);
-        font-size: 0.72rem;
-        font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-    }
-    .ac-tab.active .count {
-        background: rgba(0, 243, 255, 0.25);
-        color: #fff;
-    }
-
-    .portal-controls {
-        display: flex;
-        gap: 12px;
-        align-items: center;
+        border-radius: 50px;
+        background: rgba(14, 18, 30, 0.88);
+        border: 1px solid var(--border-glass);
+        margin-bottom: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         flex-wrap: wrap;
     }
 
-    .portal-search-wrap {
+    .ex-tab {
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-muted);
+        padding: 9px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.86rem 'Outfit', sans-serif;
+        transition: all 0.22s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .ex-tab:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .ex-tab.active {
+        background: rgba(0, 243, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 14px rgba(0, 243, 255, 0.2);
+    }
+    .ex-tab.missed-tab.active {
+        background: rgba(255, 51, 102, 0.14);
+        border-color: var(--neon-rose);
+        color: var(--neon-rose);
+        box-shadow: 0 0 14px rgba(255, 51, 102, 0.3);
+    }
+    .ex-tab .count {
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .ex-tab.active .count {
+        background: rgba(0, 243, 255, 0.25);
+        color: #fff;
+    }
+    .ex-tab.missed-tab.active .count {
+        background: rgba(255, 51, 102, 0.3);
+        color: #fff;
+    }
+
+    /* ======================================================== */
+    /* 3. SUBJECT FILTER PILLS STRIP                            */
+    /* ======================================================== */
+    .subject-strip {
+        background: rgba(14, 18, 30, 0.7);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .subj-pill-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 243, 255, 0.25) transparent;
+        flex: 1;
+        min-width: 260px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .subj-pill-list::-webkit-scrollbar { height: 3px; }
+    .subj-pill-list::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 3px; }
+
+    .subj-filter-btn {
+        border: 1px solid var(--border-glass);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-muted);
+        padding: 7px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font: 600 0.82rem 'Outfit', sans-serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .subj-filter-btn:hover {
+        color: #fff;
+        border-color: rgba(0, 243, 255, 0.3);
+        background: rgba(0, 243, 255, 0.05);
+    }
+    .subj-filter-btn.active {
+        background: rgba(0, 243, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+    }
+    .subj-filter-btn .count-badge {
+        padding: 1px 7px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.68rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+    }
+    .subj-filter-btn.active .count-badge {
+        background: rgba(0, 243, 255, 0.25);
+        color: #fff;
+    }
+    .subj-filter-btn.has-lock {
+        border-color: rgba(255, 51, 102, 0.35);
+    }
+    .subj-filter-btn.has-lock i.lock { color: var(--neon-rose); }
+
+    .clean-search-box {
         position: relative;
     }
-    .portal-search-wrap i {
+    .clean-search-box i {
         position: absolute;
-        left: 16px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--text-muted);
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
-
-    .portal-search-input {
-        width: 260px;
-        padding: 10px 16px 10px 42px;
+    .clean-search-box input {
+        width: 230px;
+        padding: 8px 14px 8px 36px;
         border-radius: 50px;
         outline: none;
-        background: rgba(0, 0, 0, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border-glass);
         color: #fff;
-        font-family: inherit;
-        font-size: 0.88rem;
-        transition: all 0.25s ease;
+        font: inherit;
+        font-size: 0.85rem;
+        transition: all 0.2s;
     }
-    .portal-search-input:focus {
+    .clean-search-box input:focus {
         border-color: var(--neon-cyan);
-        box-shadow: 0 0 16px rgba(0, 243, 255, 0.25);
-        background: rgba(0, 0, 0, 0.65);
-    }
-
-    .portal-select {
-        padding: 10px 16px;
-        border-radius: 12px;
-        background: rgba(0, 0, 0, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-        font-family: inherit;
-        font-size: 0.88rem;
-        outline: none;
-        cursor: pointer;
-        transition: border-color 0.25s;
-    }
-    .portal-select:focus {
-        border-color: var(--neon-cyan);
-    }
-    .portal-select option {
-        background: #0d1222;
-        color: #fff;
+        width: 260px;
+        box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
     }
 
     /* ======================================================== */
-    /* 3. EXAM CARDS GRID (DASHBOARD-MATCHING)                  */
+    /* 4. BALANCED & MATCHING EXAM CARDS GRID                   */
     /* ======================================================== */
-    .portal-grid {
+    .exams-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 20px;
     }
 
-    .ex-card {
+    .exam-card {
         background: var(--card-bg);
         border: 1px solid var(--border-glass);
-        border-radius: 20px;
-        padding: 26px;
+        border-radius: 18px;
+        padding: 24px 26px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-        position: relative;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-    }
-
-    .ex-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--border-glass-glow);
-        box-shadow: 0 18px 45px rgba(0, 243, 255, 0.12), 0 0 0 1px rgba(0, 243, 255, 0.15);
-    }
-
-    .ex-top {
-        display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
+        gap: 16px;
+        min-height: 220px;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+        position: relative;
+    }
+    .exam-card:hover {
+        border-color: var(--border-glow-cyan);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
     }
 
-    .ex-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: grid;
-        place-items: center;
-        font-size: 1.25rem;
-        color: var(--neon-cyan);
-        background: rgba(0, 243, 255, 0.1);
-        border: 1px solid rgba(0, 243, 255, 0.25);
+    .exam-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
     }
 
-    .tag {
+    .exam-subject-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #a78bfa;
+        background: rgba(167, 139, 250, 0.08);
+        border: 1px solid rgba(167, 139, 250, 0.2);
         padding: 4px 12px;
-        border-radius: 99px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.6px;
-        text-transform: uppercase;
-        border: 1px solid var(--border-glass);
-        color: var(--text-muted);
-        background: rgba(255, 255, 255, 0.04);
-    }
-    .tag.done {
-        color: var(--accent-green);
-        border-color: rgba(0, 230, 118, 0.4);
-        background: rgba(0, 230, 118, 0.1);
-    }
-    .tag.new {
-        color: var(--neon-cyan);
-        border-color: rgba(0, 243, 255, 0.35);
-        background: rgba(0, 243, 255, 0.08);
+        border-radius: 14px;
     }
 
-    .ex-title {
-        margin: 0;
+    .countdown-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 11px;
+        border-radius: 14px;
+        border: 1px solid transparent;
+    }
+    .countdown-chip.urgent {
+        color: var(--neon-rose);
+        background: rgba(255, 51, 102, 0.12);
+        border-color: rgba(255, 51, 102, 0.4);
+    }
+    .countdown-chip.normal {
+        color: var(--accent-amber);
+        background: rgba(255, 183, 77, 0.12);
+        border-color: rgba(255, 183, 77, 0.35);
+    }
+    .countdown-chip.open {
+        color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.08);
+        border-color: rgba(0, 243, 255, 0.25);
+    }
+
+    .exam-title {
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.25rem;
         font-weight: 700;
         color: #fff;
-        line-height: 1.35;
+        margin: 8px 0 0;
+        line-height: 1.4;
     }
 
-    .ex-course {
+    .exam-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.8rem;
         color: var(--text-muted);
-        font-size: 0.85rem;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--border-glass);
+        padding: 4px 11px;
+        border-radius: 10px;
+        font-size: 0.78rem;
+    }
+    .meta-chip i { color: var(--neon-cyan); }
+
+    .reputation-note {
+        font-size: 0.78rem;
+        color: #94a3b8;
         display: flex;
         align-items: center;
         gap: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin: 12px 0 14px;
     }
-    .ex-course i {
-        color: var(--neon-cyan);
-    }
+    .reputation-note i { color: var(--accent-amber); }
 
-    .ex-meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 8px;
-        padding-top: 6px;
-    }
-
-    .meta-box {
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.025);
-        border: 1px solid var(--border-glass);
-        text-align: center;
-    }
-    .meta-box small {
-        display: block;
-        color: var(--text-muted);
-        font-size: 0.65rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        margin-bottom: 3px;
-        font-weight: 600;
-    }
-    .meta-box b {
-        font: 700 0.95rem 'Space Grotesk', sans-serif;
-        color: #fff;
-    }
-
-    .ex-best {
-        font-size: 0.82rem;
-        color: var(--text-muted);
-        display: none;
-        padding: 6px 12px;
-        border-radius: 8px;
-        background: rgba(0, 230, 118, 0.08);
-        border: 1px solid rgba(0, 230, 118, 0.2);
-    }
-    .ex-best b {
-        color: var(--accent-green);
-    }
-
-    .btn-start {
-        margin-top: auto;
+    .btn-start-exam {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 12px;
+        padding: 12px 18px;
         border-radius: 12px;
+        min-height: 42px;
         text-decoration: none;
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-        color: #060814;
-        font: 700 0.85rem 'Outfit', sans-serif;
-        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, var(--neon-cyan), #0284c7);
+        color: #07090e;
+        font: 700 0.88rem 'Outfit', sans-serif;
+        letter-spacing: 0.4px;
         text-transform: uppercase;
-        transition: all 0.25s ease;
-        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.25);
+        transition: all 0.22s ease;
     }
-    .btn-start:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+    .btn-start-exam:hover {
+        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.4);
         color: #000;
         text-decoration: none;
+        transform: translateY(-2px);
     }
 
-    /* History Cards */
-    .hist-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-glass);
-        border-radius: 20px;
-        padding: 24px;
+    /* ======================================================== */
+    /* 5. FRESH MISSED / EXPIRED CARDS                          */
+    /* ======================================================== */
+    .missed-card {
+        background: rgba(18, 12, 22, 0.9);
+        border: 1px solid rgba(255, 51, 102, 0.3);
+        border-radius: 18px;
+        padding: 24px 26px;
         display: flex;
         flex-direction: column;
-        gap: 14px;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 220px;
+        transition: transform 0.25s ease, border-color 0.25s ease;
     }
-    .hist-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(255, 255, 255, 0.18);
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    .missed-card:hover {
+        border-color: rgba(255, 51, 102, 0.55);
+        transform: translateY(-3px);
     }
 
-    .hist-head {
+    .tag-missed {
+        background: rgba(255, 51, 102, 0.15);
+        border: 1px solid rgba(255, 51, 102, 0.4);
+        color: var(--neon-rose);
+        padding: 4px 11px;
+        border-radius: 14px;
+        font: 700 0.74rem 'Outfit', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .penalty-strip {
+        background: rgba(255, 51, 102, 0.06);
+        border: 1px solid rgba(255, 51, 102, 0.2);
+        border-radius: 10px;
+        padding: 9px 14px;
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        gap: 10px;
+        align-items: center;
+        font-size: 0.8rem;
     }
-    .hist-title {
-        margin: 0;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #fff;
-    }
-    .hist-date {
-        color: var(--text-muted);
+    .penalty-strip span { color: var(--text-muted); }
+    .penalty-strip b { color: var(--neon-rose); font-family: 'Space Grotesk', sans-serif; }
+
+    .missed-notice {
         font-size: 0.78rem;
-        margin-top: 4px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .missed-notice i { color: var(--neon-rose); }
+
+    /* ======================================================== */
+    /* 6. FRESH RESULT CARDS                                    */
+    /* ======================================================== */
+    .result-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 18px;
+        padding: 24px 26px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 220px;
+        transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .result-card:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        transform: translateY(-3px);
     }
 
-    .grade {
-        padding: 4px 12px;
-        border-radius: 99px;
-        font: 700 0.7rem 'Outfit', sans-serif;
-        letter-spacing: 0.6px;
+    .grade-badge {
+        padding: 4px 11px;
+        border-radius: 14px;
+        font: 700 0.74rem 'Outfit', sans-serif;
         text-transform: uppercase;
-        border: 1px solid;
+        letter-spacing: 0.5px;
+        border: 1px solid transparent;
     }
-    .grade.pass {
+    .grade-badge.pass {
         color: var(--accent-green);
-        border-color: rgba(0, 230, 118, 0.4);
-        background: rgba(0, 230, 118, 0.1);
+        background: rgba(0, 230, 118, 0.12);
+        border-color: rgba(0, 230, 118, 0.35);
     }
-    .grade.mid {
+    .grade-badge.mid {
         color: var(--accent-amber);
-        border-color: rgba(255, 183, 77, 0.4);
-        background: rgba(255, 183, 77, 0.1);
+        background: rgba(255, 183, 77, 0.12);
+        border-color: rgba(255, 183, 77, 0.35);
     }
-    .grade.low {
-        color: var(--accent-red);
-        border-color: rgba(255, 51, 102, 0.4);
-        background: rgba(255, 51, 102, 0.1);
+    .grade-badge.fail {
+        color: var(--neon-rose);
+        background: rgba(255, 51, 102, 0.12);
+        border-color: rgba(255, 51, 102, 0.35);
     }
 
-    .hist-score {
+    .result-score-row {
         display: flex;
         align-items: baseline;
-        gap: 6px;
-        font-family: 'Space Grotesk', sans-serif;
+        justify-content: space-between;
     }
-    .hist-score b {
-        font-size: 2rem;
+    .result-score-row .score-num {
+        font: 700 1.65rem 'Space Grotesk', sans-serif;
         color: #fff;
-        line-height: 1;
     }
-    .hist-score span {
+    .result-score-row .score-num small {
+        font-size: 0.85rem;
         color: var(--text-muted);
-        font-size: 0.95rem;
+        font-weight: 500;
     }
-    .hist-score em {
-        margin-left: auto;
-        font-style: normal;
-        font-weight: 700;
+    .result-score-row .score-pct {
+        font: 700 1.05rem 'Space Grotesk', sans-serif;
         color: var(--neon-cyan);
-        font-family: 'JetBrains Mono', monospace;
     }
 
-    .bar {
+    .slim-bar {
         height: 6px;
-        border-radius: 99px;
         background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
         overflow: hidden;
     }
-    .bar > i {
+    .slim-bar i {
         display: block;
         height: 100%;
-        width: 0;
-        border-radius: 99px;
-        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
-        transition: width 0.8s ease;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--accent-green));
+        border-radius: 10px;
     }
+
+    /* Empty state */
+    .clean-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--card-bg);
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+    }
+    .clean-empty-state i {
+        font-size: 2.6rem;
+        color: #334155;
+        margin-bottom: 12px;
+        display: block;
+    }
+    .clean-empty-state div {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .hidden { display: none !important; }
 
     /* Modal */
     .ac-overlay {
         position: fixed;
         inset: 0;
-        z-index: 2000;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        background: rgba(4, 6, 12, 0.85);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        place-items: center;
+        z-index: 9999;
     }
-    .ac-overlay.show {
-        display: flex;
-    }
-
+    .ac-overlay.show { display: grid; }
     .ac-modal {
-        width: 100%;
-        max-width: 480px;
-        padding: 34px;
-        text-align: center;
-        background: rgba(14, 18, 30, 0.98);
+        background: #0d1222;
         border: 1px solid var(--border-glass);
-        border-radius: 22px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-        animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .ac-modal h3 {
-        margin: 0 0 8px;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.45rem;
+        border-radius: 18px;
+        padding: 26px;
+        max-width: 440px;
+        width: 90%;
         color: #fff;
     }
-    .ac-modal p {
-        color: var(--text-muted);
-        line-height: 1.6;
-        margin: 0 0 20px;
-        font-size: 0.9rem;
-    }
-    .ac-modal ul {
-        text-align: left;
-        list-style: none;
-        padding: 0;
-        margin: 0 0 22px;
-    }
-    .ac-modal li {
-        padding: 11px 14px;
-        margin-bottom: 8px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--border-glass);
-        font-size: 0.88rem;
-        color: #e2e8f0;
-        display: flex;
-        align-items: center;
-    }
-    .ac-modal li i {
-        color: var(--neon-cyan);
-        margin-right: 12px;
-        width: 18px;
-        text-align: center;
-        font-size: 0.95rem;
-    }
-    .ac-modal .row {
-        display: flex;
-        gap: 12px;
-    }
+    .ac-modal h3 { margin: 0 0 6px; font-size: 1.3rem; font-family: 'Space Grotesk', sans-serif; }
+    .ac-modal p { margin: 0 0 16px; color: var(--text-muted); font-size: 0.85rem; }
+    .ac-modal ul { list-style: none; padding: 0; margin: 0 0 20px; display: flex; flex-direction: column; gap: 8px; }
+    .ac-modal li { font-size: 0.82rem; color: #cbd5e1; display: flex; align-items: center; gap: 8px; }
+    .ac-modal li i { color: var(--neon-cyan); }
+    .ac-modal .row { display: flex; gap: 10px; justify-content: flex-end; }
     .ac-btn {
-        flex: 1;
-        padding: 12px;
-        border-radius: 12px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.84rem;
+        text-decoration: none;
         border: 1px solid var(--border-glass);
         background: rgba(255, 255, 255, 0.05);
         color: #fff;
-        font: 700 0.88rem 'Outfit', sans-serif;
-        cursor: pointer;
-        text-decoration: none;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.2s ease;
-    }
-    .ac-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
     }
     .ac-btn.primary {
-        background: linear-gradient(135deg, var(--neon-cyan), #0077ff);
-        color: #060814;
-        border-color: transparent;
-        box-shadow: 0 6px 20px rgba(0, 243, 255, 0.3);
-    }
-    .ac-btn.primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 243, 255, 0.45);
+        background: var(--neon-cyan);
         color: #000;
+        border-color: var(--neon-cyan);
     }
 
-    /* Empty states */
-    .portal-empty {
-        text-align: center;
-        padding: 70px 20px;
-        background: var(--card-bg);
-        border: 1px dashed rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
-    }
-    .portal-empty i {
-        font-size: 3rem;
-        color: #334155;
-        margin-bottom: 16px;
-        display: block;
-    }
-    .portal-empty div {
-        color: var(--text-muted);
-        font-weight: 600;
-        font-size: 1.05rem;
-    }
-
-    .hidden {
-        display: none !important;
+    /* ======================================================== */
+    /* 7. MULTI-SCREEN & MOBILE RESPONSIVENESS                  */
+    /* ======================================================== */
+    @media (max-width: 1200px) {
+        .exams-grid { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
     }
 
     @media (max-width: 900px) {
-        .portal-container { padding: 20px 14px 60px; }
-        .portal-hero { padding: 22px 20px; }
-        .portal-search-input { width: 100%; }
-        .portal-controls { width: 100%; }
-        .portal-search-wrap { width: 100%; }
-        .portal-select { width: 100%; }
+        .portal-container { padding: 24px 18px 60px; }
+        .subject-strip { flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
+        .subj-pill-list { width: 100%; }
+        .clean-search-box { width: 100%; }
+        .clean-search-box input { width: 100% !important; }
+        .clean-search-box input:focus { width: 100% !important; }
+    }
+
+    @media (max-width: 768px) {
+        .portal-container { padding: 18px 14px 60px; }
+        .portal-hero { padding: 22px 18px; flex-direction: column; align-items: flex-start; gap: 18px; }
+        .portal-hero-title { font-size: 1.65rem; }
+        .portal-hero-sub { font-size: 0.85rem; max-width: 100%; }
+        .mini-stats { display: grid; grid-template-columns: repeat(2, 1fr); width: 100%; gap: 10px; }
+        .mini-stat { min-width: unset; width: 100%; padding: 12px 14px; }
+        
+        .portal-tabs-bar {
+            width: 100%;
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 14px;
+            padding: 4px;
+            gap: 4px;
+        }
+        .ex-tab {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .exams-grid { grid-template-columns: 1fr !important; gap: 16px; }
+        .exam-card, .result-card, .missed-card { padding: 20px 20px; border-radius: 16px; }
+        .clean-blocked-alert { padding: 12px 14px; border-radius: 12px; }
+    }
+
+    @media (max-width: 480px) {
+        .portal-container { padding: 14px 10px 60px; }
+        .portal-hero { padding: 18px 14px; border-radius: 16px; margin-bottom: 18px; }
+        .portal-hero-title { font-size: 1.45rem; }
+        .mini-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .mini-stat-number { font-size: 1.25rem; }
+        .mini-stat-label { font-size: 0.62rem; }
+        
+        .portal-tabs-bar {
+            flex-direction: column;
+            border-radius: 12px;
+        }
+        .ex-tab {
+            width: 100%;
+            border-radius: 8px;
+            justify-content: space-between;
+            padding: 9px 14px;
+        }
+
+        .exam-card, .result-card, .missed-card { padding: 18px 16px; }
+        .exam-title { font-size: 1.15rem; }
+        .btn-start-exam { width: 100%; }
     }
 </style>
 
@@ -731,228 +795,311 @@
 
 <div class="portal-container">
 
-    {% if messages %}
-    <div style="margin-bottom: 20px;" class="fade-in-up">
-        {% for message in messages %}
-        <div class="portal-alert-item {% if message.tags == 'error' %}alert-error{% endif %}">
-            <i class="fas {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
-            <span>{{ message }}</span>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <!-- 1. HERO BANNER (NO LEFT-SIDE BLUE BAR) -->
+    <!-- 1. FRESH HERO BANNER -->
     <div class="portal-hero fade-in-up">
         <div>
             <div class="portal-badge-pill">
-                <i class="fas fa-brain"></i> AI Proctored Assessments
+                <i class="fas fa-brain"></i> Proctored Assessment Hub
             </div>
-            <h1 class="portal-hero-title">Assessment <span>Center</span></h1>
-            <p class="portal-hero-sub">Take proctored quizzes, track your performance and earn LMS Coins by scoring 80% or above.</p>
+            <h1 class="portal-hero-title">AI Assessment <span>Center</span></h1>
+            <p class="portal-hero-sub">Timed subject quizzes and proctored examinations. Attempt within the deadline window to safeguard your academic standing.</p>
         </div>
         <div class="mini-stats">
-            <div class="mini-stat cyan">
-                <div class="mini-stat-number" id="statAvail">0</div>
+            <div class="mini-stat cyan" title="Available to attempt">
+                <div class="mini-stat-number">{{ active_count }}</div>
                 <div class="mini-stat-label">Available</div>
             </div>
-            <div class="mini-stat purple">
-                <div class="mini-stat-number" id="statTaken">0</div>
-                <div class="mini-stat-label">Attempts</div>
+            <div class="mini-stat green" title="Completed attempts">
+                <div class="mini-stat-number">{{ taken_count }}</div>
+                <div class="mini-stat-label">Completed</div>
             </div>
-            <div class="mini-stat amber">
-                <div class="mini-stat-number" id="statAvg">0%</div>
-                <div class="mini-stat-label">Avg Score</div>
+            <div class="mini-stat rose" title="Missed / Expired">
+                <div class="mini-stat-number">{{ missed_count }}</div>
+                <div class="mini-stat-label">Missed</div>
             </div>
-            <div class="mini-stat green">
-                <div class="mini-stat-number" id="statBest">0%</div>
-                <div class="mini-stat-label">Best Score</div>
+            <div class="mini-stat amber" title="Student Reputation Score">
+                <div class="mini-stat-number">{{ reputation_score }}</div>
+                <div class="mini-stat-label">Reputation</div>
             </div>
         </div>
     </div>
 
-    <!-- 2. TOOLBAR / TABS / SEARCH -->
-    <div class="portal-toolbar fade-in-up delay-1">
-        <div class="portal-tabs-bar" role="tablist">
-            <button class="ac-tab active" id="tabActive" onclick="switchView('active', this)">Active Modules <span class="count" id="cntActive">0</span></button>
-            <button class="ac-tab" id="tabHistory" onclick="switchView('history', this)">Result Archives <span class="count" id="cntHist">0</span></button>
-        </div>
-        <div class="portal-controls">
-            <div class="portal-search-wrap">
-                <i class="fas fa-search"></i>
-                <input type="search" id="searchBox" class="portal-search-input" placeholder="Search assessments…" aria-label="Search assessments">
+    <!-- 2. CLEAN BLOCKED COURSE ALERT (ONLY SHOWN IF BLOCKED) -->
+    {% if blocked_courses_count > 0 %}
+    <div class="clean-blocked-alert fade-in-up delay-1">
+        <div class="alert-left">
+            <div class="alert-icon-box">
+                <i class="fas fa-triangle-exclamation"></i>
             </div>
-            <select id="sortBox" class="portal-select" aria-label="Sort">
-                <option value="new">Newest first</option>
-                <option value="az">Title A–Z</option>
-                <option value="dur">Shortest duration</option>
-                <option value="marks">Highest marks</option>
-            </select>
+            <div class="alert-text">
+                <b>Course Completion Blocked:</b> Unattempted exam deadline expired for
+                {% for bc in blocked_courses %}
+                <span class="blocked-pill"><i class="fas fa-lock"></i> {{ bc.title }}</span>
+                {% endfor %}
+                · Reputation penalized to {{ reputation_score }}/100. Contact faculty to resolve.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 3. TABS STRIP (ACTIVE, HISTORY, MISSED) -->
+    <div class="portal-tabs-bar fade-in-up delay-1">
+        <button class="ex-tab active" id="tabActive" onclick="changeExamTab('active', this)">
+            <i class="fas fa-bolt"></i> Active Modules <span class="count">{{ active_count }}</span>
+        </button>
+        <button class="ex-tab" id="tabHistory" onclick="changeExamTab('history', this)">
+            <i class="fas fa-clock-rotate-left"></i> Result Archives <span class="count">{{ taken_count }}</span>
+        </button>
+        <button class="ex-tab missed-tab" id="tabMissed" onclick="changeExamTab('missed', this)">
+            <i class="fas fa-triangle-exclamation"></i> Missed & Expired <span class="count">{{ missed_count }}</span>
+        </button>
+    </div>
+
+    <!-- 4. SUBJECT NAVIGATION STRIP -->
+    <div class="subject-strip fade-in-up delay-1">
+        <div class="subj-pill-list" id="examSubjPillList">
+            <button type="button" class="subj-filter-btn active" data-subj-id="all" onclick="filterExamSubject('all', this)">
+                <i class="fas fa-border-all"></i> All Subjects
+                <span class="count-badge">{{ active_count }}</span>
+            </button>
+            {% for s in subject_tabs %}
+            <button type="button" class="subj-filter-btn {% if s.is_blocked %}has-lock{% endif %}" data-subj-id="{{ s.id }}" onclick="filterExamSubject('{{ s.id }}', this)">
+                <i class="fas fa-book-open"></i> {{ s.title }}
+                {% if s.is_blocked %}<i class="fas fa-lock lock" title="Completion Blocked"></i>{% endif %}
+                <span class="count-badge">{{ s.active_count }}</span>
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="clean-search-box">
+            <i class="fas fa-search"></i>
+            <input type="search" id="examSearchInput" placeholder="Search assessments…" aria-label="Search assessments">
         </div>
     </div>
 
-    <!-- 3. ACTIVE ASSESSMENTS -->
-    <div id="view-active">
+    <!-- 5. ACTIVE EXAMS -->
+    <div id="tab-pane-active" class="fade-in-up delay-2">
         {% if exams %}
-        <div class="portal-grid" id="examGrid">
+        <div class="exams-grid" id="activeExamGrid">
             {% for exam in exams %}
-            <article class="ex-card stagger-card" data-title="{{ exam.title|lower }}" data-course="{% if exam.course %}{{ exam.course.title|lower }}{% endif %}"
-                     data-dur="{{ exam.duration_minutes }}" data-marks="{{ exam.total_marks }}" data-order="{{ forloop.counter }}" data-name="{{ exam.title }}">
-                <div class="ex-top">
-                    <div class="ex-icon"><i class="fas fa-file-pen"></i></div>
-                    <span class="tag new" data-status>New</span>
+            <article class="exam-card" data-title="{{ exam.title|lower }}" data-subj="{{ exam.course.id }}" data-course="{{ exam.course.title|lower }}"
+                     data-name="{{ exam.title }}" data-dur="{{ exam.duration_minutes }}" data-marks="{{ exam.total_marks }}">
+                <div>
+                    <div class="exam-top">
+                        <span class="exam-subject-chip"><i class="fas fa-graduation-cap"></i> {{ exam.course.title|default:"General Module" }}</span>
+                        {% if exam.remaining.has_deadline %}
+                            {% if exam.remaining.urgent %}
+                                <span class="countdown-chip urgent"><i class="fas fa-fire"></i> {{ exam.remaining.label }}</span>
+                            {% else %}
+                                <span class="countdown-chip normal"><i class="far fa-clock"></i> {{ exam.remaining.label }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="countdown-chip open"><i class="fas fa-check"></i> Open</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="exam-title">{{ exam.title }}</h3>
                 </div>
-                <h3 class="ex-title">{{ exam.title }}</h3>
-                <div class="ex-course"><i class="fas fa-book-open"></i>{% if exam.course %}{{ exam.course.title|truncatechars:34 }}{% else %}General Module{% endif %}</div>
-                <div class="ex-meta">
-                    <div class="meta-box"><small>Time</small><b>{{ exam.duration_minutes }}m</b></div>
-                    <div class="meta-box"><small>Marks</small><b>{{ exam.total_marks }}</b></div>
-                    <div class="meta-box"><small>Mode</small><b>Secure</b></div>
+
+                <div>
+                    <div class="exam-meta-row">
+                        <span class="meta-chip"><i class="far fa-clock"></i> {{ exam.duration_minutes }}m</span>
+                        <span class="meta-chip"><i class="fas fa-star"></i> {{ exam.total_marks }} Marks</span>
+                        <span class="meta-chip"><i class="fas fa-shield-alt"></i> Proctored</span>
+                    </div>
+
+                    <div class="reputation-note" style="margin: 10px 0 12px;">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Complete on time to safeguard your Reputation ({{ reputation_score }})</span>
+                    </div>
+
+                    <a href="{% url 'take_exam' exam.id %}" class="btn-start-exam" data-exam-start>
+                        <i class="fas fa-play"></i> Start Assessment
+                    </a>
                 </div>
-                <div class="ex-best" data-best>Best attempt: <b></b></div>
-                <a href="{% url 'take_exam' exam.id %}" class="btn-start" data-start>
-                    <i class="fas fa-play"></i> <span>Start Exam</span>
-                </a>
             </article>
             {% endfor %}
         </div>
-        <div class="portal-empty hidden stagger-card" id="noMatchActive"><i class="fas fa-magnifying-glass"></i><div>No assessments match your search</div></div>
         {% else %}
-        <div class="portal-empty stagger-card"><i class="fas fa-box-open"></i><div>No active modules found</div></div>
+        <div class="clean-empty-state">
+            <i class="fas fa-circle-check" style="color:var(--accent-green);"></i>
+            <div>No open modules pending for your enrolled subjects</div>
+        </div>
         {% endif %}
     </div>
 
-    <!-- 4. RESULT ARCHIVES -->
-    <div id="view-history" class="hidden">
+    <!-- 6. RESULT ARCHIVES -->
+    <div id="tab-pane-history" class="hidden">
         {% if results %}
-        <div class="portal-grid" id="histGrid">
+        <div class="exams-grid" id="historyExamGrid">
             {% for result in results %}
-            <article class="hist-card stagger-card" data-title="{{ result.exam.title|lower }}" data-name="{{ result.exam.title }}"
-                     data-score="{{ result.score|floatformat:0 }}" data-total="{{ result.total_marks }}"
-                     data-dur="0" data-marks="{{ result.total_marks }}" data-order="{{ forloop.counter }}">
-                <div class="hist-head">
-                    <div>
-                        <h3 class="hist-title">{{ result.exam.title }}</h3>
-                        <div class="hist-date"><i class="far fa-calendar-check"></i> {{ result.taken_at|date:"d M, Y" }}</div>
+            <article class="result-card" data-title="{{ result.exam.title|lower }}" data-subj="{{ result.exam.course.id }}" data-course="{{ result.exam.course.title|lower }}">
+                <div>
+                    <div class="exam-top">
+                        <span class="exam-subject-chip"><i class="fas fa-graduation-cap"></i> {{ result.exam.course.title }}</span>
+                        <span class="grade-badge {{ result.grade_class }}">{{ result.grade }}</span>
                     </div>
-                    <span class="grade" data-grade></span>
+                    <h3 class="exam-title">{{ result.exam.title }}</h3>
                 </div>
-                <div class="hist-score"><b>{{ result.score|floatformat:0 }}</b><span>/ {{ result.total_marks }}</span><em data-pct></em></div>
-                <div class="bar"><i data-bar></i></div>
+
+                <div>
+                    <div class="result-score-row" style="margin-bottom:6px;">
+                        <span class="score-num">{{ result.score|floatformat:0 }} <small>/ {{ result.total_marks }}</small></span>
+                        <span class="score-pct">{{ result.percentage }}%</span>
+                    </div>
+                    <div class="slim-bar" style="margin-bottom:10px;"><i style="width: {{ result.percentage }}%;"></i></div>
+                    <div style="font-size:0.74rem; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+                        <span><i class="far fa-calendar-check"></i> {{ result.taken_at|date:"d M, Y" }}</span>
+                        {% if result.percentage >= 80 %}
+                        <span style="color:var(--accent-amber); font-weight:700;"><i class="fas fa-coins"></i> +100 Coins</span>
+                        {% endif %}
+                    </div>
+                </div>
             </article>
             {% endfor %}
         </div>
-        <div class="portal-empty hidden stagger-card" id="noMatchHist"><i class="fas fa-magnifying-glass"></i><div>No results match your search</div></div>
         {% else %}
-        <div class="portal-empty stagger-card"><i class="fas fa-clock-rotate-left"></i><div>Archive is empty</div></div>
+        <div class="clean-empty-state">
+            <i class="fas fa-clock-rotate-left"></i>
+            <div>No completed assessments yet</div>
+        </div>
         {% endif %}
+    </div>
+
+    <!-- 7. MISSED & EXPIRED ARCHIVES -->
+    <div id="tab-pane-missed" class="hidden">
+        {% if missed_exams %}
+        <div class="exams-grid" id="missedExamGrid">
+            {% for exam in missed_exams %}
+            <article class="missed-card" data-title="{{ exam.title|lower }}" data-subj="{{ exam.course.id }}" data-course="{{ exam.course.title|lower }}">
+                <div>
+                    <div class="exam-top">
+                        <span class="exam-subject-chip" style="color:var(--neon-rose);"><i class="fas fa-graduation-cap"></i> {{ exam.course.title }}</span>
+                        <span class="tag-missed"><i class="fas fa-circle-xmark"></i> Expired</span>
+                    </div>
+                    <h3 class="exam-title">{{ exam.title }}</h3>
+                </div>
+
+                <div>
+                    <div class="penalty-strip">
+                        <span><i class="fas fa-user-shield"></i> Penalty</span>
+                        <b>-15 Rep · -10 Eng · Completion Locked 🔒</b>
+                    </div>
+                    <div class="missed-notice" style="margin-top:8px;">
+                        <i class="fas fa-lock"></i>
+                        <span>Passed on {{ exam.deadline|date:"d M, Y h:i A" }}. Contact faculty for makeup exam.</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="clean-empty-state">
+            <i class="fas fa-circle-check" style="color:var(--accent-green);"></i>
+            <div>No missed assessments — clean record!</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="clean-empty-state hidden" id="noMatchExams">
+        <i class="fas fa-magnifying-glass"></i>
+        <div>No assessments match your subject or search criteria</div>
     </div>
 
 </div>
 
-<!-- Pre-exam confirmation modal -->
-<div class="ac-overlay" id="preOverlay">
+<!-- Pre-Exam Confirmation Modal -->
+<div class="ac-overlay" id="examStartModal">
     <div class="ac-modal">
-        <h3 id="preTitle">Start Exam</h3>
-        <p id="preMeta">Secure proctored mode</p>
+        <h3 id="modalExamTitle">Start Exam</h3>
+        <p id="modalExamMeta">15 minutes · 20 marks · Secure Proctored Mode</p>
         <ul>
-            <li><i class="fas fa-expand"></i>Exam opens in fullscreen mode</li>
-            <li><i class="fas fa-window-restore"></i>Switching windows or tabs is monitored</li>
-            <li><i class="fas fa-triangle-exclamation"></i>3 violations auto-submit your exam</li>
-            <li><i class="fas fa-wifi"></i>Make sure your connection is stable</li>
+            <li><i class="fas fa-expand"></i>Exam runs in fullscreen mode</li>
+            <li><i class="fas fa-window-restore"></i>Tab switching is monitored and logged</li>
+            <li><i class="fas fa-award"></i>Score 80%+ to earn 100 bonus LMS Coins</li>
         </ul>
         <div class="row">
-            <button class="ac-btn" id="preCancel" type="button">Cancel</button>
-            <a class="ac-btn primary" id="preGo" href="#">Begin</a>
+            <button class="ac-btn" id="modalExamCancel" type="button">Cancel</button>
+            <a class="ac-btn primary" id="modalExamGo" href="#">Begin Exam</a>
         </div>
     </div>
 </div>
 
 <script>
-    const examCards = Array.from(document.querySelectorAll('#examGrid .ex-card'));
-    const histCards = Array.from(document.querySelectorAll('#histGrid .hist-card'));
-    let currentView = 'active';
+(function () {
+    let currentTab = 'active';
+    let currentSubject = 'all';
 
-    // ----- Compute performance data from history -----
-    const best = {}, attempts = {};
-    let sumPct = 0, bestAll = 0;
-    histCards.forEach(c => {
-        const s = +c.dataset.score, t = +c.dataset.total || 0;
-        const pct = t > 0 ? Math.round(s / t * 100) : 0;
-        c.dataset.pct = pct;
-        c.querySelector('[data-pct]').textContent = pct + '%';
-        c.querySelector('[data-bar]').style.width = pct + '%';
-        const g = c.querySelector('[data-grade]');
-        g.textContent = pct >= 80 ? 'Excellent' : pct >= 50 ? 'Passed' : 'Needs work';
-        g.classList.add(pct >= 80 ? 'pass' : pct >= 50 ? 'mid' : 'low');
-        sumPct += pct; bestAll = Math.max(bestAll, pct);
-        const n = c.dataset.name;
-        best[n] = Math.max(best[n] || 0, pct);
-        attempts[n] = (attempts[n] || 0) + 1;
-    });
+    const activeCards = Array.from(document.querySelectorAll('#activeExamGrid .exam-card'));
+    const historyCards = Array.from(document.querySelectorAll('#historyExamGrid .result-card'));
+    const missedCards = Array.from(document.querySelectorAll('#missedExamGrid .missed-card'));
+    const searchInput = document.getElementById('examSearchInput');
 
-    examCards.forEach(c => {
-        const n = c.dataset.name;
-        if (attempts[n]) {
-            const tag = c.querySelector('[data-status]');
-            tag.textContent = 'Attempted ×' + attempts[n]; tag.className = 'tag done';
-            const b = c.querySelector('[data-best]'); b.style.display = 'block'; b.querySelector('b').textContent = best[n] + '%';
-            c.querySelector('[data-start] span').textContent = 'Retake Exam';
-        }
-    });
-
-    document.getElementById('statAvail').textContent = examCards.length;
-    document.getElementById('statTaken').textContent = histCards.length;
-    document.getElementById('statAvg').textContent = (histCards.length ? Math.round(sumPct / histCards.length) : 0) + '%';
-    document.getElementById('statBest').textContent = bestAll + '%';
-    document.getElementById('cntActive').textContent = examCards.length;
-    document.getElementById('cntHist').textContent = histCards.length;
-
-    // ----- Search + sort -----
-    function applyFilters() {
-        const q = document.getElementById('searchBox').value.trim().toLowerCase();
-        const sort = document.getElementById('sortBox').value;
-        [[examCards, 'noMatchActive'], [histCards, 'noMatchHist']].forEach(([cards, emptyId]) => {
-            if (!cards.length) return;
-            let visible = 0;
-            cards.forEach(c => {
-                const hit = !q || c.dataset.title.includes(q) || (c.dataset.course || '').includes(q);
-                c.classList.toggle('hidden', !hit); if (hit) visible++;
-            });
-            const parent = cards[0].parentElement;
-            const sorted = cards.slice().sort((a, b) => {
-                if (sort === 'az') return a.dataset.name.localeCompare(b.dataset.name);
-                if (sort === 'dur') return (+a.dataset.dur) - (+b.dataset.dur);
-                if (sort === 'marks') return (+b.dataset.marks) - (+a.dataset.marks);
-                return (+a.dataset.order) - (+b.dataset.order);
-            });
-            sorted.forEach(c => parent.appendChild(c));
-            document.getElementById(emptyId).classList.toggle('hidden', visible > 0);
-        });
-    }
-    document.getElementById('searchBox').addEventListener('input', applyFilters);
-    document.getElementById('sortBox').addEventListener('change', applyFilters);
-
-    function switchView(view, btn) {
-        currentView = view;
-        document.getElementById('view-active').classList.toggle('hidden', view !== 'active');
-        document.getElementById('view-history').classList.toggle('hidden', view !== 'history');
-        document.querySelectorAll('.ac-tab').forEach(b => b.classList.remove('active'));
+    window.changeExamTab = function (tab, btn) {
+        currentTab = tab;
+        document.getElementById('tab-pane-active').classList.toggle('hidden', tab !== 'active');
+        document.getElementById('tab-pane-history').classList.toggle('hidden', tab !== 'history');
+        document.getElementById('tab-pane-missed').classList.toggle('hidden', tab !== 'missed');
+        document.querySelectorAll('.portal-tabs-bar .ex-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        filterList();
+    };
+
+    window.filterExamSubject = function (subjId, btn) {
+        currentSubject = String(subjId);
+        document.querySelectorAll('#examSubjPillList .subj-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+        filterList();
+    };
+
+    function filterList() {
+        const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        let targetCards = [];
+        if (currentTab === 'active') targetCards = activeCards;
+        else if (currentTab === 'history') targetCards = historyCards;
+        else if (currentTab === 'missed') targetCards = missedCards;
+
+        let visible = 0;
+        targetCards.forEach(c => {
+            const subjMatch = (currentSubject === 'all' || String(c.dataset.subj) === currentSubject);
+            const searchMatch = !q || c.dataset.title.includes(q) || (c.dataset.course || '').includes(q);
+            const show = subjMatch && searchMatch;
+            c.classList.toggle('hidden', !show);
+            if (show) visible++;
+        });
+
+        const noMatchEl = document.getElementById('noMatchExams');
+        if (noMatchEl) {
+            noMatchEl.classList.toggle('hidden', visible > 0 || targetCards.length === 0);
+        }
     }
 
-    // ----- Pre-exam confirmation -----
-    document.querySelectorAll('[data-start]').forEach(a => {
-        a.addEventListener('click', e => {
+    if (searchInput) {
+        searchInput.addEventListener('input', filterList);
+    }
+
+    // Modal Confirmation
+    document.querySelectorAll('[data-exam-start]').forEach(btn => {
+        btn.addEventListener('click', e => {
             e.preventDefault();
-            const card = a.closest('.ex-card');
-            document.getElementById('preTitle').textContent = card.dataset.name;
-            document.getElementById('preMeta').textContent = card.dataset.dur + ' minutes · ' + card.dataset.marks + ' marks · Secure proctored mode';
-            document.getElementById('preGo').href = a.href;
-            document.getElementById('preOverlay').classList.add('show');
+            const card = btn.closest('.exam-card');
+            document.getElementById('modalExamTitle').textContent = card.dataset.name;
+            document.getElementById('modalExamMeta').textContent = card.dataset.dur + ' minutes · ' + card.dataset.marks + ' marks · Proctored Mode';
+            document.getElementById('modalExamGo').href = btn.href;
+            document.getElementById('examStartModal').classList.add('show');
         });
     });
-    document.getElementById('preCancel').onclick = () => document.getElementById('preOverlay').classList.remove('show');
-    document.getElementById('preOverlay').addEventListener('click', e => { if (e.target.id === 'preOverlay') e.target.classList.remove('show'); });
+
+    const modalCancel = document.getElementById('modalExamCancel');
+    if (modalCancel) {
+        modalCancel.onclick = () => document.getElementById('examStartModal').classList.remove('show');
+    }
+    const modalOverlay = document.getElementById('examStartModal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', e => {
+            if (e.target.id === 'examStartModal') modalOverlay.classList.remove('show');
+        });
+    }
+
+    filterList();
+})();
 </script>
 {% endblock %}

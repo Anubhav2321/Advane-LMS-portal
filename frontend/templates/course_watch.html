@@ -1800,6 +1800,20 @@
         font-weight: 700;
         letter-spacing: 0.3px;
     }
+    .asgn-status-pill.graded.pass,
+    .asgn-status-pill.pass {
+        background: rgba(16, 185, 129, 0.16);
+        border: 1px solid rgba(16, 185, 129, 0.45);
+        color: #34d399;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+    }
+    .asgn-status-pill.graded.fail,
+    .asgn-status-pill.fail {
+        background: rgba(239, 68, 68, 0.16);
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        color: #f87171;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+    }
     .asgn-status-pill.graded {
         background: rgba(0, 230, 118, 0.12);
         border: 1px solid rgba(0, 230, 118, 0.35);
@@ -2133,6 +2147,20 @@
     .modal-overlay.modal-open .asgn-modal-box {
         transform: scale(1) !important;
     }
+    @keyframes targetPulseGlow {
+        0%, 100% {
+            box-shadow: 0 0 0 rgba(0, 243, 255, 0);
+            border-color: rgba(0, 243, 255, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.6), 0 0 70px rgba(0, 243, 255, 0.25);
+            border-color: #00f3ff;
+        }
+    }
+    .highlight-target-pulse {
+        animation: targetPulseGlow 1.2s ease-in-out 3 !important;
+        border-color: #00f3ff !important;
+    }
     .modal-header {
         padding: 20px 26px;
         background: rgba(255, 255, 255, 0.02);
@@ -2426,6 +2454,11 @@
             <span class="pulse-dot"></span>
             <span>Real-time Sync Active</span>
         </div>
+        {% if has_missed_exams %}
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(255,51,102,0.18); border:1px solid rgba(255,51,102,0.45); border-radius:20px; font-size:0.75rem; color:var(--accent-red); font-weight:700;">
+            <i class="fas fa-lock"></i> Completion Blocked: Missed Exam
+        </div>
+        {% endif %}
     </div>
 
     <div class="strip-actions">
@@ -2958,9 +2991,15 @@ solution()
                                 
                                 <div class="asgn-status-wrap">
                                     {% if asgn.user_sub.is_graded %}
-                                        <span class="asgn-status-pill graded">
-                                            <i class="fas fa-circle-check"></i> Graded: {{ asgn.user_sub.marks_obtained|floatformat:1 }}/{{ asgn.total_marks }}
-                                        </span>
+                                        {% if asgn.user_sub.is_pass %}
+                                            <span class="asgn-status-pill graded pass">
+                                                <i class="fas fa-circle-check"></i> Passed: {{ asgn.user_sub.marks_obtained|floatformat:1 }}/{{ asgn.total_marks }}
+                                            </span>
+                                        {% else %}
+                                            <span class="asgn-status-pill graded fail">
+                                                <i class="fas fa-circle-xmark"></i> Failed: {{ asgn.user_sub.marks_obtained|floatformat:1 }}/{{ asgn.total_marks }}
+                                            </span>
+                                        {% endif %}
                                     {% elif asgn.is_submitted %}
                                         <span class="asgn-status-pill submitted">
                                             <i class="fas fa-clock-rotate-left"></i> Submitted
@@ -3025,16 +3064,64 @@ solution()
 
                                 <!-- Instructor Evaluation & Feedback (if graded) -->
                                 {% if asgn.user_sub.is_graded %}
-                                <div class="asgn-feedback-box">
-                                    <div class="feedback-head">
-                                        <span class="feedback-score"><i class="fas fa-star" style="color:#ffb74d;"></i> Score: <strong>{{ asgn.user_sub.marks_obtained|floatformat:1 }}</strong> / {{ asgn.total_marks }}</span>
-                                        <span class="feedback-badge">Official Faculty Evaluation</span>
-                                    </div>
-                                    {% if asgn.user_sub.feedback %}
-                                    <p class="feedback-text">"{{ asgn.user_sub.feedback }}"</p>
+                                    {% if asgn.user_sub.is_pass %}
+                                    <div class="asgn-feedback-box pass" style="margin-top: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 14px; padding: 18px 20px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);">
+                                        <div class="feedback-head" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                                            <span class="feedback-score" style="font-size: 1.05rem; color: #fff; font-weight: 700;">
+                                                <i class="fas fa-star" style="color:#ffb74d;"></i> Score: <strong style="color: #34d399; font-size: 1.25rem;">{{ asgn.user_sub.marks_obtained|floatformat:1 }}</strong> / {{ asgn.total_marks }}
+                                            </span>
+                                            <span class="feedback-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 14px; border-radius: 99px; font-size: 0.78rem; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.45); display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="fas fa-circle-check"></i> Official Result: PASSED
+                                            </span>
+                                        </div>
                                     {% else %}
-                                    <p class="feedback-text"><i>Good effort and clean implementation.</i></p>
+                                    <div class="asgn-feedback-box fail" style="margin-top: 14px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.38); border-radius: 14px; padding: 18px 20px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);">
+                                        <div class="feedback-head" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                                            <span class="feedback-score" style="font-size: 1.05rem; color: #fff; font-weight: 700;">
+                                                <i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Score: <strong style="color: #f87171; font-size: 1.25rem;">{{ asgn.user_sub.marks_obtained|floatformat:1 }}</strong> / {{ asgn.total_marks }}
+                                            </span>
+                                            <span class="feedback-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 4px 14px; border-radius: 99px; font-size: 0.78rem; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.45); display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="fas fa-circle-xmark"></i> Official Result: FAILED / NEEDS REVISION
+                                            </span>
+                                        </div>
+                                        <div style="margin-bottom: 12px; font-size: 0.84rem; color: #fca5a5; background: rgba(239, 68, 68, 0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.25);">
+                                            <i class="fas fa-info-circle"></i> This deliverable did not meet the passing grade. Review the instructor's feedback below and submit an improved version.
+                                        </div>
                                     {% endif %}
+
+                                    <!-- Faculty Evaluator Profile -->
+                                    {% with evaluator=asgn.user_sub.evaluator %}
+                                    {% if evaluator %}
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; margin-bottom: 14px;">
+                                        {% if evaluator.profile.profile_pic and evaluator.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                            <img src="{{ evaluator.profile.profile_pic.url }}" alt="{{ evaluator.get_full_name|default:evaluator.username }}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);">
+                                        {% else %}
+                                            <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(52, 211, 153, 0.4);">
+                                                {{ evaluator.first_name.0|default:evaluator.username.0|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div style="flex: 1;">
+                                            <div style="display: flex; align-items: center; gap: 6px;">
+                                                <span style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ evaluator.get_full_name|default:evaluator.username }}</span>
+                                                <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.35);">Evaluator</span>
+                                            </div>
+                                            <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
+                                                <i class="fas fa-chalkboard-teacher" style="color: #10b981;"></i> 
+                                                {{ evaluator.faculty_profile.job_role|default:"Course Faculty" }}{% if evaluator.faculty_profile.department %} • {{ evaluator.faculty_profile.department }}{% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
+
+                                    <div>
+                                        <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;">Instructor Feedback:</div>
+                                        {% if asgn.user_sub.feedback %}
+                                        <p class="feedback-text" style="margin: 0; color: #cbd5e1; font-size: 0.92rem; line-height: 1.5; font-style: italic;">"{{ asgn.user_sub.feedback }}"</p>
+                                        {% else %}
+                                        <p class="feedback-text" style="margin: 0; color: #94a3b8; font-size: 0.88rem; font-style: italic;">Good effort and clean submission.</p>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 {% endif %}
 
@@ -3080,12 +3167,23 @@ solution()
             </div>
 
             <!-- Progress Tracker -->
-            <div class="course-progress-stats">
-                <span id="overall-progress-text">{{ progress }}% Completed</span>
-                <span id="overall-count-text">{{ completed_lessons_count }}/{{ total_lessons_count }} Lessons</span>
+            <div class="course-progress-stats" style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+                <span id="overall-progress-text" style="font-family:'Space Grotesk',sans-serif; font-size:1.05rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
+                    <i class="fas fa-chart-line" style="color:var(--neon-cyan); font-size:0.85rem;"></i> {{ progress }}% Completed
+                </span>
+                <span id="overall-count-text" style="font-size:0.78rem; font-weight:700; color:var(--accent-emerald);">
+                    {{ completed_lessons_count }}/{{ total_lessons_count }} Lessons
+                </span>
             </div>
-            <div class="progress-track-outer">
-                <div class="progress-track-fill js-set-width" id="overall-progress-bar" data-width="{{ progress }}%"></div>
+            <div class="progress-track-outer" style="height:8px; border-radius:99px; background:rgba(255,255,255,0.06); overflow:hidden; border:1px solid rgba(255,255,255,0.08); margin-bottom:8px;">
+                <div class="progress-track-fill js-set-width" id="overall-progress-bar" data-width="{{ progress }}%" style="height:100%; border-radius:99px; background:linear-gradient(90deg, #00f3ff, #00e676); transition:width 0.4s ease; box-shadow:0 0 12px rgba(0,243,255,0.4);"></div>
+            </div>
+            <div id="overall-breakdown-text" style="font-size:0.72rem; color:var(--text-muted); display:flex; align-items:center; gap:6px; flex-wrap:wrap; line-height:1.4;">
+                <span style="color:#cbd5e1;"><i class="fas fa-play-circle" style="color:var(--neon-cyan);"></i> {{ completed_lessons_count }}/{{ total_lessons_count }} Lessons</span>
+                <span>•</span>
+                <span style="color:#cbd5e1;"><i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> {{ submitted_assignment_ids|length }}/{{ course_assignments|length }} Tasks</span>
+                <span>•</span>
+                <span style="color:#cbd5e1;"><i class="fas fa-graduation-cap" style="color:var(--accent-emerald);"></i> {{ passed_exam_ids|length }}/{{ course_exams|length }} Quizzes</span>
             </div>
         </div>
 
@@ -3150,7 +3248,9 @@ solution()
             
             <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.78rem; color:var(--text-muted); padding:4px 4px 0;">
                 <span><i class="fas fa-award"></i> Certificate</span>
-                {% if progress >= 100 %}
+                {% if has_missed_exams %}
+                    <span style="color:var(--accent-red); font-weight:700;"><i class="fas fa-lock"></i> Blocked (Missed Exam)</span>
+                {% elif progress >= 100 %}
                     <span style="color:var(--accent-emerald); font-weight:700;">Unlocked 🎉</span>
                 {% else %}
                     <span>Requires 100%</span>
@@ -3180,6 +3280,7 @@ solution()
         <form id="studentSubmitForm" method="POST" enctype="multipart/form-data" onsubmit="handleStudentSubmit(event)">
             {% csrf_token %}
             <input type="hidden" name="assignment_id" id="modalAsgnId">
+            <input type="hidden" name="next" value="{% url 'course_watch' course.id %}#assignments">
             
             <div class="modal-body-content">
                 <div class="asgn-modal-summary">
@@ -3266,10 +3367,34 @@ window.addEventListener('resize', adaptPlaylistPlacement);
 document.addEventListener('DOMContentLoaded', adaptPlaylistPlacement);
 setTimeout(adaptPlaylistPlacement, 60);
 
-// Auto-switch to assignments tab if requested in hash
-if (window.location.hash === '#assignments') {
-    switchWorkTab('assignments');
+// Auto-switch to assignments tab or exact assignment if requested in hash
+function handleHashNavigation() {
+    const hash = window.location.hash;
+    if (!hash) return;
+    
+    if (hash === '#assignments' || hash.startsWith('#asgn-')) {
+        switchWorkTab('assignments');
+        
+        const cleanId = hash.replace('#', '');
+        const targetEl = document.getElementById(cleanId) || document.getElementById('asgn-card-' + cleanId.replace('asgn-', '').replace('card-', ''));
+        if (targetEl) {
+            setTimeout(() => {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.classList.add('highlight-target-pulse');
+                setTimeout(() => targetEl.classList.remove('highlight-target-pulse'), 3500);
+            }, 250);
+        }
+    } else {
+        const cleanTab = hash.replace('#', '');
+        const validTabs = ['overview', 'assignments', 'ainotes', 'sandbox', 'discussion', 'resources', 'curriculum'];
+        if (validTabs.includes(cleanTab)) {
+            switchWorkTab(cleanTab);
+        }
+    }
 }
+window.addEventListener('DOMContentLoaded', handleHashNavigation);
+window.addEventListener('hashchange', handleHashNavigation);
+setTimeout(handleHashNavigation, 80);
 
 // =========================================
 // 📋 ASSIGNMENTS MODAL & SUBMISSION LOGIC
@@ -3282,18 +3407,26 @@ function openSubmitModal(asgnId, asgnTitle, totalMarks) {
     
     const modal = document.getElementById('studentSubmitModal');
     if (modal) {
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+        document.body.style.overflow = 'hidden';
         modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('modal-open'), 10);
+        void modal.offsetWidth;
+        modal.classList.add('modal-open');
     }
 }
+window.openSubmitModal = openSubmitModal;
 
 function closeSubmitModal() {
     const modal = document.getElementById('studentSubmitModal');
     if (modal) {
         modal.classList.remove('modal-open');
+        document.body.style.overflow = '';
         setTimeout(() => modal.style.display = 'none', 250);
     }
 }
+window.closeSubmitModal = closeSubmitModal;
 
 function onFileSelected(input) {
     const textEl = document.getElementById('dropzoneText');
@@ -3303,6 +3436,7 @@ function onFileSelected(input) {
         textEl.textContent = 'Click or drag & drop deliverable file here';
     }
 }
+window.onFileSelected = onFileSelected;
 
 function handleStudentSubmit(e) {
     e.preventDefault();
@@ -3310,6 +3444,7 @@ function handleStudentSubmit(e) {
     const formData = new FormData(form);
     const btn = document.getElementById('btnModalSubmitAction');
     const originalText = btn.innerHTML;
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]') ? form.querySelector('[name=csrfmiddlewaretoken]').value : '';
     
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
@@ -3318,6 +3453,7 @@ function handleStudentSubmit(e) {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken
         },
         body: formData
     })
@@ -3335,7 +3471,11 @@ function handleStudentSubmit(e) {
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3500);
             }
-            setTimeout(() => window.location.reload(), 1200);
+            const asgnId = data.assignment_id || document.getElementById('modalAsgnId').value;
+            setTimeout(() => {
+                window.location.hash = '#asgn-card-' + asgnId;
+                window.location.reload();
+            }, 900);
         } else {
             alert(data.message || 'Error submitting assignment.');
         }
@@ -3346,6 +3486,7 @@ function handleStudentSubmit(e) {
         form.submit(); // fallback to standard POST
     });
 }
+window.handleStudentSubmit = handleStudentSubmit;
 
 function onOverlaySubmitClick(e) {
     if (e.target.id === 'studentSubmitModal') {
@@ -3395,11 +3536,14 @@ document.addEventListener('keydown', function(e) {
     try {
         const mapEl = document.getElementById('progressMapData');
         if (!mapEl) return;
-        const progressMap = JSON.parse(mapEl.textContent);
+        let progressMap = JSON.parse(mapEl.textContent);
+        if (typeof progressMap === 'string') progressMap = JSON.parse(progressMap);
         for (let lessonId in progressMap) {
             const data = progressMap[lessonId];
             const bar = document.getElementById('lesson-bar-' + lessonId);
             const badge = document.getElementById('lesson-pct-' + lessonId);
+            const icon = document.getElementById('lesson-icon-' + lessonId);
+            const card = document.querySelector(`.lesson-nav-card[data-lesson-id="${lessonId}"]`);
             if (bar && data.percent !== undefined) {
                 bar.style.width = data.percent + '%';
                 if (data.percent >= 100 || data.is_completed) bar.classList.add('complete');
@@ -3412,6 +3556,13 @@ document.addEventListener('keydown', function(e) {
                     badge.textContent = '• ' + data.percent + '%';
                     badge.style.color = '#38bdf8';
                 }
+            }
+            if (icon && (data.is_completed || data.percent >= 100)) {
+                icon.innerHTML = '<i class="fas fa-check-circle" style="color:var(--accent-emerald);"></i>';
+            }
+            if (card && (data.is_completed || data.percent >= 100)) {
+                card.classList.remove('is-pending');
+                card.classList.add('is-completed');
             }
         }
     } catch(err) {
@@ -3501,9 +3652,16 @@ function markLessonComplete(lessonId) {
                 btn.className = 'btn-deck-complete completed';
                 btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed (+20 Coins)';
             }
+            const statusPill = document.getElementById('current-lesson-status-pill');
+            if (statusPill) {
+                statusPill.className = 'pill-info pill-status-done';
+                statusPill.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+            }
+            const currPctVal = document.getElementById('current-pct-val');
+            if (currPctVal) currPctVal.textContent = '100%';
             
             // Update overall progress bar & text
-            updateOverallProgress(data.progress);
+            updateOverallProgress(data.progress, data.completed_lessons_count, data.total_lessons_count, data.real_progress_data);
             
             // Update per-lesson bar & badge
             updateLessonUI(lessonId, 100, true);
@@ -3511,7 +3669,9 @@ function markLessonComplete(lessonId) {
             // Update user coins
             if (data.coins_earned > 0) {
                 const coinsEl = document.getElementById('header-user-coins');
-                if (coinsEl) {
+                if (coinsEl && data.user_coins !== undefined) {
+                    coinsEl.textContent = data.user_coins;
+                } else if (coinsEl) {
                     const currentCoins = parseInt(coinsEl.textContent || '0', 10);
                     coinsEl.textContent = currentCoins + data.coins_earned;
                 }
@@ -3528,11 +3688,26 @@ function markLessonComplete(lessonId) {
 }
 
 // Update Overall Progress UI
-function updateOverallProgress(newProgress) {
+function updateOverallProgress(newProgress, completedCount, totalCount, realProgressData) {
     const textEl = document.getElementById('overall-progress-text');
     const barEl = document.getElementById('overall-progress-bar');
-    if (textEl) textEl.textContent = Math.round(newProgress) + '% Completed';
-    if (barEl) barEl.style.width = newProgress + '%';
+    const countEl = document.getElementById('overall-count-text');
+    const breakdownEl = document.getElementById('overall-breakdown-text');
+    
+    if (textEl) textEl.innerHTML = `<i class="fas fa-chart-line" style="color:var(--neon-cyan); font-size:0.85rem;"></i> ${Math.round(newProgress)}% Completed`;
+    if (barEl) barEl.style.width = Math.min(100, Math.max(0, newProgress)) + '%';
+    if (countEl && completedCount !== undefined && totalCount !== undefined) {
+        countEl.textContent = `${completedCount}/${totalCount} Lessons`;
+    }
+    if (breakdownEl && realProgressData) {
+        breakdownEl.innerHTML = `
+            <span style="color:#cbd5e1;"><i class="fas fa-play-circle" style="color:var(--neon-cyan);"></i> ${realProgressData.completed_lessons}/${realProgressData.total_lessons} Lessons</span>
+            <span>•</span>
+            <span style="color:#cbd5e1;"><i class="fas fa-clipboard-check" style="color:var(--accent-amber);"></i> ${realProgressData.completed_assignments}/${realProgressData.total_assignments} Tasks</span>
+            <span>•</span>
+            <span style="color:#cbd5e1;"><i class="fas fa-graduation-cap" style="color:var(--accent-emerald);"></i> ${realProgressData.completed_quizzes}/${realProgressData.total_quizzes} Quizzes</span>
+        `;
+    }
 }
 
 // Update Lesson Item UI in Sidebar
@@ -3562,6 +3737,55 @@ function updateLessonUI(lessonId, percent, isCompleted) {
         card.classList.remove('is-pending');
         card.classList.add('is-completed');
     }
+}
+
+// Centralized Progress Telemetry Ping
+function pingProgressAPI(type, id, watch_time) {
+    fetch('/api/track-progress/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            type: type,
+            id: id,
+            watch_time: watch_time
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            updateOverallProgress(data.progress, data.completed_lessons_count, data.total_lessons_count, data.real_progress_data);
+            if (data.lesson_percent !== undefined) {
+                updateLessonUI(id, data.lesson_percent, data.is_completed);
+                const currPctVal = document.getElementById('current-pct-val');
+                if (currPctVal) currPctVal.textContent = data.lesson_percent + '%';
+            }
+            if (data.coins_earned > 0) {
+                const coinsEl = document.getElementById('header-user-coins');
+                if (coinsEl && data.user_coins !== undefined) {
+                    coinsEl.textContent = data.user_coins;
+                } else if (coinsEl) {
+                    coinsEl.textContent = (parseInt(coinsEl.textContent || '0', 10) + data.coins_earned);
+                }
+                showToast('Lesson Milestone! 🎉', `Earned +${data.coins_earned} LMS Coins!`);
+            }
+            if (data.is_completed) {
+                const btn = document.getElementById('btnMarkComplete');
+                if (btn && !btn.classList.contains('completed')) {
+                    btn.className = 'btn-deck-complete completed';
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed (+20 Coins)';
+                }
+                const statusPill = document.getElementById('current-lesson-status-pill');
+                if (statusPill) {
+                    statusPill.className = 'pill-info pill-status-done';
+                    statusPill.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+                }
+            }
+        }
+    })
+    .catch(err => console.error('Error tracking progress:', err));
 }
 
 // Auto-navigate to next lesson
@@ -3842,8 +4066,10 @@ document.addEventListener('keydown', function(e) {
 <script>
     let player;
     let watchTimer;
-    let watchTimeSeconds = 0;
+    let previousWatchSeconds = parseInt('{{ current_lesson_progress.watch_time|default:0 }}', 10) || 0;
+    let maxWatchedSeconds = previousWatchSeconds;
     var lessonId = parseInt('{{ current_lesson.id }}', 10);
+    let lastPingedSec = -1;
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('lesson-video', {
@@ -3857,15 +4083,28 @@ document.addEventListener('keydown', function(e) {
         if (event.data === YT.PlayerState.PLAYING) {
             clearInterval(watchTimer);
             watchTimer = setInterval(function() {
-                watchTimeSeconds++;
-                if (watchTimeSeconds % 10 === 0) {
-                    pingProgressAPI('video', lessonId, watchTimeSeconds);
+                if (player && typeof player.getCurrentTime === 'function') {
+                    const currentSec = Math.floor(player.getCurrentTime());
+                    if (currentSec > maxWatchedSeconds) {
+                        maxWatchedSeconds = currentSec;
+                    }
+                    if (maxWatchedSeconds > 0 && maxWatchedSeconds % 10 === 0 && maxWatchedSeconds !== lastPingedSec) {
+                        lastPingedSec = maxWatchedSeconds;
+                        pingProgressAPI('video', lessonId, maxWatchedSeconds);
+                    }
                 }
             }, 1000);
         } else {
             clearInterval(watchTimer);
-            if (watchTimeSeconds > 0) {
-                pingProgressAPI('video', lessonId, watchTimeSeconds);
+            if (player && typeof player.getCurrentTime === 'function') {
+                const currentSec = Math.floor(player.getCurrentTime());
+                if (currentSec > maxWatchedSeconds) {
+                    maxWatchedSeconds = currentSec;
+                }
+            }
+            if (maxWatchedSeconds > 0 && maxWatchedSeconds !== lastPingedSec) {
+                lastPingedSec = maxWatchedSeconds;
+                pingProgressAPI('video', lessonId, maxWatchedSeconds);
             }
             if (event.data === YT.PlayerState.ENDED) {
                 markLessonComplete(lessonId);
@@ -3878,46 +4117,7 @@ document.addEventListener('keydown', function(e) {
             player.setPlaybackRate(rate);
         }
         document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-        if (event && event.currentTarget) event.currentTarget.classList.add('active');
-    }
-
-    function pingProgressAPI(type, id, watch_time) {
-        fetch('/api/track-progress/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                type: type,
-                id: id,
-                watch_time: watch_time
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                updateOverallProgress(data.progress);
-                if (data.lesson_percent !== undefined) {
-                    updateLessonUI(id, data.lesson_percent, data.is_completed);
-                    const currPctVal = document.getElementById('current-pct-val');
-                    if (currPctVal) currPctVal.textContent = data.lesson_percent + '%';
-                }
-                if (data.is_completed) {
-                    const btn = document.getElementById('btnMarkComplete');
-                    if (btn && !btn.classList.contains('completed')) {
-                        btn.className = 'btn-deck-complete completed';
-                        btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed (+20 Coins)';
-                    }
-                    const statusPill = document.getElementById('current-lesson-status-pill');
-                    if (statusPill) {
-                        statusPill.className = 'pill-info pill-status-done';
-                        statusPill.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-                    }
-                }
-            }
-        })
-        .catch(err => console.error('Error tracking progress:', err));
+        if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
     }
 </script>
 {% elif current_lesson and current_lesson.video_file %}
@@ -3925,15 +4125,38 @@ document.addEventListener('keydown', function(e) {
     // HTML5 Video Listener
     const videoEl = document.getElementById('native-video-player');
     var lessonId = parseInt('{{ current_lesson.id }}', 10);
-    let html5WatchSeconds = 0;
+    let previousWatchSeconds = parseInt('{{ current_lesson_progress.watch_time|default:0 }}', 10) || 0;
+    let maxWatchedSeconds = previousWatchSeconds;
+    let lastPingedSec = -1;
 
     if (videoEl) {
+        // Resume from previous position if within duration
+        if (previousWatchSeconds > 5) {
+            videoEl.addEventListener('loadedmetadata', () => {
+                if (videoEl.duration && previousWatchSeconds < videoEl.duration - 5) {
+                    videoEl.currentTime = previousWatchSeconds;
+                }
+            }, { once: true });
+        }
+
         videoEl.addEventListener('timeupdate', () => {
-            html5WatchSeconds = Math.floor(videoEl.currentTime);
-            if (html5WatchSeconds > 0 && html5WatchSeconds % 10 === 0) {
-                pingProgressAPI('video', lessonId, html5WatchSeconds);
+            const currentSec = Math.floor(videoEl.currentTime);
+            if (currentSec > maxWatchedSeconds) {
+                maxWatchedSeconds = currentSec;
+            }
+            if (maxWatchedSeconds > 0 && maxWatchedSeconds % 10 === 0 && maxWatchedSeconds !== lastPingedSec) {
+                lastPingedSec = maxWatchedSeconds;
+                pingProgressAPI('video', lessonId, maxWatchedSeconds);
             }
         });
+
+        videoEl.addEventListener('pause', () => {
+            if (maxWatchedSeconds > 0 && maxWatchedSeconds !== lastPingedSec) {
+                lastPingedSec = maxWatchedSeconds;
+                pingProgressAPI('video', lessonId, maxWatchedSeconds);
+            }
+        });
+
         videoEl.addEventListener('ended', () => {
             markLessonComplete(lessonId);
         });
@@ -3942,28 +4165,7 @@ document.addEventListener('keydown', function(e) {
     function setSpeed(rate) {
         if (videoEl) videoEl.playbackRate = rate;
         document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-        if (event && event.currentTarget) event.currentTarget.classList.add('active');
-    }
-
-    function pingProgressAPI(type, id, watch_time) {
-        fetch('/api/track-progress/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ type: type, id: id, watch_time: watch_time })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'success') {
-                updateOverallProgress(data.progress);
-                if (data.lesson_percent !== undefined) {
-                    updateLessonUI(id, data.lesson_percent, data.is_completed);
-                }
-            }
-        })
-        .catch(e => console.error(e));
+        if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
     }
 </script>
 {% endif %}

@@ -756,7 +756,23 @@
                     <div class="card-meta-row">
                         <span><i class="far fa-calendar-alt"></i> {{ class.date_time|date:"d M, Y" }}</span>
                         <span><i class="far fa-clock"></i> {{ class.date_time|date:"h:i A" }}</span>
-                        <span><i class="fas fa-chalkboard-teacher"></i> {{ item.faculty }}</span>
+                    </div>
+
+                    <!-- Faculty Instructor Pill on Card -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; padding: 6px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+                        {% with fac=class.instructor_user %}
+                        {% if fac and fac.profile.profile_pic and fac.profile.profile_pic.name != 'profile_pics/default.png' %}
+                            <img src="{{ fac.profile.profile_pic.url }}" alt="{{ class.effective_instructor }}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #00f3ff; flex-shrink: 0;">
+                        {% else %}
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #00f3ff, #6c63ff); color: #fff; font-weight: 700; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                {{ class.effective_instructor.0|upper }}
+                            </div>
+                        {% endif %}
+                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <div style="font-size: 0.82rem; font-weight: 700; color: #fff; line-height: 1.2;">{{ class.effective_instructor }}</div>
+                            <div style="font-size: 0.7rem; color: #94a3b8; line-height: 1.1;">{{ fac.faculty_profile.job_role|default:"Lead Instructor" }}</div>
+                        </div>
+                        {% endwith %}
                     </div>
 
                     <!-- Bottom Action Area: PIN TIME HOVER ACTIVE VS FROSTED LOCKED BUTTON -->
