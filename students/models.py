@@ -34,6 +34,10 @@ class User(AbstractUser):
     is_teacher = models.BooleanField(default=False, verbose_name="Is Teacher")
     is_faculty = models.BooleanField(default=False, verbose_name="Is Faculty") # NEW: Added Faculty Role
     
+    # 🏅 STUDENT REPUTATION & ENGAGEMENT SYSTEM
+    reputation_score = models.IntegerField(default=100, help_text="Student Reputation Score (0-100)")
+    engagement_score = models.IntegerField(default=100, help_text="Student Engagement Score (0-100)")
+
     # 📱 Phone Number & 🆔 Unique 6-Digit Student ID
     phone = models.CharField(max_length=20, blank=True, null=True, db_index=True, help_text="Contact Phone Number")
     student_id = models.CharField(max_length=6, unique=True, null=True, blank=True, db_index=True, help_text="Unique 6-digit Student ID")
@@ -51,6 +55,28 @@ class User(AbstractUser):
     
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
+
+    @property
+    def reputation_tier(self):
+        score = self.reputation_score
+        if score >= 90:
+            return {'label': 'Pristine Standing', 'badge': 'Elite', 'color': '#00e676', 'class': 'elite'}
+        elif score >= 75:
+            return {'label': 'Good Standing', 'badge': 'Good', 'color': '#00f3ff', 'class': 'good'}
+        elif score >= 50:
+            return {'label': 'Under Watch', 'badge': 'Warning', 'color': '#ffb74d', 'class': 'warning'}
+        else:
+            return {'label': 'Critical Penalty', 'badge': 'Critical', 'color': '#ff3366', 'class': 'critical'}
+
+    @property
+    def engagement_tier(self):
+        score = self.engagement_score
+        if score >= 85:
+            return {'label': 'High Engagement', 'badge': 'Active', 'color': '#00e676'}
+        elif score >= 60:
+            return {'label': 'Moderate Engagement', 'badge': 'Moderate', 'color': '#ffb74d'}
+        else:
+            return {'label': 'At Risk', 'badge': 'Low', 'color': '#ff3366'}
 
     class Meta:
         ordering = ['-date_joined']
@@ -503,6 +529,10 @@ class Enrollment(models.Model):
             # SVG ring circumference = 2 * PI * 26 ≈ 163.36
             ring_offset = round(163.36 - (percent / 100.0) * 163.36, 2)
 
+            # Check missed exams for this course
+            has_missed = self.has_missed_exams()
+            missed_count = self.get_missed_exams().count()
+
             return {
                 'percent': percent,
                 'completed': min(total_tasks, discrete_completed),
@@ -519,6 +549,9 @@ class Enrollment(models.Model):
                 'read_docs': read_docs,
                 'total_docs': total_docs,
                 'ring_offset': ring_offset,
+                'has_missed_exams': has_missed,
+                'missed_exams_count': missed_count,
+                'completion_blocked': has_missed,
             }
         except Exception as e:
             curr_pct = min(100.0, max(0.0, getattr(self, 'progress', 0.0)))
@@ -538,14 +571,52 @@ class Enrollment(models.Model):
                 'read_docs': 0,
                 'total_docs': 0,
                 'ring_offset': round(163.36 - (curr_pct / 100.0) * 163.36, 2),
+                'has_missed_exams': False,
+                'missed_exams_count': 0,
+                'completion_blocked': False,
             }
 
+    def has_missed_exams(self):
+        """Returns True if the student has any unattempted exams for this course whose deadline has passed."""
+        now = timezone.now()
+        attempted_ids = QuizResult.objects.filter(
+            student=self.student,
+            exam__course=self.course
+        ).values_list('exam_id', flat=True)
+        return Exam.objects.filter(
+            course=self.course,
+            is_active=True,
+            deadline__isnull=False,
+            deadline__lt=now
+        ).exclude(id__in=attempted_ids).exists()
+
+    def get_missed_exams(self):
+        """Returns QuerySet of unattempted exams for this course whose deadline has passed."""
+        now = timezone.now()
+        attempted_ids = QuizResult.objects.filter(
+            student=self.student,
+            exam__course=self.course
+        ).values_list('exam_id', flat=True)
+        return Exam.objects.filter(
+            course=self.course,
+            is_active=True,
+            deadline__isnull=False,
+            deadline__lt=now
+        ).exclude(id__in=attempted_ids)
+
     def sync_progress(self):
-        """Sync the progress field with real lesson progress data."""
+        """Sync the progress field with real lesson progress data, enforcing exam completion rules."""
         data = self.get_real_progress()
         self.progress = data['percent']
-        if data['percent'] >= 100.0:
+        # If student has missed mandatory exams that expired, course completion is BLOCKED!
+        if self.has_missed_exams():
+            self.is_completed = False
+            if self.progress >= 100.0:
+                self.progress = 95.0
+        elif data['percent'] >= 100.0:
             self.is_completed = True
+        else:
+            self.is_completed = False
         self.save(update_fields=['progress', 'is_completed'])
 
     def __str__(self):
@@ -594,6 +665,48 @@ class Exam(models.Model):
         if self.deadline and timezone.now() > self.deadline:
             return True
         return False
+
+    def time_remaining_info(self):
+        """Returns structured deadline and time remaining details for UI rendering."""
+        if not self.deadline:
+            return {'has_deadline': False, 'is_expired': False, 'label': 'Open Access', 'badge_class': 'open', 'urgent': False}
+        now = timezone.now()
+        if now > self.deadline:
+            return {'has_deadline': True, 'is_expired': True, 'label': 'Expired', 'badge_class': 'expired', 'urgent': False}
+
+        diff = self.deadline - now
+        total_seconds = int(diff.total_seconds())
+        days = total_seconds // 86400
+        hours = (total_seconds % 86400) // 3600
+        minutes = (total_seconds % 3600) // 60
+
+        if days > 1:
+            label = f"{days} days left"
+            urgent = False
+            badge_class = "normal"
+        elif days == 1:
+            label = f"1 day {hours}h left"
+            urgent = False
+            badge_class = "normal"
+        elif hours > 0:
+            label = f"{hours}h {minutes}m left"
+            urgent = True
+            badge_class = "urgent"
+        else:
+            label = f"{minutes}m left"
+            urgent = True
+            badge_class = "critical"
+
+        return {
+            'has_deadline': True,
+            'is_expired': False,
+            'label': label,
+            'urgent': urgent,
+            'badge_class': badge_class,
+            'days': days,
+            'hours': hours,
+            'minutes': minutes
+        }
 
     def __str__(self):
         return self.title
@@ -820,6 +933,12 @@ class LiveClass(models.Model):
         return 'ended'
 
     @property
+    def instructor_user(self):
+        if self.course and self.course.assigned_faculty:
+            return self.course.assigned_faculty
+        return None
+
+    @property
     def effective_instructor(self):
         if self.course:
             if self.course.assigned_faculty:
@@ -899,6 +1018,7 @@ class Assignment(models.Model):
     file = models.FileField(upload_to='assignments/briefs/', blank=True, null=True, help_text="Brief attachment in PDF, DOCX, ZIP, image, etc.")
     due_date = models.DateTimeField()
     total_marks = models.PositiveIntegerField(default=100)
+    pass_marks = models.PositiveIntegerField(default=40, help_text="Passing marks required for this assignment")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -936,8 +1056,10 @@ class AssignmentSubmission(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     is_graded = models.BooleanField(default=False)
+    is_passed = models.BooleanField(default=True, null=True, blank=True)
     marks_obtained = models.FloatField(blank=True, null=True)
     feedback = models.TextField(blank=True, null=True)
+    graded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='graded_assignment_submissions')
 
     class Meta:
         ordering = ['-submitted_at']
@@ -945,6 +1067,25 @@ class AssignmentSubmission(models.Model):
 
     def __str__(self):
         return f"{self.student.username} -> {self.assignment.title}"
+
+    @property
+    def is_pass(self):
+        if self.is_passed is not None:
+            return bool(self.is_passed)
+        if self.marks_obtained is not None and self.assignment:
+            cutoff = getattr(self.assignment, 'pass_marks', None)
+            if cutoff is None or cutoff <= 0:
+                cutoff = self.assignment.total_marks * 0.4
+            return self.marks_obtained >= cutoff
+        return True
+
+    @property
+    def evaluator(self):
+        if self.graded_by:
+            return self.graded_by
+        if self.assignment and self.assignment.course and self.assignment.course.assigned_faculty:
+            return self.assignment.course.assigned_faculty
+        return None
 
     @property
     def is_late(self):
@@ -1376,6 +1517,8 @@ class StudentActivity(models.Model):
         ('profile_update', 'Profile Updated'),
         ('course_complete', 'Course Completed'),
         ('code_review', 'Code Review Requested'),
+        ('exam_missed', 'Exam Deadline Missed (Penalty)'),
+        ('reputation_penalty', 'Reputation Penalty Applied'),
     ]
     
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='activities')
@@ -1481,6 +1624,105 @@ def calculate_study_streak(user):
             break
 
     return streak
+
+
+def check_and_apply_exam_penalties(user):
+    """
+    Checks for any active exams in student's enrolled courses where:
+    - is_active is True
+    - deadline is in the past (now > deadline)
+    - student did NOT take the exam (no QuizResult exists)
+    Applies real-time logical penalties:
+    - Deducts reputation (-15)
+    - Decreases engagement (-10)
+    - Deducts coins (-20)
+    - Logs penalty in StudentActivity (preventing duplicate penalty)
+    - Sends warning Notification to user
+    - Syncs enrollment progress, locking course completion!
+    """
+    if not user or not user.is_authenticated or not getattr(user, 'is_student', True) or user.is_staff or user.is_superuser:
+        return 0
+
+    now = timezone.now()
+    enrolled_course_ids = list(Enrollment.objects.filter(student=user).values_list('course_id', flat=True))
+    if not enrolled_course_ids:
+        return 0
+
+    # Find attempted exam IDs
+    attempted_exam_ids = set(
+        QuizResult.objects.filter(student=user).values_list('exam_id', flat=True)
+    )
+
+    # Find already penalized exam IDs for this user
+    penalized_activities = StudentActivity.objects.filter(student=user, activity_type='exam_missed')
+    already_penalized_exam_ids = {
+        act.metadata.get('exam_id') for act in penalized_activities if act.metadata and isinstance(act.metadata, dict) and 'exam_id' in act.metadata
+    }
+
+    # Query expired unattempted exams
+    expired_exams = Exam.objects.filter(
+        course_id__in=enrolled_course_ids,
+        is_active=True,
+        deadline__isnull=False,
+        deadline__lt=now
+    ).exclude(id__in=attempted_exam_ids).select_related('course')
+
+    newly_penalized = 0
+    updated_user = False
+
+    for exam in expired_exams:
+        if exam.id in already_penalized_exam_ids:
+            continue
+
+        # Deduct reputation, engagement, coins
+        user.reputation_score = max(0, getattr(user, 'reputation_score', 100) - 15)
+        user.engagement_score = max(0, getattr(user, 'engagement_score', 100) - 10)
+        user.lms_coins = max(0, user.lms_coins - 20)
+        updated_user = True
+        newly_penalized += 1
+
+        course_title = exam.course.title if exam.course else "Course"
+        deadline_str = exam.deadline.strftime('%d %b, %I:%M %p') if exam.deadline else 'Expired'
+        
+        # Log StudentActivity
+        log_student_activity(
+            user,
+            'exam_missed',
+            f'Missed exam deadline: "{exam.title}" in {course_title}. Reputation -15, Engagement -10, Coins -20.',
+            course=exam.course,
+            metadata={
+                'exam_id': exam.id,
+                'exam_title': exam.title,
+                'reputation_penalty': -15,
+                'engagement_penalty': -10,
+                'coin_penalty': -20,
+                'expired_at': exam.deadline.isoformat() if exam.deadline else None,
+            }
+        )
+
+        # Create system notification
+        try:
+            Notification.objects.create(
+                recipient=user,
+                title=f"⚠️ Exam Deadline Missed: {exam.title}",
+                message=f"You missed the deadline ({deadline_str}) for '{exam.title}' in {course_title}. Your reputation dropped by 15 points, engagement decreased, and course completion for {course_title} is now BLOCKED.",
+                notification_type='exam',
+                action_url='/exams/',
+                action_label='View Exam Archive'
+            )
+        except Exception as notif_err:
+            print(f"[Warning] Failed to create missed exam notification: {notif_err}")
+
+        # Block course completion on enrollment
+        if exam.course:
+            enrollment = Enrollment.objects.filter(student=user, course=exam.course).first()
+            if enrollment:
+                enrollment.sync_progress()
+
+    if updated_user:
+        user.save(update_fields=['reputation_score', 'engagement_score', 'lms_coins'])
+
+    return newly_penalized
 
 
 # 11. PAYMENT SYSTEM (Coupons + Transaction Ledger)
