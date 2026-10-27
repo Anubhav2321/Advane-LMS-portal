@@ -1169,6 +1169,49 @@
     }
     .modal-overlay.modal-open { display: flex; opacity: 1; }
 
+    #dashboardSubmitModal {
+        display: none;
+        position: fixed !important;
+        inset: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 9999999 !important;
+        background: rgba(3, 6, 18, 0.88) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 24px !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+        opacity: 0;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    #dashboardSubmitModal.modal-open {
+        display: flex !important;
+        opacity: 1 !important;
+    }
+    #dashboardSubmitModal .asgn-modal-box {
+        max-width: 580px !important;
+        width: 100% !important;
+        margin: auto !important;
+        padding: 0 !important;
+        background: linear-gradient(180deg, #0d1226 0%, #070a16 100%) !important;
+        border: 1px solid rgba(0, 243, 255, 0.35) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(0, 243, 255, 0.15) !important;
+        overflow: hidden !important;
+        transform: scale(0.95) translateY(12px) !important;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    #dashboardSubmitModal.modal-open .asgn-modal-box {
+        transform: scale(1) translateY(0) !important;
+    }
+
     .modal-box {
         background: #111524;
         border: 1px solid var(--border-glass-glow);
@@ -1976,6 +2019,9 @@
                 {% endif %}
                 <span class="level-badge"><i class="fas fa-shield-alt"></i> LEVEL: {{ request.user.student_level }}</span>
                 <span class="streak-badge"><i class="fas fa-fire"></i> {{ study_streak|default:0 }} Day{{ study_streak|default:0|pluralize }} Streak</span>
+                <span class="level-badge" style="border-color: {{ request.user.reputation_tier.color }}; color: {{ request.user.reputation_tier.color }};" title="Student Reputation: {{ request.user.reputation_score }}/100">
+                    <i class="fas fa-user-shield"></i> {{ request.user.reputation_score }}/100 {{ request.user.reputation_tier.badge }}
+                </span>
             </div>
         </div>
         
@@ -2102,7 +2148,9 @@
                         <div class="progress-meta">
                             <span class="lesson-count"><strong>{{ enrollment.lessons_completed }}</strong> of {{ enrollment.total_lessons }} tasks completed</span>
                             <span class="last-accessed">
-                                {% if enrollment.real_progress >= 100 %}
+                                {% if enrollment.has_missed_exams %}
+                                    <span style="color: var(--accent-red); font-weight:700;"><i class="fas fa-lock"></i> Completion Blocked</span>
+                                {% elif enrollment.real_progress >= 100 %}
                                     <span style="color: var(--accent-green);"><i class="fas fa-check-circle"></i> Completed</span>
                                 {% else %}
                                     <i class="fas fa-history"></i> {{ enrollment.last_accessed|timesince }} ago
@@ -2135,7 +2183,9 @@
                         <!-- Card Action Buttons -->
                         <div class="card-actions">
                             <a href="{% url 'course_watch' enrollment.course.id %}" class="btn-continue">
-                                {% if enrollment.real_progress >= 100 %}
+                                {% if enrollment.has_missed_exams %}
+                                    <i class="fas fa-triangle-exclamation" style="color:var(--accent-red);"></i> Blocked (Missed Exam)
+                                {% elif enrollment.real_progress >= 100 %}
                                     <i class="fas fa-redo"></i> Review Course
                                 {% else %}
                                     <i class="fas fa-play"></i> Continue Learning
@@ -2180,17 +2230,29 @@
                 </div>
                 <div class="sync-item-list">
                     {% for live in upcoming_classes %}
-                    <div class="sync-item">
-                        <div class="sync-item-left">
+                    <div class="sync-item" style="align-items: center; gap: 14px;">
+                        {% with fac=live.instructor_user %}
+                        <div style="flex-shrink: 0;">
+                            {% if fac and fac.profile.profile_pic and fac.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                <img src="{{ fac.profile.profile_pic.url }}" alt="{{ live.effective_instructor }}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 243, 255, 0.25);" title="Instructor: {{ live.effective_instructor }}">
+                            {% else %}
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); color: #fff; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; border: 1.5px solid rgba(0, 243, 255, 0.4);" title="Instructor: {{ live.effective_instructor }}">
+                                    {{ live.effective_instructor.0|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="sync-item-left" style="flex: 1;">
                             <span class="sync-item-title">{{ live.title }}</span>
-                            <span class="sync-item-meta">
+                            <span class="sync-item-meta" style="flex-wrap: wrap; gap: 8px;">
                                 <span><i class="far fa-calendar-alt"></i> {{ live.date_time|date:"d M, Y • h:i A" }}</span>
                                 {% if live.course %}<span>• {{ live.course.title|truncatechars:25 }}</span>{% endif %}
+                                <span style="color: #34d399; font-weight: 600;"><i class="fas fa-user-tie"></i> {{ live.effective_instructor }}</span>
                             </span>
                         </div>
-                        <a href="{{ live.meeting_link }}" target="_blank" class="btn-sync-action cyan">
+                        <a href="{{ live.meeting_link }}" target="_blank" class="btn-sync-action cyan" style="flex-shrink: 0;">
                             <i class="fas fa-video"></i> Join Live
                         </a>
+                        {% endwith %}
                     </div>
                     {% empty %}
                         <div class="sync-empty-text">No upcoming live lectures scheduled at this moment.</div>
@@ -2204,24 +2266,35 @@
                     <div class="sync-card-title">
                         <i class="fas fa-clipboard-check" style="color: var(--accent-amber);"></i> Pending Assignments
                     </div>
-                    <span class="sync-badge task">{{ pending_assignments.count }} Due</span>
+                    <span class="sync-badge task" id="dashPendingBadge">{{ pending_assignments.count }} Due</span>
                 </div>
-                <div class="sync-item-list">
+                <div class="sync-item-list" id="dashPendingList">
                     {% for assign in pending_assignments %}
                     <div class="sync-item" id="pending-assign-{{ assign.id }}">
                         <div class="sync-item-left">
                             <span class="sync-item-title">{{ assign.title }}</span>
-                            <span class="sync-item-meta">
+                            <span class="sync-item-meta" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
                                 <span><i class="far fa-clock"></i> Due: {{ assign.due_date|date:"d M, Y" }}</span>
                                 <span>• {{ assign.total_marks }} Marks</span>
-                                {% if assign.course %}<span style="color:var(--neon-cyan);">• {{ assign.course.title|truncatechars:20 }}</span>{% endif %}
+                                {% if assign.course %}
+                                <span class="asgn-course-badge" style="background: rgba(0,243,255,0.12); color: var(--neon-cyan); border: 1px solid rgba(0,243,255,0.3); padding: 2px 8px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; display:inline-flex; align-items:center; gap:5px;">
+                                    <i class="fas fa-graduation-cap"></i> {{ assign.course.title }}
+                                </span>
+                                {% endif %}
                             </span>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <button type="button" class="btn-sync-action amber" onclick="openDashboardSubmitModal('{{ assign.id }}', '{{ assign.title|escapejs }}', '{{ assign.course.title|escapejs }}', '{{ assign.total_marks }}', '{% if assign.file %}{{ assign.file.url|escapejs }}{% endif %}', '{{ assign.file_extension }}')">
+                            <button type="button" class="btn-sync-action amber" 
+                                    data-asgn-id="{{ assign.id }}"
+                                    data-asgn-title="{{ assign.title|escape }}"
+                                    data-course-title="{{ assign.course.title|escape }}"
+                                    data-marks="{{ assign.total_marks }}"
+                                    data-brief="{% if assign.file %}{{ assign.file.url }}{% endif %}"
+                                    data-ext="{{ assign.file_extension }}"
+                                    onclick="openDashboardSubmitModal('{{ assign.id }}', '{{ assign.title|escapejs }}', '{{ assign.course.title|escapejs }}', '{{ assign.total_marks }}', '{% if assign.file %}{{ assign.file.url|escapejs }}{% endif %}', '{{ assign.file_extension }}'); return false;">
                                 <i class="fas fa-upload"></i> Submit
                             </button>
-                            <a href="{% url 'course_watch' assign.course.id %}#assignments" class="btn-sync-action cyan" title="Open in Course Workspace">
+                            <a href="{% url 'course_watch' assign.course.id %}#asgn-card-{{ assign.id }}" class="btn-sync-action cyan" title="Open {{ assign.course.title }} Workspace">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
                         </div>
@@ -2407,8 +2480,8 @@
 </div>
 
 <!-- DASHBOARD QUICK SUBMIT MODAL -->
-<div class="modal-overlay" id="dashboardSubmitModal" style="display:none; z-index: 10000;">
-    <div class="modal-box asgn-modal-box" style="max-width:560px; width:92%; background:#0d1222; border:1px solid rgba(0,243,255,0.3); border-radius:20px; box-shadow:0 25px 60px rgba(0,0,0,0.85);">
+<div class="modal-overlay" id="dashboardSubmitModal" onclick="if(event.target===this)closeDashboardSubmitModal()">
+    <div class="modal-box asgn-modal-box" onclick="event.stopPropagation()">
         <div class="modal-header" style="padding:18px 24px; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center;">
             <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
                 <i class="fas fa-cloud-arrow-up" style="color:var(--neon-cyan);"></i> Quick Submit Assignment
@@ -2421,6 +2494,7 @@
             <input type="hidden" name="next" value="{% url 'dashboard' %}">
             
             <div class="modal-body-content" style="padding: 20px 24px;">
+                <div id="dashSubmitErrorMsg" style="display:none; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.35); color:#fca5a5; padding:10px 14px; border-radius:10px; font-size:0.84rem; margin-bottom:14px;"></div>
                 <div class="asgn-modal-summary" style="margin-bottom:18px; padding:14px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.07);">
                     <div style="font-size:0.75rem; text-transform:uppercase; color:var(--neon-cyan); font-weight:700; margin-bottom:4px;" id="dashModalCourseTitle">Course</div>
                     <h3 id="dashModalAsgnTitle" style="color:#fff; font-family:'Space Grotesk',sans-serif; margin:0 0 8px 0; font-size:1.15rem;">Assignment Title</h3>
@@ -2463,6 +2537,170 @@
         </form>
     </div>
 </div>
+
+<script>
+    // =========================================
+    // 📋 DASHBOARD QUICK SUBMIT MODAL HANDLERS
+    // =========================================
+    function openDashboardSubmitModal(asgnId, asgnTitle, courseTitle, marks, briefUrl, fileExt) {
+        try {
+            const modal = document.getElementById('dashboardSubmitModal');
+            if (!modal) return;
+
+            // Ensure modal is attached directly to document.body to avoid parent layout context issues
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            document.body.style.overflow = 'hidden';
+
+            const idInput = document.getElementById('dashModalAsgnId');
+            const titleEl = document.getElementById('dashModalAsgnTitle');
+            const courseEl = document.getElementById('dashModalCourseTitle');
+            const pointsEl = document.getElementById('dashModalPoints');
+            const formEl = document.getElementById('dashSubmitForm');
+            const fileInput = document.getElementById('dashModalFileInput');
+            const textInput = document.getElementById('dashModalText');
+            const dropzoneText = document.getElementById('dashDropzoneText');
+            const errBox = document.getElementById('dashSubmitErrorMsg');
+
+            if (idInput) idInput.value = asgnId;
+            if (titleEl) titleEl.textContent = asgnTitle;
+            if (courseEl) courseEl.textContent = courseTitle;
+            if (pointsEl) pointsEl.textContent = (marks || '100') + ' Marks';
+            if (formEl) formEl.action = '/assignments/' + asgnId + '/submit/';
+            if (fileInput) fileInput.value = '';
+            if (textInput) textInput.value = '';
+            if (dropzoneText) dropzoneText.textContent = 'Click or choose file to upload';
+            if (errBox) errBox.style.display = 'none';
+            
+            const briefLink = document.getElementById('dashModalBriefLink');
+            if (briefLink) {
+                if (briefUrl && briefUrl.trim() !== '') {
+                    briefLink.href = briefUrl;
+                    briefLink.style.display = 'inline-flex';
+                    briefLink.innerHTML = `<i class="fas fa-download"></i> Download Brief (${fileExt || 'PDF'})`;
+                } else {
+                    briefLink.style.display = 'none';
+                }
+            }
+            
+            modal.style.display = 'flex';
+            void modal.offsetWidth;
+            modal.classList.add('modal-open');
+        } catch(err) {
+            console.error('Error opening dashboard submit modal:', err);
+        }
+    }
+    window.openDashboardSubmitModal = openDashboardSubmitModal;
+
+    function closeDashboardSubmitModal() {
+        const modal = document.getElementById('dashboardSubmitModal');
+        if (modal) {
+            modal.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                if (!modal.classList.contains('modal-open')) {
+                    modal.style.display = 'none';
+                }
+            }, 250);
+        }
+    }
+    window.closeDashboardSubmitModal = closeDashboardSubmitModal;
+
+    function onDashFileSelected(input) {
+        const textEl = document.getElementById('dashDropzoneText');
+        if (input.files && input.files[0]) {
+            textEl.innerHTML = `<i class="fas fa-check-circle" style="color:var(--accent-green);"></i> Selected: <b>${input.files[0].name}</b> (${Math.round(input.files[0].size/1024)} KB)`;
+        } else {
+            textEl.textContent = 'Click or choose file to upload';
+        }
+    }
+    window.onDashFileSelected = onDashFileSelected;
+
+    function handleDashboardSubmit(e) {
+        e.preventDefault();
+        const form = document.getElementById('dashSubmitForm');
+        const fileInput = document.getElementById('dashModalFileInput');
+        const textInput = document.getElementById('dashModalText');
+        const errBox = document.getElementById('dashSubmitErrorMsg');
+        
+        const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+        const hasText = textInput && textInput.value.trim().length > 0;
+        
+        if (!hasFile && !hasText) {
+            if (errBox) {
+                errBox.textContent = 'Please choose a deliverable file or write solution notes / GitHub link.';
+                errBox.style.display = 'block';
+            } else {
+                alert('Please select a deliverable file or provide your solution notes / GitHub link.');
+            }
+            return;
+        }
+        if (errBox) errBox.style.display = 'none';
+
+        const formData = new FormData(form);
+        const asgnId = document.getElementById('dashModalAsgnId').value;
+        const btn = document.getElementById('btnDashSubmitAction');
+        const orig = btn.innerHTML;
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]') ? form.querySelector('[name=csrfmiddlewaretoken]').value : '';
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        fetch(form.action, {
+            method: 'POST',
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+            if (data.success) {
+                closeDashboardSubmitModal();
+                // Smoothly remove item from pending list
+                const item = document.getElementById('pending-assign-' + asgnId);
+                if (item) {
+                    item.style.transition = 'all 0.4s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateX(30px)';
+                    setTimeout(() => {
+                        item.remove();
+                        // Update badge counter
+                        const badge = document.getElementById('dashPendingBadge');
+                        const list = document.getElementById('dashPendingList');
+                        if (list && badge) {
+                            const remaining = list.querySelectorAll('.sync-item').length;
+                            badge.textContent = remaining + ' Due';
+                            if (remaining === 0) {
+                                list.innerHTML = '<div class="sync-empty-text">All assignments submitted! You are completely up to date.</div>';
+                            }
+                        }
+                    }, 400);
+                }
+                alert(data.message || 'Assignment submitted successfully! 🎉');
+            } else {
+                alert(data.message || 'Submission failed. Please check and try again.');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+            console.error('AJAX submit failed, submitting standard form:', err);
+            form.submit();
+        });
+    }
+    window.handleDashboardSubmit = handleDashboardSubmit;
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDashboardSubmitModal();
+        }
+    });
+</script>
 
 <!-- ============================================= -->
 <!-- INTEGRATED LIVE CODE EDITOR MODAL             -->
@@ -3791,92 +4029,6 @@
         const w = el.getAttribute('data-width');
         if (w) el.style.width = w;
     });
-
-    // =========================================
-    // 📋 DASHBOARD QUICK SUBMIT MODAL HANDLERS
-    // =========================================
-    window.openDashboardSubmitModal = function(asgnId, asgnTitle, courseTitle, marks, briefUrl, fileExt) {
-        document.getElementById('dashModalAsgnId').value = asgnId;
-        document.getElementById('dashModalAsgnTitle').textContent = asgnTitle;
-        document.getElementById('dashModalCourseTitle').textContent = courseTitle;
-        document.getElementById('dashModalPoints').textContent = marks + ' Marks';
-        document.getElementById('dashSubmitForm').action = '/assignments/' + asgnId + '/submit/';
-        
-        const briefLink = document.getElementById('dashModalBriefLink');
-        if (briefUrl && briefUrl !== '') {
-            briefLink.href = briefUrl;
-            briefLink.style.display = 'inline-flex';
-            briefLink.innerHTML = `<i class="fas fa-download"></i> Download Brief (${fileExt || 'PDF'})`;
-        } else {
-            briefLink.style.display = 'none';
-        }
-        
-        const modal = document.getElementById('dashboardSubmitModal');
-        if (modal) {
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('modal-open'), 10);
-        }
-    };
-
-    window.closeDashboardSubmitModal = function() {
-        const modal = document.getElementById('dashboardSubmitModal');
-        if (modal) {
-            modal.classList.remove('modal-open');
-            setTimeout(() => modal.style.display = 'none', 250);
-        }
-    };
-
-    window.onDashFileSelected = function(input) {
-        const textEl = document.getElementById('dashDropzoneText');
-        if (input.files && input.files[0]) {
-            textEl.innerHTML = `<i class="fas fa-check-circle" style="color:var(--accent-green);"></i> Selected: <b>${input.files[0].name}</b> (${Math.round(input.files[0].size/1024)} KB)`;
-        } else {
-            textEl.textContent = 'Click or choose file to upload';
-        }
-    };
-
-    window.handleDashboardSubmit = function(e) {
-        e.preventDefault();
-        const form = document.getElementById('dashSubmitForm');
-        const formData = new FormData(form);
-        const asgnId = document.getElementById('dashModalAsgnId').value;
-        const btn = document.getElementById('btnDashSubmitAction');
-        const orig = btn.innerHTML;
-        
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-        
-        fetch(form.action, {
-            method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            body: formData
-        })
-        .then(r => r.json())
-        .then(data => {
-            btn.disabled = false;
-            btn.innerHTML = orig;
-            if (data.success) {
-                closeDashboardSubmitModal();
-                // Remove item from pending list
-                const item = document.getElementById('pending-assign-' + asgnId);
-                if (item) {
-                    item.style.transition = 'all 0.4s ease';
-                    item.style.opacity = '0';
-                    item.style.transform = 'translateX(20px)';
-                    setTimeout(() => item.remove(), 400);
-                }
-                alert(data.message);
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                alert(data.message || 'Submission failed.');
-            }
-        })
-        .catch(() => {
-            btn.disabled = false;
-            btn.innerHTML = orig;
-            form.submit();
-        });
-    };
 </script>
 
 {% endblock %}
