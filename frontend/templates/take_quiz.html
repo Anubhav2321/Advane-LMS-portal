@@ -267,10 +267,10 @@
         <form id="examForm" method="POST" action="{% url 'submit_quiz' exam.id %}" class="glass main-card" autocomplete="off">
             {% csrf_token %}
 
-            {% for q in exam.questions.all %}
+            {% for q in questions %}
             <section class="q-slide" data-index="{{ forloop.counter0 }}" data-qid="{{ q.id }}">
                 <div class="q-meta">
-                    <div class="q-label">Question {{ forloop.counter }} of {{ exam.questions.count }}</div>
+                    <div class="q-label">Question {{ forloop.counter }} of {{ questions|length }}</div>
                     <button type="button" class="flag-btn" data-flag="{{ forloop.counter0 }}"><i class="fas fa-flag"></i> Flag</button>
                 </div>
                 <h1 class="q-text" style="margin-top:14px">{{ q.question_text }}</h1>
@@ -281,7 +281,11 @@
                 <label class="opt"><input type="radio" name="q_{{ q.id }}" value="{{ q.option4 }}"><span class="badge">D</span><span>{{ q.option4 }}</span></label>
             </section>
             {% empty %}
-            <p class="q-text">No questions available for this exam.</p>
+            <div style="text-align:center; padding: 50px 20px; color: var(--amber);">
+                <i class="fas fa-exclamation-triangle" style="font-size: 2.2rem; margin-bottom: 14px; display:block;"></i>
+                <h2 style="color:#fff; font-size:1.3rem; margin-bottom: 8px;">No Questions Found</h2>
+                <p style="color:var(--muted); font-size: 0.95rem;">This exam has no questions configured yet. Please check back later or contact your instructor.</p>
+            </div>
             {% endfor %}
 
             <div class="nav-row">
@@ -327,13 +331,15 @@
     const total = slides.length;
     const MAX_STRIKES = 3;
     const KEY = 'exam_state_{{ exam.id }}_{{ request.user.id }}';
-    const DURATION = parseInt('{{ exam.duration_minutes }}', 10) * 60 * 1000;
+    const durRaw = parseInt('{{ exam.duration_minutes|default:20 }}', 10);
+    const DURATION = (isNaN(durRaw) || durRaw <= 0 ? 20 : durRaw) * 60 * 1000;
 
     let state = { answers: {}, flags: [], strikes: 0, endAt: null, started: false, log: [] };
     try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) state = Object.assign(state, s); } catch (e) {}
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
 
     let current = 0, active = false, submitting = false, paused = false, lastViolation = 0, timerId = null, guardId = null;
+    let fsSupportedAndAllowed = true;
 
     $('app').classList.add('blurred');
 
@@ -463,26 +469,54 @@
         paused = false;
         $('violationOverlay').classList.remove('show');
         $('app').classList.remove('blurred');
-        lastViolation = Date.now();
+        lastViolation = Date.now() + 2000;
     };
 
-    function enterFullscreen() {
+    async function enterFullscreen() {
         const el = document.documentElement;
-        try { return (el.requestFullscreen || el.webkitRequestFullscreen).call(el); } catch (e) { return Promise.resolve(); }
+        try {
+            const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+            if (req) {
+                const res = req.call(el);
+                if (res && typeof res.then === 'function') {
+                    await res.catch(err => {
+                        console.warn("Fullscreen request rejected or not permitted:", err);
+                        fsSupportedAndAllowed = false;
+                    });
+                }
+            } else {
+                fsSupportedAndAllowed = false;
+            }
+        } catch (e) {
+            console.warn("Fullscreen execution notice:", e);
+            fsSupportedAndAllowed = false;
+        }
     }
-    const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
 
     document.addEventListener('visibilitychange', () => { if (document.hidden) violation('You switched tabs or minimised the window'); });
     window.addEventListener('blur', () => violation('The exam window lost focus (another window or app was opened)'));
-    document.addEventListener('fullscreenchange', () => { if (!isFs()) violation('You exited fullscreen mode'); });
-    document.addEventListener('webkitfullscreenchange', () => { if (!isFs()) violation('You exited fullscreen mode'); });
+    document.addEventListener('fullscreenchange', () => { 
+        if (isFs()) {
+            fsSupportedAndAllowed = true;
+        } else if (fsSupportedAndAllowed) {
+            violation('You exited fullscreen mode'); 
+        }
+    });
+    document.addEventListener('webkitfullscreenchange', () => { 
+        if (isFs()) {
+            fsSupportedAndAllowed = true;
+        } else if (fsSupportedAndAllowed) {
+            violation('You exited fullscreen mode'); 
+        }
+    });
     document.documentElement.addEventListener('mouseleave', (e) => { if (e.clientY <= 0 && !paused) violation('Cursor left the exam window from the top'); });
 
     // Guard loop: devtools / split-screen / resize detection + focus check
     function guard() {
         if (!active || paused || submitting) return;
         if (!document.hasFocus()) return violation('The exam window lost focus');
-        if (!isFs()) return violation('Fullscreen mode is not active');
+        if (fsSupportedAndAllowed && !isFs()) return violation('Fullscreen mode is not active');
         const dw = window.outerWidth - window.innerWidth, dh = window.outerHeight - window.innerHeight;
         if (dw > 200 || dh > 250) return violation('Developer tools or a docked window was detected');
         if (Math.abs(window.innerWidth - screen.width) > 40 || Math.abs(window.innerHeight - screen.height) > 80) return violation('Window size changed (split-screen or floating window)');
@@ -506,10 +540,13 @@
             return;
         }
         if (['a', 'b', 'c', 'd'].includes(kl)) {
-            const opts = slides[current].querySelectorAll('.opt input');
-            choose(slides[current].dataset.qid, opts[kl.charCodeAt(0) - 97].value);
+            const opts = slides[current] ? slides[current].querySelectorAll('.opt input') : [];
+            const target = opts[kl.charCodeAt(0) - 97];
+            if (target) choose(slides[current].dataset.qid, target.value);
         } else if (['1', '2', '3', '4'].includes(k)) {
-            choose(slides[current].dataset.qid, slides[current].querySelectorAll('.opt input')[+k - 1].value);
+            const opts = slides[current] ? slides[current].querySelectorAll('.opt input') : [];
+            const target = opts[+k - 1];
+            if (target) choose(slides[current].dataset.qid, target.value);
         } else if (k === 'ArrowRight') go(current + 1);
         else if (k === 'ArrowLeft') go(current - 1);
         else if (kl === 'f') toggleFlag();
@@ -519,15 +556,26 @@
 
     /* ---------- Start ---------- */
     if (state.started && state.endAt) $('startLabel').textContent = 'Resume Exam';
-    if (!total) $('startBtn').disabled = true;
+    if (!total) {
+        $('startBtn').disabled = true;
+        $('startLabel').textContent = 'No Questions Available';
+        const modalEl = $('rulesOverlay') ? $('rulesOverlay').querySelector('.modal') : null;
+        if (modalEl) {
+            const notice = document.createElement('div');
+            notice.style.cssText = 'color:#fbbf24; background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.3); border-radius:12px; padding:12px 16px; margin:16px 0; font-size:0.88rem; text-align:left; display:flex; align-items:center; gap:10px;';
+            notice.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size:1.1rem; flex-shrink:0;"></i><span>This exam does not have questions loaded yet. Please contact your instructor.</span>';
+            modalEl.insertBefore(notice, $('startBtn'));
+        }
+    }
 
     $('startBtn').onclick = async () => {
+        if (!total) return;
         if (!state.started) { state.started = true; state.endAt = Date.now() + DURATION; save(); }
         if (Date.now() >= state.endAt) { $('rulesOverlay').classList.remove('show'); active = true; return finalSubmit('Time is up', 'Your answers are being submitted automatically.'); }
         await enterFullscreen();
         $('rulesOverlay').classList.remove('show');
         $('app').classList.remove('blurred');
-        active = true; lastViolation = Date.now() + 1500;
+        active = true; lastViolation = Date.now() + 2500;
         updateStrikes(); refresh(); tick();
         timerId = setInterval(tick, 1000);
         setTimeout(() => { guardId = setInterval(guard, 1500); }, 2500);

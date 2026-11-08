@@ -15,11 +15,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lms_core.settings')
 
 application = get_wsgi_application()
 
-# Background auto-sync on server startup if faculty data is missing in production DB
+# Background auto-sync on server startup if faculty data or exam questions are missing in production DB
 try:
-    from students.models import User
-    if User.objects.filter(is_faculty=True).count() < 10:
-        print("[WSGI-BOOT] Faculty data missing in production DB. Triggering auto-sync...")
+    from students.models import User, Question
+    missing_faculty = User.objects.filter(is_faculty=True).count() < 10
+    missing_questions = Question.objects.count() < 50 or not Question.objects.filter(exam_id=50).exists()
+    if missing_faculty or missing_questions:
+        print(f"[WSGI-BOOT] Data missing in production DB (faculty missing: {missing_faculty}, questions missing: {missing_questions}). Triggering auto-sync...")
         from seed_db import smart_sync_production
         smart_sync_production(force=True)
 except Exception as e:

@@ -18,7 +18,7 @@ from django.core.management.color import no_style
 from django.apps import apps
 from students.models import (
     User, Profile, FacultyProfile, Course, Lesson, LiveClass, 
-    Exam, LibraryDocument, Assignment, Enrollment
+    Exam, Question, QuizResult, LibraryDocument, Assignment, Enrollment
 )
 
 def reset_postgres_sequences():
@@ -244,6 +244,53 @@ def smart_sync_production(force=False):
         except Exception as ee:
             print(f"[WARN] Exam sync notice for id {ex.get('pk')}: {ee}")
 
+    # 7b. Sync Questions
+    questions_data = [x for x in items if x['model'] == 'students.question']
+    synced_questions = 0
+    for q in questions_data:
+        try:
+            flds = q['fields']
+            qid = q.get('pk')
+            eid = flds.get('exam')
+            exam = Exam.objects.filter(id=eid).first() if eid else None
+            if not exam:
+                continue
+            q_obj, _ = Question.objects.get_or_create(id=qid, defaults={'exam': exam})
+            q_obj.exam = exam
+            q_obj.question_text = flds.get('question_text', '')
+            q_obj.option1 = flds.get('option1', '')
+            q_obj.option2 = flds.get('option2', '')
+            q_obj.option3 = flds.get('option3', '')
+            q_obj.option4 = flds.get('option4', '')
+            q_obj.correct_option = flds.get('correct_option', '')
+            q_obj.marks = flds.get('marks', 1) or 1
+            q_obj.save()
+            synced_questions += 1
+        except Exception as qe:
+            print(f"[WARN] Question sync notice for id {q.get('pk')}: {qe}")
+
+    # 7c. Sync Quiz Results
+    results_data = [x for x in items if x['model'] == 'students.quizresult']
+    synced_results = 0
+    for r in results_data:
+        try:
+            flds = r['fields']
+            rid = r.get('pk')
+            s_val = flds.get('student')
+            s_user = User.objects.filter(username=s_val[0]).first() if isinstance(s_val, list) else User.objects.filter(pk=s_val).first()
+            eid = flds.get('exam')
+            exam = Exam.objects.filter(id=eid).first() if eid else None
+            if s_user and exam:
+                qr_obj, _ = QuizResult.objects.get_or_create(id=rid, defaults={'student': s_user, 'exam': exam, 'score': 0})
+                qr_obj.student = s_user
+                qr_obj.exam = exam
+                qr_obj.score = flds.get('score', 0)
+                qr_obj.total_marks = flds.get('total_marks', 0)
+                qr_obj.save()
+                synced_results += 1
+        except Exception as re:
+            print(f"[WARN] QuizResult sync notice for id {r.get('pk')}: {re}")
+
     # 8. Sync Library Documents
     docs_data = [x for x in items if x['model'] == 'students.librarydocument']
     synced_docs = 0
@@ -327,6 +374,8 @@ def smart_sync_production(force=False):
         "synced_lessons": synced_lessons,
         "synced_live_classes": synced_classes,
         "synced_exams": synced_exams,
+        "synced_questions": synced_questions,
+        "synced_quiz_results": synced_results,
         "synced_documents": synced_docs,
         "synced_assignments": synced_assignments,
         "synced_enrollments": synced_enrollments,
@@ -336,9 +385,10 @@ def seed():
     force = '--force' in sys.argv or os.getenv('FORCE_SEED', '').lower() in ('1', 'true', 'yes')
     faculty_count = User.objects.filter(is_faculty=True).count()
     has_courses = Course.objects.exists()
+    has_questions = Question.objects.filter(exam_id=50).exists() and (Question.objects.count() >= 50)
 
-    if faculty_count >= 10 and has_courses and not force:
-        print(f"[SAFEGUARD] Database already contains active faculty ({faculty_count}) and courses.")
+    if faculty_count >= 10 and has_courses and has_questions and not force:
+        print(f"[SAFEGUARD] Database already contains active faculty ({faculty_count}), courses, and questions ({Question.objects.count()}).")
         reset_postgres_sequences()
         return
 

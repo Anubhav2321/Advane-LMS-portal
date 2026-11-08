@@ -2562,8 +2562,23 @@ def take_exam(request, exam_id):
     """
     exam = get_object_or_404(Exam, id=exam_id)
     
-    # 1. If not staff/superuser, verify active enrollment in the exam's course
-    if not (request.user.is_staff or request.user.is_superuser):
+    # Auto-sync safeguard: if questions are missing in production db, trigger auto-sync!
+    if exam.questions.count() == 0:
+        try:
+            from seed_db import smart_sync_production
+            smart_sync_production(force=True)
+            exam.refresh_from_db()
+        except Exception as e:
+            print(f"[take_exam] Auto-sync error: {e}")
+
+    # 1. If not staff/superuser/faculty, verify active enrollment in the exam's course
+    is_admin_or_faculty = (
+        request.user.is_staff or 
+        request.user.is_superuser or 
+        getattr(request.user, 'is_faculty', False) or 
+        getattr(request.user, 'is_teacher', False)
+    )
+    if not is_admin_or_faculty:
         if not exam.course:
             messages.error(request, 'This exam is not associated with an active course.')
             return redirect('student_exam_list')
