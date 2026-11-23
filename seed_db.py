@@ -66,33 +66,42 @@ def smart_sync_production(force=False):
             user = User.objects.filter(username=uname).first()
             if not user:
                 user = User(username=uname)
-
-            user.email = flds.get('email', '') or ''
-            user.first_name = flds.get('first_name', '') or ''
-            user.last_name = flds.get('last_name', '') or ''
-            user.is_faculty = flds.get('is_faculty', False)
-            user.is_teacher = flds.get('is_teacher', False)
-            user.is_student = flds.get('is_student', True)
-            user.is_staff = flds.get('is_staff', False)
-            user.is_superuser = flds.get('is_superuser', False)
-            user.phone = flds.get('phone', '') or ''
-            user.student_level = flds.get('student_level', 'Beginner')
-            user.stream = flds.get('stream', '') or ''
-            user.lms_coins = flds.get('lms_coins', 100)
-            user.reputation_score = flds.get('reputation_score', 100)
-            user.engagement_score = flds.get('engagement_score', 100)
-
-            # Unique student_id handling to prevent PostgreSQL duplicate key crashes
-            sid = flds.get('student_id')
-            if sid:
-                existing = User.objects.filter(student_id=sid).exclude(username=uname).first()
-                if not existing:
-                    user.student_id = sid
-
-            if flds.get('password'):
-                user.password = flds['password']
-
-            user.save()
+                user.email = flds.get('email', '') or ''
+                user.first_name = flds.get('first_name', '') or ''
+                user.last_name = flds.get('last_name', '') or ''
+                user.is_faculty = flds.get('is_faculty', False)
+                user.is_teacher = flds.get('is_teacher', False)
+                user.is_student = flds.get('is_student', True)
+                user.is_staff = flds.get('is_staff', False)
+                user.is_superuser = flds.get('is_superuser', False)
+                user.phone = flds.get('phone', '') or ''
+                user.student_level = flds.get('student_level', 'Beginner')
+                user.stream = flds.get('stream', '') or ''
+                user.lms_coins = flds.get('lms_coins', 100)
+                user.reputation_score = flds.get('reputation_score', 100)
+                user.engagement_score = flds.get('engagement_score', 100)
+                sid = flds.get('student_id')
+                if sid:
+                    existing = User.objects.filter(student_id=sid).exclude(username=uname).first()
+                    if not existing:
+                        user.student_id = sid
+                if flds.get('password'):
+                    user.password = flds['password']
+                user.save()
+            else:
+                # Existing user: DO NOT overwrite coins, reputation, scores, or password!
+                changed = False
+                if not user.email and flds.get('email'):
+                    user.email = flds['email']
+                    changed = True
+                if not user.first_name and flds.get('first_name'):
+                    user.first_name = flds['first_name']
+                    changed = True
+                if not user.last_name and flds.get('last_name'):
+                    user.last_name = flds['last_name']
+                    changed = True
+                if changed:
+                    user.save()
             synced_users += 1
         except Exception as ue:
             print(f"[WARN] User sync notice for {u.get('fields', {}).get('username')}: {ue}")
@@ -354,10 +363,11 @@ def smart_sync_production(force=False):
             c_val = flds.get('course')
             course = Course.objects.filter(pk=c_val).first() if c_val else None
             if s_user and course:
-                enr_obj, _ = Enrollment.objects.get_or_create(student=s_user, course=course)
-                enr_obj.progress = flds.get('progress', 0) or 0
-                enr_obj.is_completed = flds.get('is_completed', False)
-                enr_obj.save()
+                enr_obj, created = Enrollment.objects.get_or_create(student=s_user, course=course)
+                if created:
+                    enr_obj.progress = flds.get('progress', 0) or 0
+                    enr_obj.is_completed = flds.get('is_completed', False)
+                    enr_obj.save()
                 synced_enrollments += 1
         except Exception as ene:
             print(f"[WARN] Enrollment sync notice for id {en.get('pk')}: {ene}")
