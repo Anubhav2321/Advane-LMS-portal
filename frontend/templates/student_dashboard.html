@@ -2022,6 +2022,12 @@
                 <span class="level-badge" style="border-color: {{ request.user.reputation_tier.color }}; color: {{ request.user.reputation_tier.color }};" title="Student Reputation: {{ request.user.reputation_score }}/100">
                     <i class="fas fa-user-shield"></i> {{ request.user.reputation_score }}/100 {{ request.user.reputation_tier.badge }}
                 </span>
+                <button type="button" onclick="openStudyLeaveModal()" class="level-badge" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.45); color: #38bdf8; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-umbrella-beach"></i> Study Leave
+                </button>
+                <button type="button" onclick="openDashboardAppealModal()" class="level-badge" style="background: rgba(0, 243, 255, 0.15); border-color: rgba(0, 243, 255, 0.45); color: #00f3ff; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-hand-holding-heart"></i> Academic Appeal
+                </button>
             </div>
         </div>
         
@@ -2076,6 +2082,28 @@
         </div>
     </div>
 
+    <!-- 🏖️ ACTIVE STUDY LEAVE BANNER -->
+    {% if active_study_leave %}
+    <div class="study-leave-banner fade-in-up" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.16), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(6, 182, 212, 0.45); border-radius: 16px; padding: 16px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 8px 32px rgba(6, 182, 212, 0.15); backdrop-filter: blur(16px);">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(6, 182, 212, 0.22); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #38bdf8; flex-shrink: 0;">
+                <i class="fas fa-umbrella-beach"></i>
+            </div>
+            <div>
+                <h4 style="color: #fff; margin: 0 0 4px; font-size: 1.02rem; font-weight: 700;">
+                    Planned Study Leave Active (Until {{ active_study_leave.end_date|date:"d M, Y" }})
+                </h4>
+                <p style="color: #cbd5e1; margin: 0; font-size: 0.84rem; line-height: 1.4;">
+                    Your daily study streak is frozen and protected! Missed exam and assignment penalties are temporarily halted until your leave concludes.
+                </p>
+            </div>
+        </div>
+        <span style="padding: 6px 14px; background: rgba(6, 182, 212, 0.2); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 20px; font-size: 0.8rem; color: #38bdf8; font-weight: 700; white-space: nowrap;">
+            <i class="fas fa-shield-alt"></i> Streak Protected
+        </span>
+    </div>
+    {% endif %}
+
     <!-- ============================================= -->
     <!-- 2. CONTINUE LEARNING - ENROLLED COURSES       -->
     <!-- ============================================= -->
@@ -2105,7 +2133,14 @@
                     <!-- Content -->
                     <div class="card-content">
                         <div class="card-title-row">
-                            <div class="course-title-text">{{ enrollment.course.title }}</div>
+                            <div class="course-title-text">
+                                {{ enrollment.course.title }}
+                                {% if enrollment.is_on_hold %}
+                                    <span style="display:inline-flex; align-items:center; gap:4px; font-size:0.7rem; padding:2px 8px; border-radius:12px; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.5); color:#fca5a5; font-weight:700; margin-left:6px; vertical-align:middle;">
+                                        <i class="fas fa-pause-circle"></i> On Hold
+                                    </span>
+                                {% endif %}
+                            </div>
                             <!-- Circular Progress Ring -->
                             <div class="progress-ring-wrapper">
                                 <svg class="progress-ring-svg" viewBox="0 0 60 60">
@@ -2182,8 +2217,10 @@
 
                         <!-- Card Action Buttons -->
                         <div class="card-actions">
-                            <a href="{% url 'course_watch' enrollment.course.id %}" class="btn-continue">
-                                {% if enrollment.has_missed_exams %}
+                            <a href="{% url 'course_watch' enrollment.course.id %}" class="btn-continue" {% if enrollment.is_on_hold %}style="background:linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.45)); border:1px solid rgba(239, 68, 68, 0.6); color:#fecaca;"{% endif %}>
+                                {% if enrollment.is_on_hold %}
+                                    <i class="fas fa-pause-circle" style="color:#f87171;"></i> Course On Hold (Resume)
+                                {% elif enrollment.has_missed_exams %}
                                     <i class="fas fa-triangle-exclamation" style="color:var(--accent-red);"></i> Blocked (Missed Exam)
                                 {% elif enrollment.real_progress >= 100 %}
                                     <i class="fas fa-redo"></i> Review Course
@@ -2276,6 +2313,15 @@
                             <span class="sync-item-meta" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
                                 <span><i class="far fa-clock"></i> Due: {{ assign.due_date|date:"d M, Y" }}</span>
                                 <span>• {{ assign.total_marks }} Marks</span>
+                                {% if assign.is_past_due and not assign.in_grace %}
+                                <span style="color: #f87171; font-weight: 700; font-size: 0.72rem; background: rgba(239, 68, 68, 0.15); padding: 2px 7px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-ban"></i> Deadline Expired (Closed)
+                                </span>
+                                {% elif assign.is_past_due and assign.in_grace %}
+                                <span style="color: #6ee7b7; font-weight: 700; font-size: 0.72rem; background: rgba(16, 185, 129, 0.18); padding: 2px 7px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-sparkles"></i> Grace Active (Open)
+                                </span>
+                                {% endif %}
                                 {% if assign.course %}
                                 <span class="asgn-course-badge" style="background: rgba(0,243,255,0.12); color: var(--neon-cyan); border: 1px solid rgba(0,243,255,0.3); padding: 2px 8px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; display:inline-flex; align-items:center; gap:5px;">
                                     <i class="fas fa-graduation-cap"></i> {{ assign.course.title }}
@@ -2284,16 +2330,23 @@
                             </span>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <button type="button" class="btn-sync-action amber" 
+                            {% if assign.is_past_due and not assign.in_grace %}
+                            <button type="button" class="btn-sync-action" disabled style="opacity: 0.45; cursor: not-allowed; filter: grayscale(80%); pointer-events: none; background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px dashed rgba(239, 68, 68, 0.35);" title="Submission deadline expired">
+                                <i class="fas fa-calendar-xmark" style="color: #ef4444;"></i> Closed
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn-sync-action {% if assign.in_grace %}emerald{% else %}amber{% endif %}" 
                                     data-asgn-id="{{ assign.id }}"
                                     data-asgn-title="{{ assign.title|escape }}"
                                     data-course-title="{{ assign.course.title|escape }}"
                                     data-marks="{{ assign.total_marks }}"
                                     data-brief="{% if assign.file %}{{ assign.file.url }}{% endif %}"
                                     data-ext="{{ assign.file_extension }}"
+                                    {% if assign.in_grace %}style="background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(6,78,59,0.7)); border: 1px solid rgba(16,185,129,0.6); color: #6ee7b7;"{% endif %}
                                     onclick="openDashboardSubmitModal('{{ assign.id }}', '{{ assign.title|escapejs }}', '{{ assign.course.title|escapejs }}', '{{ assign.total_marks }}', '{% if assign.file %}{{ assign.file.url|escapejs }}{% endif %}', '{{ assign.file_extension }}'); return false;">
-                                <i class="fas fa-upload"></i> Submit
+                                <i class="fas {% if assign.in_grace %}fa-sparkles{% else %}fa-upload{% endif %}"></i> Submit{% if assign.in_grace %} (Grace){% endif %}
                             </button>
+                            {% endif %}
                             <a href="{% url 'course_watch' assign.course.id %}#asgn-card-{{ assign.id }}" class="btn-sync-action cyan" title="Open {{ assign.course.title }} Workspace">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
@@ -2538,6 +2591,154 @@
     </div>
 </div>
 
+<!-- 🏖️ 1. STUDENT PLANNED STUDY LEAVE MODAL -->
+<div class="modal-overlay" id="studyLeaveModal" onclick="if(event.target===this)closeStudyLeaveModal()">
+    <div class="modal-box asgn-modal-box" onclick="event.stopPropagation()" style="max-width: 560px; background: rgba(11, 16, 30, 0.98); border: 1px solid rgba(6, 182, 212, 0.35); box-shadow: 0 16px 48px rgba(0,0,0,0.8), 0 0 24px rgba(6, 182, 212, 0.15);">
+        <div class="modal-header" style="padding: 18px 24px; border-bottom: 1px solid rgba(6, 182, 212, 0.2); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; font-size: 1.1rem;">
+                <i class="fas fa-umbrella-beach" style="color: #38bdf8;"></i> Apply for Planned Study Leave
+            </span>
+            <i class="fas fa-times" onclick="closeStudyLeaveModal()" style="color:#94a3b8; cursor:pointer; font-size:1.1rem;"></i>
+        </div>
+        <form method="POST" action="{% url 'apply_study_leave' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-body-content" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-shield-halved" style="color: #38bdf8; font-size: 1.3rem; flex-shrink: 0;"></i>
+                    <p style="margin: 0; font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
+                        Planning time off for medical surgery, exams, or family events? During approved study leave, your study streak will freeze without breaking and penalties for missed deadlines are halted.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div>
+                        <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                            <i class="fas fa-calendar-alt" style="color: #38bdf8;"></i> Start Date
+                        </label>
+                        <input type="date" name="start_date" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 10px 12px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                            <i class="fas fa-calendar-check" style="color: #38bdf8;"></i> End Date
+                        </label>
+                        <input type="date" name="end_date" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 10px 12px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-tag" style="color: var(--accent-amber);"></i> Primary Reason
+                    </label>
+                    <select name="reason" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                        <option value="medical" style="background: #0b0f19; color: #fff;">🏥 Medical Treatment / Surgery / Hospitalization</option>
+                        <option value="exam" style="background: #0b0f19; color: #fff;">📚 University / Board Examination Preparation</option>
+                        <option value="family" style="background: #0b0f19; color: #fff;">🏡 Family Emergency / Personal Responsibility</option>
+                        <option value="travel" style="background: #0b0f19; color: #fff;">✈️ Remote Travel / Offline Inaccessibility</option>
+                        <option value="other" style="background: #0b0f19; color: #fff;">💬 Other Academic Reason</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-pencil-alt" style="color: #38bdf8;"></i> Explanation / Purpose of Absence
+                    </label>
+                    <textarea name="explanation" rows="3" required placeholder="Explain why you need time off and approximate return date..." style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; resize: vertical;"></textarea>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-file-shield" style="color: var(--accent-emerald);"></i> Supporting Document (Optional)
+                    </label>
+                    <input type="file" name="supporting_doc" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px dashed rgba(255,255,255,0.25); color: #94a3b8; padding: 10px; border-radius: 10px; font-size: 0.82rem;">
+                </div>
+            </div>
+
+            <div class="modal-footer-btns" style="padding:16px 24px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:flex-end; gap:12px;">
+                <button type="button" class="btn-modal-cancel" onclick="closeStudyLeaveModal()" style="padding:10px 18px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; font-weight:600; cursor:pointer;">Cancel</button>
+                <button type="submit" style="padding:10px 22px; border-radius:10px; background:linear-gradient(135deg, #06b6d4, #0284c7); border:none; color:#fff; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fas fa-paper-plane"></i> Submit Leave Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 🙋 2. STUDENT ACADEMIC APPEAL & ASSISTANCE MODAL -->
+<div class="modal-overlay" id="dashboardAppealModal" onclick="if(event.target===this)closeDashboardAppealModal()">
+    <div class="modal-box asgn-modal-box" onclick="event.stopPropagation()" style="max-width: 580px; background: rgba(11, 16, 30, 0.98); border: 1px solid rgba(0, 243, 255, 0.35); box-shadow: 0 16px 48px rgba(0,0,0,0.8), 0 0 24px rgba(0, 243, 255, 0.15);">
+        <div class="modal-header" style="padding: 18px 24px; border-bottom: 1px solid rgba(0, 243, 255, 0.2); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; font-size: 1.1rem;">
+                <i class="fas fa-hand-holding-heart" style="color: var(--neon-cyan);"></i> Student Academic Appeal & Grace Request
+            </span>
+            <i class="fas fa-times" onclick="closeDashboardAppealModal()" style="color:#94a3b8; cursor:pointer; font-size:1.1rem;"></i>
+        </div>
+        <form method="POST" action="{% url 'submit_academic_appeal' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-body-content" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-graduation-cap" style="color: var(--neon-cyan);"></i> Select Affected Course
+                    </label>
+                    <select name="course_id" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                        {% for enr in enrollments %}
+                        <option value="{{ enr.course.id }}" style="background: #0b0f19; color: #fff;">{{ enr.course.title }}</option>
+                        {% empty %}
+                        <option value="" disabled selected style="background: #0b0f19; color: #94a3b8;">No enrolled courses</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div>
+                        <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                            <i class="fas fa-tag" style="color: var(--accent-amber);"></i> Circumstance
+                        </label>
+                        <select name="appeal_type" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 12px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                            <option value="medical" style="background: #0b0f19; color: #fff;">🏥 Illness / Medical</option>
+                            <option value="technical" style="background: #0b0f19; color: #fff;">💻 Tech / Hardware</option>
+                            <option value="family" style="background: #0b0f19; color: #fff;">🏡 Family Emergency</option>
+                            <option value="exam_clash" style="background: #0b0f19; color: #fff;">📚 Exam Conflict</option>
+                            <option value="other" style="background: #0b0f19; color: #fff;">💬 Other Hardship</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                            <i class="fas fa-gift" style="color: var(--accent-emerald);"></i> Requested Relief
+                        </label>
+                        <select name="requested_relief" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 12px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                            <option value="grace_extension" style="background: #0b0f19; color: #fff;">✨ Grace Extension</option>
+                            <option value="mentorship" style="background: #0b0f19; color: #fff;">🤝 1-on-1 Mentorship</option>
+                            <option value="study_pause" style="background: #0b0f19; color: #fff;">⏸️ Course Hold/Pause</option>
+                            <option value="penalty_waiver" style="background: #0b0f19; color: #fff;">🛡️ Penalty Forgiveness</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-pencil-alt" style="color: var(--neon-cyan);"></i> Explanation / Message to Instructor & Admin
+                    </label>
+                    <textarea name="message" rows="3" required placeholder="Please describe the difficulties you are facing and what assistance you need..." style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; resize: vertical;"></textarea>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-file-shield" style="color: var(--accent-emerald);"></i> Supporting Document (Optional)
+                    </label>
+                    <input type="file" name="supporting_document" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px dashed rgba(255,255,255,0.25); color: #94a3b8; padding: 10px; border-radius: 10px; font-size: 0.82rem;">
+                </div>
+            </div>
+
+            <div class="modal-footer-btns" style="padding:16px 24px; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:flex-end; gap:12px;">
+                <button type="button" class="btn-modal-cancel" onclick="closeDashboardAppealModal()" style="padding:10px 18px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94a3b8; font-weight:600; cursor:pointer;">Cancel</button>
+                <button type="submit" style="padding:10px 22px; border-radius:10px; background:linear-gradient(135deg, #00f3ff, #0088ff); border:none; color:#060814; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fas fa-paper-plane"></i> Submit Appeal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     // =========================================
     // 📋 DASHBOARD QUICK SUBMIT MODAL HANDLERS
@@ -2698,8 +2899,61 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeDashboardSubmitModal();
+            closeStudyLeaveModal();
+            closeDashboardAppealModal();
         }
     });
+
+    // =========================================
+    // 🏖️ STUDY LEAVE & ACADEMIC APPEAL HANDLERS
+    // =========================================
+    function openStudyLeaveModal() {
+        const modal = document.getElementById('studyLeaveModal');
+        if (modal) {
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            document.body.style.overflow = 'hidden';
+            modal.style.display = 'flex';
+            void modal.offsetWidth;
+            modal.classList.add('modal-open');
+        }
+    }
+    window.openStudyLeaveModal = openStudyLeaveModal;
+
+    function closeStudyLeaveModal() {
+        const modal = document.getElementById('studyLeaveModal');
+        if (modal) {
+            modal.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            setTimeout(() => modal.style.display = 'none', 250);
+        }
+    }
+    window.closeStudyLeaveModal = closeStudyLeaveModal;
+
+    function openDashboardAppealModal() {
+        const modal = document.getElementById('dashboardAppealModal');
+        if (modal) {
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            document.body.style.overflow = 'hidden';
+            modal.style.display = 'flex';
+            void modal.offsetWidth;
+            modal.classList.add('modal-open');
+        }
+    }
+    window.openDashboardAppealModal = openDashboardAppealModal;
+
+    function closeDashboardAppealModal() {
+        const modal = document.getElementById('dashboardAppealModal');
+        if (modal) {
+            modal.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            setTimeout(() => modal.style.display = 'none', 250);
+        }
+    }
+    window.closeDashboardAppealModal = closeDashboardAppealModal;
 </script>
 
 <!-- ============================================= -->

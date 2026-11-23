@@ -675,18 +675,27 @@
 
     .hidden { display: none !important; }
 
-    /* Modal */
+    /* Modal - Fully Centered Fixed Viewport Overlay */
     .ac-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.78) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
         display: none;
-        place-items: center;
-        z-index: 9999;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 999999 !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        box-sizing: border-box !important;
     }
-    .ac-overlay.show { display: grid; }
+    .ac-overlay.show { display: flex !important; }
     .ac-modal {
         background: #0d1222;
         border: 1px solid var(--border-glass);
@@ -695,6 +704,14 @@
         max-width: 440px;
         width: 90%;
         color: #fff;
+        margin: auto !important;
+        position: relative !important;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 243, 255, 0.18);
+        animation: acModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes acModalPopIn {
+        from { opacity: 0; transform: scale(0.92) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
     }
     .ac-modal h3 { margin: 0 0 6px; font-size: 1.3rem; font-family: 'Space Grotesk', sans-serif; }
     .ac-modal p { margin: 0 0 16px; color: var(--text-muted); font-size: 0.85rem; }
@@ -887,7 +904,9 @@
                 <div>
                     <div class="exam-top">
                         <span class="exam-subject-chip"><i class="fas fa-graduation-cap"></i> {{ exam.course.title|default:"General Module" }}</span>
-                        {% if exam.remaining.has_deadline %}
+                        {% if exam.is_pre_enrollment %}
+                            <span class="countdown-chip open" style="background:rgba(0, 243, 255, 0.12); color:var(--neon-cyan); border:1px solid rgba(0, 243, 255, 0.35);"><i class="fas fa-unlock"></i> Self-Paced</span>
+                        {% elif exam.remaining.has_deadline %}
                             {% if exam.remaining.urgent %}
                                 <span class="countdown-chip urgent"><i class="fas fa-fire"></i> {{ exam.remaining.label }}</span>
                             {% else %}
@@ -907,10 +926,17 @@
                         <span class="meta-chip"><i class="fas fa-shield-alt"></i> Proctored</span>
                     </div>
 
+                    {% if exam.is_pre_enrollment %}
+                    <div class="reputation-note" style="margin: 10px 0 12px; color: #a5f3fc; border-color: rgba(0, 243, 255, 0.2);">
+                        <i class="fas fa-info-circle" style="color:var(--neon-cyan);"></i>
+                        <span>Enrolled after deadline · Optional assessment (No penalty)</span>
+                    </div>
+                    {% else %}
                     <div class="reputation-note" style="margin: 10px 0 12px;">
                         <i class="fas fa-user-shield"></i>
                         <span>Complete on time to safeguard your Reputation ({{ reputation_score }})</span>
                     </div>
+                    {% endif %}
 
                     <a href="{% url 'take_exam' exam.id %}" class="btn-start-exam" data-exam-start>
                         <i class="fas fa-play"></i> Start Assessment
@@ -1076,7 +1102,12 @@
         searchInput.addEventListener('input', filterList);
     }
 
-    // Modal Confirmation
+    // Modal Confirmation - Ensure modal lives directly on document.body
+    const modalOverlay = document.getElementById('examStartModal');
+    if (modalOverlay && modalOverlay.parentElement !== document.body) {
+        document.body.appendChild(modalOverlay);
+    }
+
     document.querySelectorAll('[data-exam-start]').forEach(btn => {
         btn.addEventListener('click', e => {
             e.preventDefault();
@@ -1084,18 +1115,32 @@
             document.getElementById('modalExamTitle').textContent = card.dataset.name;
             document.getElementById('modalExamMeta').textContent = card.dataset.dur + ' minutes · ' + card.dataset.marks + ' marks · Proctored Mode';
             document.getElementById('modalExamGo').href = btn.href;
-            document.getElementById('examStartModal').classList.add('show');
+            
+            const modal = document.getElementById('examStartModal');
+            if (modal) {
+                if (modal.parentElement !== document.body) {
+                    document.body.appendChild(modal);
+                }
+                modal.classList.add('show');
+            }
         });
     });
 
     const modalCancel = document.getElementById('modalExamCancel');
     if (modalCancel) {
-        modalCancel.onclick = () => document.getElementById('examStartModal').classList.remove('show');
+        modalCancel.onclick = () => {
+            const modal = document.getElementById('examStartModal');
+            if (modal) modal.classList.remove('show');
+        };
     }
-    const modalOverlay = document.getElementById('examStartModal');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', e => {
             if (e.target.id === 'examStartModal') modalOverlay.classList.remove('show');
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('show')) {
+                modalOverlay.classList.remove('show');
+            }
         });
     }
 
