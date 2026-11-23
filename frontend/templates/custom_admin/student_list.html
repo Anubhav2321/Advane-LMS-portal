@@ -321,6 +321,13 @@
                         {% else %}
                             <span class="status-badge status-blocked">Blocked</span>
                         {% endif %}
+                        {% if student.has_inactive_course %}
+                            <a href="{% url 'admin_student_detail' student.id %}?warn=1" style="text-decoration: none;" title="Zero responses recorded in enrolled course! Click to issue warning notice.">
+                                <span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); margin-left: 6px; cursor: pointer;">
+                                    <i class="fas fa-triangle-exclamation"></i> Inactive
+                                </span>
+                            </a>
+                        {% endif %}
                     </td>
                     <td style="text-align: right;">
                         <a href="{% url 'admin_student_detail' student.id %}" class="btn-view">

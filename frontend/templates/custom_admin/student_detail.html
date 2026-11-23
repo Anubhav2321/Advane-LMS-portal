@@ -505,6 +505,109 @@
         .timeline-content .tl-time { font-size: 0.7rem; }
         .action-btn { padding: 12px 14px; font-size: 0.85rem; }
     }
+
+    /* ============================================= */
+    /* WARNING MODAL DARK LUXURY STYLING             */
+    /* ============================================= */
+    .warn-modal-box {
+        background: #0d1222 !important;
+        border: 1px solid rgba(245, 158, 11, 0.45) !important;
+        border-radius: 20px !important;
+        max-width: 580px !important;
+        width: 100% !important;
+        padding: 30px !important;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(245, 158, 11, 0.2) !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
+    .warn-select-wrap {
+        position: relative !important;
+        width: 100% !important;
+    }
+    .warn-dark-select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 12px 42px 12px 16px !important;
+        background: #060913 !important;
+        background-color: #060913 !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        font-size: 0.92rem !important;
+        font-family: inherit !important;
+        font-weight: 500 !important;
+        outline: none !important;
+        cursor: pointer !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+    }
+    .warn-dark-select:hover {
+        border-color: rgba(245, 158, 11, 0.55) !important;
+        background-color: #0a0e1c !important;
+    }
+    .warn-dark-select:focus {
+        border-color: #f59e0b !important;
+        background-color: #0a0e1c !important;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25) !important;
+    }
+    .warn-dark-select option {
+        background-color: #0b0f19 !important;
+        background: #0b0f19 !important;
+        color: #ffffff !important;
+        padding: 12px 16px !important;
+        font-size: 0.92rem !important;
+    }
+    .warn-dark-select option:hover,
+    .warn-dark-select option:focus,
+    .warn-dark-select option:checked {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        color: #fbbf24 !important;
+    }
+    .warn-select-icon {
+        position: absolute !important;
+        right: 16px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        pointer-events: none !important;
+        color: #94a3b8 !important;
+        font-size: 0.85rem !important;
+        transition: color 0.2s ease !important;
+    }
+    .warn-select-wrap:focus-within .warn-select-icon {
+        color: #fbbf24 !important;
+    }
+    .warn-dark-textarea {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 14px 16px !important;
+        background: #060913 !important;
+        background-color: #060913 !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+        font-family: inherit !important;
+        resize: vertical !important;
+        outline: none !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+    }
+    .warn-dark-textarea:hover {
+        border-color: rgba(245, 158, 11, 0.45) !important;
+        background-color: #0a0e1c !important;
+    }
+    .warn-dark-textarea:focus {
+        border-color: #f59e0b !important;
+        background-color: #0a0e1c !important;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25) !important;
+    }
+    select.input-dark option {
+        background-color: #0b0f19 !important;
+        color: #ffffff !important;
+    }
 </style>
 {% endblock %}
 
@@ -514,6 +617,31 @@
     <a href="{% url 'admin_student_list' %}" class="link-back">
         <i class="fas fa-arrow-left"></i> Back to Students
     </a>
+
+    <!-- Inactivity Flag Alert Banner -->
+    {% if inactive_courses %}
+    <div class="inactivity-alert-box" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 1.4rem; flex-shrink: 0;">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <div style="font-weight: 800; color: #f87171; font-size: 1.1rem; letter-spacing: 0.3px;">
+                    ⚠️ Inactive / Non-Responsive Student Flag
+                </div>
+                <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 4px; line-height: 1.4;">
+                    This student has shown <b>zero response</b> (0 live classes attended, 0 assignments submitted, 0 exams taken) in:
+                    <span style="color: #fca5a5; font-weight: 700;">
+                        {% for ic in inactive_courses %}{{ ic.title }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </span>. Administrative action is recommended.
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-warn-now" onclick="openWarnModal()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: none; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">
+            <i class="fas fa-paper-plane"></i> Send Warning Notice
+        </button>
+    </div>
+    {% endif %}
 
     <!-- ============================================= -->
     <!-- PROFILE HERO                                  -->
@@ -636,9 +764,49 @@
             <div class="section-card">
                 <h3 class="section-title"><i class="fas fa-book-open"></i> Enrolled Courses ({{ enrollments.count }})</h3>
                 {% for enroll in enrollments %}
-                <div class="enroll-item">
-                    <span style="color: var(--text-primary); font-weight: 500;">{{ enroll.course.title }}</span>
-                    <span class="progress-text">{{ enroll.get_real_progress|floatformat:0 }}%</span>
+                <div class="enroll-item" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span style="color: var(--text-primary); font-weight: 600;">{{ enroll.course.title }}</span>
+                        {% if enroll.is_on_hold %}
+                        <span style="background: rgba(239, 68, 68, 0.22); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45); padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-pause-circle"></i> On Hold
+                        </span>
+                        {% endif %}
+                        {% if enroll.is_in_grace_period %}
+                        <span style="background: rgba(16, 185, 129, 0.22); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.45); padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-calendar-plus"></i> Grace until {{ enroll.grace_period_until|date:"d M" }}
+                        </span>
+                        {% endif %}
+                        {% if enroll.is_inactive %}
+                        <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); padding: 2px 7px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-ban"></i> Zero Response
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <!-- Quick Grace Action -->
+                        <button type="button" onclick="openGrantGraceModalForCourse('{{ enroll.course.id }}', '{{ enroll.course.title|escapejs }}')" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-calendar-plus"></i> Grace
+                        </button>
+
+                        <!-- Course Hold / Resume Modal Action -->
+                        {% if enroll.is_on_hold %}
+                        <button type="button" onclick="openCourseHoldModal('{{ enroll.course.id }}', '{{ enroll.course.title|escapejs }}', true, '{{ enroll.hold_reason|default:''|escapejs }}')" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Course is paused. Click to restore active access.">
+                            <i class="fas fa-play"></i> Resume
+                        </button>
+                        {% else %}
+                        <button type="button" onclick="openCourseHoldModal('{{ enroll.course.id }}', '{{ enroll.course.title|escapejs }}', false, '')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Pause student access to this course">
+                            <i class="fas fa-pause"></i> Hold
+                        </button>
+                        {% endif %}
+
+                        <!-- Quick Warn Action -->
+                        <button type="button" onclick="openWarnModalForCourse('{{ enroll.course.id }}', '{{ enroll.course.title|escapejs }}')" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-triangle-exclamation"></i> Warn
+                        </button>
+                        
+                        <span class="progress-text">{{ enroll.get_real_progress|floatformat:0 }}%</span>
+                    </div>
                 </div>
                 {% empty %}
                 <p style="color: var(--text-muted); text-align: center; padding: 24px;">No active enrollments.</p>
@@ -722,6 +890,140 @@
                 <p class="info-item"><strong>Level:</strong> {{ student.student_level }}</p>
                 <p class="info-item"><strong>Bio:</strong> {{ student.profile.bio|default:"No bio available." }}</p>
             </div>
+
+            <!-- 🌟 Academic Appeals & Grace Requests -->
+            <div class="section-card" id="appeals">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="section-title" style="margin: 0; color: var(--neon-cyan);"><i class="fas fa-hand-holding-heart"></i> Academic Appeals & Grace Requests ({{ student_appeals.count }})</h3>
+                </div>
+                {% for appeal in student_appeals %}
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                        <div>
+                            <span style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ appeal.course.title }}</span>
+                            <span style="font-size: 0.78rem; color: #94a3b8; margin-left: 8px;">• {{ appeal.get_appeal_type_display }}</span>
+                        </div>
+                        <span style="padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; 
+                            {% if appeal.status == 'approved' %}background: rgba(16,185,129,0.18); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);
+                            {% elif appeal.status == 'rejected' %}background: rgba(239,68,68,0.18); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);
+                            {% else %}background: rgba(245,158,11,0.18); color: #fcd34d; border: 1px solid rgba(245,158,11,0.4);{% endif %}">
+                            {{ appeal.get_status_display }}
+                        </span>
+                    </div>
+                    <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+                        <strong>Explanation:</strong> "{{ appeal.message }}"
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: #94a3b8;">
+                        <div>
+                            <span>Requested: <strong style="color: #38bdf8;">{{ appeal.get_requested_relief_display }}</strong></span>
+                            {% if appeal.supporting_document %}
+                            <a href="{{ appeal.supporting_document.url }}" target="_blank" style="margin-left: 12px; color: var(--neon-cyan); text-decoration: none;"><i class="fas fa-paperclip"></i> View Document</a>
+                            {% endif %}
+                        </div>
+                        {% if appeal.status == 'pending' %}
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" onclick="openGrantGraceModalForCourse('{{ appeal.course.id }}', '{{ appeal.course.title|escapejs }}', '{{ appeal.id }}')" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                                <i class="fas fa-calendar-plus"></i> Grant Grace Period
+                            </button>
+                            <form method="POST" action="{% url 'admin_review_appeal' appeal.id %}" style="display: inline; margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.35); border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;" onclick="return confirm('Decline this appeal?')">Decline</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <span style="font-size: 0.76rem; color: #64748b;">Resolved by {{ appeal.resolved_by.username|default:"Admin" }} on {{ appeal.resolved_at|date:"d M, Y" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted); text-align: center; padding: 18px; margin: 0;">No appeals submitted by this student.</p>
+                {% endfor %}
+            </div>
+
+            <!-- 🏖️ Planned Study Leave Requests -->
+            <div class="section-card" id="leave-requests">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="section-title" style="margin: 0; color: #38bdf8;"><i class="fas fa-umbrella-beach"></i> Planned Study Leaves ({{ student_study_leaves.count }})</h3>
+                </div>
+                {% for leave in student_study_leaves %}
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+                        <div>
+                            <span style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ leave.start_date|date:"d M, Y" }} to {{ leave.end_date|date:"d M, Y" }}</span>
+                            <span style="font-size: 0.78rem; color: #94a3b8; margin-left: 8px;">• {{ leave.get_reason_display }}</span>
+                        </div>
+                        <span style="padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; 
+                            {% if leave.status == 'approved' %}background: rgba(16,185,129,0.18); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);
+                            {% elif leave.status == 'rejected' %}background: rgba(239,68,68,0.18); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);
+                            {% else %}background: rgba(245,158,11,0.18); color: #fcd34d; border: 1px solid rgba(245,158,11,0.4);{% endif %}">
+                            {{ leave.get_status_display }}
+                        </span>
+                    </div>
+                    <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+                        <strong>Explanation:</strong> "{{ leave.explanation }}"
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.78rem; color: #94a3b8;">
+                        <div>
+                            {% if leave.supporting_doc %}
+                            <a href="{{ leave.supporting_doc.url }}" target="_blank" style="color: var(--neon-cyan); text-decoration: none;"><i class="fas fa-paperclip"></i> View Attached Slip</a>
+                            {% endif %}
+                        </div>
+                        {% if leave.status == 'pending' %}
+                        <div style="display: flex; gap: 8px;">
+                            <form method="POST" action="{% url 'admin_review_study_leave' leave.id %}" style="display: inline; margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" style="background: linear-gradient(135deg, #06b6d4, #0284c7); color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                                    <i class="fas fa-check"></i> Approve Leave (Freeze Streak)
+                                </button>
+                            </form>
+                            <form method="POST" action="{% url 'admin_review_study_leave' leave.id %}" style="display: inline; margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.35); border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;" onclick="return confirm('Decline this study leave?')">Decline</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <span style="font-size: 0.76rem; color: #64748b;">Reviewed by {{ leave.reviewed_by.username|default:"Admin" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted); text-align: center; padding: 18px; margin: 0;">No study leave requests on file.</p>
+                {% endfor %}
+            </div>
+
+            <!-- 🤝 Mentorship & Counseling Sessions -->
+            <div class="section-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="section-title" style="margin: 0; color: #a78bfa;"><i class="fas fa-handshake"></i> Mentorship & Counseling Calls ({{ mentorship_sessions.count }})</h3>
+                    <span style="font-size: 0.78rem; font-weight: 700; color: #38bdf8; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.35); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-chalkboard-user"></i> Conducted by Faculty
+                    </span>
+                </div>
+                {% for sess in mentorship_sessions %}
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px;">
+                        <div>
+                            <span style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ sess.topic }}</span>
+                            {% if sess.course %}<span style="font-size: 0.78rem; color: #94a3b8; margin-left: 8px;">({{ sess.course.title }})</span>{% endif %}
+                        </div>
+                        <span style="padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; background: rgba(167, 139, 250, 0.2); color: #c4b5fd;">
+                            {{ sess.get_status_display }}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; color: #cbd5e1;">
+                        <span><i class="far fa-clock"></i> {{ sess.meeting_time|date:"d M, Y • h:i A" }} · Mentor: <b>{{ sess.faculty_or_admin.get_full_name|default:sess.faculty_or_admin.username }}</b></span>
+                        <a href="{{ sess.meeting_link }}" target="_blank" style="padding: 4px 12px; border-radius: 6px; background: rgba(0, 243, 255, 0.15); border: 1px solid rgba(0, 243, 255, 0.35); color: #00f3ff; text-decoration: none; font-weight: 600; font-size: 0.78rem;">
+                            <i class="fas fa-video"></i> Join Link
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted); text-align: center; padding: 18px; margin: 0;">No counseling or mentorship calls scheduled.</p>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- Action Sidebar -->
@@ -729,6 +1031,26 @@
             <div class="section-card">
                 <h3 class="section-title" style="color: var(--accent-red);"><i class="fas fa-shield-alt"></i> Admin Actions</h3>
                 
+                <!-- Send Warning Action Button -->
+                <button type="button" class="action-btn btn-warning-action" onclick="openWarnModal()" style="margin-bottom: 12px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; cursor: pointer; text-align: left; width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fas fa-triangle-exclamation"></i> Send Warning Notice</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+
+                <!-- Grant Grace Period Action Button -->
+                <button type="button" class="action-btn" onclick="openGrantGraceModal()" style="margin-bottom: 12px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; cursor: pointer; text-align: left; width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fas fa-calendar-plus"></i> Grant Grace Period</span>
+                    <i class="fas fa-clock"></i>
+                </button>
+
+                <!-- Faculty Mentorship Information Card -->
+                <div style="margin-bottom: 12px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 10px; padding: 12px 14px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.45;">
+                    <div style="font-weight: 700; color: #38bdf8; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-chalkboard-teacher"></i> Faculty Mentorship
+                    </div>
+                    1-on-1 counseling classes are scheduled and conducted directly by the assigned Course Faculty in the Faculty Console.
+                </div>
+
                 <a href="{% url 'admin_toggle_block' student.id %}" class="action-btn btn-block">
                     {% if student.is_active %}
                         <span><i class="fas fa-ban"></i> Block User</span>
@@ -1004,5 +1326,526 @@
             loader.style.display = 'none';
         }
     }
+
+    /* ======================================================== */
+    /* INACTIVITY WARNING NOTICE MODAL & HANDLERS               */
+    /* ======================================================== */
+    function openWarnModal() {
+        const modal = document.getElementById('warnStudentModal');
+        if (modal) {
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            updateDefaultWarningText();
+        }
+    }
+    window.openWarnModal = openWarnModal;
+
+    function closeWarnModal() {
+        const modal = document.getElementById('warnStudentModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+    window.closeWarnModal = closeWarnModal;
+
+    function openWarnModalForCourse(courseId, courseTitle) {
+        const sel = document.getElementById('warnCourseSelect');
+        if (sel) {
+            sel.value = courseId;
+        }
+        openWarnModal();
+    }
+    window.openWarnModalForCourse = openWarnModalForCourse;
+
+    function updateDefaultWarningText() {
+        const sel = document.getElementById('warnCourseSelect');
+        const studentName = '{{ student.get_full_name|default:student.username|escapejs }}';
+        let courseTitle = 'your enrolled courses';
+        if (sel && sel.selectedIndex > 0) {
+            courseTitle = sel.options[sel.selectedIndex].text.replace(/\(.*\)/, '').trim();
+        }
+        const type = document.getElementById('warnTypeSelect').value;
+        const txt = document.getElementById('warnMessageText');
+        if (!txt) return;
+
+        if (type === 'friendly_checkin') {
+            txt.value = `Hello ${studentName},\n\nWe noticed you haven't been active in '${courseTitle}' lately. We care about your learning journey! If you're facing difficulties, health issues, or exam stress, please submit an Academic Appeal or schedule a 1-on-1 counseling call with your instructor. We are here to support you.`;
+        } else if (type === 'reminder') {
+            txt.value = `Dear ${studentName},\n\nThis is a friendly academic reminder regarding your progress in '${courseTitle}'. Please attend upcoming live classes, review video lectures, and submit pending assignments to keep your learning streak and grades on track.`;
+        } else if (type === 'hold_access') {
+            txt.value = `Dear ${studentName},\n\nAction Required: Due to persistent inactivity in '${courseTitle}', your course access has been temporarily placed on hold. Please visit Course Watch and click 'Acknowledge & Resume' or submit an Academic Appeal explaining your circumstances to restore access.`;
+        } else if (type === 'final_notice') {
+            txt.value = `Dear ${studentName},\n\nFINAL NOTICE: Your academic records in '${courseTitle}' show persistent zero attendance, missing assignments, and skipped examinations. Immediate resumption of coursework within 48 hours is strictly mandatory to prevent formal course deregistration and reputation disqualification.`;
+        } else {
+            txt.value = `Dear ${studentName},\n\nNotice of Academic Inactivity: The administration and course faculty have flagged that you currently have 0 live class attendance, 0 assignment submissions, and 0 exams taken in '${courseTitle}'. Immediate coursework participation is required to maintain your academic standing.`;
+        }
+    }
+    window.updateDefaultWarningText = updateDefaultWarningText;
+
+    function resetWarningText() {
+        updateDefaultWarningText();
+    }
+    window.resetWarningText = resetWarningText;
+
+    /* ======================================================== */
+    /* 🌟 GRANT GRACE PERIOD MODAL HANDLERS                     */
+    /* ======================================================== */
+    function openGrantGraceModal() {
+        const modal = document.getElementById('grantGraceModal');
+        if (modal) {
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            updateGraceFormAction();
+        }
+    }
+    window.openGrantGraceModal = openGrantGraceModal;
+
+    function closeGrantGraceModal() {
+        const modal = document.getElementById('grantGraceModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+    window.closeGrantGraceModal = closeGrantGraceModal;
+
+    function openGrantGraceModalForCourse(courseId, courseTitle, appealId) {
+        const sel = document.getElementById('graceCourseSelect');
+        if (sel) sel.value = courseId;
+        const appInput = document.getElementById('graceAppealId');
+        if (appInput) appInput.value = appealId || '';
+        openGrantGraceModal();
+    }
+    window.openGrantGraceModalForCourse = openGrantGraceModalForCourse;
+
+    function updateGraceFormAction() {
+        const form = document.getElementById('grantGraceForm');
+        const sel = document.getElementById('graceCourseSelect');
+        const courseId = sel ? sel.value : '';
+        if (form && courseId) {
+            form.action = `/admin-panel/students/{{ student.id }}/courses/${courseId}/grant-grace/`;
+        }
+    }
+    window.updateGraceFormAction = updateGraceFormAction;
+
+    /* ======================================================== */
+    /* 🤝 MENTORSHIP & COUNSELING CALL MODAL HANDLERS           */
+    /* ======================================================== */
+    function openMentorshipModal() {
+        const modal = document.getElementById('scheduleMentorshipModal');
+        if (modal) {
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            // Set default meeting time to tomorrow at 4:00 PM
+            const timeInput = document.getElementById('mentorMeetingTime');
+            if (timeInput && !timeInput.value) {
+                const now = new Date();
+                now.setDate(now.getDate() + 1);
+                now.setHours(16, 0, 0, 0);
+                timeInput.value = now.toISOString().slice(0, 16);
+            }
+        }
+    }
+    window.openMentorshipModal = openMentorshipModal;
+
+    function closeMentorshipModal() {
+        const modal = document.getElementById('scheduleMentorshipModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+    window.closeMentorshipModal = closeMentorshipModal;
+
+    function openMentorshipModalForCourse(courseId, courseTitle, appealId) {
+        const sel = document.getElementById('mentorCourseSelect');
+        if (sel) sel.value = courseId;
+        const appInput = document.getElementById('mentorAppealId');
+        if (appInput) appInput.value = appealId || '';
+        openMentorshipModal();
+    }
+    window.openMentorshipModalForCourse = openMentorshipModalForCourse;
+
+    /* ======================================================== */
+    /* ⏸️ COURSE HOLD & RESTORE ACCESS MODAL HANDLERS          */
+    /* ======================================================== */
+    function openCourseHoldModal(courseId, courseTitle, isCurrentlyOnHold, currentReason) {
+        const modal = document.getElementById('courseHoldModal');
+        if (!modal) return;
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+        
+        const form = document.getElementById('courseHoldForm');
+        form.action = `/admin-panel/students/{{ student.id }}/courses/${courseId}/toggle-hold/`;
+        
+        const actionInput = document.getElementById('holdActionInput');
+        const titleEl = document.getElementById('holdModalTitle');
+        const descEl = document.getElementById('holdModalDesc');
+        const reasonGroup = document.getElementById('holdReasonGroup');
+        const submitBtn = document.getElementById('holdSubmitBtn');
+        const courseNameEl = document.getElementById('holdCourseName');
+        const iconContainer = document.getElementById('holdIconContainer');
+        
+        if (courseNameEl) courseNameEl.textContent = courseTitle;
+        
+        if (isCurrentlyOnHold) {
+            actionInput.value = 'restore';
+            titleEl.textContent = 'Restore Course Access';
+            descEl.textContent = `Restore active learning access for ${courseTitle}. Student will immediately regain full access to video lectures, assignments, and exams.`;
+            reasonGroup.style.display = 'none';
+            if (iconContainer) {
+                iconContainer.style.background = 'rgba(16, 185, 129, 0.15)';
+                iconContainer.style.border = '1px solid rgba(16, 185, 129, 0.35)';
+                iconContainer.style.color = '#34d399';
+                iconContainer.innerHTML = '<i class="fas fa-play"></i>';
+            }
+            submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            submitBtn.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.35)';
+            submitBtn.innerHTML = '<i class="fas fa-play-circle"></i> Restore Access Now';
+        } else {
+            actionInput.value = 'hold';
+            titleEl.textContent = 'Pause Course Access (Put on Hold)';
+            descEl.textContent = `Temporarily locks video lectures and coursework for ${courseTitle} until the student acknowledges their participation notice or submits an academic appeal.`;
+            reasonGroup.style.display = 'block';
+            if (iconContainer) {
+                iconContainer.style.background = 'rgba(239, 68, 68, 0.15)';
+                iconContainer.style.border = '1px solid rgba(239, 68, 68, 0.35)';
+                iconContainer.style.color = '#f87171';
+                iconContainer.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+            const reasonInput = document.getElementById('holdReasonInput');
+            if (reasonInput) reasonInput.value = currentReason || 'Prolonged academic inactivity. Please acknowledge or contact faculty to unfreeze.';
+            submitBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            submitBtn.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.35)';
+            submitBtn.innerHTML = '<i class="fas fa-pause-circle"></i> Confirm Course Hold';
+        }
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    window.openCourseHoldModal = openCourseHoldModal;
+
+    function closeCourseHoldModal() {
+        const modal = document.getElementById('courseHoldModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+    window.closeCourseHoldModal = closeCourseHoldModal;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('warn') === '1') {
+            const cId = urlParams.get('course_id');
+            if (cId) {
+                const sel = document.getElementById('warnCourseSelect');
+                if (sel) sel.value = cId;
+            }
+            openWarnModal();
+        }
+    });
 </script>
+
+<!-- Inactivity / Disciplinary Warning Modal -->
+<div id="warnStudentModal" class="admin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div class="warn-modal-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:42px; height:42px; border-radius:12px; background:rgba(245, 158, 11, 0.15); border:1px solid rgba(245, 158, 11, 0.3); display:flex; align-items:center; justify-content:center; color:#fbbf24; font-size:1.3rem;">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:1.3rem; font-weight:700; color:#fff; letter-spacing:0.3px;">Send Warning Notice</h3>
+                    <p style="margin:2px 0 0; font-size:0.82rem; color:#94a3b8;">Issue an official academic notice to <strong style="color:#e2e8f0;">{{ student.get_full_name|default:student.username }}</strong></p>
+                </div>
+            </div>
+            <button type="button" onclick="closeWarnModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#94a3b8; font-size:1.2rem; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; transition: all 0.2s;" onmouseover="this.style.color='#fff'; this.style.borderColor='rgba(255,255,255,0.3)';" onmouseout="this.style.color='#94a3b8'; this.style.borderColor='rgba(255,255,255,0.1)';">&times;</button>
+        </div>
+
+        <form action="{% url 'admin_send_student_warning' student.id %}" method="POST" id="warnStudentForm">
+            {% csrf_token %}
+            <!-- Select Course Context -->
+            <div style="margin-bottom:18px;">
+                <label style="display:flex; align-items:center; justify-content:space-between; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <span style="display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-book-bookmark" style="color:#fbbf24;"></i> Select Course Context:
+                    </span>
+                    <span style="font-size:0.75rem; color:#94a3b8; font-weight:400;">Target subject</span>
+                </label>
+                <div class="warn-select-wrap">
+                    <select name="course_id" id="warnCourseSelect" class="warn-dark-select" onchange="updateDefaultWarningText()">
+                        <option value="" style="background-color: #0b0f19; color: #94a3b8;">-- General / All Enrolled Courses --</option>
+                        {% for enroll in enrollments %}
+                        <option value="{{ enroll.course.id }}" style="background-color: #0b0f19; color: #ffffff;" {% if enroll.course.id|stringformat:"s" == request.GET.course_id %}selected{% endif %}>
+                            {{ enroll.course.title }} {% if enroll.is_inactive %}(⚠️ Inactive / 0 Response){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down warn-select-icon"></i>
+                </div>
+            </div>
+
+            <!-- Notice Severity Level -->
+            <div style="margin-bottom:18px;">
+                <label style="display:flex; align-items:center; justify-content:space-between; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <span style="display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-shield-halved" style="color:#fbbf24;"></i> Notice Severity Level:
+                    </span>
+                    <span style="font-size:0.75rem; color:#94a3b8; font-weight:400;">Notice classification</span>
+                </label>
+                <div class="warn-select-wrap">
+                    <select name="warning_type" id="warnTypeSelect" class="warn-dark-select" onchange="updateDefaultWarningText()">
+                        <option value="friendly_checkin" style="background-color: #0b0f19; color: #38bdf8;">👋 Friendly Check-in & Academic Support (Level 1)</option>
+                        <option value="reminder" style="background-color: #0b0f19; color: #fcd34d;">ℹ️ Attendance & Task Reminder (Level 1.5)</option>
+                        <option value="formal_warning" style="background-color: #0b0f19; color: #fb923c;">⚠️ Academic Inactivity Warning (Level 2 - Standard)</option>
+                        <option value="hold_access" style="background-color: #0b0f19; color: #f87171;">⏸️ Temporary Course Access Hold (Level 3 - Intervention)</option>
+                        <option value="final_notice" style="background-color: #0b0f19; color: #ef4444;">⛔ Final Disciplinary Notice (High Severity)</option>
+                    </select>
+                    <i class="fas fa-chevron-down warn-select-icon"></i>
+                </div>
+            </div>
+
+            <!-- Notice Message to Student -->
+            <div style="margin-bottom:22px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:0.86rem; font-weight:600; color:#cbd5e1;">
+                        <i class="fas fa-comment-dots" style="color:#fbbf24;"></i> Notice Message to Student:
+                    </label>
+                    <span style="font-size:0.76rem; color:#fbbf24; cursor:pointer; display:flex; align-items:center; gap:5px; padding:3px 8px; border-radius:5px; background:rgba(245, 158, 11, 0.1); border:1px solid rgba(245, 158, 11, 0.2);" onclick="resetWarningText()">
+                        <i class="fas fa-rotate-left"></i> Reset Template
+                    </span>
+                </div>
+                <textarea name="warning_message" id="warnMessageText" rows="6" class="warn-dark-textarea"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:18px;">
+                <button type="button" onclick="closeWarnModal()" style="padding:11px 20px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; font-weight:600; font-size:0.88rem; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.background='rgba(255,255,255,0.06)';">
+                    Cancel
+                </button>
+                <button type="submit" style="padding:11px 24px; border-radius:10px; background:linear-gradient(135deg, #f59e0b, #d97706); border:none; color:#0b0f19; font-weight:700; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(245, 158, 11, 0.35); transition:transform 0.15s ease;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';">
+                    <i class="fas fa-paper-plane"></i> Send Notice to Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ✨ 1. GRANT ACADEMIC GRACE PERIOD MODAL -->
+<div id="grantGraceModal" class="admin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div class="warn-modal-box" style="border: 1px solid rgba(16, 185, 129, 0.35);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.1)); border:1.5px solid rgba(16, 185, 129, 0.5); display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(16, 185, 129, 0.35); flex-shrink:0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3"/>
+                        <path d="M12 7V12L15 14" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19 3L19.8 4.8L21.6 5.6L19.8 6.4L19 8.2L18.2 6.4L16.4 5.6L18.2 4.8L19 3Z" fill="#34d399"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:1.3rem; font-weight:700; color:#fff;">Grant Grace Extension</h3>
+                    <p style="margin:2px 0 0; font-size:0.82rem; color:#94a3b8;">Re-open past-due assignments & assessments for <strong style="color:#e2e8f0;">{{ student.get_full_name|default:student.username }}</strong></p>
+                </div>
+            </div>
+            <button type="button" onclick="closeGrantGraceModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#94a3b8; font-size:1.2rem; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+
+        <form method="POST" id="grantGraceForm" action="">
+            {% csrf_token %}
+            <input type="hidden" name="appeal_id" id="graceAppealId" value="">
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-book-bookmark" style="color:#34d399;"></i> Target Course:
+                </label>
+                <div class="warn-select-wrap">
+                    <select id="graceCourseSelect" class="warn-dark-select" onchange="updateGraceFormAction()">
+                        {% for enroll in enrollments %}
+                        <option value="{{ enroll.course.id }}" style="background-color: #0b0f19; color: #ffffff;">{{ enroll.course.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down warn-select-icon"></i>
+                </div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-clock" style="color:#34d399;"></i> Extension Duration:
+                </label>
+                <div class="warn-select-wrap">
+                    <select name="days" class="warn-dark-select">
+                        <option value="3" style="background-color: #0b0f19; color: #ffffff;">⚡ 3 Days (Quick catch-up window)</option>
+                        <option value="5" selected style="background-color: #0b0f19; color: #ffffff;">✨ 5 Days (Recommended standard extension)</option>
+                        <option value="7" style="background-color: #0b0f19; color: #ffffff;">📅 7 Days (One full additional week)</option>
+                        <option value="14" style="background-color: #0b0f19; color: #ffffff;">🏖️ 14 Days (Extended illness/recovery period)</option>
+                    </select>
+                    <i class="fas fa-chevron-down warn-select-icon"></i>
+                </div>
+            </div>
+
+            <div style="margin-bottom:18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px;">
+                <label style="display:flex; align-items:center; gap:10px; font-size:0.86rem; color:#cbd5e1; cursor:pointer;">
+                    <input type="checkbox" name="forgive_penalty" value="true" checked style="width: 18px; height: 18px; accent-color: #10b981;">
+                    <span><b>Forgive Reputation Penalties:</b> Restore +25 reputation points and forgive missed milestones</span>
+                </label>
+            </div>
+
+            <div style="margin-bottom:22px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-comment-dots" style="color:#34d399;"></i> Administrative / Counseling Feedback:
+                </label>
+                <textarea name="admin_notes" rows="3" placeholder="Extension granted on academic review. All assignments and quizzes are temporarily open." class="warn-dark-textarea"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:18px;">
+                <button type="button" onclick="closeGrantGraceModal()" style="padding:11px 20px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; font-weight:600; font-size:0.88rem; cursor:pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding:11px 24px; border-radius:10px; background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-weight:700; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(16, 185, 129, 0.35);">
+                    <i class="fas fa-calendar-check"></i> Grant Grace Window
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 🤝 2. SCHEDULE 1-ON-1 MENTORSHIP CALL MODAL -->
+<div id="scheduleMentorshipModal" class="admin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div class="warn-modal-box" style="border: 1px solid rgba(6, 182, 212, 0.35);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:42px; height:42px; border-radius:12px; background:rgba(6, 182, 212, 0.15); border:1px solid rgba(6, 182, 212, 0.3); display:flex; align-items:center; justify-content:center; color:#38bdf8; font-size:1.3rem;">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:1.3rem; font-weight:700; color:#fff;">Schedule 1-on-1 Mentorship</h3>
+                    <p style="margin:2px 0 0; font-size:0.82rem; color:#94a3b8;">Arrange a live counseling session for <strong style="color:#e2e8f0;">{{ student.get_full_name|default:student.username }}</strong></p>
+                </div>
+            </div>
+            <button type="button" onclick="closeMentorshipModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#94a3b8; font-size:1.2rem; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+
+        <form method="POST" action="{% url 'admin_schedule_mentorship' student.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="appeal_id" id="mentorAppealId" value="">
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-book-bookmark" style="color:#38bdf8;"></i> Subject Context:
+                </label>
+                <div class="warn-select-wrap">
+                    <select name="course_id" id="mentorCourseSelect" class="warn-dark-select">
+                        <option value="" style="background-color: #0b0f19; color: #94a3b8;">-- General Academic Mentorship --</option>
+                        {% for enroll in enrollments %}
+                        <option value="{{ enroll.course.id }}" style="background-color: #0b0f19; color: #ffffff;">{{ enroll.course.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down warn-select-icon"></i>
+                </div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-heading" style="color:#38bdf8;"></i> Session Topic / Agenda:
+                </label>
+                <input type="text" name="topic" value="1-on-1 Academic Counseling & Guidance" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom:18px;">
+                <div>
+                    <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                        <i class="fas fa-video" style="color:#38bdf8;"></i> Meeting Link (Google Meet / Zoom):
+                    </label>
+                    <input type="url" name="meeting_link" placeholder="https://meet.google.com/..." required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                        <i class="fas fa-calendar-clock" style="color:#38bdf8;"></i> Date & Time:
+                    </label>
+                    <input type="datetime-local" name="meeting_time" id="mentorMeetingTime" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom:22px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-comment-dots" style="color:#38bdf8;"></i> Instructor Note / Message to Student:
+                </label>
+                <textarea name="notes" rows="3" placeholder="Looking forward to clearing your doubts and getting your academic progress back on track!" class="warn-dark-textarea"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:18px;">
+                <button type="button" onclick="closeMentorshipModal()" style="padding:11px 20px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; font-weight:600; font-size:0.88rem; cursor:pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding:11px 24px; border-radius:10px; background:linear-gradient(135deg, #06b6d4, #0284c7); border:none; color:#fff; font-weight:700; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(6, 182, 212, 0.35);">
+                    <i class="fas fa-paper-plane"></i> Schedule Session & Notify Student
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ⏸️ 3. COURSE HOLD & RESTORATION INTERVENTION MODAL -->
+<div id="courseHoldModal" class="admin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:999999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div class="warn-modal-box" style="border: 1px solid rgba(239, 68, 68, 0.35); max-width: 580px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div id="holdIconContainer" style="width:44px; height:44px; border-radius:12px; background:rgba(239, 68, 68, 0.15); border:1px solid rgba(239, 68, 68, 0.35); display:flex; align-items:center; justify-content:center; color:#f87171; font-size:1.3rem;">
+                    <i class="fas fa-pause"></i>
+                </div>
+                <div>
+                    <h3 id="holdModalTitle" style="margin:0; font-size:1.25rem; font-weight:700; color:#fff;">Pause Course Access (Put on Hold)</h3>
+                    <p style="margin:2px 0 0; font-size:0.82rem; color:#94a3b8;">Student: <strong style="color:#e2e8f0;">{{ student.get_full_name|default:student.username }}</strong> • Course: <strong id="holdCourseName" style="color:#38bdf8;"></strong></p>
+                </div>
+            </div>
+            <button type="button" onclick="closeCourseHoldModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#94a3b8; font-size:1.2rem; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+
+        <form method="POST" id="courseHoldForm" action="">
+            {% csrf_token %}
+            <input type="hidden" name="action" id="holdActionInput" value="hold">
+
+            <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <i class="fas fa-circle-info" style="color: #f87171; margin-top: 3px; font-size: 1rem;"></i>
+                    <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.5;">
+                        <span id="holdModalDesc">Temporarily pauses video lectures and learning progress for this course until the student acknowledges their participation notice or submits an academic appeal.</span>
+                        <div style="margin-top: 6px; font-size: 0.78rem; color: #94a3b8;">
+                            🛡️ <b>Safe Educational Intervention:</b> This does not unenroll or delete the student's records. It creates an engaging checkpoint requiring their active acknowledgment.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="holdReasonGroup" style="margin-bottom:20px;">
+                <label style="display:block; font-size:0.86rem; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                    <i class="fas fa-file-pen" style="color:#f87171;"></i> Reason / Administrative Note:
+                </label>
+                <textarea name="reason" id="holdReasonInput" rows="3" placeholder="e.g. Zero attendance in live classes and no assignment submissions in the last 14 days." class="warn-dark-textarea"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:18px;">
+                <button type="button" onclick="closeCourseHoldModal()" style="padding:11px 20px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#cbd5e1; font-weight:600; font-size:0.88rem; cursor:pointer;">
+                    Cancel
+                </button>
+                <button type="submit" id="holdSubmitBtn" style="padding:11px 24px; border-radius:10px; background:linear-gradient(135deg, #ef4444, #dc2626); border:none; color:#fff; font-weight:700; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(239, 68, 68, 0.35);">
+                    <i class="fas fa-pause-circle"></i> Confirm Course Hold
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
 {% endblock %}
