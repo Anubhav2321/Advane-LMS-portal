@@ -42,6 +42,11 @@ class User(AbstractUser):
     phone = models.CharField(max_length=20, blank=True, null=True, db_index=True, help_text="Contact Phone Number")
     student_id = models.CharField(max_length=6, unique=True, null=True, blank=True, db_index=True, help_text="Unique 6-digit Student ID")
     
+    # 🔥 STUDY STREAK PERSISTENCE
+    current_streak = models.PositiveIntegerField(default=1, help_text="Current daily study streak")
+    longest_streak = models.PositiveIntegerField(default=1, help_text="Longest consecutive daily study streak achieved")
+    last_streak_date = models.DateField(null=True, blank=True, help_text="Date of last recorded streak activity")
+    
     student_level = models.CharField(
         max_length=50, 
         choices=[('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')],
@@ -116,6 +121,16 @@ class User(AbstractUser):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip() or self.username
+
+    def has_active_study_leave(self):
+        """Returns True if the student currently has an approved active study leave."""
+        today = timezone.localdate()
+        return self.study_leaves.filter(status='approved', start_date__lte=today, end_date__gte=today).exists()
+
+    def get_active_study_leave(self):
+        """Returns the current active approved study leave instance if one exists."""
+        today = timezone.localdate()
+        return self.study_leaves.filter(status='approved', start_date__lte=today, end_date__gte=today).first()
 
     @property
     def profile_pic_url(self):
@@ -416,9 +431,20 @@ class Enrollment(models.Model):
     is_completed = models.BooleanField(default=False)
     last_accessed = models.DateTimeField(auto_now=True)
 
+    # Recovery, Empathy & Moderation Fields
+    grace_period_until = models.DateTimeField(null=True, blank=True, help_text="Extended grace window granting student ability to submit past-due tasks")
+    is_on_hold = models.BooleanField(default=False, help_text="Course temporarily put on hold/paused by admin")
+    hold_reason = models.CharField(max_length=255, blank=True, null=True, help_text="Reason for hold")
+
     class Meta:
         unique_together = ('student', 'course')
         ordering = ['-enrolled_at']
+
+    @property
+    def is_in_grace_period(self):
+        if self.grace_period_until:
+            return timezone.now() <= self.grace_period_until
+        return False
 
     def update_progress(self, percent):
         self.progress = min(100.0, max(0.0, percent))
@@ -577,32 +603,53 @@ class Enrollment(models.Model):
             }
 
     def has_missed_exams(self):
-        """Returns True if the student has any unattempted exams for this course whose deadline has passed."""
-        now = timezone.now()
-        attempted_ids = QuizResult.objects.filter(
-            student=self.student,
-            exam__course=self.course
-        ).values_list('exam_id', flat=True)
-        return Exam.objects.filter(
-            course=self.course,
-            is_active=True,
-            deadline__isnull=False,
-            deadline__lt=now
-        ).exclude(id__in=attempted_ids).exists()
+        """
+        Returns True if the student has any unattempted exams for this course whose
+        deadline was AFTER the student enrolled in the course and has now passed.
+        Exams whose deadline expired BEFORE enrollment are optional and do NOT count as missed.
+        If the student is currently granted an active grace period, completion is unblocked.
+        """
+        if self.is_in_grace_period:
+            return False
 
-    def get_missed_exams(self):
-        """Returns QuerySet of unattempted exams for this course whose deadline has passed."""
         now = timezone.now()
         attempted_ids = QuizResult.objects.filter(
             student=self.student,
             exam__course=self.course
         ).values_list('exam_id', flat=True)
-        return Exam.objects.filter(
+        qs = Exam.objects.filter(
             course=self.course,
             is_active=True,
             deadline__isnull=False,
             deadline__lt=now
         ).exclude(id__in=attempted_ids)
+
+        if self.enrolled_at:
+            qs = qs.filter(deadline__gt=self.enrolled_at)
+
+        return qs.exists()
+
+    def get_missed_exams(self):
+        """
+        Returns QuerySet of unattempted exams for this course whose deadline
+        occurred AFTER the student enrolled and has passed.
+        """
+        now = timezone.now()
+        attempted_ids = QuizResult.objects.filter(
+            student=self.student,
+            exam__course=self.course
+        ).values_list('exam_id', flat=True)
+        qs = Exam.objects.filter(
+            course=self.course,
+            is_active=True,
+            deadline__isnull=False,
+            deadline__lt=now
+        ).exclude(id__in=attempted_ids)
+
+        if self.enrolled_at:
+            qs = qs.filter(deadline__gt=self.enrolled_at)
+
+        return qs
 
     def sync_progress(self):
         """Sync the progress field with real lesson progress data, enforcing exam completion rules."""
@@ -1571,9 +1618,10 @@ def record_daily_learning_activity(user):
 
 def calculate_study_streak(user):
     """
-    Calculates consecutive active days with at least 1 learning action or visit.
-    Guarantees seamless continuation across days, correctly handling local timezones
-    and preventing streaks from resetting on already-active sessions.
+    Calculates and persists consecutive active days with at least 1 learning action or visit.
+    Guarantees seamless continuation across days, correctly handling local timezones,
+    supporting a 1-day streak freeze/grace period, preserving active days, and saving
+    the streak permanently to the database so it never resets prematurely.
     """
     if not (user and user.is_authenticated and getattr(user, 'is_student', True) and not user.is_staff and not user.is_superuser):
         return 0
@@ -1607,23 +1655,79 @@ def calculate_study_streak(user):
         if dt:
             activity_dates.add(timezone.localtime(dt).date())
 
-    # Calculate consecutive days ending at today or yesterday
+    # Include approved study leave dates as continuous protected streak days
+    try:
+        for leave in user.study_leaves.filter(status='approved', end_date__gte=cutoff):
+            cur_d = max(leave.start_date, cutoff)
+            end_d = min(leave.end_date, today)
+            while cur_d <= end_d:
+                activity_dates.add(cur_d)
+                cur_d += datetime.timedelta(days=1)
+    except Exception:
+        pass
+
+    # Today is always an active date
+    activity_dates.add(today)
+
+    total_active_days = len(activity_dates)
+
+    # Calculate consecutive days with 1-day grace window (Streak Freeze)
     yesterday = today - datetime.timedelta(days=1)
-    if today in activity_dates:
-        check_date = today
-    elif yesterday in activity_dates:
-        check_date = yesterday
+    two_days_ago = today - datetime.timedelta(days=2)
+
+    # If already recorded today, return current persisted streak
+    last_date = getattr(user, 'last_streak_date', None)
+    curr_streak = getattr(user, 'current_streak', 1) or 1
+    long_streak = getattr(user, 'longest_streak', 1) or 1
+
+    if last_date == today and curr_streak >= 1:
+        # Already processed today
+        streak = max(curr_streak, total_active_days if total_active_days <= 3 else curr_streak)
+        return streak
+
+    # Determine streak continuation
+    if last_date == yesterday:
+        # Consecutive day login!
+        curr_streak += 1
+    elif last_date == two_days_ago:
+        # 1-day grace period / Streak Freeze applied!
+        curr_streak += 1
     else:
-        return 0
+        # Recompute from activity dates with 1-day grace window
+        streak_calc = 0
+        check_date = today
+        grace_used = False
+        while check_date in activity_dates or (not grace_used and (check_date - datetime.timedelta(days=1)) in activity_dates):
+            if check_date in activity_dates:
+                streak_calc += 1
+                check_date -= datetime.timedelta(days=1)
+                grace_used = False
+            else:
+                # 1 missed day: use grace
+                grace_used = True
+                check_date -= datetime.timedelta(days=1)
+            if streak_calc > 365:
+                break
+        
+        # In local development or multi-session learning, reward distinct active days
+        curr_streak = max(streak_calc, total_active_days, 1)
 
-    streak = 0
-    while check_date in activity_dates:
-        streak += 1
-        check_date -= datetime.timedelta(days=1)
-        if streak > 365:
-            break
+    long_streak = max(long_streak, curr_streak)
 
-    return streak
+    # Persist directly to User model so database always holds the up-to-date streak
+    try:
+        User.objects.filter(pk=user.pk).update(
+            current_streak=curr_streak,
+            longest_streak=long_streak,
+            last_streak_date=today
+        )
+        user.current_streak = curr_streak
+        user.longest_streak = long_streak
+        user.last_streak_date = today
+    except Exception as e:
+        print(f"[Warning] Failed persisting streak to database: {e}")
+
+    return curr_streak
 
 
 def check_and_apply_exam_penalties(user):
@@ -1644,9 +1748,11 @@ def check_and_apply_exam_penalties(user):
         return 0
 
     now = timezone.now()
-    enrolled_course_ids = list(Enrollment.objects.filter(student=user).values_list('course_id', flat=True))
-    if not enrolled_course_ids:
+    user_enrollments = list(Enrollment.objects.filter(student=user))
+    if not user_enrollments:
         return 0
+    enrollment_by_course = {e.course_id: e for e in user_enrollments}
+    enrolled_course_ids = list(enrollment_by_course.keys())
 
     # Find attempted exam IDs
     attempted_exam_ids = set(
@@ -1672,6 +1778,15 @@ def check_and_apply_exam_penalties(user):
 
     for exam in expired_exams:
         if exam.id in already_penalized_exam_ids:
+            continue
+
+        enr = enrollment_by_course.get(exam.course_id)
+        if not enr:
+            continue
+
+        # CRITICAL: If the exam deadline was before or at the time the student enrolled,
+        # the exam was expired BEFORE the student enrolled. It is NOT mandatory for them, so NO penalty!
+        if exam.deadline and enr.enrolled_at and exam.deadline <= enr.enrolled_at:
             continue
 
         # Deduct reputation, engagement, coins
@@ -1707,7 +1822,7 @@ def check_and_apply_exam_penalties(user):
                 title=f"⚠️ Exam Deadline Missed: {exam.title}",
                 message=f"You missed the deadline ({deadline_str}) for '{exam.title}' in {course_title}. Your reputation dropped by 15 points, engagement decreased, and course completion for {course_title} is now BLOCKED.",
                 notification_type='exam',
-                action_url='/exams/',
+                action_url='/my-exams/',
                 action_label='View Exam Archive'
             )
         except Exception as notif_err:
@@ -2058,4 +2173,135 @@ def notify_admins_of_ticket_reply(ticket, reply_message, student_user):
             threading.Thread(target=_async_send_reply_notif, daemon=True).start()
     except Exception as e:
         print(f"[ADMIN SUPPORT REPLY EMAIL DISPATCH ERROR]: {e}")
+
+
+# ========================================================
+# 🚀 EMPATHETIC RECOVERY & ACADEMIC ASSISTANCE MODELS
+# ========================================================
+
+class AcademicAppeal(models.Model):
+    """
+    Empathetic Academic Appeal mechanism allowing students with genuine issues
+    (medical illness, technical malfunction, family emergency, exam clashes)
+    to formally request grace extensions, leniency, or teacher counseling.
+    """
+    APPEAL_TYPES = [
+        ('medical', 'Medical / Health Illness'),
+        ('device_internet', 'Device / Technical Breakdown'),
+        ('family_emergency', 'Family / Personal Emergency'),
+        ('academic_exam', 'College / University Exam Clashes'),
+        ('financial_work', 'Job / Work / Financial Hardship'),
+        ('other', 'Other Genuine Cause'),
+    ]
+
+    RELIEF_REQUESTS = [
+        ('grace_extension', 'Deadline Grace Extension'),
+        ('mentorship', '1-on-1 Faculty Mentorship Call'),
+        ('mentor_call', '1-on-1 Faculty Mentorship Call'),
+        ('study_pause', 'Temporary Study Pause / Course Hold'),
+        ('penalty_waiver', 'Reputation / Penalty Forgiveness'),
+        ('forgive_penalty', 'Reputation / Penalty Forgiveness'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved / Relief Granted'),
+        ('rejected', 'Declined'),
+        ('counseled', 'Counseled / Resolved'),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='academic_appeals')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='academic_appeals')
+    appeal_type = models.CharField(max_length=50, choices=APPEAL_TYPES, default='medical')
+    requested_relief = models.CharField(max_length=50, choices=RELIEF_REQUESTS, default='grace_extension')
+    message = models.TextField(help_text="Detailed situation explanation")
+    supporting_document = models.FileField(upload_to='appeals/documents/', null=True, blank=True)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_notes = models.TextField(blank=True, null=True, help_text="Reviewer feedback or actions taken")
+    resolved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='resolved_appeals')
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Appeal #{self.id} by {self.student.username} for {self.course.title} ({self.status})"
+
+
+class StudentStudyLeave(models.Model):
+    """
+    Study Pause / Planned Absence mechanism:
+    Allows students to submit scheduled leaves (e.g., hospitalization, surgery, exam clashing)
+    which freezes their study streak, halts inactive flags, and protects reputations.
+    """
+    REASON_CHOICES = [
+        ('medical', 'Medical Treatment / Illness / Surgery'),
+        ('family', 'Family Event / Urgent Duty / Emergency'),
+        ('exams', 'College / Semester / Board Exam Clashes'),
+        ('travel_network', 'Travel to Low-Connectivity / Remote Area'),
+        ('work_pressure', 'Professional / Work Obligation'),
+        ('other', 'Other Personal Reason'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved (Active / Safeguarded)'),
+        ('rejected', 'Rejected'),
+        ('completed', 'Completed'),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='study_leaves')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.CharField(max_length=50, choices=REASON_CHOICES, default='medical')
+    explanation = models.TextField()
+    supporting_doc = models.FileField(upload_to='leaves/documents/', null=True, blank=True)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_leaves')
+    admin_response = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @property
+    def is_currently_active(self):
+        today = timezone.localdate()
+        return self.status == 'approved' and self.start_date <= today <= self.end_date
+
+    def __str__(self):
+        return f"Study Leave ({self.start_date} to {self.end_date}) for {self.student.username} [{self.status}]"
+
+
+class FacultyMentorshipSession(models.Model):
+    """
+    1-on-1 Mentorship / Counseling Sessions scheduled between Faculty/Admins
+    and students to resolve learning blockers, personal difficulties, and doubts.
+    """
+    STATUS_CHOICES = [
+        ('scheduled', 'Scheduled'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mentorship_sessions_as_student')
+    faculty_or_admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mentorship_sessions_as_mentor')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='mentorship_sessions', null=True, blank=True)
+    topic = models.CharField(max_length=255, default="1-on-1 Academic Counseling & Guidance")
+    meeting_link = models.URLField(help_text="Google Meet, Zoom, or Teams Link")
+    meeting_time = models.DateTimeField()
+    notes = models.TextField(blank=True, null=True, help_text="Notes/message from mentor to student")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-meeting_time']
+
+    def __str__(self):
+        return f"1-on-1 Session: {self.student.username} with {self.faculty_or_admin.username} at {self.meeting_time}"
+
 
