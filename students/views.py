@@ -79,6 +79,9 @@ from .models import (
     notify_admins_of_ticket_reply,   #  NEW: Dispatch helper for student replies
     FacultyProfile,                  #  NEW: Faculty Profile Model
     check_and_apply_exam_penalties,  #  NEW: Real-time exam deadline penalty engine
+    AcademicAppeal,                  #  🌟 NEW: Academic Appeals Model
+    StudentStudyLeave,               #  🌟 NEW: Student Study Leave Model
+    FacultyMentorshipSession,        #  🌟 NEW: Faculty Mentorship Session Model
 )
 
 User = get_user_model()
@@ -90,7 +93,7 @@ def home_view(request):
     """
     Renders the Landing Page with stats.
     """
-    if User.objects.filter(is_faculty=True).count() < 10:
+    if User.objects.filter(is_faculty=True).count() < 10 and (os.getenv('RENDER') or os.getenv('PRODUCTION')):
         try:
             from seed_db import smart_sync_production
             smart_sync_production(force=True)
@@ -331,6 +334,7 @@ def login_view(request):
             if hasattr(user, 'ensure_student_id'):
                 user.ensure_student_id()
             record_daily_learning_activity(user)
+            calculate_study_streak(user)
 
             # Session expiration: 2 weeks if remember_me, otherwise browser session
             if remember_me:
@@ -690,11 +694,15 @@ def student_dashboard(request):
     #  3-PANEL SYNC LOGIC (FETCHING FACULTY DATA)
     
     # 1. Fetch Pending Assignments for enrolled courses
-    pending_assignments = Assignment.objects.filter(
+    pending_assignments = list(Assignment.objects.filter(
         course_id__in=enrolled_course_ids
     ).exclude(
         submissions__student=user
-    ).select_related('course').order_by('due_date')[:6]
+    ).select_related('course').order_by('due_date')[:6])
+    
+    grace_course_ids = {e.course_id for e in enriched_enrollments if e.is_in_grace_period}
+    for assign in pending_assignments:
+        assign.in_grace = assign.course_id in grace_course_ids
     
     # 2. Fetch Upcoming Live Classes for enrolled courses
     upcoming_classes = LiveClass.objects.filter(
@@ -791,6 +799,12 @@ def student_dashboard(request):
         'upcoming_classes': upcoming_classes,
         'active_exams': active_exams,
         'recent_documents': recent_documents,
+        
+        # 🌟 Humane Recovery & Study Leave Data
+        'active_study_leave': user.get_active_study_leave() if hasattr(user, 'get_active_study_leave') else None,
+        'user_appeals': AcademicAppeal.objects.filter(student=user).select_related('course').order_by('-created_at')[:5],
+        'user_study_leaves': StudentStudyLeave.objects.filter(student=user).order_by('-created_at')[:5],
+        'user_mentorships': FacultyMentorshipSession.objects.filter(student=user).order_by('-meeting_time')[:5],
     }
     return render(request, 'student_dashboard.html', context)
 
@@ -1689,6 +1703,10 @@ def course_watch(request, course_id, lesson_id=None):
         'submission_form': AssignmentSubmissionForm(),
         'has_missed_exams': enrollment.has_missed_exams() if enrollment else False,
         'missed_exams': list(enrollment.get_missed_exams()) if enrollment else [],
+        'enrollment': enrollment,
+        'is_on_hold': enrollment.is_on_hold if enrollment else False,
+        'is_in_grace_period': enrollment.is_in_grace_period if enrollment else False,
+        'grace_period_until': enrollment.grace_period_until if enrollment else None,
     }
     return render(request, 'course_watch.html', context)
 
@@ -1715,6 +1733,17 @@ def submit_assignment(request, assignment_id):
         return redirect('course_watch', course_id=assignment.course.id)
 
     if request.method == 'POST':
+        # Enforce deadline: If assignment due date has passed, block submissions unless in grace period
+        if assignment.is_past_due:
+            enrollment = Enrollment.objects.filter(student=request.user, course=assignment.course).first()
+            if not (enrollment and enrollment.is_in_grace_period):
+                due_str = assignment.due_date.strftime('%d %b, %Y • %I:%M %p') if assignment.due_date else "the deadline"
+                msg = f"The submission deadline for '{assignment.title}' expired on {due_str}. Submissions are now closed and can no longer be accepted."
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'message': msg}, status=400)
+                messages.error(request, msg)
+                return redirect('course_watch', course_id=assignment.course.id)
+
         submission, created = AssignmentSubmission.objects.get_or_create(
             assignment=assignment,
             student=request.user
@@ -2477,6 +2506,12 @@ def student_exam_list(request):
         QuizResult.objects.filter(student=request.user).values_list('exam_id', flat=True)
     )
 
+    # Map enrollment date for each course for the student
+    enrollment_map = {
+        e.course_id: e.enrolled_at 
+        for e in Enrollment.objects.filter(student=request.user)
+    }
+
     available_exams = []
     missed_exams = []
 
@@ -2485,9 +2520,18 @@ def student_exam_list(request):
         if exam.id in attempted_exam_ids:
             # Already completed; appears in past results
             continue
+
+        enrolled_at = enrollment_map.get(exam.course_id)
+        is_pre_enrollment = bool(exam.deadline and enrolled_at and exam.deadline <= enrolled_at)
+        exam.is_pre_enrollment = is_pre_enrollment
+
         if exam.is_expired():
-            # Expired without attempt -> Missed Assessment Archive
-            missed_exams.append(exam)
+            if is_pre_enrollment:
+                # Pre-enrollment exam: NOT mandatory, unlocked for self-paced optional attempt!
+                available_exams.append(exam)
+            else:
+                # Expired while enrolled -> Missed Assessment Archive
+                missed_exams.append(exam)
         else:
             # Open and ready to take
             available_exams.append(exam)
@@ -2563,7 +2607,7 @@ def take_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
     
     # Auto-sync safeguard: if questions are missing in production db, trigger auto-sync!
-    if exam.questions.count() == 0:
+    if exam.questions.count() == 0 and (os.getenv('RENDER') or os.getenv('PRODUCTION')):
         try:
             from seed_db import smart_sync_production
             smart_sync_production(force=True)
@@ -2588,12 +2632,30 @@ def take_exam(request, exam_id):
             messages.error(request, f'You must be enrolled in "{exam.course.title}" to take this exam.')
             return redirect('student_exam_list')
 
+        enrollment = Enrollment.objects.filter(student=request.user, course=exam.course).first()
+        if enrollment and enrollment.is_on_hold:
+            messages.error(
+                request,
+                f'Course access to "{exam.course.title}" is temporarily paused. '
+                f'Please acknowledge the notice or submit an appeal in Course Watch to resume.'
+            )
+            return redirect('course_watch', course_id=exam.course.id)
+
         # Check deadline expiration!
         if exam.is_expired():
             # Check if student previously attempted it
             already_taken = QuizResult.objects.filter(student=request.user, exam=exam).exists()
             if already_taken:
                 messages.info(request, f'You have already completed "{exam.title}". View your score in Result Archives.')
+                return redirect('student_exam_list')
+
+            # Check if student enrolled AFTER the deadline (pre-enrollment exam)
+            if enrollment and exam.deadline and exam.deadline <= enrollment.enrolled_at:
+                # Student enrolled after deadline: allow self-paced optional attempt!
+                pass
+            elif enrollment and enrollment.is_in_grace_period:
+                # Student has active grace period extension granted by admin/faculty!
+                pass
             else:
                 messages.error(
                     request, 
@@ -2601,7 +2663,7 @@ def take_exam(request, exam_id):
                     f'Unattempted exams cannot be taken after deadline and have moved to your Missed Archives. '
                     f'Your reputation and course completion for "{exam.course.title}" have been penalized.'
                 )
-            return redirect('student_exam_list')
+                return redirect('student_exam_list')
 
     # 2. Render exam page
     context = {
@@ -3032,6 +3094,122 @@ def execute_code_api(request):
         }, status=500)
 
 
+# ========================================================
+# 🚀 REAL-TIME INACTIVE / NON-RESPONSIVE STUDENT ALERT ENGINE
+# ========================================================
+
+def check_and_alert_inactive_students():
+    """
+    Scans active enrollments for non-responsive students:
+    Students who have attended 0 live classes, submitted 0 assignments,
+    taken 0 exams, and completed 0 lessons in an enrolled course.
+    Automatically generates targeted alerts to LMS Administrators and the assigned Faculty.
+    Alerts are throttled to once every 5 days per student-course pair to avoid spamming.
+    """
+    now = timezone.now()
+    throttle_window = now - datetime.timedelta(days=5)
+    enrollment_cutoff = now - datetime.timedelta(days=1)
+
+    candidate_enrollments = (
+        Enrollment.objects.filter(
+            student__is_active=True,
+            student__is_staff=False,
+            student__is_superuser=False,
+            enrolled_at__lte=enrollment_cutoff
+        )
+        .select_related('student', 'course', 'course__assigned_faculty')
+    )
+
+    courses_with_classes = set(LiveClass.objects.values_list('course_id', flat=True))
+    courses_with_assignments = set(Assignment.objects.values_list('course_id', flat=True))
+    courses_with_exams = set(Exam.objects.values_list('course_id', flat=True))
+    active_course_ids = courses_with_classes | courses_with_assignments | courses_with_exams
+
+    inactive_records = []
+
+    recent_notif_titles = set(
+        Notification.objects.filter(
+            created_at__gte=throttle_window,
+            notification_type='system'
+        ).values_list('title', flat=True)
+    )
+
+    for enr in candidate_enrollments:
+        if enr.course_id not in active_course_ids:
+            continue
+
+        student = enr.student
+        course = enr.course
+
+        # Safeguard: Do not alert if student has approved study leave or active grace period
+        if hasattr(student, 'has_active_study_leave') and student.has_active_study_leave():
+            continue
+        if enr.is_in_grace_period:
+            continue
+
+        has_attended = LiveClassAttendance.objects.filter(student=student, live_class__course=course).exists()
+        has_submitted = AssignmentSubmission.objects.filter(student=student, assignment__course=course).exists()
+        has_quiz = QuizResult.objects.filter(student=student, exam__course=course).exists()
+        has_lesson = LessonProgress.objects.filter(student=student, lesson__course=course, is_completed=True).exists()
+
+        if not (has_attended or has_submitted or has_quiz or has_lesson):
+            inactive_records.append({
+                'student': student,
+                'course': course,
+                'enrollment': enr
+            })
+            alert_ident = f"[Inactive Alert] Student #{student.id} Course #{course.id}"
+            already_alerted = any(alert_ident in t for t in recent_notif_titles)
+
+            if not already_alerted:
+                student_display_name = student.get_full_name() or student.username
+                student_code = f"#{student.student_id}" if getattr(student, 'student_id', None) else f"ID: {student.id}"
+
+                # 1. Alert Administrators
+                admin_users = list(User.objects.filter(Q(is_staff=True) | Q(is_superuser=True)).distinct())
+                for admin in admin_users:
+                    try:
+                        Notification.objects.create(
+                            recipient=admin,
+                            is_global=False,
+                            title=f"⚠️ Non-Responsive Student Alert: {student_display_name} ({course.title}) {alert_ident}",
+                            message=(
+                                f"Student {student_display_name} ({student_code}) has shown ZERO response in '{course.title}': "
+                                f"0 live classes attended, 0 assignments submitted, 0 exams taken, and 0 lessons completed. "
+                                f"Immediate administrative review or warning notice is recommended."
+                            ),
+                            notification_type='system',
+                            action_url=f"/admin-panel/students/{student.id}/?course_id={course.id}&warn=1",
+                            action_label="Take Action / Warn Student"
+                        )
+                    except Exception:
+                        pass
+
+                # 2. Alert Assigned Faculty of this course
+                faculty_user = course.assigned_faculty
+                if faculty_user and faculty_user not in admin_users:
+                    try:
+                        Notification.objects.create(
+                            recipient=faculty_user,
+                            is_global=False,
+                            title=f"⚠️ Inactive Student Alert: {student_display_name} in {course.title} {alert_ident}",
+                            message=(
+                                f"Student {student_display_name} ({student_code}) is completely inactive in your course '{course.title}': "
+                                f"0 classes attended, 0 assignments submitted, and 0 exam attempts. "
+                                f"Administration has also been alerted."
+                            ),
+                            notification_type='system',
+                            action_url=f"/faculty/courses/{course.id}/students/?student_id={student.id}",
+                            action_label="Review Course Students"
+                        )
+                    except Exception:
+                        pass
+
+                recent_notif_titles.add(alert_ident)
+
+    return inactive_records
+
+
 # 7. ADMIN PANEL SYSTEM (FULL CREATE/DELETE LOGIC)
 
 @staff_member_required
@@ -3039,6 +3217,9 @@ def admin_dashboard(request):
     """
     Admin Dashboard Logic with Analytics Data for Charts + Course Activity Tracker.
     """
+    # Check for inactive students and alert Admin + Faculty
+    inactive_records = check_and_alert_inactive_students()
+
     total_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False).count()
     total_courses = Course.objects.count()
     total_enrollments = Enrollment.objects.count()
@@ -3167,6 +3348,15 @@ def admin_dashboard(request):
         'recent_activities': recent_activities,
         'top_students': top_students,
         
+        # Inactive student alerts
+        'inactive_students_count': len(inactive_records),
+        'inactive_student_records': inactive_records[:6],
+
+        # Inbound Communications & Alert Hub
+        'recent_appeals': AcademicAppeal.objects.select_related('student', 'course').order_by('-created_at')[:8],
+        'recent_leaves': StudentStudyLeave.objects.select_related('student').order_by('-created_at')[:8],
+        'recent_support_tickets': SupportTicket.objects.select_related('student').order_by('-created_at')[:8],
+
         # Forms
         'course_form': CourseForm(),
         'notice_form': NotificationForm(),
@@ -3518,7 +3708,14 @@ def faculty_dashboard(request):
     if not assigned_courses.exists() and (user.is_staff or user.is_superuser):
         assigned_courses = Course.objects.all().order_by('-created_at')
 
-    assigned_course_ids = assigned_courses.values_list('id', flat=True)
+    assigned_course_ids = list(assigned_courses.values_list('id', flat=True))
+
+    # Check for inactive students and alert Admin + Faculty
+    inactive_records = check_and_alert_inactive_students()
+    if user.is_staff or user.is_superuser:
+        faculty_inactive_records = [r for r in inactive_records if r['course'].id in assigned_course_ids]
+    else:
+        faculty_inactive_records = [r for r in inactive_records if r['course'].assigned_faculty == user]
 
     # Enrolled students for courses taught by this faculty
     student_query = request.GET.get('student_search', '').strip()
@@ -3606,6 +3803,24 @@ def faculty_dashboard(request):
     notice_form.fields['recipient'].queryset = User.objects.filter(id__in=enrolled_student_ids).order_by('username')
     notice_form.fields['recipient'].empty_label = f"All Students in {selected_course.title}" if selected_course else "All My Enrolled Students (Course Broadcast)"
 
+    enrolled_student_ids = list(Enrollment.objects.filter(course_id__in=assigned_course_ids).values_list('student_id', flat=True).distinct())
+    enrolled_students = User.objects.filter(id__in=enrolled_student_ids).order_by('first_name', 'username')
+
+    # Study leaves for students enrolled in faculty courses
+    faculty_study_leaves = StudentStudyLeave.objects.filter(
+        student_id__in=enrolled_student_ids
+    ).select_related('student').order_by('-created_at')[:25]
+
+    # Academic appeals for faculty courses (or students requesting mentorship)
+    faculty_appeals = AcademicAppeal.objects.filter(
+        Q(course_id__in=assigned_course_ids) | Q(student_id__in=enrolled_student_ids, requested_relief='mentor_call')
+    ).select_related('student', 'course').order_by('-created_at')[:25]
+
+    # Mentorship sessions for this faculty
+    faculty_mentorship_sessions = FacultyMentorshipSession.objects.filter(
+        Q(faculty_or_admin=user) | Q(course_id__in=assigned_course_ids)
+    ).select_related('student', 'course', 'faculty_or_admin').order_by('-meeting_time')[:30]
+
     context = {
         'faculty_user': user,
         'faculty_profile': faculty_profile,
@@ -3615,6 +3830,7 @@ def faculty_dashboard(request):
         'selected_course': selected_course,
         'courses_breakdown': courses_breakdown,
         'enrollments': enrollments_qs,
+        'enrolled_students': enrolled_students,
         'student_search': student_query,
         'total_assigned_courses': total_assigned_courses,
         'total_enrolled_students': total_enrolled_students,
@@ -3627,6 +3843,10 @@ def faculty_dashboard(request):
         'all_faculty_documents': faculty_documents,
         'exams': faculty_exams[:50],
         'assignments': faculty_assignments[:50],
+        'faculty_inactive_records': faculty_inactive_records,
+        'faculty_study_leaves': faculty_study_leaves,
+        'faculty_appeals': faculty_appeals,
+        'faculty_mentorship_sessions': faculty_mentorship_sessions,
         'live_class_form': live_class_form,
         'library_form': library_form,
         'exam_form': exam_form,
@@ -3920,7 +4140,7 @@ def faculty_extend_exam_deadline(request, exam_id):
                         title=f"Exam Deadline Extended: {exam.title}",
                         message=f"The deadline for exam '{exam.title}' ({exam.course.title}) has been updated to {formatted_dt}.",
                         notification_type='exam',
-                        action_url="/exams/",
+                        action_url="/my-exams/",
                         action_label="Take Exam",
                         is_global=False
                     )
@@ -4119,7 +4339,7 @@ def admin_faculty_list(request):
     Admin can search faculties, see their department, job role, assigned courses, contact info,
     work experience, and register new faculties or delete existing ones.
     """
-    if User.objects.filter(is_faculty=True).count() < 10:
+    if User.objects.filter(is_faculty=True).count() < 10 and (os.getenv('RENDER') or os.getenv('PRODUCTION')):
         try:
             from seed_db import smart_sync_production
             smart_sync_production(force=True)
@@ -4316,13 +4536,22 @@ def admin_student_list(request):
     query = request.GET.get('search', '').strip()
     base_students = User.objects.filter(is_student=True, is_staff=False, is_superuser=False)
     if query:
-        students = base_students.filter(
+        students = list(base_students.filter(
             Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query) | Q(username__icontains=query)
-        )
+        ))
     else:
-        students = base_students.order_by('-date_joined')
+        students = list(base_students.order_by('-date_joined'))
 
-    return render(request, 'custom_admin/student_list.html', {'students': students, 'search_query': query})
+    inactive_records = check_and_alert_inactive_students()
+    inactive_student_ids = set(r['student'].id for r in inactive_records)
+    for s in students:
+        s.has_inactive_course = (s.id in inactive_student_ids)
+
+    return render(request, 'custom_admin/student_list.html', {
+        'students': students, 
+        'search_query': query,
+        'inactive_student_count': len(inactive_student_ids)
+    })
 
 @staff_member_required
 def admin_student_detail(request, user_id):
@@ -4332,6 +4561,19 @@ def admin_student_detail(request, user_id):
         return redirect('admin_profile')
     enrollments = Enrollment.objects.filter(student=student).order_by('-enrolled_at')
     completed_courses = enrollments.filter(progress=100).count()
+
+    inactive_courses = []
+    enriched_enrollments = []
+    for enr in enrollments:
+        has_attended = LiveClassAttendance.objects.filter(student=student, live_class__course=enr.course).exists()
+        has_submitted = AssignmentSubmission.objects.filter(student=student, assignment__course=enr.course).exists()
+        has_quiz = QuizResult.objects.filter(student=student, exam__course=enr.course).exists()
+        has_lesson = LessonProgress.objects.filter(student=student, lesson__course=enr.course, is_completed=True).exists()
+        enr.is_inactive = not (has_attended or has_submitted or has_quiz or has_lesson)
+        if enr.is_inactive:
+            inactive_courses.append(enr.course)
+        enriched_enrollments.append(enr)
+
     quiz_results = QuizResult.objects.filter(student=student).order_by('-taken_at')
     avg_score = quiz_results.aggregate(Avg('score'))['score__avg']
     avg_score = round(avg_score, 1) if avg_score else 0
@@ -4393,7 +4635,9 @@ def admin_student_detail(request, user_id):
     
     context = {
         'student': student,
-        'enrollments': enrollments,
+        'enrollments': enriched_enrollments,
+        'inactive_courses': inactive_courses,
+        'has_inactive_courses': len(inactive_courses) > 0,
         'completed_courses': completed_courses,
         'quiz_results': quiz_results,
         'avg_score': avg_score,
@@ -4414,8 +4658,99 @@ def admin_student_detail(request, user_id):
         'stu_breakdown_data': json.dumps(stu_breakdown_data),
         'quiz_score_labels': json.dumps(quiz_score_labels),
         'quiz_score_data': json.dumps(quiz_score_data),
+
+        # 🌟 Humane Recovery & Mentorship Records
+        'student_appeals': AcademicAppeal.objects.filter(student=student).select_related('course').order_by('-created_at'),
+        'student_study_leaves': StudentStudyLeave.objects.filter(student=student).order_by('-created_at'),
+        'mentorship_sessions': FacultyMentorshipSession.objects.filter(student=student).select_related('course', 'faculty_or_admin').order_by('-meeting_time'),
     }
     return render(request, 'custom_admin/student_detail.html', context)
+
+
+@staff_member_required
+def admin_send_student_warning(request, user_id):
+    """
+    Allows LMS Administrators to issue formal academic warning notices to an inactive student.
+    Sends high-priority private notification and logs student activity.
+    """
+    student = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        course_id = request.POST.get('course_id')
+        warning_type = request.POST.get('warning_type', 'formal_warning')
+        custom_message = request.POST.get('warning_message', '').strip()
+
+        course = None
+        if course_id and course_id.isdigit():
+            course = Course.objects.filter(id=int(course_id)).first()
+
+        course_name = f"'{course.title}'" if course else "your enrolled courses"
+
+        type_prefix = "🚨 Formal Academic Inactivity Warning"
+        if warning_type == 'friendly_checkin':
+            type_prefix = "👋 Friendly Academic Check-in & Support"
+        elif warning_type == 'reminder':
+            type_prefix = "⚠️ Attendance & Assessment Participation Reminder"
+        elif warning_type == 'final_notice':
+            type_prefix = "⛔ FINAL NOTICE: Zero Course Participation"
+        elif warning_type == 'hold_access':
+            type_prefix = "⏸️ Course Access Hold: Academic Inactivity"
+            if course:
+                enr = Enrollment.objects.filter(student=student, course=course).first()
+                if enr:
+                    enr.is_on_hold = True
+                    enr.hold_reason = "Academic inactivity and participation hold"
+                    enr.save(update_fields=['is_on_hold', 'hold_reason'])
+
+        default_msg = (
+            f"Dear {student.get_full_name() or student.username},\n\n"
+            f"You have been flagged by the Academic Administration and Course Faculty for zero engagement in {course_name}. "
+            f"Records show 0 live class attendance, unsubmitted assignments, and missed assessments.\n\n"
+            f"Please attend upcoming live lectures, complete pending assignments, and attempt scheduled examinations immediately "
+            f"to maintain academic standing and avoid course deregistration or reputation penalties."
+        )
+        if warning_type == 'friendly_checkin':
+            default_msg = (
+                f"Hello {student.get_full_name() or student.username},\n\n"
+                f"We noticed you haven't been active in {course_name} recently. We care about your learning journey! "
+                f"If you are facing any difficulties, health issues, or need guidance, please feel free to submit an academic appeal "
+                f"or request a 1-on-1 counseling session with your faculty. We are here to support you."
+            )
+        elif warning_type == 'hold_access':
+            default_msg = (
+                f"Attention {student.get_full_name() or student.username},\n\n"
+                f"Due to continued zero participation in {course_name}, your course access has been placed on temporary hold. "
+                f"To resume active learning, please open Course Watch and click 'Acknowledge & Resume' or submit an academic appeal "
+                f"explaining your situation."
+            )
+        final_message = custom_message if custom_message else default_msg
+
+        # Create targeted, private notification for the student
+        Notification.objects.create(
+            recipient=student,
+            is_global=False,
+            title=f"{type_prefix}: {course.title if course else 'Academic Notice'}",
+            message=final_message,
+            notification_type='notice',
+            action_url=f"/courses/watch/{course.id}/" if course else "/dashboard/",
+            action_label="Open Course Workspace" if course else "Open Dashboard"
+        )
+
+        # Log student activity
+        log_student_activity(
+            student,
+            'reputation_penalty',
+            f"Formal academic warning issued by Admin ({request.user.username}) regarding inactivity in {course_name}.",
+            course=course
+        )
+
+        success_msg = f"Academic warning notice successfully issued to {student.get_full_name() or student.username}."
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': success_msg})
+
+        messages.success(request, success_msg)
+        return redirect('admin_student_detail', user_id=student.id)
+
+    return redirect('admin_student_detail', user_id=student.id)
 
 @staff_member_required
 def admin_update_student_info(request, user_id):

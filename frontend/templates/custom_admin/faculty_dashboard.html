@@ -1003,6 +1003,94 @@
         </div>
     </div>
 
+    <!-- Inactive Student Notice Banner for Faculty -->
+    {% if faculty_inactive_records %}
+    <div class="inactive-alert-banner" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 1.3rem; flex-shrink: 0;">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <div style="font-weight: 700; color: #f87171; font-size: 1.05rem;">
+                    ⚠️ {{ faculty_inactive_records|length }} Non-Responsive Student{{ faculty_inactive_records|length|pluralize }} Flagged in Your Courses
+                </div>
+                <div style="color: #cbd5e1; font-size: 0.88rem; margin-top: 2px;">
+                    These students have 0 live class attendance, 0 submitted assignments, and 0 exams taken in courses taught by you. Immediate 1-on-1 mentorship or counseling is recommended.
+                </div>
+            </div>
+        </div>
+        <a href="#non-responsive-section" style="background: #ef4444; color: #fff; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(239,68,68,0.35);">
+            <i class="fas fa-users-viewfinder"></i> Review Flagged Students ({{ faculty_inactive_records|length }})
+        </a>
+    </div>
+
+    <!-- ⚠️ DEDICATED NON-RESPONSIVE STUDENTS INTERVENTION PANEL -->
+    <div id="non-responsive-section" class="fac-course-group-card" style="margin-bottom: 28px; border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.04); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 30px rgba(239, 68, 68, 0.15);">
+        <div class="fac-course-group-header" style="background: rgba(239, 68, 68, 0.14); padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div class="fac-course-group-title" style="color: #f87171; font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-triangle-exclamation"></i> Non-Responsive Students Flagged in Your Courses
+                <span class="fac-course-group-chip" style="background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; font-size: 0.78rem; padding: 3px 10px; border-radius: 99px;">{{ faculty_inactive_records|length }} Flagged</span>
+            </div>
+            <div style="font-size: 0.82rem; color: #cbd5e1;">Zero recorded participation in live classes, assignments, and exams</div>
+        </div>
+        <div class="table-responsive">
+            <table class="fac-table">
+                <thead>
+                    <tr>
+                        <th>Student Profile</th>
+                        <th>Student ID</th>
+                        <th>Course</th>
+                        <th>Inactivity Flags</th>
+                        <th>Faculty Interventions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in faculty_inactive_records %}
+                    <tr>
+                        <td>
+                            <div class="student-cell">
+                                {% if rec.student.profile.profile_pic and rec.student.profile.profile_pic.name != 'profile_pics/default.png' %}
+                                    <img src="{{ rec.student.profile.profile_pic.url }}" alt="{{ rec.student.username }}" class="student-avatar">
+                                {% else %}
+                                    <div class="student-avatar-initial" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">{{ rec.student.first_name.0|default:rec.student.username.0|upper }}</div>
+                                {% endif %}
+                                <div>
+                                    <div style="font-weight: 700; color: #fff;">{{ rec.student.get_full_name|default:rec.student.username }}</div>
+                                    <div style="color: #64748b; font-size: 0.8rem;">@{{ rec.student.username }} • {{ rec.student.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="student-id-badge" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #fca5a5;">{{ rec.student.student_id|default:"100001" }}</span>
+                        </td>
+                        <td>
+                            <span class="course-pill"><i class="fas fa-book"></i> {{ rec.course.title }}</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.78rem;">
+                                <span style="color: #fca5a5;"><i class="fas fa-times-circle" style="color: #ef4444;"></i> 0 Live Classes Attended</span>
+                                <span style="color: #fca5a5;"><i class="fas fa-times-circle" style="color: #ef4444;"></i> 0 Assignments Submitted</span>
+                                <span style="color: #fca5a5;"><i class="fas fa-times-circle" style="color: #ef4444;"></i> 0 Exams Attempted</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button type="button" onclick="openFacultyMentorshipModal('{{ rec.student.id }}', '{{ rec.student.get_full_name|default:rec.student.username|escapejs }}', '{{ rec.course.id }}', '{{ rec.course.title|escapejs }}')" style="background: linear-gradient(135deg, #06b6d4, #0284c7); border: none; color: #fff; border-radius: 8px; padding: 7px 14px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(6, 182, 212, 0.35);">
+                                    <i class="fas fa-handshake"></i> Schedule 1-on-1 Mentorship
+                                </button>
+                                <button type="button" onclick="openFacultyNoticeForStudent('{{ rec.student.id }}', '{{ rec.student.get_full_name|default:rec.student.username|escapejs }}')" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #cbd5e1; border-radius: 8px; padding: 7px 14px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-bullhorn"></i> Send Check-in Notice
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- ============================================= -->
     <!-- 2. QUICK STATS CARDS                          -->
     <!-- ============================================= -->
@@ -1297,6 +1385,12 @@
             </button>
             <button type="button" class="fac-tab-btn" onclick="switchFacultyTab('tab-assignments', this)">
                 <i class="fas fa-tasks"></i> Assignments
+            </button>
+            <button type="button" class="fac-tab-btn" onclick="switchFacultyTab('tab-mentorship', this)">
+                <i class="fas fa-handshake"></i> 1-on-1 Mentorship & Study Leaves
+                {% if faculty_study_leaves or faculty_appeals %}
+                    <span style="background: #00d4ff; color: #04101e; font-size: 0.72rem; font-weight: 800; padding: 2px 7px; border-radius: 99px; margin-left: 6px;">{{ faculty_study_leaves|length|add:faculty_appeals|length }}</span>
+                {% endif %}
             </button>
         </div>
 
@@ -1867,7 +1961,161 @@
             </div>
         </div>
 
-    </div>
+        <!-- ============================================= -->
+        <!-- TAB 6: 1-ON-1 MENTORSHIP & STUDY LEAVES       -->
+        <!-- ============================================= -->
+        <div id="tab-mentorship" class="fac-tab-pane">
+            <div class="fac-action-grid" id="mentorship-section">
+                <!-- Schedule Mentorship Form Box -->
+                <div class="fac-form-box">
+                    <h3><i class="fas fa-handshake" style="color: #38bdf8;"></i> Schedule 1-on-1 Mentorship Class</h3>
+                    <p style="font-size: 0.84rem; color: #94a3b8; margin: -10px 0 16px 0;">
+                        Arrange personalized doubt-clearing or study leave catch-up classes. Student instantly receives a portal notification and email with the Google Meet / Zoom link.
+                    </p>
+
+                    <form method="POST" action="{% url 'faculty_schedule_mentorship' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="appeal_id" id="facTabAppealId" value="">
+
+                        <label><i class="fas fa-user-graduate" style="color: #38bdf8;"></i> Select Enrolled Student</label>
+                        <select name="student_id" id="facTabStudentSelect" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; margin-bottom: 14px;">
+                            <option value="">-- Choose Student --</option>
+                            {% for stu in enrolled_students %}
+                            <option value="{{ stu.id }}" style="background: #0b0f19; color: #fff;">{{ stu.get_full_name|default:stu.username }} (@{{ stu.username }} • ID: {{ stu.student_id|default:stu.id }})</option>
+                            {% endfor %}
+                        </select>
+
+                        <label><i class="fas fa-book" style="color: #38bdf8;"></i> Subject Context</label>
+                        <select name="course_id" id="facTabCourseSelect" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; margin-bottom: 14px;">
+                            <option value="">-- General Academic Guidance --</option>
+                            {% for c in assigned_courses %}
+                            <option value="{{ c.id }}" style="background: #0b0f19; color: #fff;">{{ c.title }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label><i class="fas fa-heading" style="color: #38bdf8;"></i> Session Topic / Catch-up Focus</label>
+                        <input type="text" name="topic" id="facTabTopicInput" value="1-on-1 Academic Counseling & Guidance" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; margin-bottom: 14px;">
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                            <div>
+                                <label><i class="fas fa-video" style="color: #38bdf8;"></i> Meeting Link (Meet / Zoom)</label>
+                                <input type="url" name="meeting_link" id="facTabMeetingLink" placeholder="https://meet.google.com/..." required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                            </div>
+                            <div>
+                                <label><i class="fas fa-calendar-alt" style="color: #38bdf8;"></i> Date & Time</label>
+                                <input type="datetime-local" name="meeting_time" id="facTabMeetingTime" required style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                            </div>
+                        </div>
+
+                        <label><i class="fas fa-comment-dots" style="color: #38bdf8;"></i> Instructor Note / Message to Student</label>
+                        <textarea name="notes" id="facTabNotes" rows="3" placeholder="Explain what concepts will be covered and how this session will help their coursework catch-up..." style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; margin-bottom: 18px;"></textarea>
+
+                        <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #06b6d4, #0284c7); border: none; color: #fff; font-weight: 700; padding: 12px 24px; border-radius: 10px; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; box-shadow: 0 4px 20px rgba(6, 182, 212, 0.35);">
+                            <i class="fas fa-paper-plane"></i> Schedule Class & Notify Student
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right Stream: Study Leaves, Appeals & Scheduled Calls -->
+                <div class="fac-list-box">
+                    <!-- 1. Study Leave Catch-up Students -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                            <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: #fbbf24; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-calendar-day"></i> Study Leave Students (Catch-up Required)
+                            </h4>
+                            <span style="font-size: 0.75rem; color: #94a3b8;">{{ faculty_study_leaves|length }} Record{{ faculty_study_leaves|length|pluralize }}</span>
+                        </div>
+                        {% if faculty_study_leaves %}
+                            {% for lv in faculty_study_leaves %}
+                            <div style="background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">{{ lv.student.get_full_name|default:lv.student.username }}</div>
+                                    <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">
+                                        📅 <strong>{{ lv.start_date|date:"d M" }} - {{ lv.end_date|date:"d M, Y" }}</strong> • Reason: {{ lv.get_reason_display }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">
+                                        Status: <span style="color: {% if lv.status == 'approved' %}#34d399{% else %}#fbbf24{% endif %}; font-weight: 600;">{{ lv.get_status_display }}</span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="openFacultyMentorshipModal('{{ lv.student.id }}', '{{ lv.student.get_full_name|default:lv.student.username|escapejs }}', '', '', '', 'Catch-up Class for Study Leave ({{ lv.start_date|date:'d M' }} - {{ lv.end_date|date:'d M' }})')" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #04101e; border-radius: 8px; padding: 7px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-video"></i> Schedule Catch-up
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="text-align: center; padding: 18px; color: #64748b; font-size: 0.84rem;">
+                                No students currently on study leave in your courses.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 2. Academic Appeals Requesting Mentorship -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                            <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-scale-balanced"></i> Appeals Requesting Teacher Counseling
+                            </h4>
+                            <span style="font-size: 0.75rem; color: #94a3b8;">{{ faculty_appeals|length }} Appeal{{ faculty_appeals|length|pluralize }}</span>
+                        </div>
+                        {% if faculty_appeals %}
+                            {% for app in faculty_appeals %}
+                            <div style="background: rgba(52, 211, 153, 0.05); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">{{ app.student.get_full_name|default:app.student.username }}</div>
+                                    <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">
+                                        Course: <strong>{{ app.course.title }}</strong> • {{ app.get_appeal_type_display }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 3px;">
+                                        Relief: {{ app.get_requested_relief_display }} • Status: <span style="color: {% if app.status == 'approved' or app.status == 'counseled' %}#34d399{% else %}#fbbf24{% endif %}; font-weight: 600;">{{ app.get_status_display }}</span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="openFacultyMentorshipModal('{{ app.student.id }}', '{{ app.student.get_full_name|default:app.student.username|escapejs }}', '{{ app.course.id }}', '{{ app.course.title|escapejs }}', '{{ app.id }}', 'Counseling Call for Academic Appeal in {{ app.course.title|escapejs }}')" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; border-radius: 8px; padding: 7px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-handshake"></i> Counsel Student
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="text-align: center; padding: 18px; color: #64748b; font-size: 0.84rem;">
+                                No pending mentorship appeals for your courses.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 3. Scheduled Mentorship Sessions -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                            <h4 style="margin: 0; font-size: 0.98rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-calendar-check"></i> Scheduled 1-on-1 Classes
+                            </h4>
+                            <span style="font-size: 0.75rem; color: #94a3b8;">{{ faculty_mentorship_sessions|length }} Session{{ faculty_mentorship_sessions|length|pluralize }}</span>
+                        </div>
+                        {% if faculty_mentorship_sessions %}
+                            {% for sess in faculty_mentorship_sessions %}
+                            <div style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-weight: 700; color: #fff; font-size: 0.88rem;">{{ sess.topic }}</div>
+                                    <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">
+                                        Student: <strong>{{ sess.student.get_full_name|default:sess.student.username }}</strong> {% if sess.course %}• {{ sess.course.title }}{% endif %}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #38bdf8; margin-top: 3px;">
+                                        <i class="far fa-clock"></i> {{ sess.meeting_time|date:"d M, Y at h:i A" }}
+                                    </div>
+                                </div>
+                                <a href="{{ sess.meeting_link }}" target="_blank" style="background: linear-gradient(135deg, #06b6d4, #0284c7); color: #fff; border-radius: 8px; padding: 7px 14px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);">
+                                    <i class="fas fa-video"></i> Join Meeting
+                                </a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="text-align: center; padding: 18px; color: #64748b; font-size: 0.84rem;">
+                                No 1-on-1 mentorship sessions scheduled yet.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
 </div>
 
@@ -2156,6 +2404,73 @@
                 </button>
                 <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #ff3366, #e11d48); border: 1px solid rgba(255, 51, 102, 0.4); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.35);">
                     <i class="fas fa-check-circle"></i> Update & Reschedule
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- FACULTY 1-ON-1 MENTORSHIP MODAL               -->
+<!-- ============================================= -->
+<div id="facMentorshipModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(5, 7, 15, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); z-index: 99999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: rgba(13, 17, 28, 0.96); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 20px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(6, 182, 212, 0.2); position: relative; animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(90deg, rgba(6, 182, 212, 0.12), transparent);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 1.15rem;">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #fff;">Schedule 1-on-1 Mentorship</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Student: <strong id="facModalStudentName" style="color: #38bdf8;"></strong></p>
+                </div>
+            </div>
+            <button type="button" onclick="closeFacultyMentorshipModal()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" action="{% url 'faculty_schedule_mentorship' %}" style="padding: 22px 24px;">
+            {% csrf_token %}
+            <input type="hidden" name="student_id" id="facModalStudentId" value="">
+            <input type="hidden" name="appeal_id" id="facModalAppealId" value="">
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #38bdf8; margin-bottom: 6px;">Course Context</label>
+                <select name="course_id" id="facModalCourseSelect" style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: #060913; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                    <option value="">-- General Academic Mentorship --</option>
+                    {% for c in assigned_courses %}
+                    <option value="{{ c.id }}">{{ c.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Topic / Session Focus <span style="color: #ef4444;">*</span></label>
+                <input type="text" name="topic" id="facModalTopicInput" value="1-on-1 Academic Counseling & Guidance" required style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #38bdf8; margin-bottom: 6px;">Meeting Link (Meet/Zoom) <span style="color: #ef4444;">*</span></label>
+                    <input type="url" name="meeting_link" placeholder="https://meet.google.com/..." required style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #38bdf8; margin-bottom: 6px;">Date & Time <span style="color: #ef4444;">*</span></label>
+                    <input type="datetime-local" name="meeting_time" id="facModalMeetingTime" required style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 22px;">
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px;">Instructor Note / Message to Student</label>
+                <textarea name="notes" rows="3" placeholder="Explain what doubts will be discussed and encourage the student..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; color: #fff; font-size: 0.88rem; outline: none;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 16px;">
+                <button type="button" onclick="closeFacultyMentorshipModal()" style="padding: 10px 18px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" style="padding: 10px 22px; background: linear-gradient(135deg, #06b6d4, #0284c7); border: none; color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);">
+                    <i class="fas fa-paper-plane"></i> Schedule & Send Link
                 </button>
             </div>
         </form>
@@ -2630,6 +2945,57 @@
         }
     }
 
+    // --- 🤝 Faculty Mentorship Modal Functions ---
+    function openFacultyMentorshipModal(studentId, studentName, courseId, courseTitle, appealId, defaultTopic) {
+        const modal = document.getElementById('facMentorshipModalOverlay');
+        if (!modal) return;
+
+        document.getElementById('facModalStudentId').value = studentId || '';
+        document.getElementById('facModalStudentName').textContent = studentName || 'Student';
+        if (appealId) document.getElementById('facModalAppealId').value = appealId;
+        if (courseId) {
+            const cSel = document.getElementById('facModalCourseSelect');
+            if (cSel) cSel.value = courseId;
+        }
+        if (defaultTopic) {
+            const tInput = document.getElementById('facModalTopicInput');
+            if (tInput) tInput.value = defaultTopic;
+        }
+
+        // Default meeting time to tomorrow at 4:00 PM
+        const timeInput = document.getElementById('facModalMeetingTime');
+        if (timeInput && !timeInput.value) {
+            const tm = new Date();
+            tm.setDate(tm.getDate() + 1);
+            tm.setHours(16, 0, 0, 0);
+            timeInput.value = tm.toISOString().slice(0, 16);
+        }
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    window.openFacultyMentorshipModal = openFacultyMentorshipModal;
+
+    function closeFacultyMentorshipModal() {
+        const modal = document.getElementById('facMentorshipModalOverlay');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+    window.closeFacultyMentorshipModal = closeFacultyMentorshipModal;
+
+    function openFacultyNoticeForStudent(studentId, studentName) {
+        switchFacultyTab('tab-notices');
+        const sel = document.getElementById('id_recipient');
+        if (sel) {
+            sel.value = studentId;
+        }
+        const noticeSection = document.getElementById('notices-section');
+        if (noticeSection) noticeSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    window.openFacultyNoticeForStudent = openFacultyNoticeForStudent;
+
     // --- Escape Key Closes Modals ---
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -2638,6 +3004,7 @@
             closeExtendExamModal();
             closeExtendAssignmentModal();
             closeEditLiveClassModal();
+            closeFacultyMentorshipModal();
         }
     });
 
@@ -2645,7 +3012,12 @@
     window.addEventListener('DOMContentLoaded', () => {
         const hash = window.location.hash;
         if (hash) {
-            if (hash === '#tab-assignments' || hash === '#assignments' || hash === '#assignments-section') {
+            if (hash === '#tab-mentorship' || hash === '#mentorship' || hash === '#study-leaves') {
+                switchFacultyTab('tab-mentorship');
+            } else if (hash === '#non-responsive-section') {
+                const el = document.getElementById('non-responsive-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            } else if (hash === '#tab-assignments' || hash === '#assignments' || hash === '#assignments-section') {
                 switchFacultyTab('tab-assignments');
             } else if (hash === '#tab-exams' || hash === '#exams' || hash === '#exams-section') {
                 switchFacultyTab('tab-exams');
