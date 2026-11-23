@@ -68,6 +68,7 @@ from students.views import (
     # 7. Admin Management (Lists & Edits)
     admin_student_list, 
     admin_student_detail,
+    admin_send_student_warning,
     admin_update_student_info,
     admin_toggle_block, 
     admin_delete_student, 
@@ -135,6 +136,19 @@ from students.community_views import (
     delete_message,   # ADDED for Delete API
     edit_message,     # ADDED for Edit API
     accept_bounty     #  NEW: ADDED for Bounty System API
+)
+
+# 🌟 Student Humane Recovery, Grace Period & Appeals
+from students.recovery_views import (
+    submit_academic_appeal,
+    apply_study_leave,
+    acknowledge_course_hold,
+    admin_grant_grace_period,
+    admin_schedule_mentorship,
+    faculty_schedule_mentorship,
+    admin_toggle_course_hold,
+    admin_review_study_leave,
+    admin_review_appeal,
 )
 
 urlpatterns = [
@@ -217,6 +231,7 @@ urlpatterns = [
     # 5. Quiz & AI System
     # New Exam Logic (Course Linked)
     path('my-exams/', student_exam_list, name='student_exam_list'), 
+    path('exams/', student_exam_list, name='exams_portal'), 
     path('take-exam/<int:exam_id>/', take_exam, name='take_exam'), 
     path('take-quiz/<int:exam_id>/', take_exam, name='take_quiz'), 
     
@@ -261,10 +276,13 @@ urlpatterns = [
     path('faculty/assignments/<int:assignment_id>/extend-deadline/', faculty_extend_assignment_deadline, name='faculty_extend_assignment_deadline'),
     path('faculty/delete-assignment/<int:assignment_id>/', faculty_delete_assignment, name='faculty_delete_assignment'),
     path('faculty/update-profile/', faculty_update_profile, name='faculty_update_profile'),
+    path('faculty/schedule-mentorship/', faculty_schedule_mentorship, name='faculty_schedule_mentorship'),
+    path('faculty/schedule-mentorship/<int:student_id>/', faculty_schedule_mentorship, name='faculty_schedule_mentorship_for_student'),
     
     #  A. Student Management 
     path('admin-panel/students/', admin_student_list, name='admin_student_list'),
     path('admin-panel/students/<int:user_id>/', admin_student_detail, name='admin_student_detail'),
+    path('admin-panel/students/<int:user_id>/send-warning/', admin_send_student_warning, name='admin_send_student_warning'),
     path('admin-panel/students/<int:user_id>/update/', admin_update_student_info, name='admin_update_student_info'),
     path('admin-panel/students/<int:user_id>/block/', admin_toggle_block, name='admin_toggle_block'),
     path('admin-panel/students/<int:user_id>/delete/', admin_delete_student, name='admin_delete_student'),
@@ -309,6 +327,16 @@ urlpatterns = [
     path('admin-panel/support-tickets/<int:ticket_id>/reply/', admin_reply_support_ticket, name='admin_reply_support_ticket'),
     path('admin-panel/support-tickets/<int:ticket_id>/delete/', admin_delete_support_ticket, name='admin_delete_support_ticket'),
     path('support-tickets/<int:ticket_id>/reply/', student_reply_support_ticket, name='student_reply_support_ticket'),
+
+    # 🌟 Student Humane Recovery, Grace Period & Appeals
+    path('appeals/submit/', submit_academic_appeal, name='submit_academic_appeal'),
+    path('study-leave/apply/', apply_study_leave, name='apply_study_leave'),
+    path('courses/hold/<int:course_id>/acknowledge/', acknowledge_course_hold, name='acknowledge_course_hold'),
+    path('admin-panel/students/<int:student_id>/courses/<int:course_id>/grant-grace/', admin_grant_grace_period, name='admin_grant_grace_period'),
+    path('admin-panel/students/<int:student_id>/schedule-mentorship/', admin_schedule_mentorship, name='admin_schedule_mentorship'),
+    path('admin-panel/students/<int:student_id>/courses/<int:course_id>/toggle-hold/', admin_toggle_course_hold, name='admin_toggle_course_hold'),
+    path('admin-panel/study-leaves/<int:leave_id>/review/', admin_review_study_leave, name='admin_review_study_leave'),
+    path('admin-panel/appeals/<int:appeal_id>/review/', admin_review_appeal, name='admin_review_appeal'),
 ]
 
 import os

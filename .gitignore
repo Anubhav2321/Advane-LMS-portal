@@ -12,6 +12,10 @@ env/
 # =========================
 db.sqlite3
 db.sqlite3-journal
+db.sqlite3-shm
+db.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-wal
 
 # =========================
 # 3. Python Cache

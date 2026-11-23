@@ -114,8 +114,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': sqlite_path,
+        'OPTIONS': {
+            'timeout': 30,  # Wait up to 30 seconds to prevent "database is locked" errors on localhost
+        },
     }
 }
+
+# SQLite Concurrency & Performance Hardening (WAL Mode & Normal Synchronous)
+from django.db.backends.signals import connection_created
+def configure_sqlite_wal(sender, connection, **kwargs):
+    if connection.vendor == 'sqlite':
+        with connection.cursor() as cursor:
+            cursor.execute('PRAGMA journal_mode=WAL;')
+            cursor.execute('PRAGMA synchronous=NORMAL;')
+            cursor.execute('PRAGMA busy_timeout=30000;')
+            cursor.execute('PRAGMA cache_size=-64000;')
+connection_created.connect(configure_sqlite_wal)
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 if DATABASE_URL and dj_database_url:

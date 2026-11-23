@@ -2,6 +2,7 @@ from django.urls import path
 from students import community_views
 from . import views
 from . import compiler_service  # Cloud Code Execution Service (Piston API)
+from students.recovery_views import faculty_schedule_mentorship
 
 urlpatterns = [
 
@@ -77,6 +78,8 @@ urlpatterns = [
     path('faculty/assignments/<int:assignment_id>/extend-deadline/', views.faculty_extend_assignment_deadline, name='faculty_extend_assignment_deadline'),
     path('faculty/delete-assignment/<int:assignment_id>/', views.faculty_delete_assignment, name='faculty_delete_assignment'),
     path('faculty/update-profile/', views.faculty_update_profile, name='faculty_update_profile'),
+    path('faculty/schedule-mentorship/', faculty_schedule_mentorship, name='faculty_schedule_mentorship'),
+    path('faculty/schedule-mentorship/<int:student_id>/', faculty_schedule_mentorship, name='faculty_schedule_mentorship_for_student'),
     
     # Student Management List & Actions
     path('admin-panel/students/', views.admin_student_list, name='admin_student_list'),
