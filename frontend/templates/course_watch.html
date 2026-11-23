@@ -2454,6 +2454,16 @@
             <span class="pulse-dot"></span>
             <span>Real-time Sync Active</span>
         </div>
+        {% if is_on_hold %}
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(239,68,68,0.22); border:1px solid rgba(239,68,68,0.55); border-radius:20px; font-size:0.75rem; color:#fca5a5; font-weight:700;">
+            <i class="fas fa-pause-circle"></i> Course On Hold
+        </div>
+        {% endif %}
+        {% if is_in_grace_period %}
+        <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(16,185,129,0.22); border:1px solid rgba(16,185,129,0.55); border-radius:20px; font-size:0.75rem; color:#6ee7b7; font-weight:700;">
+            <i class="fas fa-sparkles"></i> Grace Period (Until {{ grace_period_until|date:"d M, Y" }})
+        </div>
+        {% endif %}
         {% if has_missed_exams %}
         <div style="display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(255,51,102,0.18); border:1px solid rgba(255,51,102,0.45); border-radius:20px; font-size:0.75rem; color:var(--accent-red); font-weight:700;">
             <i class="fas fa-lock"></i> Completion Blocked: Missed Exam
@@ -2462,6 +2472,9 @@
     </div>
 
     <div class="strip-actions">
+        <button class="btn-strip-action" onclick="openAcademicAppealModal('{{ course.id }}', '{{ course.title|escapejs }}')" style="background: rgba(0, 243, 255, 0.12); border: 1px solid rgba(0, 243, 255, 0.35); color: #00f3ff; font-weight: 600;">
+            <i class="fas fa-hand-holding-heart"></i> Academic Appeal
+        </button>
         <div class="coins-pill">
             <i class="fas fa-coins"></i>
             <span id="header-user-coins">{{ request.user.lms_coins }}</span> Coins
@@ -2477,6 +2490,56 @@
     </div>
 </div>
 
+<!-- COURSE HOLD INTERACTIVE NOTIFICATION -->
+{% if is_on_hold %}
+<div class="course-hold-banner" style="margin: 16px 24px 0; background: linear-gradient(135deg, rgba(239, 68, 68, 0.16), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(239, 68, 68, 0.45); border-radius: 16px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2); backdrop-filter: blur(16px); position: relative; z-index: 50;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239, 68, 68, 0.22); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #f87171; flex-shrink: 0;">
+            <i class="fas fa-pause-circle"></i>
+        </div>
+        <div>
+            <h4 style="color: #fff; margin: 0 0 4px; font-size: 1.05rem; font-weight: 700;">Course Participation Notice: Access On Hold</h4>
+            <p style="color: #cbd5e1; margin: 0; font-size: 0.85rem; line-height: 1.4;">
+                This course was placed on temporary hold due to prolonged inactivity. 
+                {% if enrollment.hold_reason %}<span style="color: #fca5a5; font-weight: 600;">(Reason: {{ enrollment.hold_reason }})</span>{% endif %}
+                Confirm your resumption or submit an academic explanation to unfreeze your access.
+            </p>
+        </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+        <form method="POST" action="{% url 'acknowledge_course_hold' course.id %}">
+            {% csrf_token %}
+            <button type="submit" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);">
+                <i class="fas fa-check-circle"></i> Acknowledge & Resume
+            </button>
+        </form>
+        <button type="button" onclick="openAcademicAppealModal('{{ course.id }}', '{{ course.title|escapejs }}')" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-hand-holding-heart" style="color: #00f3ff;"></i> Submit Appeal
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<!-- GRACE EXTENSION BANNER -->
+{% if is_in_grace_period %}
+<div class="grace-period-banner" style="margin: 16px 24px 0; background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 16px; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15); backdrop-filter: blur(16px); position: relative; z-index: 50;">
+    <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(16, 185, 129, 0.22); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #34d399; flex-shrink: 0;">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div>
+            <h4 style="color: #fff; margin: 0 0 2px; font-size: 0.95rem; font-weight: 700;">Academic Grace Extension Active ✨</h4>
+            <p style="color: #cbd5e1; margin: 0; font-size: 0.82rem;">
+                Faculty/Admin granted you a grace extension until <strong style="color: #34d399;">{{ grace_period_until|date:"d M, Y • h:i A" }}</strong>. Past-due assignments and exams are re-opened for submission without penalty!
+            </p>
+        </div>
+    </div>
+    <span style="padding: 6px 14px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 20px; font-size: 0.8rem; color: #34d399; font-weight: 700;">
+        Active Protection
+    </span>
+</div>
+{% endif %}
+
 <!-- MAIN CONTINUOUS LEARNING WORKSPACE -->
 <div class="watch-workspace">
 
@@ -2486,6 +2549,30 @@
 
             <!-- VIDEO PLAYER THEATER -->
             <div class="player-theater" id="theaterWrapper">
+                {% if is_on_hold %}
+                <!-- FROSTED GLASS VIDEO LOCK OVERLAY FOR COURSE ON HOLD -->
+                <div class="theater-hold-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(11, 15, 25, 0.95); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; box-sizing:border-box;">
+                    <div style="width:64px; height:64px; border-radius:18px; background:linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.12)); border:1.5px solid rgba(239, 68, 68, 0.55); display:flex; align-items:center; justify-content:center; font-size:2rem; color:#f87171; margin-bottom:14px; box-shadow:0 0 28px rgba(239, 68, 68, 0.35);">
+                        <i class="fas fa-pause-circle"></i>
+                    </div>
+                    <h3 style="color:#ffffff; font-size:1.3rem; font-weight:800; margin:0 0 6px; letter-spacing:0.3px;">Course Video Paused (Access On Hold)</h3>
+                    <p style="color:#cbd5e1; font-size:0.88rem; max-width:520px; margin:0 0 16px; line-height:1.45;">
+                        This course was temporarily paused by faculty/administration due to lack of recorded participation.
+                        {% if enrollment.hold_reason %}<br><span style="color:#fca5a5; font-weight:600; font-size:0.82rem; background:rgba(239,68,68,0.15); padding:3px 10px; border-radius:6px; display:inline-block; margin-top:6px;">Reason: {{ enrollment.hold_reason }}</span>{% endif %}
+                    </p>
+                    <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center;">
+                        <form method="POST" action="{% url 'acknowledge_course_hold' course.id %}">
+                            {% csrf_token %}
+                            <button type="submit" style="background:linear-gradient(135deg, #10b981, #059669); color:#ffffff; border:none; padding:11px 22px; border-radius:10px; font-weight:700; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(16, 185, 129, 0.4); transition:transform 0.15s ease;">
+                                <i class="fas fa-unlock"></i> Acknowledge & Unfreeze Course
+                            </button>
+                        </form>
+                        <button type="button" onclick="openAcademicAppealModal('{{ course.id }}', '{{ course.title|escapejs }}')" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ffffff; padding:11px 20px; border-radius:10px; font-weight:600; font-size:0.88rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                            <i class="fas fa-hand-holding-heart" style="color:#00f3ff;"></i> Submit Academic Appeal
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
                 {% if youtube_id %}
                     <iframe 
                         id="lesson-video"
@@ -3125,17 +3212,52 @@ solution()
                                 </div>
                                 {% endif %}
 
+                                {% if asgn.is_past_due and not is_in_grace_period %}
+                                <div class="recap-actions">
+                                    <button type="button" class="btn-asgn-action resubmit" disabled style="opacity: 0.45; cursor: not-allowed; filter: grayscale(80%); pointer-events: none; background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px dashed rgba(148, 163, 184, 0.3);">
+                                        <i class="fas fa-lock"></i> Submission Locked (Deadline Passed)
+                                    </button>
+                                </div>
+                                {% else %}
                                 <div class="recap-actions">
                                     <button type="button" class="btn-asgn-action resubmit" onclick="openSubmitModal('{{ asgn.id }}', '{{ asgn.title|escapejs }}', '{{ asgn.total_marks }}')">
                                         <i class="fas fa-arrows-rotate"></i> Re-upload / Update Solution
                                     </button>
                                 </div>
+                                {% endif %}
                             </div>
                             {% else %}
                             <div class="asgn-card-footer" style="margin-top:14px;">
+                                {% if asgn.is_past_due and not is_in_grace_period %}
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                        <button type="button" class="btn-asgn-action submit" disabled style="opacity: 0.45; cursor: not-allowed; filter: grayscale(80%); pointer-events: none; background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px dashed rgba(239, 68, 68, 0.4); justify-content: center; flex: 1;">
+                                            <i class="fas fa-calendar-xmark" style="color: #ef4444;"></i> Submission Closed
+                                        </button>
+                                        <button type="button" class="btn-asgn-action" onclick="openAcademicAppealModal('{{ course.id }}', '{{ course.title|escapejs }}', '{{ asgn.title|escapejs }}')" style="background: rgba(0, 243, 255, 0.12); border: 1px solid rgba(0, 243, 255, 0.35); color: #00f3ff; font-weight: 600; font-size: 0.82rem; padding: 9px 14px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                            <i class="fas fa-hand-holding-heart"></i> Request Grace Extension
+                                        </button>
+                                    </div>
+                                    <div style="font-size: 0.82rem; color: #f87171; display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: rgba(239, 68, 68, 0.06); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.18);">
+                                        <i class="fas fa-ban"></i>
+                                        <span>Submission deadline expired on {{ asgn.due_date|date:"d M, Y • h:i A" }}. If you experienced illness or hardship, click "Request Grace Extension".</span>
+                                    </div>
+                                </div>
+                                {% elif asgn.is_past_due and is_in_grace_period %}
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <button type="button" class="btn-asgn-action submit" onclick="openSubmitModal('{{ asgn.id }}', '{{ asgn.title|escapejs }}', '{{ asgn.total_marks }}')" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 78, 59, 0.6)); border: 1px solid rgba(16, 185, 129, 0.6); color: #6ee7b7; box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);">
+                                        <i class="fas fa-sparkles"></i> Submit Solution (Grace Extension Active)
+                                    </button>
+                                    <div style="font-size: 0.78rem; color: #6ee7b7; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-shield-halved"></i>
+                                        <span>Your submission is protected by grace extension valid until {{ grace_period_until|date:"d M, Y" }}.</span>
+                                    </div>
+                                </div>
+                                {% else %}
                                 <button type="button" class="btn-asgn-action submit" onclick="openSubmitModal('{{ asgn.id }}', '{{ asgn.title|escapejs }}', '{{ asgn.total_marks }}')">
                                     <i class="fas fa-cloud-arrow-up"></i> Submit Solution
                                 </button>
+                                {% endif %}
                             </div>
                             {% endif %}
                         </div>
@@ -3313,6 +3435,78 @@ solution()
                 <button type="button" class="btn-modal-cancel" onclick="closeSubmitModal()">Cancel</button>
                 <button type="submit" class="btn-modal-submit" id="btnModalSubmitAction">
                     <i class="fas fa-paper-plane"></i> Submit Solution
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 🌟 ACADEMIC APPEAL & HARDSHIP RELIEF MODAL -->
+<div class="modal-overlay" id="academicAppealModal" onclick="if(event.target===this)closeAcademicAppealModal()">
+    <div class="modal-box asgn-modal-box" onclick="event.stopPropagation()" style="max-width: 580px; background: rgba(11, 16, 30, 0.98); border: 1px solid rgba(0, 243, 255, 0.35); box-shadow: 0 16px 48px rgba(0,0,0,0.8), 0 0 24px rgba(0, 243, 255, 0.15);">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(0, 243, 255, 0.2); padding: 18px 24px;">
+            <span style="display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 700; color: #fff;">
+                <i class="fas fa-hand-holding-heart" style="color: var(--neon-cyan);"></i>
+                Academic Appeal & Grace Request
+            </span>
+            <i class="fas fa-times" onclick="closeAcademicAppealModal()" title="Close" style="cursor: pointer; color: #94a3b8; font-size: 1.1rem;"></i>
+        </div>
+        <form id="academicAppealForm" method="POST" action="{% url 'submit_academic_appeal' %}" enctype="multipart/form-data" onsubmit="handleAppealSubmit(event)">
+            {% csrf_token %}
+            <input type="hidden" name="course_id" id="appealCourseId" value="{{ course.id }}">
+
+            <div class="modal-body-content" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div style="background: rgba(0, 243, 255, 0.06); border: 1px solid rgba(0, 243, 255, 0.22); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-circle-info" style="color: var(--neon-cyan); font-size: 1.3rem; flex-shrink: 0;"></i>
+                    <p style="margin: 0; font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
+                        Facing sickness, personal hardship, or exam clashes? Submit your explanation. The course faculty and admin will review your appeal to grant grace time, mentorship, or course assistance.
+                    </p>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-tag" style="color: var(--neon-cyan);"></i> Reason / Circumstance Category
+                    </label>
+                    <select name="appeal_type" class="warn-dark-select" style="width: 100%; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                        <option value="medical" style="background: #0b0f19; color: #fff;">🏥 Medical Illness / Hospitalization</option>
+                        <option value="technical" style="background: #0b0f19; color: #fff;">💻 Technical Breakdown / Device Damage / Internet Outage</option>
+                        <option value="family" style="background: #0b0f19; color: #fff;">🏡 Family Emergency / Personal Hardship</option>
+                        <option value="exam_clash" style="background: #0b0f19; color: #fff;">📚 University / Board Examination Clash</option>
+                        <option value="other" style="background: #0b0f19; color: #fff;">💬 Other Hardship</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-gift" style="color: var(--accent-amber);"></i> Requested Assistance / Relief
+                    </label>
+                    <select name="requested_relief" class="warn-dark-select" style="width: 100%; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 0.88rem; outline: none;">
+                        <option value="grace_extension" style="background: #0b0f19; color: #fff;">✨ Deadline Grace Extension (3 - 7 days)</option>
+                        <option value="mentorship" style="background: #0b0f19; color: #fff;">🤝 1-on-1 Faculty Mentorship & Guidance Call</option>
+                        <option value="study_pause" style="background: #0b0f19; color: #fff;">⏸️ Course Study Pause / Freeze</option>
+                        <option value="penalty_waiver" style="background: #0b0f19; color: #fff;">🛡️ Reputation Score & Penalty Forgiveness</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-pencil-alt" style="color: var(--neon-cyan);"></i> Explanation / Message to Instructor
+                    </label>
+                    <textarea name="message" id="appealMessage" rows="3" required placeholder="Describe your situation in detail so faculty can assist you..." style="width: 100%; box-sizing: border-box; background: #060913; border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 12px 14px; border-radius: 10px; font-size: 0.88rem; resize: vertical; outline: none;"></textarea>
+                </div>
+
+                <div>
+                    <label style="display:block; margin-bottom:6px; font-size:0.82rem; color:#94a3b8; font-weight:600;">
+                        <i class="fas fa-file-shield" style="color: var(--accent-emerald);"></i> Supporting Document (Optional: Medical prescription, Exam Admit, etc.)
+                    </label>
+                    <input type="file" name="supporting_document" style="width: 100%; box-sizing: border-box; background: #060913; border: 1px dashed rgba(255,255,255,0.25); color: #94a3b8; padding: 10px; border-radius: 10px; font-size: 0.82rem;">
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" onclick="closeAcademicAppealModal()" style="padding: 9px 18px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; font-size: 0.85rem; cursor: pointer;">Cancel</button>
+                <button type="submit" id="btnSubmitAppeal" style="padding: 9px 22px; border-radius: 8px; background: linear-gradient(135deg, #00f3ff, #0088ff); border: none; color: #060814; font-weight: 700; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0, 243, 255, 0.3);">
+                    <i class="fas fa-paper-plane"></i> Submit Appeal
                 </button>
             </div>
         </form>
@@ -3528,8 +3722,91 @@ function onOverlaySubmitClick(e) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeSubmitModal();
+        closeAcademicAppealModal();
     }
 });
+
+// =========================================
+// 🌟 ACADEMIC APPEAL MODAL & SUBMISSION LOGIC
+// =========================================
+function openAcademicAppealModal(courseId, courseTitle, asgnTitle) {
+    if (courseId) {
+        const idInput = document.getElementById('appealCourseId');
+        if (idInput) idInput.value = courseId;
+    }
+    if (asgnTitle) {
+        const msgBox = document.getElementById('appealMessage');
+        if (msgBox && !msgBox.value) {
+            msgBox.value = `Requesting grace extension for assignment "${asgnTitle}". `;
+        }
+    }
+    const modal = document.getElementById('academicAppealModal');
+    if (modal) {
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex';
+        void modal.offsetWidth;
+        modal.classList.add('modal-open');
+    }
+}
+window.openAcademicAppealModal = openAcademicAppealModal;
+
+function closeAcademicAppealModal() {
+    const modal = document.getElementById('academicAppealModal');
+    if (modal) {
+        modal.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        setTimeout(() => modal.style.display = 'none', 250);
+    }
+}
+window.closeAcademicAppealModal = closeAcademicAppealModal;
+
+function handleAppealSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('academicAppealForm');
+    const formData = new FormData(form);
+    const btn = document.getElementById('btnSubmitAppeal');
+    const originalText = btn.innerHTML;
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]') ? form.querySelector('[name=csrfmiddlewaretoken]').value : '';
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        if (data.success) {
+            closeAcademicAppealModal();
+            const toast = document.getElementById('learningToast');
+            if (toast) {
+                document.getElementById('toastTitle').textContent = 'Appeal Submitted! 📩';
+                document.getElementById('toastSubtitle').textContent = data.message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+            setTimeout(() => window.location.reload(), 1200);
+        } else {
+            alert(data.message || 'Error submitting academic appeal.');
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        form.submit();
+    });
+}
+window.handleAppealSubmit = handleAppealSubmit;
 
 // Per-Lesson Initial Progress Sync from Server
 (function initLessonProgress() {
