@@ -869,12 +869,131 @@
             <p>Real-time overview of your learning platform</p>
         </div>
         <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <button type="button" onclick="openNotificationModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; background: rgba(0, 243, 255, 0.12); border: 1px solid rgba(0, 243, 255, 0.35); color: #00f3ff; border-radius: var(--radius-md); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: var(--transition-smooth); position: relative;">
+                <i class="fas fa-bell"></i> Inbound Alerts
+                {% if unread_notifications_count > 0 %}
+                    <span style="background: #ff3366; color: #fff; font-size: 0.72rem; font-weight: 800; padding: 2px 7px; border-radius: 99px; box-shadow: 0 0 10px rgba(255,51,102,0.6);">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </button>
             <a href="{% url 'admin_faculty_list' %}" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(52, 211, 153, 0.35); color: #34d399; border-radius: var(--radius-md); font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: var(--transition-smooth);">
                 <i class="fas fa-chalkboard-teacher"></i> Faculty Directory
             </a>
             <button type="button" onclick="openAddFacultyModal()" style="display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(52, 211, 153, 0.4); color: #ffffff; border-radius: var(--radius-md); font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35); cursor: pointer; transition: var(--transition-smooth);">
                 <i class="fas fa-user-plus"></i> Add Faculty
             </button>
+        </div>
+    </div>
+
+    <!-- Inactive Student Notice Banner -->
+    {% if inactive_students_count > 0 %}
+    <div class="inactive-alert-banner" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 1.3rem; flex-shrink: 0;">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <div style="font-weight: 700; color: #f87171; font-size: 1.05rem;">
+                    ⚠️ {{ inactive_students_count }} Non-Responsive Student Enrollment{{ inactive_students_count|pluralize }} Detected
+                </div>
+                <div style="color: #cbd5e1; font-size: 0.88rem; margin-top: 2px;">
+                    These students have 0 live class attendance, 0 submitted assignments, and 0 exams taken in their enrolled subjects. Automated alerts have been routed to administrators & faculty.
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'admin_student_list' %}" style="background: #ef4444; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);">
+            <i class="fas fa-user-shield"></i> Review & Warn Students
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- 🔔 INBOUND COMMUNICATIONS & STUDENT REQUESTS HUB -->
+    <div class="inbound-hub-card" style="background: rgba(10, 10, 30, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(0, 243, 255, 0.2); border-radius: var(--radius-lg); padding: 22px 26px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(0, 243, 255, 0.12); border: 1px solid rgba(0, 243, 255, 0.35); display: flex; align-items: center; justify-content: center; color: #00f3ff; font-size: 1.25rem;">
+                    <i class="fas fa-tower-broadcast"></i>
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #fff;">Inbound Communications & Alert Hub</h3>
+                    <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #94a3b8;">Real-time feed of student messages, appeals, study leaves, and system alerts</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button type="button" onclick="openNotificationModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(0, 243, 255, 0.12); border: 1px solid rgba(0, 243, 255, 0.35); color: #00f3ff; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer;">
+                    <i class="fas fa-bell"></i> Open Full Hub ({{ notifications_list|length }})
+                </button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px;">
+            <!-- Column 1: Support Messages -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 700; font-size: 0.88rem; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-headset"></i> Support Mailbox
+                    </span>
+                    <a href="{% url 'admin_support_tickets' %}" style="font-size: 0.78rem; color: #00f3ff; text-decoration: none;">View All <i class="fas fa-chevron-right"></i></a>
+                </div>
+                {% if recent_support_tickets %}
+                    {% for ticket in recent_support_tickets|slice:":3" %}
+                    <a href="{% url 'admin_support_tickets' %}?ticket={{ ticket.id }}" style="display: block; text-decoration: none; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,243,255,0.08)';" onmouseout="this.style.background='rgba(255,255,255,0.03)';">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                            <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">{{ ticket.name|truncatechars:20 }}</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8;">{{ ticket.created_at|timesince }} ago</span>
+                        </div>
+                        <div style="font-size: 0.78rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.subject }}</div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <p style="margin: 8px 0 0 0; font-size: 0.8rem; color: #64748b;">No pending support tickets.</p>
+                {% endif %}
+            </div>
+
+            <!-- Column 2: Academic Appeals -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 700; font-size: 0.88rem; color: #34d399; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-scale-balanced"></i> Academic Appeals
+                    </span>
+                    <a href="{% url 'admin_student_list' %}" style="font-size: 0.78rem; color: #34d399; text-decoration: none;">Review <i class="fas fa-chevron-right"></i></a>
+                </div>
+                {% if recent_appeals %}
+                    {% for app in recent_appeals|slice:":3" %}
+                    <a href="/admin-panel/students/{{ app.student.id }}/#academic-appeals" style="display: block; text-decoration: none; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; transition: all 0.2s;" onmouseover="this.style.background='rgba(52,211,153,0.08)';" onmouseout="this.style.background='rgba(255,255,255,0.03)';">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                            <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">{{ app.student.get_full_name|default:app.student.username|truncatechars:20 }}</span>
+                            <span style="font-size: 0.68rem; padding: 2px 6px; border-radius: 6px; {% if app.status == 'approved' %}background:rgba(16,185,129,0.2); color:#34d399;{% elif app.status == 'pending' %}background:rgba(245,158,11,0.2); color:#fbbf24;{% else %}background:rgba(255,255,255,0.06); color:#94a3b8;{% endif %}">{{ app.status|upper }}</span>
+                        </div>
+                        <div style="font-size: 0.78rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ app.course.title }}: {{ app.get_appeal_type_display }}</div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <p style="margin: 8px 0 0 0; font-size: 0.8rem; color: #64748b;">No recent academic appeals.</p>
+                {% endif %}
+            </div>
+
+            <!-- Column 3: Study Leaves -->
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 700; font-size: 0.88rem; color: #fbbf24; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-calendar-day"></i> Study Leaves
+                    </span>
+                    <a href="{% url 'admin_student_list' %}" style="font-size: 0.78rem; color: #fbbf24; text-decoration: none;">Review <i class="fas fa-chevron-right"></i></a>
+                </div>
+                {% if recent_leaves %}
+                    {% for lv in recent_leaves|slice:":3" %}
+                    <a href="/admin-panel/students/{{ lv.student.id }}/#leave-requests" style="display: block; text-decoration: none; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; transition: all 0.2s;" onmouseover="this.style.background='rgba(251,191,36,0.08)';" onmouseout="this.style.background='rgba(255,255,255,0.03)';">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                            <span style="font-weight: 600; font-size: 0.82rem; color: #fff;">{{ lv.student.get_full_name|default:lv.student.username|truncatechars:20 }}</span>
+                            <span style="font-size: 0.68rem; padding: 2px 6px; border-radius: 6px; {% if lv.status == 'approved' %}background:rgba(16,185,129,0.2); color:#34d399;{% elif lv.status == 'pending' %}background:rgba(245,158,11,0.2); color:#fbbf24;{% else %}background:rgba(255,255,255,0.06); color:#94a3b8;{% endif %}">{{ lv.status|upper }}</span>
+                        </div>
+                        <div style="font-size: 0.78rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ lv.start_date|date:"d M" }} - {{ lv.end_date|date:"d M, Y" }} ({{ lv.get_reason_display }})</div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <p style="margin: 8px 0 0 0; font-size: 0.8rem; color: #64748b;">No recent study leave applications.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 

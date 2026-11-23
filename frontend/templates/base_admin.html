@@ -834,6 +834,57 @@
             }
         }
     </style>
+    <style>
+        /* ============================================= */
+        /* NOTIFICATION BELL STYLES FOR ADMIN/FACULTY    */
+        /* ============================================= */
+        .admin-sidebar-bell-btn {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .admin-sidebar-bell-btn:hover {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: rgba(0, 243, 255, 0.4);
+            color: #00f3ff;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+        .admin-sidebar-notif-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff3366;
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
+            animation: pulseNotif 2s infinite;
+        }
+        @keyframes pulseNotif {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -847,6 +898,12 @@
             <i class="fas {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}fa-chalkboard-teacher{% else %}fa-shield-halved{% endif %}"></i>
             <span>{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty <strong>Panel</strong>{% else %}Admin <strong>Panel</strong>{% endif %}</span>
         </div>
+        <button type="button" class="admin-sidebar-bell-btn" onclick="openNotificationModal()" style="margin-left:auto; margin-right:8px;" aria-label="Notifications" title="Inbound Messages & Notifications">
+            <i class="fas fa-bell"></i>
+            {% if unread_notifications_count > 0 %}
+                <span class="admin-sidebar-notif-dot">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </button>
         <a href="{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}{% url 'faculty_dashboard' %}{% else %}{% url 'admin_profile' %}{% endif %}" class="admin-mobile-avatar" title="{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty Profile{% else %}Admin Profile{% endif %}">
             {% if request.user.profile_pic_url %}
                 <img src="{{ request.user.profile_pic_url }}" alt="{{ request.user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
@@ -867,6 +924,12 @@
         <div class="brand">
             <i class="fas {% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}fa-chalkboard-teacher{% else %}fa-shield-halved{% endif %}"></i>
             <span>{% if request.user.is_faculty and not request.user.is_staff and not request.user.is_superuser %}Faculty Panel{% else %}Admin Panel{% endif %}</span>
+            <button type="button" class="admin-sidebar-bell-btn" onclick="openNotificationModal()" title="Inbound Messages & Notifications">
+                <i class="fas fa-bell"></i>
+                {% if unread_notifications_count > 0 %}
+                    <span class="admin-sidebar-notif-dot">{{ unread_notifications_count }}</span>
+                {% endif %}
+            </button>
             <button class="admin-sidebar-close-btn" onclick="toggleAdminSidebar()" aria-label="Close navigation">
                 <i class="fas fa-times"></i>
             </button>
@@ -925,6 +988,13 @@
                 <a href="{% url 'faculty_dashboard' %}#tab-assignments" class="fac-nav-item {% if 'assignment' in request.resolver_match.url_name and request.resolver_match.url_name != 'faculty_dashboard' %}active{% endif %}" data-nav="tab-assignments" onclick="return handleFacultySidebarNav(event, 'tab-assignments')">
                     <i class="fas fa-tasks" style="color: #3b82f6;"></i>
                     <span>Assignments</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'faculty_dashboard' %}#tab-mentorship" class="fac-nav-item" data-nav="tab-mentorship" onclick="return handleFacultySidebarNav(event, 'tab-mentorship')">
+                    <i class="fas fa-handshake" style="color: #38bdf8;"></i>
+                    <span>1-on-1 Mentorship</span>
                 </a>
             </li>
 
@@ -1098,6 +1168,9 @@
     <!-- Viewport-anchored modals block -->
     {% block modals %}
     {% endblock %}
+
+    <!-- 🔔 GLOBAL REAL-TIME INBOUND NOTIFICATIONS & TASK HUB MODAL -->
+    {% include 'notification_modal.html' %}
 
     <script>
         // Auto-dismiss toasts after 5 seconds
